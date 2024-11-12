@@ -1,0 +1,2 @@
+You are allowed to use OpenDMS for personal usage.
+For a commercial usage or a usage in a NPO please contact the repository-owner.
