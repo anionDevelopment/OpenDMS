@@ -19,6 +19,7 @@ using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.Logging.GRYLogger;
+using OpenDMSBackend.Core.Services;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
@@ -37,7 +38,8 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = registrationIsEnabled;
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
-            DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger);
+            ISQLProvider sqlProvider = new SQLProvider();
+            DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
             persistence = databasePersistence;
             persistence.Reset();
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
@@ -61,8 +63,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
                 initializationService.Initialize();
 
                 // assert
-                Assert.IsTrue(persistence.UserExistsByName(adminUserName));
-                Assert.IsTrue(businessLogicService.UserExists(adminUserName));
+                Assert.IsTrue(businessLogicService.UserWithNameExists(adminUserName));
                 // TODO add more assertions
             }
         }
@@ -78,15 +79,14 @@ namespace OpenDMSBackend.Tests.Testcases.Services
                 initializationService.Initialize();
                 string user = "someuser";
                 string password = "somepassword";
-                Assert.IsFalse(persistence.UserExistsByName(user));
+                Assert.IsFalse(persistence.UserWithNameExists(user));
 
                 // act
                 string userId = businessLogicService.Register(user, password);
 
                 // assert
                 Assert.IsTrue(persistence.UserWithIdExists(userId));
-                Assert.IsTrue(persistence.UserExistsByName(user));
-                Assert.IsTrue(businessLogicService.UserExists(user));
+                Assert.IsTrue(businessLogicService.UserWithNameExists(user));
                 // TODO add more assertions
             }
         }

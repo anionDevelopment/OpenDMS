@@ -1,9 +1,0 @@
-@startuml
-
-Container --> Containee : Content
-StorageLocation --|> Container 
-Folder --|> Container 
-Folder --|> Containee
-Document --|> Containee
-
-@enduml

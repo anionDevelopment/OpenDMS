@@ -28,6 +28,7 @@ using GRYLibrary.Core.APIServer.Mid.AutS;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using GRYLibrary.Core.APIServer.Mid.Ex;
+using OpenDMSBackend.Core.Services;
 
 namespace OpenDMSBackend.Core
 {
@@ -107,6 +108,7 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.User>, OpenDMSBackendTransientAuthenticationServicePersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.User>>());
                     }
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProvider>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.User>>());
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.User>>();

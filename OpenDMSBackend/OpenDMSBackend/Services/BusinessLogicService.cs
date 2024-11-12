@@ -48,14 +48,10 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             }
         }
 
-        public bool UserExists(string adminUserName)
+        public bool UserWithNameExists(string username)
         {
-            throw new NotImplementedException();
+           return _Persistence.UserWithNameExists(username);
         }
 
-        public bool UserExistsByName(string adminUsername)
-        {
-            return _AuthenticationService.UserExistsByName(adminUsername);
-        }
     }
 }

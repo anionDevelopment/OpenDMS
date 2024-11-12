@@ -1,11 +1,11 @@
--- MaiaDB-syntax
+-- MariaDB-syntax
 ALTER DATABASE CHARACTER SET utf8mb4;
 
 
 CREATE TABLE `Users` (
     `Id` varchar(255) not null,
     `Name` varchar(255) not null,
-    `PasswordHash` varchar(255) null,--when this properties are null then this means that the user uses an external authenticationprovider (for example OpenID) to login.
+    `PasswordHash` varchar(255) null,-- when this properties are null then this means that the user uses an external authenticationprovider (for example OpenID) to login.
     `EMailAddress` varchar(255) null,
     `UserIsActivated` tinyint(1) not null,
     `UserIsLocked` tinyint(1) not null,
@@ -22,6 +22,8 @@ CREATE TABLE `Documents` (
     `OriginalFilename` varchar(255) not null,
     `ImportDate` datetime(6) not null,
     `LastEditDate` datetime(6) null,
+    `ReadableId` BIGINT unsigned not null,
+    `DocumentContent` longblob not null,
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 

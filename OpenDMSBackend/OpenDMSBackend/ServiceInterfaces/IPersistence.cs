@@ -10,7 +10,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         public void DocumentExists(Guid id);
         uint GetAmountOfDocuments();
         void Reset();
-        bool UserExistsByName(string adminUserName);
+        bool UserWithNameExists(string adminUserName);
         bool UserWithIdExists(string userId);
     }
 }

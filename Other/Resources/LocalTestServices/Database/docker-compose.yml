@@ -4,7 +4,7 @@ services:
   opendms_database:
     # connectionstring: "Server=opendms_database; Port=3306; Database=OpenDMSDatabase; Uid=user; Pwd=pa55w0rd;"
     # direct local connection: "mariadb -u root -pR00tpa55w0rd OpenDMSDatabase"
-    image: mariadb:11.6.1
+    image: mariadb:11.5.2
     container_name: "opendms_database"
     ports:
       - "3306:3306"

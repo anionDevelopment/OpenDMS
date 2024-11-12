@@ -5,6 +5,7 @@
 The following tools from the [tools-list](https://github.com/anionDev/ScriptCollection/blob/main/ScriptCollection/Other/Reference/ReferenceContent/Articles/RequirementsForCommonProjectStructure.md#Tools) are required to build this code-unit:
 
 - `docfx`
+- `docker`
 - `dotnet-coverage`
 - `git`
 - `gitversion`
@@ -12,10 +13,6 @@ The following tools from the [tools-list](https://github.com/anionDev/ScriptColl
 - `reportgenerator`
 - `scriptcollection`
 - `swagger`
-
-To create a release the following tools are also required:
-
-- `gh`
 
 ## IDE
 

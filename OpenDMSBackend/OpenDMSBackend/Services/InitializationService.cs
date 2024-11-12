@@ -44,7 +44,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             this._AuthenticationService.UpdateRole(adminsRole);
 
             string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
-            if (!this._BusinessLogicService.UserExistsByName(adminUsername))
+            if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
             {
                 string initialAdminPassword = CodeUnitSpecificConstants.UsernameAdmin;//only initial password. must be changed on production
                 string adminUserId = this._BusinessLogicService.Register(adminUsername, initialAdminPassword);

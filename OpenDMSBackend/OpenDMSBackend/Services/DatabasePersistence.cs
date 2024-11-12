@@ -12,22 +12,25 @@ using System.Data;
 using MySqlConnector;
 using Role = GRYLibrary.Core.APIServer.CommonDBTypes.Role;
 using GRYLibrary.Core.Logging.GRYLogger;
+using OpenDMSBackend.Core.Services;
 
 namespace OpenDMSBackend.Core.ServiceInterfaces
 {
     public sealed class DatabasePersistence : IPersistence, IAuthenticationServicePersistence<Model.User>
     {
+        private readonly ISQLProvider _SQLProvider;
         private readonly DatabaseContext _DatabaseContext;
         private static readonly object _Lock = new object();
         private readonly Semaphore _Semaphore = new Semaphore();
-         private readonly ITimeService _TimeService;
+        private readonly ITimeService _TimeService;
         private readonly IGRYLog _Log;
 
-        public DatabasePersistence(DbContextOptions<DatabaseContext> options, IGeneralLogger logger, ITimeService timeService, IDatabaseManager databaseManager,    IGRYLog log)
+        public DatabasePersistence(DbContextOptions<DatabaseContext> options, IGeneralLogger logger, ITimeService timeService, IDatabaseManager databaseManager, IGRYLog log, ISQLProvider sqlProvider)
         {
-             this._TimeService = timeService;
+            this._TimeService = timeService;
             this._DatabaseContext = new DatabaseContext(options, logger, timeService, databaseManager);
             this._Log = log;
+            this._SQLProvider = sqlProvider;
         }
 
         #region AccessDatabase
@@ -114,7 +117,20 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         #endregion
         public void CreateDocument(Document document)
         {
-            throw new NotImplementedException();
+            this.RunTransaction((command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddDocument();
+                command.Prepare();
+                command.Parameters.Add(new MySqlParameter("Id", document.Id.ToString("N")));
+                command.Parameters.Add(new MySqlParameter("Title", document.Title.Value));
+                command.Parameters.Add(new MySqlParameter("Filename", document.Filename.Value));
+                command.Parameters.Add(new MySqlParameter("OriginalFilename", document.OriginalFilename.Value));
+                command.Parameters.Add(new MySqlParameter("ImportDate", document.ImportDate.ToDateTime()));
+                command.Parameters.Add(new MySqlParameter("LastEditDate", document.LastEditDate.HasValue ? document.LastEditDate : null));
+                command.Parameters.Add(new MySqlParameter("ReadableId", document.ReadableId));
+                command.Parameters.Add(new MySqlParameter("DocumentContent", document.DocumentContent));
+                command.ExecuteNonQuery();
+            });
         }
 
         public IDictionary<string, Model.User> GetAllUsers()
@@ -124,17 +140,61 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public ISet<Role> GetAllRoles()
         {
-            throw new NotImplementedException();
+            ISet<Role> roles = this.RunTransaction((command) =>
+            {
+                ISet<Role> rolesInternal = new HashSet<Role>();
+                command.CommandText = this._SQLProvider.GetScriptGetAllRoles();
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string id = reader.GetString(0);
+                        string name = reader.GetString(1);
+                        rolesInternal.Add(new Role() { Id = id, Name = name });
+                    }
+                    reader.Close();
+                    return rolesInternal;
+                };
+            })[0];
+            foreach (Role role in roles)
+            {
+                this.EnrichWithInheritedRoles(role);
+            }
+            return roles;
+        }
+
+        private void EnrichWithInheritedRoles(Role role)
+        {
+            //TODO load inherited roles transitively
         }
 
         public void AddRole(Role role)
         {
-            throw new NotImplementedException();
+            this.RunTransaction((command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptInsertRole();
+                command.Prepare();
+                command.Parameters.Add(new MySqlParameter("Id", role.Id));
+                command.Parameters.Add(new MySqlParameter("Name", role.Name));
+                command.ExecuteNonQuery();
+            }, (command) =>
+            {
+                //TODO add inherited roles
+            });
         }
 
         public void UpdateRole(Role role)
         {
-            throw new NotImplementedException();
+            this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptUpdateRole();
+                cmd.Parameters.Add(new MySqlParameter("Id", role.Id));
+                cmd.Parameters.Add(new MySqlParameter("Name", role.Name));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+            }, (cmd) =>
+            {
+                //TODO update inherited roles
+            });
         }
 
         public void DeleteRoleByName(string roleName)
@@ -147,19 +207,45 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             throw new NotImplementedException();
         }
 
-        public void AddUser(Model.User newUser)
+        public void AddUser(Model.User user)
         {
-            throw new NotImplementedException();
+            this.RunTransaction((command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddUser();
+                command.Parameters.Add(new MySqlParameter("Id", user.Id));
+                command.Parameters.Add(new MySqlParameter("Name", user.Name));
+                command.Parameters.Add(new MySqlParameter("PasswordHash", user.PasswordHash));
+                command.Parameters.Add(new MySqlParameter("EMailAddress", user.EMailAddress));
+                command.Parameters.Add(new MySqlParameter("UserIsActivated", user.UserIsActivated));
+                command.Parameters.Add(new MySqlParameter("UserIsLocked", user.UserIsLocked));
+                command.Parameters.Add(new MySqlParameter("RegistrationMoment", user.RegistrationMoment));
+                command.Parameters.Add(new MySqlParameter("TOTPActivated", user.TOTP.IsActicated));
+                command.Parameters.Add(new MySqlParameter("TOTPSecretKey", user.TOTP.SecretKey));
+                command.Prepare();
+                command.ExecuteNonQuery();
+            });
         }
 
         public bool UserWithNameExists(string userName)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptUserWithNameExists();
+                cmd.Parameters.Add(new MySqlParameter("UserName", userName));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                return reader.HasRows;
+            })[0];
         }
 
         public bool UserWithIdExists(string userId)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = _SQLProvider.GetScriptUserWithIdExists();
+                cmd.Parameters.Add(new MySqlParameter(nameof(userId), userId));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                return reader.HasRows;
+            })[0];
         }
 
         public Model.User GetUserById(string userId)
@@ -179,12 +265,25 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public bool RoleExists(string roleName)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptRoleExists();
+                cmd.Parameters.Add(new MySqlParameter("RoleName", roleName));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                return reader.HasRows;
+            })[0];
         }
 
         public void AddRoleToUser(string userId, string roleId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction((command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddRoleToUser();
+                command.Prepare();
+                command.Parameters.Add(new MySqlParameter("UserId", userId));
+                command.Parameters.Add(new MySqlParameter("RoleId", roleId));
+                command.ExecuteNonQuery();
+            });
         }
 
         public void RemoveRoleFromUser(string userId, string roleId)
@@ -194,7 +293,14 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public bool UserHasRole(string userId, string roleId)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptUserHasRole();
+                cmd.Parameters.Add(new MySqlParameter("UserId", userId));
+                cmd.Parameters.Add(new MySqlParameter("RoleId", roleId));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                return reader.HasRows;
+            })[0];
         }
 
         public Model.User GetUserByAccessToken(string accessToken)
@@ -219,7 +325,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public void Reset()
         {
-            throw new NotImplementedException();
+            this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptResetDatabase();
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                return reader.HasRows;
+            });
         }
 
         public bool IsAvailable()
@@ -228,11 +339,6 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         }
 
         public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool UserExistsByName(string adminUserName)
         {
             throw new NotImplementedException();
         }

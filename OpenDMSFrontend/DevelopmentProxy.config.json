@@ -1,0 +1,6 @@
+{
+    "/API/": {
+        "target": "https://opendmsbackend.test.local:443",
+        "secure": false
+    }
+}

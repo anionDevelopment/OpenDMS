@@ -21,6 +21,9 @@ using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using OpenDMSBackend.Core.Configuration;
 using GRYLibrary.Core.Logging.GRYLogger;
+using OpenDMSBackend.Core.Services;
+using GRYLibrary.Core.Misc.Strings;
+using MySqlConnector;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
@@ -44,19 +47,28 @@ namespace OpenDMSBackend.Tests.Testcases.Services
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = true;
                 Mock<IExampleDataCreator> exampleDataCreatorMock = new Mock<IExampleDataCreator>(MockBehavior.Strict);
                 exampleDataCreatorMock.Setup(mock => mock.AddExampleData());
-                   IGRYLog logger = GeneralLogger.CreateUsingConsole();
+                IGRYLog logger = GeneralLogger.CreateUsingConsole();
                 Mock<IApplicationConstants<CodeUnitSpecificConstants>> constantsMock = new Mock<IApplicationConstants<CodeUnitSpecificConstants>>(MockBehavior.Strict);
                 constantsMock.SetupGet(m => m.Environment).Returns(OpenDMSBackendUtilities.GetEnvironmentTargetType());
+                ISQLProvider sqlProvider = new SQLProvider();
 
-                DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger);
+                DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
 
-                OpenDMSBackend.Core.Model.Document expectedDocument = new OpenDMSBackend.Core.Model.Document();
+                Core.Model.Document testDocument = new Core.Model.Document(Guid.NewGuid(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, new byte[] { 1, 2, 3 });
 
                 //act
-                databasePersistence.CreateDocument(expectedDocument);
+                databasePersistence.CreateDocument(testDocument);
 
                 // assert
-                throw new NotImplementedException();
+                string reloadedDocumentOriginalFilename = databasePersistence.RunTransaction((cmd) =>
+                {
+                    cmd.CommandText = $"select OriginalFilename from Documents where Id='{testDocument.Id:N}'";
+                    using MySqlDataReader reader = cmd.ExecuteReader();
+                    Assert.IsTrue(reader.HasRows);
+                    reader.Read();
+                    return reader.GetString(0);
+                })[0];
+                Assert.AreEqual(testDocument.OriginalFilename.Value, reloadedDocumentOriginalFilename);
             }
         }
 

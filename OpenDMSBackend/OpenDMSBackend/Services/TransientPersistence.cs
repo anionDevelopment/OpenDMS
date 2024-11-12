@@ -50,10 +50,10 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public uint GetAmountOfDocuments()
         {
-           return (uint)_Documents.Count;
+           return (uint)this._Documents.Count;
         }
 
-        public bool UserExistsByName(string adminUserName)
+        public bool UserWithNameExists(string adminUserName)
         {
             throw new NotImplementedException();
         }

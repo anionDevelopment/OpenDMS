@@ -64,16 +64,16 @@
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.10" />
-        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.0" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="NBitcoin" Version="7.0.42" />
         <PackageReference Include="Nethereum.Web3" Version="4.26.0" />
         <PackageReference Include="prometheus-net" Version="8.2.1" />
         <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
-        <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+        <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
         <PackageReference Include="NJsonSchema" Version="11.0.2" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
@@ -82,8 +82,23 @@
       <ProjectReference Include="..\..\..\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="Database\Migrations\**">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-        </EmbeddedResource>
+		<EmbeddedResource Include="Database\Migrations\**">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Database\SQL\**">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Database\SQL\AddDocument.sql" />
+      <None Remove="Database\SQL\AddRoleToUser.sql" />
+      <None Remove="Database\SQL\AddUser.sql" />
+      <None Remove="Database\SQL\GetAllRoles.sql" />
+      <None Remove="Database\SQL\InsertRole.sql" />
+      <None Remove="Database\SQL\RoleExists.sql" />
+      <None Remove="Database\SQL\UpdateRole.sql" />
+      <None Remove="Database\SQL\UserHasRole.sql" />
+      <None Remove="Database\SQL\UserWithIdExists.sql" />
+      <None Remove="Database\SQL\UserWithNameExists.sql" />
     </ItemGroup>
 </Project>
