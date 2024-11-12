@@ -1,6 +1,6 @@
 {
   "name": "open-dmsfrontend",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "build": "npm run build-QualityCheck",
     "build-Development": "ng build --configuration Development",
@@ -10,34 +10,34 @@
     "test-Development": "ng test --configuration Development --browsers ChromeHeadless --code-coverage --watch false",
     "test-QualityCheck": "ng test --configuration QualityCheck --browsers ChromeHeadless --code-coverage --watch false",
     "test-Productive": "ng test --configuration Productive --browsers ChromeHeadless --code-coverage --watch false",
-    "generate-api-client": "openapi-generator-cli generate -g typescript-angular -i ./Other/Resources/DependentCodeUnits/OpeDMSBackend/APISpecification/OpeDMSBackend.latest.api.json -o ./src/app/generated/open-dms-backend",
+    "generate-api-client": "openapi-generator-cli generate -g typescript-angular -i ./Other/Resources/DependentCodeUnits/OpenDMSBackend/APISpecification/OpenDMSBackend.latest.api.json -o ./src/app/generated/open-dms-backend",
     "start": "ng serve --configuration Development --proxy-config DevelopmentProxy.config.json"
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^18.2.0",
-    "@angular/common": "^18.2.0",
-    "@angular/compiler": "^18.2.0",
-    "@angular/core": "^18.2.0",
-    "@angular/forms": "^18.2.0",
-    "@angular/platform-browser": "^18.2.0",
-    "@angular/platform-browser-dynamic": "^18.2.0",
-    "@angular/router": "^18.2.0",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.14.10"
+    "@angular/animations": "18.2.0",
+    "@angular/common": "18.2.0",
+    "@angular/compiler": "18.2.0",
+    "@angular/core": "18.2.0",
+    "@angular/forms": "18.2.0",
+    "@angular/platform-browser": "18.2.0",
+    "@angular/platform-browser-dynamic": "18.2.0",
+    "@angular/router": "18.2.0",
+    "rxjs": "7.8.0",
+    "tslib": "2.3.0",
+    "zone.js": "0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.2.11",
-    "@angular/cli": "^18.2.11",
-    "@angular/compiler-cli": "^18.2.0",
-    "@types/jasmine": "~5.1.0",
-    "jasmine-core": "~5.2.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.5.2"
+    "@angular-devkit/build-angular": "18.2.11",
+    "@angular/cli": "18.2.11",
+    "@angular/compiler-cli": "18.2.0",
+    "@types/jasmine": "5.1.0",
+    "jasmine-core": "5.2.0",
+    "karma": "6.4.0",
+    "karma-chrome-launcher": "3.2.0",
+    "karma-coverage": "2.2.0",
+    "karma-jasmine": "5.1.0",
+    "karma-jasmine-html-reporter": "2.1.0",
+    "typescript": "5.5.2"
   }
 }
