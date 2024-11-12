@@ -1,0 +1,26 @@
+version: "3.2"
+
+services:
+  opendms_database:
+    # connectionstring: "Server=opendms_database; Port=3306; Database=OpenDMSDatabase; Uid=user; Pwd=pa55w0rd;"
+    # direct local connection: "mariadb -u root -pR00tpa55w0rd OpenDMSDatabase"
+    image: mariadb:11.6.1
+    container_name: "opendms_database"
+    ports:
+      - "3306:3306"
+    # Encomment the following 2 lines if the test-database is supposed to be persistent for test-purposes
+    #   volumes:
+    #     - "./Volumes/Data:/var/lib/mysql"
+    environment:
+      MARIADB_USER: user
+      MARIADB_PASSWORD: pa55w0rd
+      MARIADB_ROOT_PASSWORD: R00tpa55w0rd
+      MARIADB_DATABASE: OpenDMSDatabase
+
+  opendms_database_administration:
+    image: adminer:4.8.1
+    container_name: "opendms_database_administration"
+    ports:
+      - 8080:8080
+    depends_on:
+      - opendms_database

@@ -1,0 +1,56 @@
+{
+	"folders": [
+		{
+			"path": ".",
+			"name": "Entire repository"
+		},
+		{
+			"path": "./OpenDMS",
+			"name": "OpenDMS"
+		}
+	],
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Build all codeunits",
+				"command": "SCBuildCodeunits",
+				"args": [
+					"--buildenvironment",
+					"Development"
+				],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}",
+				},
+			},
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Debug current file",
+				"type": "python",
+				"request": "launch",
+				"program": "${file}",
+				"console": "integratedTerminal"
+			}
+		]
+	},
+	"settings": {
+		"window.title": "${dirty} ${rootName}", // see https://code.visualstudio.com/updates/v1_10#_configurable-window-title
+		"files.exclude": {
+			".coverage": true,
+			"TestResults": true,
+			".vs": true,
+		},
+		"spellright.language": [
+			"en",
+		],
+		"spellright.documentTypes": [
+			"markdown",
+			"plaintext",
+		],
+	}
+}
