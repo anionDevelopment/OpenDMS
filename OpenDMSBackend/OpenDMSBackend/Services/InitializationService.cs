@@ -27,25 +27,25 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         }
         public void Initialize()
         {
-            this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);
-            Role usersRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
-
-            this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameModerartors);
-            Role moderatorsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameModerartors);
-            moderatorsRole.InheritedRoles = new HashSet<Role>();
-            moderatorsRole.InheritedRoles.Add(usersRole);
-            this._AuthenticationService.UpdateRole(moderatorsRole);
-
-
-            this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameAdmins);
-            Role adminsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameAdmins);
-            adminsRole.InheritedRoles = new HashSet<Role>();
-            adminsRole.InheritedRoles.Add(moderatorsRole);
-            this._AuthenticationService.UpdateRole(adminsRole);
-
             string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
             if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
             {
+                this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);
+                Role usersRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
+
+                this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameModerators);
+                Role moderatorsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameModerators);
+                moderatorsRole.InheritedRoles = new HashSet<Role>();
+                moderatorsRole.InheritedRoles.Add(usersRole);
+                this._AuthenticationService.UpdateRole(moderatorsRole);
+
+
+                this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameAdmins);
+                Role adminsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameAdmins);
+                adminsRole.InheritedRoles = new HashSet<Role>();
+                adminsRole.InheritedRoles.Add(moderatorsRole);
+                this._AuthenticationService.UpdateRole(adminsRole);
+
                 string initialAdminPassword = CodeUnitSpecificConstants.UsernameAdmin;//only initial password. must be changed on production
                 string adminUserId = this._BusinessLogicService.Register(adminUsername, initialAdminPassword);
                 this._AuthenticationService.EnsureUserHasRole(adminUserId, adminsRole.Id);
@@ -56,7 +56,6 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
                 this._ExampleDataCreator.AddExampleData();
             }
             this._GeneralLogger.Log("Service is initialized.", Microsoft.Extensions.Logging.LogLevel.Information);
-
         }
     }
 }

@@ -1,30 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using GRYLibrary.Core.Misc;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class SQLProvider : ISQLProvider
+    public class SQLProvider : AbstractSQLProvider,ISQLProvider
     {
-        private IDictionary<string, string> _ScriptCache = new Dictionary<string, string>();
-
-        private string LoadSQLScript(string sqlFileName)
-        {
-            if (!this._ScriptCache.ContainsKey(sqlFileName))
-            {
-                this.LoadScriptToCache(sqlFileName);
-            }
-            return this._ScriptCache[sqlFileName];
-        }
-
-        private void LoadScriptToCache(string sqlFileName)
-        {
-            using (Stream stream = this.GetType().Assembly.GetManifestResourceStream($"OpenDMSBackend.Core.Database.SQL.{sqlFileName}.sql"))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                this._ScriptCache[sqlFileName] = reader.ReadToEnd();
-            }
-        }
-
+        public SQLProvider() :base("OpenDMSBackend.Core.Database.SQL") { }
+       
         public string GetScriptResetDatabase()
         {
             return this.LoadSQLScript("ResetDatabase");

@@ -7,7 +7,7 @@ namespace OpenDMSBackend.Core.Constants
         internal const string UsernameAdmin = "admin";
         internal const string RolenameUsers = "Users";
         internal const string RolenameAdmins = "Administrators";
-        internal const string RolenameModerartors = "Moderators";
+        internal const string RolenameModerators = "Moderators";
         internal const string ActionAccessLoginArea = "AccessLoginArea";
 
         internal const string BusinessMetricsPrefix = $"{GeneralConstants.CodeUnitName}_business_";
