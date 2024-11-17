@@ -24,6 +24,7 @@ CREATE TABLE `Documents` (
     `LastEditDate` datetime(6) null,
     `ReadableId` BIGINT unsigned not null,
     `DocumentContent` longblob not null,
+    `DocumentPreview` longblob not null,
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 

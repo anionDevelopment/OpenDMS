@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenDMSBackend.Core.Model
 {
-    public class Document: IDocument
+    public class DocumentPreview
     {
 
         public Guid Id { get; set; }
@@ -15,9 +15,8 @@ namespace OpenDMSBackend.Core.Model
         public GRYDateTime ImportDate { get; set; }
         public GRYDateTime? LastEditDate { get; set; }
         public ulong ReadableId { get; set; }
-        public byte[] DocumentContent { get; set; }
-        public byte[] DocumentPreview { get; set; }
-        public Document(Guid id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] documentContent, byte[] documentPreview)
+        public byte[] Preview { get; set; }
+        public DocumentPreview(Guid id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] preview)
         {
             this.Id = id;
             this.Title = title;
@@ -26,7 +25,7 @@ namespace OpenDMSBackend.Core.Model
             this.ImportDate = importDate;
             this.LastEditDate = lastEditDate;
             this.ReadableId = readableId;
-            this.DocumentPreview = documentPreview;
+            this.Preview = preview;
         }
 
         public override bool Equals(object? obj)
@@ -36,7 +35,7 @@ namespace OpenDMSBackend.Core.Model
                 return false;
             }
 
-            if (obj is not Document document)
+            if (obj is not DocumentPreview document)
             {
                 return false;
             }
@@ -64,7 +63,7 @@ namespace OpenDMSBackend.Core.Model
             {
                 return false;
             }
-            if (!this.DocumentPreview.SequenceEqual(document.DocumentPreview))
+            if (!this.Preview.SequenceEqual(document.Preview))
             {
                 return false;
             }
@@ -76,14 +75,5 @@ namespace OpenDMSBackend.Core.Model
             return HashCode.Combine(this.Id);
         }
 
-        public void Accept(IContaineeVisitor containee)
-        {
-            containee.Handle(this);
-        }
-
-        public T Accept<T>(IContaineeVisitor<T> containee)
-        {
-            return containee.Handle(this);
-        }
     }
 }

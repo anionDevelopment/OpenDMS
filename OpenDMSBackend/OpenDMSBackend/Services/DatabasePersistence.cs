@@ -129,6 +129,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
                 command.Parameters.Add(new MySqlParameter("LastEditDate", document.LastEditDate.HasValue ? document.LastEditDate : null));
                 command.Parameters.Add(new MySqlParameter("ReadableId", document.ReadableId));
                 command.Parameters.Add(new MySqlParameter("DocumentContent", document.DocumentContent));
+                command.Parameters.Add(new MySqlParameter("DocumentPreview", document.DocumentPreview));
                 command.ExecuteNonQuery();
             });
         }

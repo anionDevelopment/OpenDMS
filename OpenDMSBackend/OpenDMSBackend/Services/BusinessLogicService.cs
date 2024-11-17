@@ -3,10 +3,14 @@ using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
+using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
+using OpenDMSBackend.Core.Miscellaneous;
 using OpenDMSBackend.Core.Model;
 using System;
+using System.Collections.Generic;
+using YamlDotNet.Core.Events;
 
 namespace OpenDMSBackend.Core.ServiceInterfaces
 {
@@ -29,9 +33,10 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             this._Configuration = configuration;
         }
 
-        public void AddDocument(Document document)
+        public void AddDocument(string? title, string originalFilename, byte[] content)
         {
-            throw new NotImplementedException();
+            Document document = new Document(Guid.NewGuid(), title==null? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename),_TimeService.GetCurrentTimeAsGRYDateTime(),null,_Persistence.GetNewReadableId(),content,Utilities.GeneratePreview(content));
+             _Persistence.CreateDocument(document);
         }
 
         public string Register(string username, string password)
@@ -46,6 +51,16 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
                 this._AuthenticationService.AddUserTyped(newUser);
                 return newUser.Id;
             }
+        }
+
+        public Document GetDocument(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<DocumentPreview> Search(string searchTerm)
+        {
+            throw new NotImplementedException();
         }
 
         public bool UserWithNameExists(string username)

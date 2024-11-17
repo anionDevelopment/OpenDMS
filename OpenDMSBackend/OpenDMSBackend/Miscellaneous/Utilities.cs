@@ -1,10 +1,15 @@
 ﻿using GRYLibrary.Core.APIServer.ConcreteEnvironments;
+using System;
 
 namespace OpenDMSBackend.Core.Miscellaneous
 {
     internal static class Utilities
     {
-     
+        internal static byte[] GeneratePreview(byte[] documentContent)
+        {
+            throw new NotImplementedException();
+        }
+
         internal static GRYEnvironment GetEnvironmentTargetType()
         {
 #if Development

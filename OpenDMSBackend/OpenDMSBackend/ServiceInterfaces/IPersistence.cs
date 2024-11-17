@@ -12,5 +12,6 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         void Reset();
         bool UserWithNameExists(string adminUserName);
         bool UserWithIdExists(string userId);
+        ulong GetNewReadableId();
     }
 }
