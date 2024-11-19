@@ -54,7 +54,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
 
                 DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
 
-                Core.Model.Document testDocument = new Core.Model.Document(Guid.NewGuid(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, new byte[] { 1, 2, 3 });
+                Core.Model.Document testDocument = new Core.Model.Document(Guid.NewGuid(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, new byte[] { 1, 2, 3, 4 }, new byte[] { 1, 2 });
 
                 //act
                 databasePersistence.CreateDocument(testDocument);

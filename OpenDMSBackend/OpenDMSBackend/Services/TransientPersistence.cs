@@ -62,5 +62,10 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         {
             throw new NotImplementedException();
         }
+
+        public ulong GetNewReadableId()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
