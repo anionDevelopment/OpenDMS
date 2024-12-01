@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminHomePageComponent } from './admin-home-page/admin-home-page.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
-import { EditUserComponent } from './edit-user/edit-user.component';
+import { UserComponent } from './user/user.component';
+import { UsersListComponent } from './users-list/users-list.component';
 
 
 
@@ -10,10 +11,14 @@ import { EditUserComponent } from './edit-user/edit-user.component';
   declarations: [
     AdminHomePageComponent,
     AdminDashboardComponent,
-    EditUserComponent
+    UserComponent,
+    UsersListComponent,
   ],
   imports: [
     CommonModule
+  ],
+  exports: [
+    AdminHomePageComponent,
   ]
 })
 export class AdminAreaModule { }

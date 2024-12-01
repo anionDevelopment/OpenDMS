@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ThemeSwitchComponent } from './theme-switch.component';
+import { FrameWorkComponent } from './frame-work.component';
 
-describe('ThemeSwitchComponent', () => {
-  let component: ThemeSwitchComponent;
-  let fixture: ComponentFixture<ThemeSwitchComponent>;
+describe('FrameWorkComponent', () => {
+  let component: FrameWorkComponent;
+  let fixture: ComponentFixture<FrameWorkComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ThemeSwitchComponent]
+      declarations: [FrameWorkComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ThemeSwitchComponent);
+    fixture = TestBed.createComponent(FrameWorkComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
