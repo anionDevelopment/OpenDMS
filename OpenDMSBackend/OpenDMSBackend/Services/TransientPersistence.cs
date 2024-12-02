@@ -45,7 +45,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            GRYLibrary.Core.Misc.Utilities.NoOperation();
         }
 
         public uint GetAmountOfDocuments()
@@ -53,14 +53,14 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
            return (uint)this._Documents.Count;
         }
 
-        public bool UserWithNameExists(string adminUserName)
+        public bool UserWithNameExists(string username)
         {
-            throw new NotImplementedException();
+            return this._TransientAuthenticationServicePersistence.UserWithNameExists(username);
         }
 
         public bool UserWithIdExists(string userId)
         {
-            throw new NotImplementedException();
+            return this._TransientAuthenticationServicePersistence.UserWithIdExists(userId);
         }
 
         public ulong GetNewReadableId()

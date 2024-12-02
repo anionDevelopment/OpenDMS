@@ -1,0 +1,19 @@
+version: '3'
+
+tasks:
+
+  StartDevelopmentReverseProxy:
+    aliases:
+      - sdrpu
+    desc: "Start development-reverse-proxy"
+    dir: Other/Resources/LocalTestServices/ReverseProxy
+    cmds:
+      - docker compose -p developmentreverseproxy up --force-recreate -d
+
+  StopDevelopmentReverseProxy:
+    aliases:
+      - sdrpd
+    desc: "Stop development-reverse-proxy"
+    dir: Other/Resources/LocalTestServices/ReverseProxy
+    cmds:
+      - docker compose -p developmentreverseproxy down
