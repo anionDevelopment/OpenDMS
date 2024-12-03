@@ -5,7 +5,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { BASE_PATH } from './generated/con-surv-backend/variables';
+import { BASE_PATH } from './generated/open-dms-backend/variables';
 import { environment } from '../environments/environment';
 import { logInterceptor } from './interceptors/log.interceptor';
 import { Settings } from './static/Settings';
