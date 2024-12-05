@@ -121,7 +121,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             {
                 command.CommandText = this._SQLProvider.GetScriptAddDocument();
                 command.Prepare();
-                command.Parameters.Add(new MySqlParameter("Id", document.Id.ToString("N")));
+                command.Parameters.Add(new MySqlParameter("Id", document.Id));
                 command.Parameters.Add(new MySqlParameter("Title", document.Title.Value));
                 command.Parameters.Add(new MySqlParameter("Filename", document.Filename.Value));
                 command.Parameters.Add(new MySqlParameter("OriginalFilename", document.OriginalFilename.Value));
@@ -314,7 +314,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             throw new NotImplementedException();
         }
 
-        public void DocumentExists(Guid id)
+        public bool DocumentExists(string id)
         {
             throw new NotImplementedException();
         }
@@ -345,6 +345,26 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         }
 
         public ulong GetNewReadableId()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Document GetDocument(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CreateTag(Tag tag)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AssignTag(string documentId, string tagId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnassignTag(string documentId, string tagId)
         {
             throw new NotImplementedException();
         }

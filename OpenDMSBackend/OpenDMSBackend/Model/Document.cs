@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Strings;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OpenDMSBackend.Core.Model
@@ -8,16 +9,18 @@ namespace OpenDMSBackend.Core.Model
     public class Document: IDocument
     {
 
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public OneLineString Title { get; set; }
         public OneLineString Filename { get; set; }
         public OneLineString OriginalFilename { get; set; }
         public GRYDateTime ImportDate { get; set; }
         public GRYDateTime? LastEditDate { get; set; }
+        public ISet<Tag> Tags { get; set; }
         public ulong ReadableId { get; set; }
         public byte[] DocumentContent { get; set; }
         public byte[] DocumentPreview { get; set; }
-        public Document(Guid id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] documentContent, byte[] documentPreview)
+        public string OCRContent { get; set; }
+        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] documentContent, byte[] documentPreview,ISet<Tag> tags, string oCRContent)
         {
             this.Id = id;
             this.Title = title;
@@ -27,6 +30,8 @@ namespace OpenDMSBackend.Core.Model
             this.LastEditDate = lastEditDate;
             this.ReadableId = readableId;
             this.DocumentPreview = documentPreview;
+            this.Tags = tags;
+            this.OCRContent = oCRContent;
         }
 
         public override bool Equals(object? obj)
@@ -65,6 +70,10 @@ namespace OpenDMSBackend.Core.Model
                 return false;
             }
             if (!this.DocumentPreview.SequenceEqual(document.DocumentPreview))
+            {
+                return false;
+            }
+            if (!this.Tags.SetEquals(document.Tags))
             {
                 return false;
             }
