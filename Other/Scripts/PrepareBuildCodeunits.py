@@ -6,8 +6,10 @@ from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjec
 def prepare_build_codeunits():
     t = TasksForCommonProjectStructure()
     current_file = str(Path(__file__).absolute())
-    product_folder: str = GeneralUtilities.resolve_relative_path("../../..", current_file)
-    t.ensure_certificate_authority_for_development_purposes_is_generated(product_folder)
+    repository_folder = GeneralUtilities.resolve_relative_path("../../..", current_file)
+    t.ensure_certificate_authority_for_development_purposes_is_generated(repository_folder)
+    t.generate_certificate_for_development_purposes_for_product(repository_folder)
+    t.generate_tasksfile_from_workspace_file(repository_folder)
 
 
 if __name__ == "__main__":
