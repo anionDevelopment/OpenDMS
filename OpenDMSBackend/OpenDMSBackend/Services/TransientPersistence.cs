@@ -4,22 +4,23 @@ using GRYLibrary.Core.APIServer.Services.Trans;
 using System;
 using System.Linq;
 using GRYLibrary.Core.Misc;
+using OpenDMSBackend.Core.ServiceInterfaces;
 
-namespace OpenDMSBackend.Core.ServiceInterfaces
+namespace OpenDMSBackend.Core.Services
 {
     public sealed class TransientPersistence : IPersistence
     {
         private readonly IDictionary<string/*id*/, Document> _Documents;
         private readonly IDictionary<string/*id*/, Tag> _Tags;
-        private readonly IIdGenerator<ulong> _IdGenerator;
-        private readonly IAuthenticationServicePersistence<OpenDMSBackend.Core.Model.User> _TransientAuthenticationServicePersistence;
+        private readonly IIdGenerator<long> _IdGenerator;
+        private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
 
-        public TransientPersistence(IAuthenticationServicePersistence<OpenDMSBackend.Core.Model.User> transientAuthenticationServicePersistence)
+        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence)
         {
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
             this._Documents = new Dictionary<string, Document>();
             this._Tags = new Dictionary<string, Tag>();
-            _IdGenerator = IdGenerator.GetDefaultLongIdGenerator();
+            this._IdGenerator = IdGenerator.GetDefaultLongIdGenerator();
             this.Initialize();
         }
 
@@ -33,17 +34,17 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         {
             this._Documents.Clear();
             this._Tags.Clear();
-            this._IdGenerator.Reset();
+            //this._IdGenerator.Reset();
         }
 
         public void CreateDocument(Document document)
         {
-            _Documents[document.Id] = document;
+            this._Documents[document.Id] = document;
         }
 
         public bool DocumentExists(string id)
         {
-            return _Documents.ContainsKey(id);
+            return this._Documents.ContainsKey(id);
         }
 
         public bool IsAvailable()
@@ -53,7 +54,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public void Dispose()
         {
-            GRYLibrary.Core.Misc.Utilities.NoOperation();
+            Utilities.NoOperation();
         }
 
         public uint GetAmountOfDocuments()
@@ -73,31 +74,31 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public ulong GetNewReadableId()
         {
-            return _IdGenerator.GenerateNewId();
+            return (ulong)this._IdGenerator.GenerateNewId();
         }
 
         public Document GetDocument(string id)
         {
-            return _Documents[id];
+            return this._Documents[id];
         }
 
         public void CreateTag(Tag tag)
         {
-            _Tags[tag.Id] = tag;
+            this._Tags[tag.Id] = tag;
         }
         private Tag GetTag(string id)
         {
-            return _Tags[id];
+            return this._Tags[id];
         }
 
         public void AssignTag(string documentId, string tagId)
         {
-            GetDocument(documentId).Tags.Add(GetTag(tagId));
+            this.GetDocument(documentId).Tags.Add(this.GetTag(tagId));
         }
 
         public void UnassignTag(string documentId, string tagId)
         {
-            GetDocument(documentId).Tags.Remove(GetTag(tagId));
+            this.GetDocument(documentId).Tags.Remove(this.GetTag(tagId));
         }
     }
 }

@@ -20,6 +20,7 @@ using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Services;
+using Moq;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
@@ -44,7 +45,8 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             persistence.Reset();
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
             IAuthenticationService<User> authenticationService = new OpenDMSBackendPersistentAuthenticationService( timeService, databasePersistence, logger, constants);
-            businessLogicService = new BusinessLogicService( databasePersistence, authenticationService, timeService,   constants, logger, persistedAPIServerConfiguration);
+            Mock<OCRService> ocrServiceMock= new Mock<OCRService>(MockBehavior.Strict);
+            businessLogicService = new BusinessLogicService( databasePersistence, authenticationService, timeService,   constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(databasePersistence, authenticationService, timeService,  logger, constants, businessLogicService, persistedAPIServerConfiguration);
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator);
         }

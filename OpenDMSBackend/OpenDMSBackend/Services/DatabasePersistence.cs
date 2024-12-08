@@ -242,7 +242,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         {
             return this.RunTransaction((cmd) =>
             {
-                cmd.CommandText = _SQLProvider.GetScriptUserWithIdExists();
+                cmd.CommandText = this._SQLProvider.GetScriptUserWithIdExists();
                 cmd.Parameters.Add(new MySqlParameter(nameof(userId), userId));
                 using MySqlDataReader reader = cmd.ExecuteReader();
                 return reader.HasRows;

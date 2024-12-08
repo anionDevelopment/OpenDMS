@@ -35,13 +35,13 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             this._Constants = constants;
             this._Logger = logger;
             this._Configuration = configuration;
-            _OCRService= oCRService;
+            this._OCRService = oCRService;
         }
 
         public void AddDocument(string? title, string originalFilename, byte[] content)
         {
-            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), _TimeService.GetCurrentTimeAsGRYDateTime(), null, _Persistence.GetNewReadableId(), content, Utilities.GeneratePreview(content), new HashSet<Tag>(), _OCRService.GetOCRContent(content));
-            _Persistence.CreateDocument(document);
+            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), content, Utilities.GeneratePreview(content), new HashSet<Tag>(), this._OCRService.GetOCRContent(content));
+            this._Persistence.CreateDocument(document);
         }
 
         public string Register(string username, string password)
@@ -61,7 +61,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         public Document GetDocument(string id)
         {
             //TODO do permission check
-            return _Persistence.GetDocument(id);
+            return this._Persistence.GetDocument(id);
         }
 
         public IEnumerable<DocumentPreview> Search(string searchTerm)
@@ -71,25 +71,25 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
         public bool UserWithNameExists(string username)
         {
-            return _Persistence.UserWithNameExists(username);
+            return this._Persistence.UserWithNameExists(username);
         }
 
         public void CreateTag(string tagName, Color tagColor)
         {
             //TODO do permission check
-            _Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(),tagName, tagColor));
+            this._Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(),tagName, tagColor));
         }
 
         public void AssignTag(string documentId, string tagId)
         {
             //TODO do permission check
-            _Persistence.AssignTag( documentId,  tagId);
+            this._Persistence.AssignTag( documentId,  tagId);
         }
 
         public void UnassignTag(string documentId, string tagId)
         {
             //TODO do permission check
-            _Persistence.UnassignTag(documentId, tagId);
+            this._Persistence.UnassignTag(documentId, tagId);
         }
     }
 }

@@ -24,6 +24,8 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Services;
 using GRYLibrary.Core.Misc.Strings;
 using MySqlConnector;
+using System.Collections.Generic;
+using OpenDMSBackend.Core.Model;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
@@ -54,7 +56,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
 
                 DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
 
-                Core.Model.Document testDocument = new Core.Model.Document(Guid.NewGuid(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, new byte[] { 1, 2, 3, 4 }, new byte[] { 1, 2 });
+                Core.Model.Document testDocument = new Core.Model.Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, new byte[] { 1, 2, 3, 4 }, new byte[] { 1, 2 }, new HashSet<Tag>() , string.Empty);
 
                 //act
                 databasePersistence.CreateDocument(testDocument);
