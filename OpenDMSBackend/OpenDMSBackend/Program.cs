@@ -106,16 +106,8 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
                         {
                             string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                            Tools.ConnectToDatabase(() =>
-                            {
-                                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions =>
-                                {
-                                    sqlOptions.CommandTimeout(120);
-                                });
-                            }, logger, GUtilities.AdaptMariaDBSQLConnectionString(connectionString, true)
-                            );
-                        }, ServiceLifetime.Singleton);
-
+                            Tools.ConnectToDatabase(() => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)), logger, GUtilities.AdaptMariaDBSQLConnectionString(connectionString, true));
+                        }, ServiceLifetime.Transient);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.User>, OpenDMSBackendPersistentAuthenticationService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.User>>(sp => sp.GetRequiredService<DatabasePersistence>());
