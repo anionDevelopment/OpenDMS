@@ -33,7 +33,6 @@ using GRYLibrary.Core.APIServer.Services.CredH;
 using GRYLibrary.Core.APIServer.MidT.Aut;
 using GRYLibrary.Core.APIServer.MidT.Auth;
 using GRYLibrary.Core.APIServer.MidT.RLog;
-using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 
 namespace OpenDMSBackend.Core
@@ -106,8 +105,8 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
                         {
                             string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                            Tools.ConnectToDatabase(() => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)), logger, GUtilities.AdaptMariaDBSQLConnectionString(connectionString, true));
-                        }, ServiceLifetime.Transient);
+                            Tools.ConnectToDatabaseWrapper(() => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions => { sqlOptions.CommandTimeout(120); }), GeneralLogger.NoLog(), GUtilities.AdaptMariaDBSQLConnectionString(connectionString, true));
+                        }, ServiceLifetime.Singleton);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.User>, OpenDMSBackendPersistentAuthenticationService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.User>>(sp => sp.GetRequiredService<DatabasePersistence>());

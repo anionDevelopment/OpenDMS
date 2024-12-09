@@ -8,7 +8,6 @@ using GRYLibrary.Core.APIServer.MidT.Auth;
 using GRYLibrary.Core.APIServer.MidT.Exception;
 using GRYLibrary.Core.APIServer.MidT.RLog;
 using GRYLibrary.Core.APIServer.Services.CredH;
-using System;
 
 namespace OpenDMSBackend.Core.Configuration
 {

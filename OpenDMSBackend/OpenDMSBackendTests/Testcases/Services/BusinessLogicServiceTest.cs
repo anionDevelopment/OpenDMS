@@ -51,6 +51,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator);
         }
 
+        [Ignore("Ignroed du to https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1944")]
         [TestMethod(nameof(DatabaseInitializationTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public void DatabaseInitializationTest()
@@ -70,6 +71,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             }
         }
 
+        [Ignore("Ignroed du to https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1944")]
         [TestMethod(nameof(RegisterTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public void RegisterTest()

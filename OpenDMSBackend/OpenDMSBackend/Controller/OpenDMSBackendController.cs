@@ -1,9 +1,6 @@
 ﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Model;
-using System.Collections.Generic;
-using System;
 using OpenDMSBackend.Core.ServiceInterfaces;
 
 namespace OpenDMSBackend.Core.Controller

@@ -7,9 +7,9 @@
     "build-QualityCheck": "ng build --configuration QualityCheck",
     "build-Productive": "ng build --configuration Productive",
     "test": "npm run test-QualityCheck",
-    "test-Development": "ng test --configuration Development --browsers ChromeHeadless --code-coverage --watch false",
-    "test-QualityCheck": "ng test --configuration QualityCheck --browsers ChromeHeadless --code-coverage --watch false",
-    "test-Productive": "ng test --configuration Productive --browsers ChromeHeadless --code-coverage --watch false",
+    "test-Development": "ng test --configuration Development --browsers ChromeHeadless --watch false",
+    "test-QualityCheck": "ng test --configuration QualityCheck --browsers ChromeHeadless --watch false",
+    "test-Productive": "ng test --configuration Productive --browsers ChromeHeadless --watch false",
     "start": "ng serve --configuration Development --host 0.0.0.0 --live-reload=false",
     "lint": "ng lint"
   },
