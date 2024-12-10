@@ -8,9 +8,8 @@ describe('HintNotFoundComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HintNotFoundComponent]
-    })
-    .compileComponents();
+      declarations: [HintNotFoundComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HintNotFoundComponent);
     component = fixture.componentInstance;

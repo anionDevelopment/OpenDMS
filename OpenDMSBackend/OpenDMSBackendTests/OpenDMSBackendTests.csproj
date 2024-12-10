@@ -88,6 +88,6 @@
         <PackageReference Include="prometheus-net" Version="8.2.1" />
         <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
-        <PackageReference Include="GRYLibrary" Version="0.12.122" />
+        <PackageReference Include="GRYLibrary" Version="0.12.125" />
     </ItemGroup>
 </Project>

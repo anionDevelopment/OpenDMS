@@ -10,7 +10,7 @@ namespace OpenDMSBackend.Core.Services
     {
         private readonly IDictionary<string/*id*/, Document> _Documents;
         private readonly IDictionary<string/*id*/, Tag> _Tags;
-        private readonly IIdGenerator<long> _IdGenerator;
+        private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
 
         public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence)
@@ -32,7 +32,7 @@ namespace OpenDMSBackend.Core.Services
         {
             this._Documents.Clear();
             this._Tags.Clear();
-            //this._IdGenerator.Reset();
+            this._IdGenerator.Reset();
         }
 
         public void CreateDocument(Document document)
