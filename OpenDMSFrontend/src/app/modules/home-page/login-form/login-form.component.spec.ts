@@ -1,22 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FooterComponent } from './footer.component';
+import { LoginFormComponent } from './login-form.component';
 import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { UserService } from '../../../generated/open-dms-backend';
 
-describe('FooterComponent', () => {
-  let component: FooterComponent;
-  let fixture: ComponentFixture<FooterComponent>;
+describe('LoginFormComponent', () => {
+  let component: LoginFormComponent;
+  let fixture: ComponentFixture<LoginFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-
       imports: [
         CommonModule,
         NoopAnimationsModule,
@@ -29,15 +29,17 @@ describe('FooterComponent', () => {
         MatIconModule,
       ],
       declarations: [
-        FooterComponent,
+        LoginFormComponent,
       ],
       providers: [
+        {
+          provide: UserService,
+          useValue: {}
+        }
       ]
+    }).compileComponents();
 
-    })
-      .compileComponents();
-
-    fixture = TestBed.createComponent(FooterComponent);
+    fixture = TestBed.createComponent(LoginFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

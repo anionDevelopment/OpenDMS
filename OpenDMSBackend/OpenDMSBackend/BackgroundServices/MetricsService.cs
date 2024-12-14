@@ -5,8 +5,8 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.Extensions.Logging;
 using Prometheus;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.ServiceInterfaces;
 using System;
+using OpenDMSBackend.Core.Services;
 
 namespace OpenDMSBackend.Core.BackgroundWorker
 {

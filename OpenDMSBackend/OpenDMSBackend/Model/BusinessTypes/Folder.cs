@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OpenDMSBackend.Core.Model
+namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public class Folder : IFolder
     {
@@ -13,7 +13,7 @@ namespace OpenDMSBackend.Core.Model
 
         public T Accept<T>(IContainerVisitor<T> containee)
         {
-           return containee.Handle(this);
+            return containee.Handle(this);
         }
 
         public void Accept(IContaineeVisitor containee)

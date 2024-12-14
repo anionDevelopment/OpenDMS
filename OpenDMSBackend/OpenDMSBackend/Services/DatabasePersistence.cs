@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using OpenDMSBackend.Core.Model;
 using OpenDMSBackend.Core.Database;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Trans;
@@ -13,10 +12,12 @@ using MySqlConnector;
 using Role = GRYLibrary.Core.APIServer.CommonDBTypes.Role;
 using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Core.Model.BusinessTypes;
+using OpenDMSBackend.Core.Model.DTOs;
 
 namespace OpenDMSBackend.Core.ServiceInterfaces
 {
-    public sealed class DatabasePersistence : IPersistence, IAuthenticationServicePersistence<Model.User>
+    public sealed class DatabasePersistence : IPersistence, IAuthenticationServicePersistence<User>
     {
         private readonly ISQLProvider _SQLProvider;
         private readonly DatabaseContext _DatabaseContext;
@@ -134,7 +135,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             });
         }
 
-        public IDictionary<string, Model.User> GetAllUsers()
+        public IDictionary<string, User> GetAllUsers()
         {
             throw new NotImplementedException();
         }
@@ -203,12 +204,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             throw new NotImplementedException();
         }
 
-        public bool AccessTokenExists(string accessToken, out Model.User user)
+        public bool AccessTokenExists(string accessToken, out User user)
         {
             throw new NotImplementedException();
         }
 
-        public void AddUser(Model.User user)
+        public void AddUser(User user)
         {
             this.RunTransaction((command) =>
             {
@@ -249,12 +250,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             })[0];
         }
 
-        public Model.User GetUserById(string userId)
+        public User GetUserById(string userId)
         {
             throw new NotImplementedException();
         }
 
-        public Model.User GetUserByName(string userName)
+        public User GetUserByName(string userName)
         {
             throw new NotImplementedException();
         }
@@ -304,12 +305,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             })[0];
         }
 
-        public Model.User GetUserByAccessToken(string accessToken)
+        public User GetUserByAccessToken(string accessToken)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateUser(Model.User user)
+        public void UpdateUser(User user)
         {
             throw new NotImplementedException();
         }
@@ -365,6 +366,11 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         }
 
         public void UnassignTag(string documentId, string tagId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TagDTO[] GetAllTags()
         {
             throw new NotImplementedException();
         }

@@ -18,12 +18,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
     /// <summary>
     /// Represetns a authenticationservice where userdata (user, roles, accesstoken, etc.) will be stored persistent.
     /// </summary>
-    public class OpenDMSBackendPersistentAuthenticationService : IAuthenticationService<Model.User>
+    public class OpenDMSBackendPersistentAuthenticationService : IAuthenticationService<Model.BusinessTypes.User>
     {
-        private readonly IAuthenticationServicePersistence<Model.User> _AuthentificationPersistence;
+        private readonly IAuthenticationServicePersistence<Model.BusinessTypes.User> _AuthentificationPersistence;
         private readonly IGeneralLogger _Logger;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
-        public OpenDMSBackendPersistentAuthenticationService( ITimeService timeService, IAuthenticationServicePersistence<Model.User> authentificationPersistence, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants)
+        public OpenDMSBackendPersistentAuthenticationService( ITimeService timeService, IAuthenticationServicePersistence<Model.BusinessTypes.User> authentificationPersistence, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants)
         {
             this._AuthentificationPersistence = authentificationPersistence;
             this._Logger = logger;
@@ -46,12 +46,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             this._AuthentificationPersistence.AddRole(newRole);
         }
 
-        public void AddUser(Model.User user)
+        public void AddUser(Model.BusinessTypes.User user)
         {
-            this.AddUserTyped((Model.User)user);
+            this.AddUserTyped((Model.BusinessTypes.User)user);
         }
 
-        public void AddUserTyped(Model.User user)
+        public void AddUserTyped(Model.BusinessTypes.User user)
         {
             this._AuthentificationPersistence.AddUser(user);
         }
@@ -87,12 +87,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             this._AuthentificationPersistence.AddRoleToUser(userId, roleId);
         }
 
-        public ISet<Model.User> GetAllUser()
+        public ISet<Model.BusinessTypes.User> GetAllUser()
         {
             throw new NotImplementedException();
         }
 
-        public ISet<Model.User> GetAllUserTyped()
+        public ISet<Model.BusinessTypes.User> GetAllUserTyped()
         {
             throw new NotImplementedException();
         }
@@ -110,7 +110,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         }
 
 
-        public Model.User GetUserTyped(string userId)
+        public Model.BusinessTypes.User GetUserTyped(string userId)
         {
             return this._AuthentificationPersistence.GetUserById(userId);
         }
@@ -186,22 +186,22 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             this._AuthentificationPersistence.UpdateRole(role);
         }
 
-        public ISet<Role> GetRoles(Model.User user)
+        public ISet<Role> GetRoles(Model.BusinessTypes.User user)
         {
             return user.Roles;
         }
 
-        public void UpdateUser(Model.User user)
+        public void UpdateUser(Model.BusinessTypes.User user)
         {
             throw new NotImplementedException();
         }
 
-        public Model.User GetUserByNameTyped(string name)
+        public Model.BusinessTypes.User GetUserByNameTyped(string name)
         {
             throw new NotImplementedException();
         }
 
-        public Model.User GetUserById(string userId)
+        public Model.BusinessTypes.User GetUserById(string userId)
         {
             throw new NotImplementedException();
         }

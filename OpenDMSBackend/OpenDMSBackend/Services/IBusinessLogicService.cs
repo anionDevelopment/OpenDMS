@@ -1,8 +1,9 @@
-﻿using OpenDMSBackend.Core.Model;
+﻿using OpenDMSBackend.Core.Model.BusinessTypes;
+using OpenDMSBackend.Core.Model.DTOs;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace OpenDMSBackend.Core.ServiceInterfaces
+namespace OpenDMSBackend.Core.Services
 {
     public interface IBusinessLogicService
     {
@@ -14,11 +15,13 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         #region Document
         public void AddDocument(string? title, string originalFilename, byte[] content);
         public Document GetDocument(string id);
-        public IEnumerable<DocumentPreview> Search(string searchTerm);
+        public IEnumerable<DocumentPreview> Search(string userId, string searchTerm);
 
         public void CreateTag(string tagName, Color tagColor);
         public void AssignTag(string documentId, string tagId);
         public void UnassignTag(string documentId, string tagId);
+        public bool UserIsAllowedToViewDocument(string userId, string documentId);
+        public TagDTO[] GetAllTags();
         #endregion
     }
 }

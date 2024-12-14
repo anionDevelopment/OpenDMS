@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OpenDMSBackend.Core.Model
+namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
-    public class Document: IDocument
+    public class Document : IDocument
     {
 
         public string Id { get; set; }
@@ -20,7 +20,7 @@ namespace OpenDMSBackend.Core.Model
         public byte[] DocumentContent { get; set; }
         public byte[] DocumentPreview { get; set; }
         public string OCRContent { get; set; }
-        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] documentContent, byte[] documentPreview,ISet<Tag> tags, string oCRContent)
+        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] documentContent, byte[] documentPreview, ISet<Tag> tags, string oCRContent)
         {
             this.Id = id;
             this.Title = title;
@@ -74,10 +74,7 @@ namespace OpenDMSBackend.Core.Model
             {
                 return false;
             }
-            if (!this.DocumentPreview.SequenceEqual(document.DocumentPreview))
-            {
-                return false;
-            }
+            //document-preview will not be compared here, this is intended.
             if (!this.Tags.SetEquals(document.Tags))
             {
                 return false;

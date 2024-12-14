@@ -4,10 +4,16 @@ api.module.ts
 api/api.ts
 api/maintenanceRoutes.service.ts
 api/openDMSBackend.service.ts
+api/user.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/accessToken.ts
+model/documentDTO.ts
+model/documentPreviewDTO.ts
 model/models.ts
+model/tagDTO.ts
+model/userInformationDTO.ts
 param.ts
 variables.ts

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OpenDMSBackend.Core.Model
+namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public interface IContainer
     {

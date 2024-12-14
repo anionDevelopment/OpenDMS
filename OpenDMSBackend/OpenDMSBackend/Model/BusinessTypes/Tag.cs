@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace OpenDMSBackend.Core.Model
+namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public class Tag
     {

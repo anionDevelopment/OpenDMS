@@ -1,8 +1,8 @@
-﻿using OpenDMSBackend.Core.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Misc;
-using OpenDMSBackend.Core.ServiceInterfaces;
+using OpenDMSBackend.Core.Model.BusinessTypes;
+using OpenDMSBackend.Core.Model.DTOs;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -26,7 +26,6 @@ namespace OpenDMSBackend.Core.Services
         {
             this.Reset();
         }
-
 
         public void Reset()
         {
@@ -97,6 +96,11 @@ namespace OpenDMSBackend.Core.Services
         public void UnassignTag(string documentId, string tagId)
         {
             this.GetDocument(documentId).Tags.Remove(this.GetTag(tagId));
+        }
+
+        public TagDTO[] GetAllTags()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

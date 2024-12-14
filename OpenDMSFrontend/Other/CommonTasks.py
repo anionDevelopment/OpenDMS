@@ -20,9 +20,9 @@ def common_tasks():
     sc.program_runner = ProgramRunnerEpew()
     codeunit_folder = GeneralUtilities.resolve_relative_path("..", os.path.dirname(file))
     additional_arguments_file = t.get_additionalargumentsfile_from_commandline_arguments(cmd_args, None)
-    t.replace_version_in_packagejson_file(GeneralUtilities.resolve_relative_path("../package.json", folder_of_current_file), codeunit_version)
     t.standardized_tasks_do_common_tasks(file, codeunit_version, verbosity, build_environment, True, additional_arguments_file, False, cmd_args)
-    t.do_npm_install(codeunit_folder, True, verbosity=verbosity)
+    t.replace_version_in_packagejson_file(GeneralUtilities.resolve_relative_path("../package.json", folder_of_current_file), codeunit_version)
+    # t.do_npm_install(codeunit_folder, True, verbosity=verbosity)
     t.generate_api_client_from_dependent_codeunit_in_angular(file, "OpenDMSBackend", "open-dms-backend")
 
 

@@ -7,25 +7,26 @@ using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Miscellaneous;
-using OpenDMSBackend.Core.Model;
-using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Core.Model.BusinessTypes;
+using OpenDMSBackend.Core.Model.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
-namespace OpenDMSBackend.Core.ServiceInterfaces
+namespace OpenDMSBackend.Core.Services
 {
     public class BusinessLogicService : IBusinessLogicService
     {
         private static readonly object _LockObject = new object();
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
         private readonly IPersistence _Persistence;
-        private readonly IAuthenticationService<Model.User> _AuthenticationService;
+        private readonly IAuthenticationService<User> _AuthenticationService;
         private readonly ITimeService _TimeService;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
         private readonly IOCRService _OCRService;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration,IOCRService oCRService)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -40,6 +41,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         {
             Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), content, Utilities.GeneratePreview(content), new HashSet<Tag>(), this._OCRService.GetOCRContent(content));
             this._Persistence.CreateDocument(document);
+            this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         public string Register(string username, string password)
@@ -50,8 +52,9 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
                 {
                     throw new NotAuthorizedException();
                 }
-                Model.User newUser = Model.User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
+                User newUser = User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
                 this._AuthenticationService.AddUserTyped(newUser);
+                this._Logger.Log($"User '{username}' registered.", Microsoft.Extensions.Logging.LogLevel.Information);
                 return newUser.Id;
             }
         }
@@ -62,9 +65,25 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             return this._Persistence.GetDocument(id);
         }
 
-        public IEnumerable<DocumentPreview> Search(string searchTerm)
+        public IEnumerable<DocumentPreview> Search(string userId,string searchTerm)
         {
-            throw new NotImplementedException();
+            string[] searchTerms;
+            if (searchTerm.Contains(' '))
+            {
+                searchTerms = searchTerm.Split(' ');
+            }
+            else
+            {
+                searchTerms = new string[] { searchTerm };
+            }
+            searchTerms = searchTerms.Select(searchTerm => searchTerm.Trim()).Where(searchTerm => !string.IsNullOrEmpty(searchTerm)).ToArray();
+            IEnumerable<DocumentPreview> result = new List<DocumentPreview>();
+            if (searchTerms.Length != 0)
+            {
+                throw new NotImplementedException();//TODO search and add to result
+            }
+            result = result.Where(document => this.UserIsAllowedToViewDocument(userId,document.Id));
+            return result;
         }
 
         public bool UserWithNameExists(string username)
@@ -75,19 +94,29 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         public void CreateTag(string tagName, Color tagColor)
         {
             //TODO do permission check
-            this._Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(),tagName, tagColor));
+            this._Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(), tagName, tagColor));
         }
 
         public void AssignTag(string documentId, string tagId)
         {
             //TODO do permission check
-            this._Persistence.AssignTag( documentId,  tagId);
+            this._Persistence.AssignTag(documentId, tagId);
         }
 
         public void UnassignTag(string documentId, string tagId)
         {
             //TODO do permission check
             this._Persistence.UnassignTag(documentId, tagId);
+        }
+
+        public bool UserIsAllowedToViewDocument(string userId, string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TagDTO[] GetAllTags()
+        {
+            return _Persistence.GetAllTags();
         }
     }
 }

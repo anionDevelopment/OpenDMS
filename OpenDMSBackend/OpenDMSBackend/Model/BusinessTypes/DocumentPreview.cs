@@ -3,12 +3,11 @@ using GRYLibrary.Core.Misc.Strings;
 using System;
 using System.Linq;
 
-namespace OpenDMSBackend.Core.Model
+namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public class DocumentPreview
     {
-
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public OneLineString Title { get; set; }
         public OneLineString Filename { get; set; }
         public OneLineString OriginalFilename { get; set; }
@@ -16,7 +15,7 @@ namespace OpenDMSBackend.Core.Model
         public GRYDateTime? LastEditDate { get; set; }
         public ulong ReadableId { get; set; }
         public byte[] Preview { get; set; }
-        public DocumentPreview(Guid id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] preview)
+        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] preview)
         {
             this.Id = id;
             this.Title = title;

@@ -10,7 +10,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Miscellaneous;
-using OpenDMSBackend.Core.Model;
 using OpenDMSBackend.Core.ServiceInterfaces;
 using OpenDMSBackend.Tests.TestUtilities;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
@@ -21,6 +20,7 @@ using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Services;
 using Moq;
+using OpenDMSBackend.Core.Model.BusinessTypes;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {

@@ -88,4 +88,7 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </EmbeddedResource>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="ServiceInterfaces\" />
+    </ItemGroup>
 </Project>

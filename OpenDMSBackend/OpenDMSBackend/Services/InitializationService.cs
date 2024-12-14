@@ -6,18 +6,19 @@ using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Miscellaneous;
+using OpenDMSBackend.Core.Services;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.ServiceInterfaces
 {
     public class InitializationService : IInitializationService
     {
-        private readonly IAuthenticationService<Model.User> _AuthenticationService;
+        private readonly IAuthenticationService<Model.BusinessTypes.User> _AuthenticationService;
         private readonly IBusinessLogicService _BusinessLogicService;
         private readonly IGeneralLogger _GeneralLogger;
         private readonly IExampleDataCreator _ExampleDataCreator;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
-        public InitializationService(IAuthenticationService<Model.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator)
+        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator)
         {
             this._AuthenticationService = authenticationService;
             this._BusinessLogicService = businessLogicService;
@@ -33,17 +34,9 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
                 this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);
                 Role usersRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
 
-                this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameModerators);
-                Role moderatorsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameModerators);
-                moderatorsRole.InheritedRoles = new HashSet<Role>();
-                moderatorsRole.InheritedRoles.Add(usersRole);
-                this._AuthenticationService.UpdateRole(moderatorsRole);
-
-
                 this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameAdmins);
                 Role adminsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameAdmins);
                 adminsRole.InheritedRoles = new HashSet<Role>();
-                adminsRole.InheritedRoles.Add(moderatorsRole);
                 this._AuthenticationService.UpdateRole(adminsRole);
 
                 string initialAdminPassword = CodeUnitSpecificConstants.UsernameAdmin;//only initial password. must be changed on production
