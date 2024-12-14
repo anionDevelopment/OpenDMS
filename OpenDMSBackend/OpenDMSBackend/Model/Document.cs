@@ -29,6 +29,7 @@ namespace OpenDMSBackend.Core.Model
             this.ImportDate = importDate;
             this.LastEditDate = lastEditDate;
             this.ReadableId = readableId;
+            this.DocumentContent = documentContent;
             this.DocumentPreview = documentPreview;
             this.Tags = tags;
             this.OCRContent = oCRContent;

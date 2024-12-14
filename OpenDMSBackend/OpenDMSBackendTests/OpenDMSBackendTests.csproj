@@ -84,7 +84,7 @@
         <PackageReference Include="Nethereum.Web3" Version="4.26.0" />
         <PackageReference Include="NJsonSchema" Version="11.1.0" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.1" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
         <PackageReference Include="prometheus-net" Version="8.2.1" />
         <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />

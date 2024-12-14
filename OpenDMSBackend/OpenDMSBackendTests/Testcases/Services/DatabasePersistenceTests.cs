@@ -32,7 +32,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services
     [TestClass]
     public class DatabasePersistenceTests
     {
-        [Ignore("Ignroed du to https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1944")]
         [TestMethod(nameof(DatabasePersistenceCreateDocument))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public void DatabasePersistenceCreateDocument()
@@ -75,7 +74,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             }
         }
 
-        [Ignore("Ignroed du to https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1944")]
         [TestMethod(nameof(GenerateDatabaseGenerationScript))]
         [TestProperty(nameof(TestKind), nameof(TestKind.GenerationTest))]
         public void GenerateDatabaseGenerationScript()
