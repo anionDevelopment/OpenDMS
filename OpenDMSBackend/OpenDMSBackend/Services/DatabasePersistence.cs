@@ -36,7 +36,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         #region AccessDatabase
         private void AccessDatabase(Action<DatabaseContext> action)
         {
-            this.AccessDatabase<object>((database) =>
+            this.AccessDatabase<object?>((database) =>
                 {
                     action(database);
                     return null;

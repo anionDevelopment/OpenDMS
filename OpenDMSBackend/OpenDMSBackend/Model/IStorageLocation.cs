@@ -1,6 +1,6 @@
 ﻿namespace OpenDMSBackend.Core.Model
 {
-    public interface IStorageLocation:IContainer
+    public interface IStorageLocation : IContainer
     {
     }
 }

@@ -70,6 +70,10 @@ namespace OpenDMSBackend.Core.Model
             {
                 return false;
             }
+            if (!this.DocumentContent.SequenceEqual(document.DocumentContent))
+            {
+                return false;
+            }
             if (!this.DocumentPreview.SequenceEqual(document.DocumentPreview))
             {
                 return false;
@@ -78,6 +82,7 @@ namespace OpenDMSBackend.Core.Model
             {
                 return false;
             }
+            //ocr-content will not be compared here, this is intended.
             return true;
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace OpenDMSBackend.Core.Model
 {
-    public interface IFolder : IContainer,IContainee
+    public interface IFolder : IContainer, IContainee
     {
     }
 }
