@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { HomePageComponent } from './home-page.component';
+import { AdminAreaContainerComponent } from './admin-area-container.component';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -9,14 +8,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { UserService } from '../../../generated/open-dms-backend';
-import { FrameWorkComponent } from '../frame-work/frame-work.component';
-import { LoginFormComponent } from '../login-form/login-form.component';
-import { FooterComponent } from '../footer/footer.component';
+import { Router } from '@angular/router';
+import { MatDividerModule } from '@angular/material/divider';
 
-describe('HomePageComponent', () => {
-  let component: HomePageComponent;
-  let fixture: ComponentFixture<HomePageComponent>;
+describe('AdminAreaContainerComponent', () => {
+  let component: AdminAreaContainerComponent;
+  let fixture: ComponentFixture<AdminAreaContainerComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -26,27 +23,26 @@ describe('HomePageComponent', () => {
         ReactiveFormsModule,
         FormsModule,
         MatFormFieldModule,
+        MatDividerModule,
         MatCardModule,
         MatInputModule,
         MatButtonModule,
         MatIconModule,
       ],
       declarations: [
-        FrameWorkComponent,
-        LoginFormComponent,
-        FooterComponent,
-        HomePageComponent,
+        AdminAreaContainerComponent,
       ],
       providers: [
         {
-          provide: UserService,
-          useValue: {}
+          provide: Router,
+          useValue: {
+            url: "admin/dashboard",
+          },
         }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(HomePageComponent);
+    fixture = TestBed.createComponent(AdminAreaContainerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

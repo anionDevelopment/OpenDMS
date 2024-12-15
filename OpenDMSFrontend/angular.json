@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ConSurvFrontend": {
+    "OpenDMSFrontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -87,13 +87,13 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "Production": {
-              "buildTarget": "ConSurvFrontend:build:Production"
+              "buildTarget": "OpenDMSFrontend:build:Production"
             },
             "QualityCheck": {
-              "buildTarget": "ConSurvFrontend:build:QualityCheck"
+              "buildTarget": "OpenDMSFrontend:build:QualityCheck"
             },
             "Development": {
-              "buildTarget": "ConSurvFrontend:build:Development"
+              "buildTarget": "OpenDMSFrontend:build:Development"
             },
             "options": {}
           },

@@ -14,12 +14,12 @@ RUN mkdir /Workspace && \
 
 WORKDIR /Workspace/Other/EntryPoint
 
-#Install .NET and ffmpeg
+#Install .NET
 RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
     dpkg -i packages-microsoft-prod.deb && \
     rm packages-microsoft-prod.deb && \
     apt-get update && \
-    apt-get install -y dotnet-sdk-9.0 ffmpeg
+    apt-get install -y dotnet-runtime-9.0
 
 ADD Other/Resources/DependentCodeUnits/OpenDMSBackend/BuildResult_DotNet_win-x64 /Workspace/Application/Backend
 
@@ -29,7 +29,7 @@ COPY OpenDMS/nginx.configuration /Workspace/Application/Frontend
 COPY OpenDMS/EntryPoint.sh /Workspace/Other/EntryPoint
 RUN chmod +x /Workspace/Other/EntryPoint/EntryPoint.sh
 
-HEALTHCHECK CMD curl --insecure --fail https://localhost:443/Backend/API/Other/Maintenance/HealthCheck
+HEALTHCHECK CMD curl --fail http://localhost:80/Backend/API/Other/Maintenance/HealthCheck
 #TODO add frontend to healthcheck
 
 ENTRYPOINT ["./EntryPoint.sh"]

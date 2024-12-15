@@ -24,7 +24,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/con-surv-frontend'),
+      dir: require('path').join(__dirname, './coverage/open-dms-frontend'),
       subdir: '.',
       reporters: [
         { type: 'cobertura', dir: './Other/Artifacts/TestCoverage' }

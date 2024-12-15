@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HomePageComponent } from './home-page.component';
+import { HintNotAuthenticatedComponent } from './hint-not-authenticated.component';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -9,14 +9,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { UserService } from '../../../generated/open-dms-backend';
-import { FrameWorkComponent } from '../frame-work/frame-work.component';
-import { LoginFormComponent } from '../login-form/login-form.component';
-import { FooterComponent } from '../footer/footer.component';
+import { UserDataService } from '../../../services/user-data.service';
 
-describe('HomePageComponent', () => {
-  let component: HomePageComponent;
-  let fixture: ComponentFixture<HomePageComponent>;
+describe('HintNotAuthenticatedComponent', () => {
+  let component: HintNotAuthenticatedComponent;
+  let fixture: ComponentFixture<HintNotAuthenticatedComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -32,21 +29,17 @@ describe('HomePageComponent', () => {
         MatIconModule,
       ],
       declarations: [
-        FrameWorkComponent,
-        LoginFormComponent,
-        FooterComponent,
-        HomePageComponent,
+        HintNotAuthenticatedComponent,
       ],
       providers: [
         {
-          provide: UserService,
+          provide: UserDataService,
           useValue: {}
         }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(HomePageComponent);
+    fixture = TestBed.createComponent(HintNotAuthenticatedComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

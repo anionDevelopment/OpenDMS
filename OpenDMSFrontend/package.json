@@ -1,6 +1,6 @@
 {
   "name": "open-dms",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
     "build": "npm run build-QualityCheck",
     "build-Development": "ng build --configuration Development",

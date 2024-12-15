@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { UserDataService } from '../../../services/user-data.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -7,5 +8,4 @@ import { Component } from '@angular/core';
   styleUrl: './admin-dashboard.component.scss'
 })
 export class AdminDashboardComponent {
-
 }

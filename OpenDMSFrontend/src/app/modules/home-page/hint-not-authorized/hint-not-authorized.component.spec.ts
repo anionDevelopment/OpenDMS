@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HomePageComponent } from './home-page.component';
+import { HintNotAuthorizedComponent } from './hint-not-authorized.component';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -9,17 +9,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { UserService } from '../../../generated/open-dms-backend';
-import { FrameWorkComponent } from '../frame-work/frame-work.component';
-import { LoginFormComponent } from '../login-form/login-form.component';
-import { FooterComponent } from '../footer/footer.component';
 
-describe('HomePageComponent', () => {
-  let component: HomePageComponent;
-  let fixture: ComponentFixture<HomePageComponent>;
+describe('HintNotAuthorizedComponent', () => {
+  let component: HintNotAuthorizedComponent;
+  let fixture: ComponentFixture<HintNotAuthorizedComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+
       imports: [
         CommonModule,
         NoopAnimationsModule,
@@ -32,21 +29,15 @@ describe('HomePageComponent', () => {
         MatIconModule,
       ],
       declarations: [
-        FrameWorkComponent,
-        LoginFormComponent,
-        FooterComponent,
-        HomePageComponent,
+        HintNotAuthorizedComponent,
       ],
       providers: [
-        {
-          provide: UserService,
-          useValue: {}
-        }
       ]
+
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(HomePageComponent);
+    fixture = TestBed.createComponent(HintNotAuthorizedComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

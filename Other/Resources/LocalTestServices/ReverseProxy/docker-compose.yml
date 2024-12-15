@@ -1,21 +1,16 @@
-version: '3.2'
+version: "3.2"
 
 services:
-
-  consurv_reverseproxy:
+  opendms_reverseproxy:
     image: nginx:latest
-    container_name: 'consurv_reverseproxy'
+    container_name: "opendms_reverseproxy"
     volumes:
       - "./nginx.conf:/etc/nginx/nginx.conf"
-#     - "./Volumes/Logs:/var/log/nginx"
       - "../../DevelopmentCertificate:/Workspace/Certificates"
-    #network_mode: "host"
     networks:
-      - consurv_net
+      - opendms_net
     ports:
       - "443:443"
-    #environment:
-    #  MARIADB_USER: user
 networks:
-  consurv_net:
+  opendms_net:
     external: true

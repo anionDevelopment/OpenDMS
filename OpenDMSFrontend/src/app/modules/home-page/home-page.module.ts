@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HintNotAuthenticatedComponent } from './hint-not-authenticated/hint-not-authenticated.component';
+import { HintNotAuthorizedComponent } from './hint-not-authorized/hint-not-authorized.component';
 import { HintNotFoundComponent } from './hint-not-found/hint-not-found.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,6 +22,8 @@ import { FrameWorkComponent } from './frame-work/frame-work.component';
   declarations: [
     FrameWorkComponent,
     FooterComponent,
+    HintNotAuthenticatedComponent,
+    HintNotAuthorizedComponent,
     HintNotFoundComponent,
     HomePageComponent,
     LoginFormComponent,

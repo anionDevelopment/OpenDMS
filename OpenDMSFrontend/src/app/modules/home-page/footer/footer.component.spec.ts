@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { UserService } from '../../../generated/open-dms-backend';
 
 describe('FooterComponent', () => {
   let component: FooterComponent;

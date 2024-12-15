@@ -19,17 +19,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { DocumentComponent } from './document/document.component';
 import { DocumentsListComponent } from './documents-list/documents-list.component';
-import { UserHomePageComponent } from './user-home-page/user-home-page.component';
 
 @NgModule({
   declarations: [
-    Document,
+    DocumentComponent,
     DocumentsListComponent,
+    UserIconComponent,
     UserAreaContainerComponent,
     UserDashboardComponent,
-    UserHomePageComponent,
-    UserIconComponent,
     UserSettingsComponent,
   ],
   imports: [

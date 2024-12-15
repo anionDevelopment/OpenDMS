@@ -8,8 +8,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { UserService } from '../../../generated/open-dms-backend';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
