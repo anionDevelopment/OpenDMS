@@ -26,6 +26,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             this._Constants = constants;
             this._ExampleDataCreator = exampleDataCreator;
         }
+
         public void Initialize()
         {
             string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
@@ -36,7 +37,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
 
                 this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameAdmins);
                 Role adminsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameAdmins);
-                adminsRole.InheritedRoles = new HashSet<Role>();
+                adminsRole.InheritedRoles = new HashSet<Role>() { usersRole };
                 this._AuthenticationService.UpdateRole(adminsRole);
 
                 string initialAdminPassword = CodeUnitSpecificConstants.UsernameAdmin;//only initial password. must be changed on production

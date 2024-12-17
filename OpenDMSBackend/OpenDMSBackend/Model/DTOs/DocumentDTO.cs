@@ -8,6 +8,7 @@ namespace OpenDMSBackend.Core.Model.DTOs
     public class DocumentDTO
     {
         public string Id { get; set; }
+        public string OwnerId { get; set; }
         public string Title { get; set; }
         public string Filename { get; set; }
         public string OriginalFilename { get; set; }
@@ -18,9 +19,10 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public byte[] DocumentContent { get; set; }
         public byte[] DocumentPreview { get; set; }
 
-        public DocumentDTO(string id, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ISet<TagDTO> tags, ulong readableId, byte[] documentContent, byte[] documentPreview)
+        public DocumentDTO(string id, string ownerId, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ISet<TagDTO> tags, ulong readableId, byte[] documentContent, byte[] documentPreview)
         {
             this.Id = id;
+            this.OwnerId = ownerId;
             this.Title = title;
             this.Filename = filename;
             this.OriginalFilename = originalFilename;

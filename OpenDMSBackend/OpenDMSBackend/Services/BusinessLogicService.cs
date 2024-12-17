@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Exceptions;
@@ -21,12 +22,12 @@ namespace OpenDMSBackend.Core.Services
         private static readonly object _LockObject = new object();
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
         private readonly IPersistence _Persistence;
-        private readonly IAuthenticationService<User> _AuthenticationService;
+        private readonly IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> _AuthenticationService;
         private readonly ITimeService _TimeService;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
         private readonly IOCRService _OCRService;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -37,9 +38,9 @@ namespace OpenDMSBackend.Core.Services
             this._OCRService = oCRService;
         }
 
-        public void AddDocument(string? title, string originalFilename, byte[] content)
+        public void AddDocument(string? title,string ownerId, string originalFilename, byte[] content)
         {
-            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), content, Utilities.GeneratePreview(content), new HashSet<Tag>(), this._OCRService.GetOCRContent(content));
+            Document document = new Document(Guid.NewGuid().ToString(), ownerId, title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), content, Utilities.GeneratePreview(content), new HashSet<Tag>(), this._OCRService.GetOCRContent(content));
             this._Persistence.CreateDocument(document);
             this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
@@ -52,8 +53,12 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new NotAuthorizedException();
                 }
-                User newUser = User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
+                OpenDMSBackend.Core.Model.BusinessTypes.User newUser = OpenDMSBackend.Core.Model.BusinessTypes.User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
                 this._AuthenticationService.AddUserTyped(newUser);
+
+                Role userRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
+                this._AuthenticationService.EnsureUserHasRole(newUser.Id, userRole.Id);
+
                 this._Logger.Log($"User '{username}' registered.", Microsoft.Extensions.Logging.LogLevel.Information);
                 return newUser.Id;
             }
@@ -117,6 +122,11 @@ namespace OpenDMSBackend.Core.Services
         public TagDTO[] GetAllTags()
         {
             return _Persistence.GetAllTags();
+        }
+
+        public IEnumerable<DocumentPreview> GetLatestDocuments(string userId)
+        {
+            return _Persistence.GetLatestDocuments(userId,10);
         }
     }
 }

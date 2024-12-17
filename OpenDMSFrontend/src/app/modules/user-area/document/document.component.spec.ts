@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DocumentComponent } from './document.component';
+import { HomePageModule } from '../../home-page/home-page.module';
 
 describe('DocumentComponent', () => {
   let component: DocumentComponent;
@@ -8,9 +9,13 @@ describe('DocumentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DocumentComponent]
-    })
-    .compileComponents();
+      imports: [
+        HomePageModule,
+      ],
+      declarations: [
+        DocumentComponent,
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DocumentComponent);
     component = fixture.componentInstance;

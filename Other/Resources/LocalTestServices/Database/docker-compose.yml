@@ -16,6 +16,8 @@ services:
       MARIADB_PASSWORD: pa55w0rd
       MARIADB_ROOT_PASSWORD: R00tpa55w0rd
       MARIADB_DATABASE: OpenDMSBackendDatabase
+    networks:
+      - opendms_net
 
   opendmsbackend_database_administration:
     image: adminer:4.8.1
@@ -24,3 +26,9 @@ services:
       - 8080:8080
     depends_on:
       - opendmsbackend_database
+    networks:
+      - opendms_net
+
+networks:
+  opendms_net:
+    external: true

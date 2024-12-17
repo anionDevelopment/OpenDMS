@@ -57,6 +57,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\OpenDMSBackend\OpenDMSBackend.csproj" />
+        <ProjectReference Include="E:\Data\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="coverlet.collector" Version="6.0.2">
             <PrivateAssets>all</PrivateAssets>
@@ -88,6 +89,5 @@
         <PackageReference Include="prometheus-net" Version="8.2.1" />
         <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
-        <PackageReference Include="GRYLibrary" Version="0.12.125" />
     </ItemGroup>
 </Project>

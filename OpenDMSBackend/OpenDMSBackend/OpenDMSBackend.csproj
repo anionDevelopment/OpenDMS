@@ -78,7 +78,6 @@
         <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
-        <PackageReference Include="GRYLibrary" Version="0.12.125" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Database\Migrations\**">
@@ -90,5 +89,8 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="ServiceInterfaces\" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="E:\Data\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
     </ItemGroup>
 </Project>

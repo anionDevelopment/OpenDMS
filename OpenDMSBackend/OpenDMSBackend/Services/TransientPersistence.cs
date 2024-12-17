@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
@@ -101,6 +103,11 @@ namespace OpenDMSBackend.Core.Services
         public TagDTO[] GetAllTags()
         {
             throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<DocumentPreview> GetLatestDocuments(string userId, uint maximalAmountOfDocuments)
+        {
+            return _Documents.Values.Where(document => document.OwnerId == userId).OrderByDescending(document => document.LastEditDate).Take((int)maximalAmountOfDocuments).Select(d=>d.GetPreview());
         }
     }
 }

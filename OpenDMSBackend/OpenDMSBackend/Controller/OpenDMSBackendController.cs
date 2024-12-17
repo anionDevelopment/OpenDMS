@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
+using System.Linq;
 
 namespace OpenDMSBackend.Core.Controller
 {
@@ -27,7 +28,7 @@ namespace OpenDMSBackend.Core.Controller
         [Route(nameof(AddDocument))]
         public IActionResult AddDocument([FromForm] byte[] content, [FromQuery] string filename, [FromQuery] string? title)
         {
-            this._BusinessLogicService.AddDocument(title, filename, content);
+            this._BusinessLogicService.AddDocument(title, GetUser().Id, filename, content);
             return this.Ok();
         }
 
@@ -49,6 +50,16 @@ namespace OpenDMSBackend.Core.Controller
         public IActionResult Search([FromQuery] string searchTerm)
         {
             return this.Ok(this._BusinessLogicService.Search(this.GetUser().Id, searchTerm));
+        }
+
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpGet]
+        [ProducesResponseType(typeof(DocumentPreviewDTO[]), StatusCodes.Status200OK)]
+        [Route(nameof(GetLatestDocuments))]
+        public IActionResult GetLatestDocuments()
+        {
+            return this.Ok(this._BusinessLogicService.GetLatestDocuments(this.GetUser().Id).Select(preview => preview.ToDTO()));
         }
 
         [Authenticate]

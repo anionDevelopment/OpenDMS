@@ -10,6 +10,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
     {
 
         public string Id { get; set; }
+        public string OwnerId { get; set; }
         public OneLineString Title { get; set; }
         public OneLineString Filename { get; set; }
         public OneLineString OriginalFilename { get; set; }
@@ -20,9 +21,10 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public byte[] DocumentContent { get; set; }
         public byte[] DocumentPreview { get; set; }
         public string OCRContent { get; set; }
-        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] documentContent, byte[] documentPreview, ISet<Tag> tags, string oCRContent)
+        public Document(string id, string ownerId, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] documentContent, byte[] documentPreview, ISet<Tag> tags, string oCRContent)
         {
             this.Id = id;
+            this.OwnerId = ownerId;
             this.Title = title;
             this.Filename = filename;
             this.OriginalFilename = originalFilename;
@@ -47,6 +49,10 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
                 return false;
             }
             if (!this.Id.Equals(document.Id))
+            {
+                return false;
+            }
+            if (!this.OwnerId.Equals(document.OwnerId))
             {
                 return false;
             }
@@ -96,6 +102,11 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public T Accept<T>(IContaineeVisitor<T> containee)
         {
             return containee.Handle(this);
+        }
+
+        public DocumentPreview GetPreview()
+        {
+            throw new NotImplementedException();
         }
     }
 }

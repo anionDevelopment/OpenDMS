@@ -34,6 +34,8 @@ namespace OpenDMSBackend.Core.Miscellaneous
 
         public void AddExampleData()
         {
+            this._BusinessLogicService.Register("user01", "user01");
+            this._BusinessLogicService.Register("user02", "user02");
             //TODO add example data
         }
     }

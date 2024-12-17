@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.APIServer.Services;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
+using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -18,5 +19,6 @@ namespace OpenDMSBackend.Core.Services
         public void AssignTag(string documentId, string tagId);
         public void UnassignTag(string documentId, string tagId);
         public TagDTO[] GetAllTags();
+        IEnumerable<DocumentPreview> GetLatestDocuments(string userId, uint maximalAmountOfDocuments);
     }
 }

@@ -17,6 +17,7 @@ CREATE TABLE `Users` (
 
 CREATE TABLE `Documents` (
     `Id` varchar(255) not null,
+    `OwnerId` varchar(255) not null,
     `Title` varchar(255) not null,
     `Filename` varchar(255) not null,
     `OriginalFilename` varchar(255) not null,
