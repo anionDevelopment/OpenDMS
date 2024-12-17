@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenDMSBackend", "OpenDMSBa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenDMSBackendTests", "OpenDMSBackendTests\OpenDMSBackendTests.csproj", "{740C3BA4-87F3-49A3-95C8-A3CEC80C01BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRYLibrary", "E:\Data\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj", "{292C13C3-BD91-446F-808A-554CCAE809C6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Development|Any CPU = Development|Any CPU
@@ -28,12 +26,6 @@ Global
 		{740C3BA4-87F3-49A3-95C8-A3CEC80C01BF}.Productive|Any CPU.Build.0 = Productive|Any CPU
 		{740C3BA4-87F3-49A3-95C8-A3CEC80C01BF}.QualityCheck|Any CPU.ActiveCfg = QualityCheck|Any CPU
 		{740C3BA4-87F3-49A3-95C8-A3CEC80C01BF}.QualityCheck|Any CPU.Build.0 = QualityCheck|Any CPU
-		{292C13C3-BD91-446F-808A-554CCAE809C6}.Development|Any CPU.ActiveCfg = Development|Any CPU
-		{292C13C3-BD91-446F-808A-554CCAE809C6}.Development|Any CPU.Build.0 = Development|Any CPU
-		{292C13C3-BD91-446F-808A-554CCAE809C6}.Productive|Any CPU.ActiveCfg = Productive|Any CPU
-		{292C13C3-BD91-446F-808A-554CCAE809C6}.Productive|Any CPU.Build.0 = Productive|Any CPU
-		{292C13C3-BD91-446F-808A-554CCAE809C6}.QualityCheck|Any CPU.ActiveCfg = QualityCheck|Any CPU
-		{292C13C3-BD91-446F-808A-554CCAE809C6}.QualityCheck|Any CPU.Build.0 = QualityCheck|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

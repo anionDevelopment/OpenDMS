@@ -10,15 +10,21 @@ namespace OpenDMSBackend.Core.Services
 {
     public sealed class TransientPersistence : IPersistence
     {
+        private readonly IDictionary<string/*id*/, StorageLocation> _StorageLocations;
+        private readonly IDictionary<string/*id*/, Folder> _Folders;
         private readonly IDictionary<string/*id*/, Document> _Documents;
         private readonly IDictionary<string/*id*/, Tag> _Tags;
+        private readonly IDictionary<string/*user-id*/, string/*storagelocation-id*/> _StorageLocationAssignments;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
 
         public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence)
         {
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
+            this._StorageLocations = new Dictionary<string, StorageLocation>();
+            this._Folders = new Dictionary<string, Folder>();
             this._Documents = new Dictionary<string, Document>();
+            this._StorageLocationAssignments = new Dictionary<string, string>();
             this._Tags = new Dictionary<string, Tag>();
             this._IdGenerator = IdGenerator.GetDefaultLongIdGenerator();
             this.Initialize();
@@ -31,6 +37,9 @@ namespace OpenDMSBackend.Core.Services
 
         public void Reset()
         {
+            this._StorageLocationAssignments.Clear();
+            this._StorageLocations.Clear();
+            this._Folders.Clear();
             this._Documents.Clear();
             this._Tags.Clear();
             this._IdGenerator.Reset();
@@ -105,9 +114,9 @@ namespace OpenDMSBackend.Core.Services
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<DocumentPreview> GetLatestDocuments(string userId, uint maximalAmountOfDocuments)
+        public IEnumerable<string> GetAllDocumentIds() 
         {
-            return _Documents.Values.Where(document => document.OwnerId == userId).OrderByDescending(document => document.LastEditDate).Take((int)maximalAmountOfDocuments).Select(d=>d.GetPreview());
+            return _Documents.Keys;
         }
     }
 }

@@ -12,17 +12,31 @@ namespace OpenDMSBackend.Core.Services
         bool UserWithNameExists(string username);
         #endregion
 
-        #region Document
-        public void AddDocument(string? title, string ownerId, string originalFilename, byte[] content);
-        public Document GetDocument(string id);
-        public IEnumerable<DocumentPreview> Search(string userId, string searchTerm);
+        #region BusinessLogic
 
+        public void Delete(string requesterUserId, string containerOrContaineeId);
+
+        #region Document
+        public void AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content);
+        public void Update(string requesterUserId, Document updatedDocument);
+        public Document GetDocument(string requesterUserId, string id);
+        public IEnumerable<DocumentPreview> Search(string requesterUserId, string searchTerm);
         public void CreateTag(string tagName, Color tagColor);
-        public void AssignTag(string documentId, string tagId);
-        public void UnassignTag(string documentId, string tagId);
         public bool UserIsAllowedToViewDocument(string userId, string documentId);
+        public bool UserIsAllowedToEditDocument(string userId, string documentId);
         public TagDTO[] GetAllTags();
-        IEnumerable<DocumentPreview> GetLatestDocuments(string userId);
+        IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId);
+        #endregion
+
+        #region Storage
+        public void Move(string requesterUserId, string containeeIdToMove,string targetContainerId);
+        public void AddStorageLocation(string requesterUserId, string name);
+        public void AddFolder(string requesterUserId, string name, string parentContainerId);
+        public void Rename(string requesterUserId, string containerId, string newName);
+        public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId);
+        public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId);
+        #endregion
+
         #endregion
     }
 }

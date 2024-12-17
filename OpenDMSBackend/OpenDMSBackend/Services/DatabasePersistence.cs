@@ -375,7 +375,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DocumentPreview> GetLatestDocuments(string userId, uint maximalAmountOfDocuments)
+        public IEnumerable<string> GetAllDocumentIds()
         {
             throw new NotImplementedException();
         }

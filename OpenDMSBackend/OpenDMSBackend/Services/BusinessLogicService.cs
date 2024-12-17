@@ -38,9 +38,9 @@ namespace OpenDMSBackend.Core.Services
             this._OCRService = oCRService;
         }
 
-        public void AddDocument(string? title,string ownerId, string originalFilename, byte[] content)
+        public void AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content)
         {
-            Document document = new Document(Guid.NewGuid().ToString(), ownerId, title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), content, Utilities.GeneratePreview(content), new HashSet<Tag>(), this._OCRService.GetOCRContent(content));
+            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), content, Utilities.GeneratePreview(content), new HashSet<Tag>(), this._OCRService.GetOCRContent(content));
             this._Persistence.CreateDocument(document);
             this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
@@ -64,13 +64,13 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
-        public Document GetDocument(string id)
+        public Document GetDocument(string requesterUserId, string id)
         {
             //TODO do permission check
             return this._Persistence.GetDocument(id);
         }
 
-        public IEnumerable<DocumentPreview> Search(string userId,string searchTerm)
+        public IEnumerable<DocumentPreview> Search(string requesterUserId, string searchTerm)
         {
             string[] searchTerms;
             if (searchTerm.Contains(' '))
@@ -87,7 +87,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 throw new NotImplementedException();//TODO search and add to result
             }
-            result = result.Where(document => this.UserIsAllowedToViewDocument(userId,document.Id));
+            result = result.Where(document => this.UserIsAllowedToViewDocument(requesterUserId, document.Id));
             return result;
         }
 
@@ -124,9 +124,60 @@ namespace OpenDMSBackend.Core.Services
             return _Persistence.GetAllTags();
         }
 
-        public IEnumerable<DocumentPreview> GetLatestDocuments(string userId)
+        public IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId)
         {
-            return _Persistence.GetLatestDocuments(userId,10);
+            return _Persistence
+                .GetAllDocumentIds()
+                .Where(documentId => this.UserIsAllowedToViewDocument(requesterUserId, documentId))
+                .Select(d=>this.GetDocument(requesterUserId,d))
+                .OrderByDescending(document => document.LastEditDate)
+                .Take(10)
+                .Select(document=>document.GetPreview());
+        }
+        public void Update(string requesterUserId, Document updatedDocument)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UserIsAllowedToEditDocument(string userId, string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddStorageLocation(string requesterUserId, string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddFolder(string requesterUserId, string name, string parentContainerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Rename(string requesterUserId, string containerId, string newName)
+        {
+            //TODO check permission
+            throw new NotImplementedException();
+        }
+
+        public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(string requesterUserId, string containerOrContaineeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -108,16 +108,24 @@ export class OpenDMSBackendService {
     }
 
     /**
+     * @param containerId 
+     * @param xAccessToken Access Token
      * @param filename 
      * @param title 
      * @param content 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public aPIV1OpenDMSBackendAddDocumentPut(filename?: string, title?: string, content?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public aPIV1OpenDMSBackendAddDocumentPut(filename?: string, title?: string, content?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public aPIV1OpenDMSBackendAddDocumentPut(filename?: string, title?: string, content?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public aPIV1OpenDMSBackendAddDocumentPut(filename?: string, title?: string, content?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, content?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, content?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, content?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, content?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (containerId === null || containerId === undefined) {
+            throw new Error('Required parameter containerId was null or undefined when calling aPIV1OpenDMSBackendAddDocumentContainerIdPost.');
+        }
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendAddDocumentContainerIdPost.');
+        }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         if (filename !== undefined && filename !== null) {
@@ -130,6 +138,9 @@ export class OpenDMSBackendService {
         }
 
         let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
 
         let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (localVarHttpHeaderAcceptSelected === undefined) {
@@ -183,8 +194,8 @@ export class OpenDMSBackendService {
             }
         }
 
-        let localVarPath = `/API/v1/OpenDMSBackend/AddDocument`;
-        return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/API/v1/OpenDMSBackend/AddDocument/${this.configuration.encodeParam({name: "containerId", value: containerId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
@@ -200,24 +211,24 @@ export class OpenDMSBackendService {
     }
 
     /**
-     * @param documentId 
-     * @param tagId 
+     * @param parentFolderId 
+     * @param name 
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public aPIV1OpenDMSBackendAssignTagDocumentIdTagIdPut(documentId: string, tagId: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public aPIV1OpenDMSBackendAssignTagDocumentIdTagIdPut(documentId: string, tagId: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public aPIV1OpenDMSBackendAssignTagDocumentIdTagIdPut(documentId: string, tagId: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public aPIV1OpenDMSBackendAssignTagDocumentIdTagIdPut(documentId: string, tagId: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (documentId === null || documentId === undefined) {
-            throw new Error('Required parameter documentId was null or undefined when calling aPIV1OpenDMSBackendAssignTagDocumentIdTagIdPut.');
+    public aPIV1OpenDMSBackendAddFolderParentFolderIdNamePost(parentFolderId: string, name: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV1OpenDMSBackendAddFolderParentFolderIdNamePost(parentFolderId: string, name: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV1OpenDMSBackendAddFolderParentFolderIdNamePost(parentFolderId: string, name: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV1OpenDMSBackendAddFolderParentFolderIdNamePost(parentFolderId: string, name: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (parentFolderId === null || parentFolderId === undefined) {
+            throw new Error('Required parameter parentFolderId was null or undefined when calling aPIV1OpenDMSBackendAddFolderParentFolderIdNamePost.');
         }
-        if (tagId === null || tagId === undefined) {
-            throw new Error('Required parameter tagId was null or undefined when calling aPIV1OpenDMSBackendAssignTagDocumentIdTagIdPut.');
+        if (name === null || name === undefined) {
+            throw new Error('Required parameter name was null or undefined when calling aPIV1OpenDMSBackendAddFolderParentFolderIdNamePost.');
         }
         if (xAccessToken === null || xAccessToken === undefined) {
-            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendAssignTagDocumentIdTagIdPut.');
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendAddFolderParentFolderIdNamePost.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -258,8 +269,219 @@ export class OpenDMSBackendService {
             }
         }
 
-        let localVarPath = `/API/v1/OpenDMSBackend/AssignTag/${this.configuration.encodeParam({name: "documentId", value: documentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "tagId", value: tagId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/API/v1/OpenDMSBackend/AddFolder/${this.configuration.encodeParam({name: "parentFolderId", value: parentFolderId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "name", value: name, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param name 
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV1OpenDMSBackendAddStorageLocationNamePost(name: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV1OpenDMSBackendAddStorageLocationNamePost(name: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV1OpenDMSBackendAddStorageLocationNamePost(name: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV1OpenDMSBackendAddStorageLocationNamePost(name: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (name === null || name === undefined) {
+            throw new Error('Required parameter name was null or undefined when calling aPIV1OpenDMSBackendAddStorageLocationNamePost.');
+        }
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendAddStorageLocationNamePost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v1/OpenDMSBackend/AddStorageLocation/${this.configuration.encodeParam({name: "name", value: name, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param storageLocationId 
+     * @param sharedWithUserId 
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV1OpenDMSBackendAuthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost(storageLocationId: string, sharedWithUserId: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV1OpenDMSBackendAuthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost(storageLocationId: string, sharedWithUserId: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV1OpenDMSBackendAuthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost(storageLocationId: string, sharedWithUserId: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV1OpenDMSBackendAuthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost(storageLocationId: string, sharedWithUserId: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (storageLocationId === null || storageLocationId === undefined) {
+            throw new Error('Required parameter storageLocationId was null or undefined when calling aPIV1OpenDMSBackendAuthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost.');
+        }
+        if (sharedWithUserId === null || sharedWithUserId === undefined) {
+            throw new Error('Required parameter sharedWithUserId was null or undefined when calling aPIV1OpenDMSBackendAuthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost.');
+        }
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendAuthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v1/OpenDMSBackend/AuthorizeUserToViewStorageLocation/${this.configuration.encodeParam({name: "storageLocationId", value: storageLocationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "sharedWithUserId", value: sharedWithUserId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param containerOrContaineeId 
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV1OpenDMSBackendDeleteContainerOrContaineeIdDelete(containerOrContaineeId: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV1OpenDMSBackendDeleteContainerOrContaineeIdDelete(containerOrContaineeId: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV1OpenDMSBackendDeleteContainerOrContaineeIdDelete(containerOrContaineeId: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV1OpenDMSBackendDeleteContainerOrContaineeIdDelete(containerOrContaineeId: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (containerOrContaineeId === null || containerOrContaineeId === undefined) {
+            throw new Error('Required parameter containerOrContaineeId was null or undefined when calling aPIV1OpenDMSBackendDeleteContainerOrContaineeIdDelete.');
+        }
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendDeleteContainerOrContaineeIdDelete.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v1/OpenDMSBackend/Delete/${this.configuration.encodeParam({name: "containerOrContaineeId", value: containerOrContaineeId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -418,6 +640,220 @@ export class OpenDMSBackendService {
 
     /**
      * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV1OpenDMSBackendGetLatestDocumentsGet(xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<DocumentPreviewDTO>>;
+    public aPIV1OpenDMSBackendGetLatestDocumentsGet(xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<DocumentPreviewDTO>>>;
+    public aPIV1OpenDMSBackendGetLatestDocumentsGet(xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<DocumentPreviewDTO>>>;
+    public aPIV1OpenDMSBackendGetLatestDocumentsGet(xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendGetLatestDocumentsGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v1/OpenDMSBackend/GetLatestDocuments`;
+        return this.httpClient.request<Array<DocumentPreviewDTO>>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param containeeIdToMove 
+     * @param targetContainerId 
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV1OpenDMSBackendMoveContaineeIdToMoveTargetContainerIdPost(containeeIdToMove: string, targetContainerId: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV1OpenDMSBackendMoveContaineeIdToMoveTargetContainerIdPost(containeeIdToMove: string, targetContainerId: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV1OpenDMSBackendMoveContaineeIdToMoveTargetContainerIdPost(containeeIdToMove: string, targetContainerId: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV1OpenDMSBackendMoveContaineeIdToMoveTargetContainerIdPost(containeeIdToMove: string, targetContainerId: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (containeeIdToMove === null || containeeIdToMove === undefined) {
+            throw new Error('Required parameter containeeIdToMove was null or undefined when calling aPIV1OpenDMSBackendMoveContaineeIdToMoveTargetContainerIdPost.');
+        }
+        if (targetContainerId === null || targetContainerId === undefined) {
+            throw new Error('Required parameter targetContainerId was null or undefined when calling aPIV1OpenDMSBackendMoveContaineeIdToMoveTargetContainerIdPost.');
+        }
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendMoveContaineeIdToMoveTargetContainerIdPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v1/OpenDMSBackend/Move/${this.configuration.encodeParam({name: "containeeIdToMove", value: containeeIdToMove, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "targetContainerId", value: targetContainerId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param containerId 
+     * @param newName 
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV1OpenDMSBackendRenameContainerIdNewNamePost(containerId: string, newName: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV1OpenDMSBackendRenameContainerIdNewNamePost(containerId: string, newName: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV1OpenDMSBackendRenameContainerIdNewNamePost(containerId: string, newName: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV1OpenDMSBackendRenameContainerIdNewNamePost(containerId: string, newName: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (containerId === null || containerId === undefined) {
+            throw new Error('Required parameter containerId was null or undefined when calling aPIV1OpenDMSBackendRenameContainerIdNewNamePost.');
+        }
+        if (newName === null || newName === undefined) {
+            throw new Error('Required parameter newName was null or undefined when calling aPIV1OpenDMSBackendRenameContainerIdNewNamePost.');
+        }
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendRenameContainerIdNewNamePost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v1/OpenDMSBackend/Rename/${this.configuration.encodeParam({name: "containerId", value: containerId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "newName", value: newName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param xAccessToken Access Token
      * @param searchTerm 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -493,24 +929,24 @@ export class OpenDMSBackendService {
     }
 
     /**
-     * @param documentId 
-     * @param tagId 
+     * @param storageLocationId 
+     * @param sharedWithUserId 
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public aPIV1OpenDMSBackendUnassignTagDocumentIdTagIdPut(documentId: string, tagId: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public aPIV1OpenDMSBackendUnassignTagDocumentIdTagIdPut(documentId: string, tagId: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public aPIV1OpenDMSBackendUnassignTagDocumentIdTagIdPut(documentId: string, tagId: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public aPIV1OpenDMSBackendUnassignTagDocumentIdTagIdPut(documentId: string, tagId: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (documentId === null || documentId === undefined) {
-            throw new Error('Required parameter documentId was null or undefined when calling aPIV1OpenDMSBackendUnassignTagDocumentIdTagIdPut.');
+    public aPIV1OpenDMSBackendUnauthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost(storageLocationId: string, sharedWithUserId: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV1OpenDMSBackendUnauthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost(storageLocationId: string, sharedWithUserId: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV1OpenDMSBackendUnauthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost(storageLocationId: string, sharedWithUserId: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV1OpenDMSBackendUnauthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost(storageLocationId: string, sharedWithUserId: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (storageLocationId === null || storageLocationId === undefined) {
+            throw new Error('Required parameter storageLocationId was null or undefined when calling aPIV1OpenDMSBackendUnauthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost.');
         }
-        if (tagId === null || tagId === undefined) {
-            throw new Error('Required parameter tagId was null or undefined when calling aPIV1OpenDMSBackendUnassignTagDocumentIdTagIdPut.');
+        if (sharedWithUserId === null || sharedWithUserId === undefined) {
+            throw new Error('Required parameter sharedWithUserId was null or undefined when calling aPIV1OpenDMSBackendUnauthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost.');
         }
         if (xAccessToken === null || xAccessToken === undefined) {
-            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendUnassignTagDocumentIdTagIdPut.');
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendUnauthorizeUserToViewStorageLocationStorageLocationIdSharedWithUserIdPost.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -551,8 +987,8 @@ export class OpenDMSBackendService {
             }
         }
 
-        let localVarPath = `/API/v1/OpenDMSBackend/UnassignTag/${this.configuration.encodeParam({name: "documentId", value: documentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "tagId", value: tagId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<any>('put', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/API/v1/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/${this.configuration.encodeParam({name: "storageLocationId", value: storageLocationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "sharedWithUserId", value: sharedWithUserId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

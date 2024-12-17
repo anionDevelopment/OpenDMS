@@ -19,6 +19,6 @@ namespace OpenDMSBackend.Core.Services
         public void AssignTag(string documentId, string tagId);
         public void UnassignTag(string documentId, string tagId);
         public TagDTO[] GetAllTags();
-        IEnumerable<DocumentPreview> GetLatestDocuments(string userId, uint maximalAmountOfDocuments);
+        public IEnumerable<string> GetAllDocumentIds();
     }
 }

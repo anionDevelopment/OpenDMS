@@ -9,7 +9,6 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
     public class DocumentPreview
     {
         public string Id { get; set; }
-        public string OwnerId { get; set; }
         public OneLineString Title { get; set; }
         public OneLineString Filename { get; set; }
         public OneLineString OriginalFilename { get; set; }
@@ -17,10 +16,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public GRYDateTime? LastEditDate { get; set; }
         public ulong ReadableId { get; set; }
         public byte[] Preview { get; set; }
-        public DocumentPreview(string id, string ownerId, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] preview)
+        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] preview)
         {
             this.Id = id;
-            this.OwnerId = ownerId;
             this.Title = title;
             this.Filename = filename;
             this.OriginalFilename = originalFilename;
@@ -38,10 +36,6 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             }
 
             if (obj is not DocumentPreview document)
-            {
-                return false;
-            }
-            if (!this.OwnerId.Equals(document.OwnerId))
             {
                 return false;
             }
@@ -83,7 +77,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         internal DocumentPreviewDTO ToDTO()
         {
-            return new DocumentPreviewDTO(this.Id, this.OwnerId, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.ReadableId, this.Preview);
+            return new DocumentPreviewDTO(this.Id,this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.ReadableId, this.Preview);
         }
     }
 }

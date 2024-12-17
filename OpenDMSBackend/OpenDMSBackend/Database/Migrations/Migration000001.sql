@@ -15,9 +15,20 @@ CREATE TABLE `Users` (
     CONSTRAINT `PK_Users` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 
+CREATE TABLE `StorageLocations` (
+    `Id` varchar(255) not null,
+    `Name` varchar(255) not null,
+    CONSTRAINT `PK_StorageLocations` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `Folders` (
+    `Id` varchar(255) not null,
+    `Name` varchar(255) not null,
+    CONSTRAINT `PK_StorageLocations` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
 CREATE TABLE `Documents` (
     `Id` varchar(255) not null,
-    `OwnerId` varchar(255) not null,
     `Title` varchar(255) not null,
     `Filename` varchar(255) not null,
     `OriginalFilename` varchar(255) not null,
@@ -29,12 +40,17 @@ CREATE TABLE `Documents` (
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 
+CREATE TABLE `Container_Containee` (
+    `ContainerId` varchar(255) not null,
+    `ContaineeId` varchar(255) not null
+) CHARACTER SET=utf8mb4;
+
 CREATE TABLE `AccessToken` (
     `Value` varchar(255) not null,
     `ExpiredMoment` datetime(6) not null,
     `UserId` varchar(255) not null,
     CONSTRAINT `PK_AccessToken` PRIMARY KEY (`Value`),
-    CONSTRAINT `FK_AccessToken_Users_UserId` FOREIGN KEY (`UserId`) REFERENCES `Users` (`Id`)
+    CONSTRAINT `FK_AccessToken_Users_UserId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `RefreshToken` (
@@ -42,7 +58,7 @@ CREATE TABLE `RefreshToken` (
     `ExpiredMoment` datetime(6) not null,
     `UserId` varchar(255) not null,
     CONSTRAINT `PK_RefreshToken` PRIMARY KEY (`Value`),
-    CONSTRAINT `FK_RefreshToken_UserId` FOREIGN KEY (`UserId`) REFERENCES `Users` (`Id`)
+    CONSTRAINT `FK_RefreshToken_UserId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `Roles` (
@@ -55,15 +71,23 @@ CREATE TABLE `Roles` (
 CREATE TABLE `User_Roles` (
     `UserId` varchar(255) not null,
     `RoleId` varchar(255) not null,
-    CONSTRAINT `FK_User_Roles_UserId` FOREIGN KEY (`UserId`) REFERENCES `Users` (`Id`),
-    CONSTRAINT `FK_User_Roles_RoleId` FOREIGN KEY (`RoleId`) REFERENCES `Roles` (`Id`),
+    CONSTRAINT `FK_User_Roles_UserId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`),
+    CONSTRAINT `FK_User_Roles_RoleId` FOREIGN KEY (`RoleId`) REFERENCES `Roles`(`Id`),
     CONSTRAINT `PK_Role` PRIMARY KEY (`UserId`, `RoleId`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `Role_InheritedRoles` (
     `RoleId` varchar(255) not null,
     `InheritedRoleId` varchar(255) not null,
-    CONSTRAINT `FK_Role_InheritedRoles_RoleId` FOREIGN KEY (`RoleId`) REFERENCES `Roles` (`Id`),
-    CONSTRAINT `FK_Role_InheritedRoles_InheritedRoleId` FOREIGN KEY (`InheritedRoleId`) REFERENCES `Roles` (`Id`),
-    CONSTRAINT `PK_Role_InheritedRoles` PRIMARY KEY (`RoleId`,`InheritedRoleId`)
+    CONSTRAINT `FK_Role_InheritedRoles_RoleId` FOREIGN KEY (`RoleId`) REFERENCES `Roles`(`Id`),
+    CONSTRAINT `FK_Role_InheritedRoles_InheritedRoleId` FOREIGN KEY (`InheritedRoleId`) REFERENCES `Roles`(`Id`),
+    CONSTRAINT `PK_Role_InheritedRoles` PRIMARY KEY (`RoleId`, `InheritedRoleId`)
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `User_StorageLocations` (
+    `UserId` varchar(255) not null,
+    `StorageLocationId` varchar(255) not null,
+    CONSTRAINT `FK_User_StorageLocations_UsersId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`),
+    CONSTRAINT `FK_User_StorageLocations_StorageLocationsId` FOREIGN KEY (`StorageLocationId`) REFERENCES `StorageLocations`(`Id`),
+    CONSTRAINT `PK_User_StorageLocations` PRIMARY KEY (`UserId`, `StorageLocationId`)
 ) CHARACTER SET=utf8mb4;

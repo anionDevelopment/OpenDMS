@@ -4,6 +4,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public interface IContainer
     {
+        string Name { get; set; }
         public ISet<IContainee> Content { get; set; }
         public void Accept(IContainerVisitor containee);
         public T Accept<T>(IContainerVisitor<T> containee);

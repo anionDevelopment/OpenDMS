@@ -4,6 +4,7 @@ using GRYLibrary.Core.APIServer.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenDMSBackend.Core.Constants;
+using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
 using System.Linq;
@@ -24,22 +25,91 @@ namespace OpenDMSBackend.Core.Controller
             this._AuthenticationService = authenticationService;
         }
 
-        [HttpPut]
-        [Route(nameof(AddDocument))]
-        public IActionResult AddDocument([FromForm] byte[] content, [FromQuery] string filename, [FromQuery] string? title)
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AddDocument)}/{{{nameof(containerId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AddDocument([FromForm] byte[] content, string containerId, [FromQuery] string filename, [FromQuery] string? title)
         {
-            this._BusinessLogicService.AddDocument(title, GetUser().Id, filename, content);
+            this._BusinessLogicService.AddDocument(GetUser().Id, title, containerId, filename, content);
+            return this.Ok();
+        }
+
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AddFolder)}/{{{nameof(parentFolderId)}}}/{{{nameof(name)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AddFolder([FromRoute] string parentFolderId, [FromRoute] string name)
+        {
+            this._BusinessLogicService.AddFolder(GetUser().Id, name, parentFolderId);
+            return this.Ok();
+        }
+
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(Rename)}/{{{nameof(containerId)}}}/{{{nameof(newName)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult Rename([FromRoute] string containerId, [FromRoute] string newName)
+        {
+            this._BusinessLogicService.Rename(GetUser().Id, containerId, newName);
+            return this.Ok();
+        }
+
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(Move)}/{{{nameof(containeeIdToMove)}}}/{{{nameof(targetContainerId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult Move([FromRoute] string containeeIdToMove, [FromRoute] string targetContainerId)
+        {
+            this._BusinessLogicService.Move(GetUser().Id, containeeIdToMove, targetContainerId);
+            return this.Ok();
+        }
+
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AuthorizeUserToViewStorageLocation)}/{{{nameof(storageLocationId)}}}/{{{nameof(sharedWithUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AuthorizeUserToViewStorageLocation([FromRoute] string storageLocationId, [FromRoute] string sharedWithUserId)
+        {
+            this._BusinessLogicService.AuthorizeUserToViewStorageLocation(GetUser().Id, storageLocationId, sharedWithUserId);
+            return this.Ok();
+        }
+
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(UnauthorizeUserToViewStorageLocation)}/{{{nameof(storageLocationId)}}}/{{{nameof(sharedWithUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult UnauthorizeUserToViewStorageLocation([FromRoute] string storageLocationId, [FromRoute] string sharedWithUserId)
+        {
+            this._BusinessLogicService.UnauthorizeUserToViewStorageLocation(GetUser().Id, storageLocationId, sharedWithUserId);
+            return this.Ok();
+        }
+
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AddStorageLocation)}/{{{nameof(name)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AddStorageLocation([FromRoute] string name)
+        {
+            this._BusinessLogicService.AddStorageLocation(GetUser().Id, name);
             return this.Ok();
         }
 
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpGet]
-        [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
         [Route(nameof(GetDocument))]
+        [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
         public IActionResult GetDocument([FromQuery] string id)
         {
-            return this.Ok(this._BusinessLogicService.GetDocument(id));
+            return this.Ok(this._BusinessLogicService.GetDocument(GetUser().Id, id));
         }
 
         [Authenticate]
@@ -65,33 +135,22 @@ namespace OpenDMSBackend.Core.Controller
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpPut]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [Route($"{nameof(AssignTag)}/{{{nameof(documentId)}}}/{{{nameof(tagId)}}}")]
-        public IActionResult AssignTag([FromRoute] string documentId, [FromRoute] string tagId)
-        {
-            this._BusinessLogicService.AssignTag(documentId, tagId);
-            return this.Ok();
-        }
-
-        [Authenticate]
-        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
-        [HttpPut]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [Route($"{nameof(UnassignTag)}/{{{nameof(documentId)}}}/{{{nameof(tagId)}}}")]
-        public IActionResult UnassignTag([FromRoute] string documentId, [FromRoute] string tagId)
-        {
-            this._BusinessLogicService.UnassignTag(documentId, tagId);
-            return this.Ok();
-        }
-
-        [Authenticate]
-        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
-        [HttpPut]
         [ProducesResponseType(typeof(TagDTO[]), StatusCodes.Status200OK)]
         [Route(nameof(GetAllTags))]
         public IActionResult GetAllTags()
         {
             return this.Ok(this._BusinessLogicService.GetAllTags());
+        }
+
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpDelete]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(Delete)}/{{{nameof(containerOrContaineeId)}}}")]
+        public IActionResult Delete(string containerOrContaineeId)
+        {
+            this._BusinessLogicService.Delete(GetUser().Id, containerOrContaineeId);
+            return this.Ok();
         }
 
         private GRYLibrary.Core.APIServer.CommonDBTypes.User GetUser()

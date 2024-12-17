@@ -7,7 +7,6 @@ namespace OpenDMSBackend.Core.Model.DTOs
     public class DocumentPreviewDTO
     {
         public string Id { get; set; }
-        public string OwnerId { get; set; }
         public OneLineString Title { get; set; }
         public OneLineString Filename { get; set; }
         public OneLineString OriginalFilename { get; set; }
@@ -16,10 +15,9 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public ulong ReadableId { get; set; }
         public byte[] Preview { get; set; }
 
-        public DocumentPreviewDTO(string id, string ownerId, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] preview)
+        public DocumentPreviewDTO(string id,  OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] preview)
         {
             this.Id = id;
-            this.OwnerId = ownerId;
             this.Title = title;
             this.Filename = filename;
             this.OriginalFilename = originalFilename;

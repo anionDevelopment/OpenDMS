@@ -5,6 +5,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
     public class Folder : IFolder
     {
         public ISet<IContainee> Content { get; set; } = new HashSet<IContainee>();
+        public string Name { get; set; }
 
         public void Accept(IContainerVisitor containee)
         {
