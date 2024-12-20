@@ -1,6 +1,8 @@
 <app-frame-work>
     <app-user-area-container>
 
+        <!--TODO add folder-view-->
+
         <table mat-table [dataSource]="allAvailableDocumentPreviews">
             <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef> Id </th>
@@ -37,6 +39,7 @@
         </mat-paginator>
 
         <br />
+        <input type="file" accept="image/*" #file>
         <button mat-button (click)="addDocument()">
             <mat-icon>add</mat-icon>
         </button>

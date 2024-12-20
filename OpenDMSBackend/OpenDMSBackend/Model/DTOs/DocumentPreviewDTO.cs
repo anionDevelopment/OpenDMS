@@ -14,9 +14,9 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public DateTime? LastEditDate { get; set; }
         public ulong ReadableId { get; set; }
         public string MimeType { get; set; }
-        public byte[] Preview { get; set; }
+        public string PreviewAsBase64 { get; set; }
 
-        public DocumentPreviewDTO(string id, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ulong readableId,string mimeType, byte[] preview)
+        public DocumentPreviewDTO(string id, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ulong readableId,string mimeType, string previewAsBase64)
         {
             this.Id = id;
             this.Title = title;
@@ -26,7 +26,7 @@ namespace OpenDMSBackend.Core.Model.DTOs
             this.LastEditDate = lastEditDate;
             this.ReadableId = readableId;
             this.MimeType = mimeType;
-            this.Preview = preview;
+            this.PreviewAsBase64 = previewAsBase64;
         }
     }
 }

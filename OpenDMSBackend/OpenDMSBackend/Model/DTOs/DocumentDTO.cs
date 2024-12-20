@@ -14,10 +14,10 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public ISet<TagDTO> Tags { get; set; }
         public ulong ReadableId { get; set; }
         public string MimeType { get; set; }
-        public byte[] DocumentContent { get; set; }
-        public byte[] DocumentPreview { get; set; }
+        public string DocumentContentAsBase64 { get; set; }
+        public string DocumentPreviewAsBase64 { get; set; }
 
-        public DocumentDTO(string id, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ISet<TagDTO> tags, ulong readableId,string mimeType, byte[] documentContent, byte[] documentPreview)
+        public DocumentDTO(string id, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ISet<TagDTO> tags, ulong readableId, string mimeType, string documentContentAsBase64, string documentPreviewAsBase64)
         {
             this.Id = id;
             this.Title = title;
@@ -28,8 +28,8 @@ namespace OpenDMSBackend.Core.Model.DTOs
             this.Tags = tags;
             this.ReadableId = readableId;
             this.MimeType = mimeType;
-            this.DocumentContent = documentContent;
-            this.DocumentPreview = documentPreview;
+            this.DocumentContentAsBase64 = documentContentAsBase64;
+            this.DocumentPreviewAsBase64 = documentPreviewAsBase64;
         }
     }
 }

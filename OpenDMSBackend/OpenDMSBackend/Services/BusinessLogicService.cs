@@ -5,6 +5,7 @@ using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
@@ -41,8 +42,8 @@ namespace OpenDMSBackend.Core.Services
 
         public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content)
         {
-            string mimeType = Utilities.GetMIMEType(originalFilename);
-            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(),OneLineString.From( mimeType), content ,Utilities.GeneratePreview(content,mimeType), new HashSet<Tag>(), this._OCRService.GetOCRContent(content,mimeType));
+            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), OneLineString.From(OpenDMSBackend.Core.Miscellaneous.Utilities.GetMIMEType(originalFilename)), content, default, new HashSet<Tag>(), default);
+            AnalyseDocument(document);
             this._Persistence.CreateDocument(document);
             this._Persistence.SetParentOfContainee(document.Id, containerId);
             this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
@@ -106,7 +107,7 @@ namespace OpenDMSBackend.Core.Services
             return this._Persistence.UserWithNameExists(username);
         }
 
-        public void CreateTag(string tagName, Color tagColor)
+        public void CreateTag(string tagName, ExtendedColor tagColor)
         {
             //TODO do permission check
             this._Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(), tagName, tagColor));
@@ -137,7 +138,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
         {
-            if (Utilities.GetEnvironmentTargetType() is not Productive && this.UserIsAdministrator(userId))
+            if (OpenDMSBackend.Core.Miscellaneous.Utilities.GetEnvironmentTargetType() is not Productive && this.UserIsAdministrator(userId))
             {
                 return true;
             }
@@ -171,7 +172,19 @@ namespace OpenDMSBackend.Core.Services
         public void Update(string requesterUserId, Document updatedDocument)
         {
             //TODO check permission
+            var existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
+            if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content))
+            {
+                AnalyseDocument(updatedDocument);
+            }
             this._Persistence.Update(requesterUserId, updatedDocument);
+        }
+
+        private void AnalyseDocument(Document document)
+        {
+            _Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
+            document.Preview = OpenDMSBackend.Core.Miscellaneous.Utilities.GeneratePreview(document.Content, document.MIMEType.Value);
+            document.OCRContent = _OCRService.GetOCRContent(document.Content, document.MIMEType.Value);
         }
 
         public bool UserIsAllowedToEditDocument(string userId, string documentId)

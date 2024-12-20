@@ -1,4 +1,5 @@
-﻿using OpenDMSBackend.Core.Model.BusinessTypes;
+﻿using GRYLibrary.Core.Misc;
+using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using System.Collections.Generic;
 using System.Drawing;
@@ -24,7 +25,7 @@ namespace OpenDMSBackend.Core.Services
         public void Update(string requesterUserId, Document updatedDocument);
         public Document GetDocument(string requesterUserId, string id);
         public IEnumerable<DocumentPreview> Search(string requesterUserId, string searchTerm);
-        public void CreateTag(string tagName, Color tagColor);
+        public void CreateTag(string tagName, ExtendedColor tagColor);
         public bool UserIsAllowedToViewDocument(string userId, string documentId);
         public bool UserIsAllowedToEditDocument(string userId, string documentId);
         public TagDTO[] GetAllTags();

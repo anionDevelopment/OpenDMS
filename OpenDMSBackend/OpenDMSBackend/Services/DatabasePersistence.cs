@@ -113,7 +113,6 @@ namespace OpenDMSBackend.Core.Services
             return results.ToArray();
         }
 
-
         #endregion
         public void CreateDocument(Document document)
         {
@@ -128,8 +127,9 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(new MySqlParameter("ImportDate", document.ImportDate.ToDateTime()));
                 command.Parameters.Add(new MySqlParameter("LastEditDate", document.LastEditDate.HasValue ? document.LastEditDate : null));
                 command.Parameters.Add(new MySqlParameter("ReadableId", document.ReadableId));
-                command.Parameters.Add(new MySqlParameter("DocumentContent", document.DocumentContent));
-                command.Parameters.Add(new MySqlParameter("DocumentPreview", document.DocumentPreview));
+                command.Parameters.Add(new MySqlParameter("MIMEType", document.MIMEType.Value));
+                command.Parameters.Add(new MySqlParameter("DocumentContent", document.Content));
+                command.Parameters.Add(new MySqlParameter("DocumentPreview", document.Preview));
                 command.ExecuteNonQuery();
             });
         }

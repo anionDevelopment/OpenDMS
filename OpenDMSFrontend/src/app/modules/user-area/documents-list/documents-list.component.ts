@@ -33,12 +33,7 @@ export class DocumentsListComponent {
   downloadDocument(document: DocumentPreviewDTO) {
     this.openDMSBackendService.aPIV1OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), document.id!)
       .subscribe(document => {
-        console.log(document);
-        const x = window.atob(document.documentContent as string);
-        console.log(x);
-        saveAs(new Blob([x], {
-          type: 'application/pdf'
-        }), document.filename! as string);
+        saveAs(this.utilitiesService.base64toBlob(document.documentContentAsBase64!, "octet/stream"), document.filename!);
       });
   }
 
@@ -46,12 +41,44 @@ export class DocumentsListComponent {
     throw new Error('Method not implemented.');
   }
 
-  viewDocument(document: DocumentPreviewDTO) {
-    throw new Error('Method not implemented.');
+  viewDocument(documentPreviewDTO: DocumentPreviewDTO) {
+    this.openDMSBackendService.aPIV1OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), documentPreviewDTO.id!)
+      .subscribe(documentDTO => {
+
+        var fileURL = window.URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
+        const tab = window.open()!;
+        tab.location.href = fileURL;
+
+
+        /*
+        let fileURL = URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
+        // create <a> element dynamically
+        let fileLink = document.createElement('a');
+        fileLink.setAttribute('target', '_blank');
+        fileLink.href = fileURL;
+        // suggest a name for the downloaded file
+        fileLink.download = 'pdf_name';
+        // simulate click
+        fileLink.click();
+        */
+
+        /*
+        let fileURL = URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
+        const iframe = document.createElement('iframe');
+        iframe.src = fileURL;
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.style.border = 'none';
+        const newWindow = window.open('', '_blank')!;
+        newWindow.document.body.appendChild(iframe);
+        newWindow.document.title = 'My Custom Title';
+        */
+      });
   }
 
   addDocument() {
-    throw new Error('Method not implemented.');
+    let element: HTMLElement = document.querySelector('input[type="file"]') as HTMLElement;
+    element.click();
   }
 
 }

@@ -912,14 +912,16 @@
             "type": "integer",
             "format": "int64"
           },
-          "documentContent": {
+          "mimeType": {
             "type": "string",
-            "format": "byte",
             "nullable": true
           },
-          "documentPreview": {
+          "documentContentAsBase64": {
             "type": "string",
-            "format": "byte",
+            "nullable": true
+          },
+          "documentPreviewAsBase64": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -957,9 +959,12 @@
             "type": "integer",
             "format": "int64"
           },
-          "preview": {
+          "mimeType": {
             "type": "string",
-            "format": "byte",
+            "nullable": true
+          },
+          "previewAsBase64": {
+            "type": "string",
             "nullable": true
           }
         },

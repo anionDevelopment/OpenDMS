@@ -91,7 +91,8 @@ namespace OpenDMSBackend.Core.Services
 
         public Document GetDocument(string id)
         {
-            return this._Documents[id];
+            var result= this._Documents[id];
+            return result;
         }
 
         public void CreateTag(Tag tag)

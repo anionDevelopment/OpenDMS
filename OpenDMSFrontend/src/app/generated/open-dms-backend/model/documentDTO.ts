@@ -19,7 +19,8 @@ export interface DocumentDTO {
     lastEditDate?: string | null;
     tags?: Set<TagDTO> | null;
     readableId?: number;
-    documentContent?: string | null;
-    documentPreview?: string | null;
+    mimeType?: string | null;
+    documentContentAsBase64?: string | null;
+    documentPreviewAsBase64?: string | null;
 }
 

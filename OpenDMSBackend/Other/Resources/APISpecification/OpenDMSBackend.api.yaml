@@ -13,12 +13,10 @@ components:
     DocumentDTO:
       additionalProperties: false
       properties:
-        documentContent:
-          format: byte
+        documentContentAsBase64:
           nullable: true
           type: string
-        documentPreview:
-          format: byte
+        documentPreviewAsBase64:
           nullable: true
           type: string
         filename:
@@ -32,6 +30,9 @@ components:
           type: string
         lastEditDate:
           format: date-time
+          nullable: true
+          type: string
+        mimeType:
           nullable: true
           type: string
         originalFilename:
@@ -66,11 +67,13 @@ components:
           format: date-time
           nullable: true
           type: string
+        mimeType:
+          nullable: true
+          type: string
         originalFilename:
           nullable: true
           type: string
-        preview:
-          format: byte
+        previewAsBase64:
           nullable: true
           type: string
         readableId:

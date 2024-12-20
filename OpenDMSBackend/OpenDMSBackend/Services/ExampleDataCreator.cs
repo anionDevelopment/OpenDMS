@@ -35,18 +35,19 @@ namespace OpenDMSBackend.Core.Services
         {
             string title = $"Document{documentNumber.ToString().PadLeft(2, '0')}";
             string filename = $"{title}.pdf";
-            byte[] content = this.GetFileContentFromEmbeddedExampleDocuments(filename);
+            byte[] content = GetFileContentFromEmbeddedExampleDocuments(filename);
             this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content);
         }
 
-        public byte[] GetFileContentFromEmbeddedExampleDocuments(string documentName)
+        public static byte[] GetFileContentFromEmbeddedExampleDocuments(string documentName)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             string resourceName = $"OpenDMSBackend.Core.Resources.ExampleDocuments.{documentName}";
             using Stream stream = assembly.GetManifestResourceStream(resourceName)!;
             BinaryReader binaryReader = new BinaryReader(stream);
             using BinaryReader reader = binaryReader;
-            return reader.ReadBytes((int)stream.Length);
+            var result= reader.ReadBytes((int)stream.Length);
+            return result;
         }
     }
 }

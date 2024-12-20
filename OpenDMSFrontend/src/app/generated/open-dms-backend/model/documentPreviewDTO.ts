@@ -17,6 +17,7 @@ export interface DocumentPreviewDTO {
     importDate?: string;
     lastEditDate?: string | null;
     readableId?: number;
-    preview?: string | null;
+    mimeType?: string | null;
+    previewAsBase64?: string | null;
 }
 

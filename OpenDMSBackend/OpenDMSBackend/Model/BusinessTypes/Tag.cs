@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using GRYLibrary.Core.Misc;
+using OpenDMSBackend.Core.Model.DTOs;
+using System;
+using System.Drawing;
 
 namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
@@ -7,11 +10,16 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public string Id { get; set; }
         public string Name { get; set; }
-        public Color Color { get; set; }
-        public Tag(string id, string name, Color color)
+        public ExtendedColor Color { get; set; }
+        public Tag(string id, string name, ExtendedColor color)
         {
             this.Name = name;
             this.Color = color;
+        }
+
+        internal TagDTO ToDTO()
+        {
+            return new TagDTO(Id, Name, Color.GetRGBString());
         }
     }
 }

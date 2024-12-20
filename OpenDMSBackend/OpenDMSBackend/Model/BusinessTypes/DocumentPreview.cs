@@ -2,6 +2,7 @@
 using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Model.DTOs;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OpenDMSBackend.Core.Model.BusinessTypes
@@ -14,10 +15,11 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public OneLineString OriginalFilename { get; set; }
         public GRYDateTime ImportDate { get; set; }
         public GRYDateTime? LastEditDate { get; set; }
+        public ISet<Tag> Tags { get; set; }
         public ulong ReadableId { get; set; }
         public OneLineString MIMEType { get; set; }
         public byte[] Preview { get; set; }
-        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, OneLineString mimeType, byte[] preview)
+        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] preview)
         {
             this.Id = id;
             this.Title = title;
@@ -27,6 +29,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.LastEditDate = lastEditDate;
             this.ReadableId = readableId;
             this.MIMEType = mimeType;
+            this.Tags = tags;
             this.Preview = preview;
         }
 
@@ -53,9 +56,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             return HashCode.Combine(this.Id);
         }
 
-        internal DocumentPreviewDTO ToDTO()
+        public DocumentPreviewDTO ToDTO()
         {
-            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.ReadableId,this.MIMEType.Value, this.Preview);
+            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.ReadableId,this.MIMEType.Value,Miscellaneous.Utilities.ToBase64( this.Preview));
         }
     }
 }

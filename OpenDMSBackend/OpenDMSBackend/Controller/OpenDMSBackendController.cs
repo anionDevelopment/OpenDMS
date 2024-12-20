@@ -105,8 +105,7 @@ namespace OpenDMSBackend.Core.Controller
         [Route(nameof(GetDocument))]
         [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
         public IActionResult GetDocument([FromQuery] string id)
-        {
-            return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, id));
+        {  return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, id).ToDTO());
         }
 
         [Authenticate]

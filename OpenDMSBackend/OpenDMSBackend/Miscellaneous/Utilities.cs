@@ -1,12 +1,15 @@
 ﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
+using Microsoft.AspNetCore.StaticFiles;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
+using Sprache;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace OpenDMSBackend.Core.Miscellaneous
 {
@@ -30,22 +33,21 @@ namespace OpenDMSBackend.Core.Miscellaneous
 #endif
         }
 
-        private static readonly IList<string> ExtensionsForImage = new List<string>() { "jpg", "jpeg", "png", "bmp", "gif", "tiff", "svg" };
-        private static readonly IList<string> ExtensionsForPlainText = new List<string>() { "jpg", "jpeg", "png", "bmp", "gif", "tiff", "svg" };
-        internal static string GetMIMEType(string originalFilename)
+        internal static string GetMIMEType(string fileName)
         {
-            string extension = Path.GetExtension(originalFilename.ToLower())[1..];
-            if (extension == "pdf")
+            try
             {
-                return "application/pdf";
+                if (new FileExtensionContentTypeProvider().TryGetContentType(fileName, out string? contentType))
+                {
+                    if (!string.IsNullOrEmpty(contentType))
+                    {
+                        return contentType;
+                    }
+                }
             }
-            if (ExtensionsForImage.Contains(extension))
+            catch
             {
-                return "image/jpeg";
-            }
-            if (ExtensionsForPlainText.Contains(extension))
-            {
-                return "text/plain";
+                GRYLibrary.Core.Misc.Utilities.NoOperation();
             }
             return "application/octet-stream";
         }
@@ -54,6 +56,15 @@ namespace OpenDMSBackend.Core.Miscellaneous
         {
             bool isAdmin = user.GetAllRoles().Where(r => r.Name == CodeUnitSpecificConstants.RolenameAdmins).Any();
             return new UserInformationDTO(user.Id, user.Name, isAdmin);
+        }
+
+        public static string ToBase64(byte[] content)
+        {
+            return System.Convert.ToBase64String(content);
+        }
+        public static byte[] FromBase64(string content)
+        {
+           return System.Convert.FromBase64String(content);
         }
     }
 }
