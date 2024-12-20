@@ -4,7 +4,7 @@ namespace OpenDMSBackend.Core.Services
 {
     public class SQLProvider : AbstractSQLProvider,ISQLProvider
     {
-        public SQLProvider() :base("OpenDMSBackend.Core.Database.SQL") { }
+        public SQLProvider() :base("OpenDMSBackend.Core.Resources.Database.SQL") { }
        
         public string GetScriptResetDatabase()
         {

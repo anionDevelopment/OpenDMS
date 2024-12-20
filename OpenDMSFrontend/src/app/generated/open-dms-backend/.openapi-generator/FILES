@@ -13,9 +13,7 @@ index.ts
 model/accessToken.ts
 model/documentDTO.ts
 model/documentPreviewDTO.ts
-model/gRYDateTime.ts
 model/models.ts
-model/oneLineString.ts
 model/tagDTO.ts
 model/userInformationDTO.ts
 param.ts

@@ -4,6 +4,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public class Folder : IFolder
     {
+        public string Id { get; set; }
         public ISet<IContainee> Content { get; set; } = new HashSet<IContainee>();
         public string Name { get; set; }
 

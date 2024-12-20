@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Database;
-using OpenDMSBackend.Core.Miscellaneous;
 using OpenDMSBackend.Core.ServiceInterfaces;
 using OpenDMSBackend.Tests.TestUtilities;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
@@ -44,10 +43,10 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             persistence = databasePersistence;
             persistence.Reset();
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
-            IAuthenticationService<User> authenticationService = new OpenDMSBackendPersistentAuthenticationService( timeService, databasePersistence, logger, constants);
-            Mock<OCRService> ocrServiceMock= new Mock<OCRService>(MockBehavior.Strict);
-            businessLogicService = new BusinessLogicService( databasePersistence, authenticationService, timeService,   constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object);
-            IExampleDataCreator exampleDataCreator = new ExampleDataCreator(databasePersistence, authenticationService, timeService,  logger, constants, businessLogicService, persistedAPIServerConfiguration);
+            IAuthenticationService<User> authenticationService = new OpenDMSBackendPersistentAuthenticationService(timeService, databasePersistence, logger, constants);
+            Mock<OCRService> ocrServiceMock = new Mock<OCRService>(MockBehavior.Strict);
+            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object);
+            IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService);
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator);
         }
 
@@ -56,7 +55,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         public void DatabaseInitializationTest()
         {
             // arrange
-            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService initializationService, out IPersistence persistence);
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService initializationService, out IPersistence _);
             using (databaseTestFramework)
             {
                 string adminUserName = CodeUnitSpecificConstants.UsernameAdmin;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Tree;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 
@@ -14,7 +14,8 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*id*/, Folder> _Folders;
         private readonly IDictionary<string/*id*/, Document> _Documents;
         private readonly IDictionary<string/*id*/, Tag> _Tags;
-        private readonly IDictionary<string/*user-id*/, string/*storagelocation-id*/> _StorageLocationAssignments;
+        private readonly IDictionary<string/*containee-id*/, string/*container-id*/> _ContaineeContainerAssignments;
+        private readonly IDictionary<string/*storagelocation-id*/, string/*user-id*/> _StorageLocationOwnerAssignments;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
 
@@ -24,7 +25,8 @@ namespace OpenDMSBackend.Core.Services
             this._StorageLocations = new Dictionary<string, StorageLocation>();
             this._Folders = new Dictionary<string, Folder>();
             this._Documents = new Dictionary<string, Document>();
-            this._StorageLocationAssignments = new Dictionary<string, string>();
+            this._ContaineeContainerAssignments = new Dictionary<string, string>();
+            this._StorageLocationOwnerAssignments = new Dictionary<string, string>();
             this._Tags = new Dictionary<string, Tag>();
             this._IdGenerator = IdGenerator.GetDefaultLongIdGenerator();
             this.Initialize();
@@ -37,10 +39,12 @@ namespace OpenDMSBackend.Core.Services
 
         public void Reset()
         {
-            this._StorageLocationAssignments.Clear();
+            this._StorageLocationOwnerAssignments.Clear();
             this._StorageLocations.Clear();
             this._Folders.Clear();
             this._Documents.Clear();
+            this._ContaineeContainerAssignments.Clear();
+            this._StorageLocationOwnerAssignments.Clear();
             this._Tags.Clear();
             this._IdGenerator.Reset();
         }
@@ -82,7 +86,7 @@ namespace OpenDMSBackend.Core.Services
 
         public ulong GetNewReadableId()
         {
-            return (ulong)this._IdGenerator.GenerateNewId();
+            return this._IdGenerator.GenerateNewId();
         }
 
         public Document GetDocument(string id)
@@ -114,9 +118,123 @@ namespace OpenDMSBackend.Core.Services
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<string> GetAllDocumentIds() 
+        public IEnumerable<string> GetAllDocumentIds()
         {
-            return _Documents.Keys;
+            return this._Documents.Keys;
+        }
+
+        public string GetStorageLocationId(string id)
+        {
+            if (this.IsContaineeId(id))
+            {
+                return this.GetStorageLocationId(this.GetParentIdOfContainee(id));
+            }
+            else if (this.IsStorageLocationId(id))
+            {
+                return id;
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Id {id} not found.");
+            }
+        }
+
+        public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
+        {
+           return this._StorageLocationOwnerAssignments[storageLocationId] == userId;
+        }
+
+        public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
+        {
+            return false;//TODO
+        }
+
+        public string AddStoragLocation(string name)
+        {
+            var sl = new StorageLocation();
+            sl.Id = Guid.NewGuid().ToString();
+            sl.Name = name;
+            this._StorageLocations[sl.Id] = sl;
+            return sl.Id;
+        }
+
+        public void SetOwnerOfStorageLocation(string storageLocationId, string userId)
+        {
+            this._StorageLocationOwnerAssignments[storageLocationId] = userId;
+        }
+
+        public string AddFolder(string name)
+        {
+            var folder = new Folder()
+            {
+                Id=Guid.NewGuid().ToString(),
+                Name=   name,
+            };
+            this._Folders[folder.Id]=folder;
+            return folder.Id;
+        }
+
+        public void SetParentOfContainee(string containeeId, string parentContainerId)
+        {
+            this._ContaineeContainerAssignments[containeeId] = parentContainerId;
+        }
+
+        public void Delete(string containerOrContaineeId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Rename(string containerId, string newName)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Update(string requesterUserId, Document updatedDocument)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IContainee GetContaineeById(string containeeId)
+        {
+            if (this._Documents.TryGetValue(containeeId, out Document? document))
+            {
+                return document;
+            }
+            if (this._Folders.TryGetValue(containeeId, out Folder? folder))
+            {
+                return folder;
+            }
+            throw new KeyNotFoundException($"No {nameof(IContainee)} available with id \"{containeeId}\".");
+        }
+
+        public string GetParentIdOfContainee(string containeeId)
+        {
+            return this._ContaineeContainerAssignments[containeeId];
+        }
+
+        public bool IsContaineeId(string containeeId)
+        {
+            return this._Documents.ContainsKey(containeeId) || this._Folders.ContainsKey(containeeId);
+        }
+
+        public bool IsStorageLocationId(string id)
+        {
+            return this._StorageLocations.ContainsKey(id);
+        }
+
+        public DocumentPreview GetDocumentPreview(string id)
+        {
+            return this.GetDocument(id).GetPreview();
         }
     }
 }

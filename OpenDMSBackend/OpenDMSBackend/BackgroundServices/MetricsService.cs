@@ -27,7 +27,6 @@ namespace OpenDMSBackend.Core.BackgroundWorker
         {
             try
             {
-                this._Logger.Log("Calculate metrics", LogLevel.Debug);
                 this.MetricAmountOfDocuments.Set(this._Persistence.GetAmountOfDocuments());
             }
             catch (Exception exception)

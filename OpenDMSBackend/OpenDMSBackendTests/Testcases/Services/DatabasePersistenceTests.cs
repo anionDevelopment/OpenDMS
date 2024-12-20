@@ -11,7 +11,6 @@ using Moq;
 using OpenDMSBackendUtilities = OpenDMSBackend.Core.Miscellaneous.Utilities;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Database;
-using OpenDMSBackend.Core.ServiceInterfaces;
 using OpenDMSBackend.Tests.TestUtilities;
 using System;
 using System.IO;
@@ -55,7 +54,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
 
                 DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
 
-                Document testDocument = new Core.Model.BusinessTypes.Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, new byte[] { 1, 2, 3, 4 }, new byte[] { 1, 2 }, new HashSet<Tag>() , string.Empty);
+                Document testDocument = new Core.Model.BusinessTypes.Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, new byte[] { 1, 2 }, new HashSet<Tag>(), string.Empty);
 
                 //act
                 databasePersistence.CreateDocument(testDocument);

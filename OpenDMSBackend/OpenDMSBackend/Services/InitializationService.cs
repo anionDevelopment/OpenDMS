@@ -5,10 +5,9 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Services;
 using System.Collections.Generic;
 
-namespace OpenDMSBackend.Core.ServiceInterfaces
+namespace OpenDMSBackend.Core.Services
 {
     public class InitializationService : IInitializationService
     {

@@ -9,6 +9,7 @@ The following tools from the [tools-list](https://github.com/anionDev/ScriptColl
 - `dotnet-coverage`
 - `git`
 - `gitversion`
+- `java`
 - `python`
 - `reportgenerator`
 - `scriptcollection`

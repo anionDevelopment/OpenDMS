@@ -1,6 +1,4 @@
-﻿using GRYLibrary.Core.Misc.Strings;
-using GRYLibrary.Core.Misc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 
 namespace OpenDMSBackend.Core.Model.DTOs
@@ -15,10 +13,11 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public DateTime? LastEditDate { get; set; }
         public ISet<TagDTO> Tags { get; set; }
         public ulong ReadableId { get; set; }
+        public string MimeType { get; set; }
         public byte[] DocumentContent { get; set; }
         public byte[] DocumentPreview { get; set; }
 
-        public DocumentDTO(string id,  string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ISet<TagDTO> tags, ulong readableId, byte[] documentContent, byte[] documentPreview)
+        public DocumentDTO(string id, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ISet<TagDTO> tags, ulong readableId,string mimeType, byte[] documentContent, byte[] documentPreview)
         {
             this.Id = id;
             this.Title = title;
@@ -28,6 +27,7 @@ namespace OpenDMSBackend.Core.Model.DTOs
             this.LastEditDate = lastEditDate;
             this.Tags = tags;
             this.ReadableId = readableId;
+            this.MimeType = mimeType;
             this.DocumentContent = documentContent;
             this.DocumentPreview = documentPreview;
         }

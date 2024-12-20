@@ -4,7 +4,6 @@ using GRYLibrary.Core.APIServer.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
 using System.Linq;
@@ -32,7 +31,7 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public IActionResult AddDocument([FromForm] byte[] content, string containerId, [FromQuery] string filename, [FromQuery] string? title)
         {
-            this._BusinessLogicService.AddDocument(GetUser().Id, title, containerId, filename, content);
+            this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content);
             return this.Ok();
         }
 
@@ -40,11 +39,10 @@ namespace OpenDMSBackend.Core.Controller
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [Route($"{nameof(AddFolder)}/{{{nameof(parentFolderId)}}}/{{{nameof(name)}}}")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult AddFolder([FromRoute] string parentFolderId, [FromRoute] string name)
         {
-            this._BusinessLogicService.AddFolder(GetUser().Id, name, parentFolderId);
-            return this.Ok();
+            return this.Ok(this._BusinessLogicService.AddFolder(this.GetUser().Id, name, parentFolderId));
         }
 
         [Authenticate]
@@ -54,7 +52,7 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public IActionResult Rename([FromRoute] string containerId, [FromRoute] string newName)
         {
-            this._BusinessLogicService.Rename(GetUser().Id, containerId, newName);
+            this._BusinessLogicService.Rename(this.GetUser().Id, containerId, newName);
             return this.Ok();
         }
 
@@ -65,7 +63,7 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public IActionResult Move([FromRoute] string containeeIdToMove, [FromRoute] string targetContainerId)
         {
-            this._BusinessLogicService.Move(GetUser().Id, containeeIdToMove, targetContainerId);
+            this._BusinessLogicService.Move(this.GetUser().Id, containeeIdToMove, targetContainerId);
             return this.Ok();
         }
 
@@ -76,7 +74,7 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public IActionResult AuthorizeUserToViewStorageLocation([FromRoute] string storageLocationId, [FromRoute] string sharedWithUserId)
         {
-            this._BusinessLogicService.AuthorizeUserToViewStorageLocation(GetUser().Id, storageLocationId, sharedWithUserId);
+            this._BusinessLogicService.AuthorizeUserToViewStorageLocation(this.GetUser().Id, storageLocationId, sharedWithUserId);
             return this.Ok();
         }
 
@@ -87,7 +85,7 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         public IActionResult UnauthorizeUserToViewStorageLocation([FromRoute] string storageLocationId, [FromRoute] string sharedWithUserId)
         {
-            this._BusinessLogicService.UnauthorizeUserToViewStorageLocation(GetUser().Id, storageLocationId, sharedWithUserId);
+            this._BusinessLogicService.UnauthorizeUserToViewStorageLocation(this.GetUser().Id, storageLocationId, sharedWithUserId);
             return this.Ok();
         }
 
@@ -95,11 +93,10 @@ namespace OpenDMSBackend.Core.Controller
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [Route($"{nameof(AddStorageLocation)}/{{{nameof(name)}}}")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult AddStorageLocation([FromRoute] string name)
         {
-            this._BusinessLogicService.AddStorageLocation(GetUser().Id, name);
-            return this.Ok();
+            return this.Ok(this._BusinessLogicService.AddStorageLocation(this.GetUser().Id, name));
         }
 
         [Authenticate]
@@ -109,7 +106,7 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
         public IActionResult GetDocument([FromQuery] string id)
         {
-            return this.Ok(this._BusinessLogicService.GetDocument(GetUser().Id, id));
+            return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, id));
         }
 
         [Authenticate]
@@ -149,7 +146,7 @@ namespace OpenDMSBackend.Core.Controller
         [Route($"{nameof(Delete)}/{{{nameof(containerOrContaineeId)}}}")]
         public IActionResult Delete(string containerOrContaineeId)
         {
-            this._BusinessLogicService.Delete(GetUser().Id, containerOrContaineeId);
+            this._BusinessLogicService.Delete(this.GetUser().Id, containerOrContaineeId);
             return this.Ok();
         }
 

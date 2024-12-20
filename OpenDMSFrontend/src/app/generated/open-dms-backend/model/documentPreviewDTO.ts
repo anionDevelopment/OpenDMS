@@ -7,17 +7,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { OneLineString } from './oneLineString';
-import { GRYDateTime } from './gRYDateTime';
 
 
 export interface DocumentPreviewDTO { 
     id?: string | null;
-    title?: OneLineString;
-    filename?: OneLineString;
-    originalFilename?: OneLineString;
-    importDate?: GRYDateTime;
-    lastEditDate?: GRYDateTime;
+    title?: string | null;
+    filename?: string | null;
+    originalFilename?: string | null;
+    importDate?: string;
+    lastEditDate?: string | null;
     readableId?: number;
     preview?: string | null;
 }

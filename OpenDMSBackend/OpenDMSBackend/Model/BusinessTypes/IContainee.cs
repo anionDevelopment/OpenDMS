@@ -1,6 +1,8 @@
-﻿namespace OpenDMSBackend.Core.Model.BusinessTypes
+﻿using OpenDMSBackend.Core.Services;
+
+namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
-    public interface IContainee
+    public interface IContainee: IContent
     {
         public void Accept(IContaineeVisitor containee);
         public T Accept<T>(IContaineeVisitor<T> containee);

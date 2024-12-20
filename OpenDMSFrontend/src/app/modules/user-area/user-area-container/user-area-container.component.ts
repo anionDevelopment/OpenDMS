@@ -2,6 +2,7 @@ import { NonNullAssert } from '@angular/compiler';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserDataService } from '../../../services/user-data.service';
+import { UtilitiesService } from '../../../services/utilities.service';
 
 @Component({
   selector: 'app-user-area-container',
@@ -12,8 +13,8 @@ import { UserDataService } from '../../../services/user-data.service';
 export class UserAreaContainerComponent {
   activeSite: string;
   userIsAdmin: boolean | null = null;
-  constructor(private router: Router, userDataService: UserDataService) {
-    this.activeSite = this.getSiteTitle(this.router.url.split('/').pop()!);
+  constructor(private router: Router, userDataService: UserDataService, utilitiesService: UtilitiesService) {
+    this.activeSite = this.getSiteTitle(utilitiesService.getURLWithoutQueryParameter(this.router).split('/').pop()!);
     userDataService.userIsAdmin().subscribe((isAdmin) => {
       this.userIsAdmin = isAdmin;
     });
@@ -40,6 +41,9 @@ export class UserAreaContainerComponent {
       }
       case "documents": {
         return "Documents";
+      }
+      case "document": {
+        return "Document";
       }
       case "settings": {
         return "Settings";

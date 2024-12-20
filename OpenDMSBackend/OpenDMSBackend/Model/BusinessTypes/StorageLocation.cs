@@ -4,6 +4,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public class StorageLocation : IStorageLocation
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public ISet<IContainee> Content { get; set; } = new HashSet<IContainee>();
         public void Accept(IContainerVisitor containee)

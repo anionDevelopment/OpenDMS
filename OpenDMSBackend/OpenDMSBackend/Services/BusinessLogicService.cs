@@ -1,4 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
@@ -38,11 +39,14 @@ namespace OpenDMSBackend.Core.Services
             this._OCRService = oCRService;
         }
 
-        public void AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content)
+        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content)
         {
-            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), content, Utilities.GeneratePreview(content), new HashSet<Tag>(), this._OCRService.GetOCRContent(content));
+            string mimeType = Utilities.GetMIMEType(originalFilename);
+            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(),OneLineString.From( mimeType), content ,Utilities.GeneratePreview(content,mimeType), new HashSet<Tag>(), this._OCRService.GetOCRContent(content,mimeType));
             this._Persistence.CreateDocument(document);
+            this._Persistence.SetParentOfContainee(document.Id, containerId);
             this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
+            return document.Id;
         }
 
         public string Register(string username, string password)
@@ -69,6 +73,12 @@ namespace OpenDMSBackend.Core.Services
             //TODO do permission check
             return this._Persistence.GetDocument(id);
         }
+        private DocumentPreview GetDocumentPreview(string requesterUserId, string id)
+        {
+            //TODO do permission check
+            return this._Persistence.GetDocumentPreview(id);
+        }
+
 
         public IEnumerable<DocumentPreview> Search(string requesterUserId, string searchTerm)
         {
@@ -116,27 +126,52 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAllowedToViewDocument(string userId, string documentId)
         {
-            throw new NotImplementedException();
+            string storageLocationId = this._Persistence.GetStorageLocationId(documentId);
+            if (this.UserIsAllowedToViewStorageLocation(userId, storageLocationId))
+            {
+                return true;
+            }
+            //add more possibilities if desired
+            return false;
+        }
+
+        public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
+        {
+            if (Utilities.GetEnvironmentTargetType() is not Productive && this.UserIsAdministrator(userId))
+            {
+                return true;
+            }
+            if (this._Persistence.UserIsOwnerOfStorageLocation(userId, storageLocationId))
+            {
+                return true;
+            }
+            if (this._Persistence.StorageLocationIsSharedWithUser(storageLocationId, userId))
+            {
+                return true;
+            }
+            //add more possibilities if desired
+            return false;
         }
 
         public TagDTO[] GetAllTags()
         {
-            return _Persistence.GetAllTags();
+            return this._Persistence.GetAllTags();
         }
 
         public IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId)
         {
-            return _Persistence
+            return this._Persistence
                 .GetAllDocumentIds()
                 .Where(documentId => this.UserIsAllowedToViewDocument(requesterUserId, documentId))
-                .Select(d=>this.GetDocument(requesterUserId,d))
+                .Select(id => this.GetDocumentPreview(requesterUserId, id))
                 .OrderByDescending(document => document.LastEditDate)
-                .Take(10)
-                .Select(document=>document.GetPreview());
+                .Take(10);
         }
+
         public void Update(string requesterUserId, Document updatedDocument)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+            this._Persistence.Update(requesterUserId, updatedDocument);
         }
 
         public bool UserIsAllowedToEditDocument(string userId, string documentId)
@@ -144,40 +179,55 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
-        public void AddStorageLocation(string requesterUserId, string name)
+        public string AddStorageLocation(string requesterUserId, string name)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+            string id = this._Persistence.AddStoragLocation(name);
+            this._Persistence.SetOwnerOfStorageLocation(id, requesterUserId);
+            return id;
         }
 
-        public void AddFolder(string requesterUserId, string name, string parentContainerId)
+        public string AddFolder(string requesterUserId, string name, string parentContainerId)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+            string id = this._Persistence.AddFolder(name);
+            this._Persistence.SetParentOfContainee(id, parentContainerId);
+            return id;
         }
 
         public void Rename(string requesterUserId, string containerId, string newName)
         {
             //TODO check permission
-            throw new NotImplementedException();
+            this._Persistence.Rename(containerId, newName);
         }
 
         public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+            this._Persistence.AuthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+            this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
         public void Delete(string requesterUserId, string containerOrContaineeId)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+            this._Persistence.Delete(containerOrContaineeId);
         }
 
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+            this._Persistence.SetParentOfContainee(containeeIdToMove, targetContainerId);
+        }
+
+        public bool UserIsAdministrator(string userId)
+        {
+            return this._AuthenticationService.GetUser(userId).GetAllRoles().Where(role => role.Name == Constants.CodeUnitSpecificConstants.RolenameAdmins).Any();
         }
     }
 }

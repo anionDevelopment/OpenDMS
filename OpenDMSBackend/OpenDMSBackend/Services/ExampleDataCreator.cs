@@ -1,42 +1,52 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
-using GRYLibrary.Core.APIServer.Settings;
-using GRYLibrary.Core.APIServer.Settings.Configuration;
-using GRYLibrary.Core.Logging.GeneralPurposeLogger;
-using OpenDMSBackend.Core.Configuration;
-using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Model.BusinessTypes;
-using System;
+﻿using System.IO;
+using System.Reflection;
 
 namespace OpenDMSBackend.Core.Services
 {
     public class ExampleDataCreator : IExampleDataCreator
     {
         private readonly IBusinessLogicService _BusinessLogicService;
-        private readonly IPersistence _Persistence;
-        private readonly IAuthenticationService<User> _AuthenticationService;
-        private readonly ITimeService _TimeService;
-        private readonly IGeneralLogger _Logger;
-        private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
-        private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
-        private static readonly Random _Random = new Random();
 
-        public ExampleDataCreator(IPersistence persistence, IAuthenticationService<User> authenticationService, ITimeService timeService, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants, IBusinessLogicService businessLogicService, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration)
+        public ExampleDataCreator(IBusinessLogicService businessLogicService)
         {
-            this._Persistence = persistence;
-            this._AuthenticationService = authenticationService;
-            this._TimeService = timeService;
-            this._Logger = logger;
-            this._Constants = constants;
             this._BusinessLogicService = businessLogicService;
-            this._Configuration = configuration;
         }
 
         public void AddExampleData()
         {
-            this._BusinessLogicService.Register("user01", "user01");
-            this._BusinessLogicService.Register("user02", "user02");
+            (string userId, string storageLocationId) userDetails1 = this.AddUser(1);
+            this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId);
 
-            //TODO add more example data
+            (string userId, string storageLocationId) userDetails2 = this.AddUser(2);
+            this.AddExampleDocument(2, userDetails2.userId, userDetails2.storageLocationId);
+            this.AddExampleDocument(3, userDetails2.userId, userDetails2.storageLocationId);
+        }
+
+        private (string userId, string storageLocationId) AddUser(int userNumber)
+        {
+            string userName = $"user{userNumber.ToString().PadLeft(2, '0')}";
+            string password = userName;
+            string userId = this._BusinessLogicService.Register(userName, password);
+            string storageLocationId = this._BusinessLogicService.AddStorageLocation(userId, "MainStorage");
+            return (userId, storageLocationId);
+        }
+
+        private void AddExampleDocument(int documentNumber, string ownerId, string locationId)
+        {
+            string title = $"Document{documentNumber.ToString().PadLeft(2, '0')}";
+            string filename = $"{title}.pdf";
+            byte[] content = this.GetFileContentFromEmbeddedExampleDocuments(filename);
+            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content);
+        }
+
+        public byte[] GetFileContentFromEmbeddedExampleDocuments(string documentName)
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string resourceName = $"OpenDMSBackend.Core.Resources.ExampleDocuments.{documentName}";
+            using Stream stream = assembly.GetManifestResourceStream(resourceName)!;
+            BinaryReader binaryReader = new BinaryReader(stream);
+            using BinaryReader reader = binaryReader;
+            return reader.ReadBytes((int)stream.Length);
         }
     }
 }

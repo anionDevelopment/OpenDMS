@@ -11,11 +11,10 @@ using System.Data;
 using MySqlConnector;
 using Role = GRYLibrary.Core.APIServer.CommonDBTypes.Role;
 using GRYLibrary.Core.Logging.GRYLogger;
-using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 
-namespace OpenDMSBackend.Core.ServiceInterfaces
+namespace OpenDMSBackend.Core.Services
 {
     public sealed class DatabasePersistence : IPersistence, IAuthenticationServicePersistence<User>
     {
@@ -376,6 +375,91 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
         }
 
         public IEnumerable<string> GetAllDocumentIds()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetStorageLocationId(string containeeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string AddStoragLocation(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetOwnerOfStorageLocation(string storageLocationId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string AddFolder(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetParentOfContainee(string containeeId, string parentContainerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(string containerOrContaineeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Rename(string containerId, string newName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(string requesterUserId, Document updatedDocument)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IContainee GetContaineeById(string containeeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetParentIdOfContainee(string containeeId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsContaineeId(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsStorageLocationId(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DocumentPreview GetDocumentPreview(string id)
         {
             throw new NotImplementedException();
         }

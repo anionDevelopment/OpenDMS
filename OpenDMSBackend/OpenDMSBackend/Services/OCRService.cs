@@ -4,9 +4,9 @@ namespace OpenDMSBackend.Core.Services
 {
     public class OCRService : IOCRService
     {
-        public string GetOCRContent(byte[] content)
+        public string GetOCRContent(byte[] content, string mimeType)
         {
-            throw new NotImplementedException();
+            return "content";//TODO implement function
         }
     }
 }

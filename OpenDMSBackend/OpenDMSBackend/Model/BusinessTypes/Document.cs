@@ -8,7 +8,6 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public class Document : IDocument
     {
-
         public string Id { get; set; }
         public OneLineString Title { get; set; }
         public OneLineString Filename { get; set; }
@@ -17,10 +16,11 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public GRYDateTime? LastEditDate { get; set; }
         public ISet<Tag> Tags { get; set; }
         public ulong ReadableId { get; set; }
+        public OneLineString MIMEType { get; set; }
         public byte[] DocumentContent { get; set; }
         public byte[] DocumentPreview { get; set; }
         public string OCRContent { get; set; }
-        public Document(string id,OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] documentContent, byte[] documentPreview, ISet<Tag> tags, string oCRContent)
+        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, OneLineString mimeType, byte[] documentContent, byte[] documentPreview, ISet<Tag> tags, string oCRContent)
         {
             this.Id = id;
             this.Title = title;
@@ -29,6 +29,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.ImportDate = importDate;
             this.LastEditDate = lastEditDate;
             this.ReadableId = readableId;
+            this.MIMEType = mimeType;
             this.DocumentContent = documentContent;
             this.DocumentPreview = documentPreview;
             this.Tags = tags;
@@ -50,36 +51,6 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             {
                 return false;
             }
-            if (!this.Title.Equals(document.Title))
-            {
-                return false;
-            }
-            if (!this.Filename.Equals(document.Filename))
-            {
-                return false;
-            }
-            if (!this.OriginalFilename.Equals(document.OriginalFilename))
-            {
-                return false;
-            }
-            if (!this.ImportDate.Equals(document.ImportDate))
-            {
-                return false;
-            }
-            if (!this.LastEditDate.Equals(document.LastEditDate))
-            {
-                return false;
-            }
-            if (!this.DocumentContent.SequenceEqual(document.DocumentContent))
-            {
-                return false;
-            }
-            //document-preview will not be compared here, this is intended.
-            if (!this.Tags.SetEquals(document.Tags))
-            {
-                return false;
-            }
-            //ocr-content will not be compared here, this is intended.
             return true;
         }
 
@@ -100,7 +71,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentPreview GetPreview()
         {
-            throw new NotImplementedException();
+            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.ReadableId, this.MIMEType, this.DocumentPreview);
         }
     }
 }

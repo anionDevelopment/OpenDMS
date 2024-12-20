@@ -15,8 +15,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public GRYDateTime ImportDate { get; set; }
         public GRYDateTime? LastEditDate { get; set; }
         public ulong ReadableId { get; set; }
+        public OneLineString MIMEType { get; set; }
         public byte[] Preview { get; set; }
-        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, byte[] preview)
+        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, OneLineString mimeType, byte[] preview)
         {
             this.Id = id;
             this.Title = title;
@@ -25,6 +26,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.ImportDate = importDate;
             this.LastEditDate = lastEditDate;
             this.ReadableId = readableId;
+            this.MIMEType = mimeType;
             this.Preview = preview;
         }
 
@@ -43,30 +45,6 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             {
                 return false;
             }
-            if (!this.Title.Equals(document.Title))
-            {
-                return false;
-            }
-            if (!this.Filename.Equals(document.Filename))
-            {
-                return false;
-            }
-            if (!this.OriginalFilename.Equals(document.OriginalFilename))
-            {
-                return false;
-            }
-            if (!this.ImportDate.Equals(document.ImportDate))
-            {
-                return false;
-            }
-            if (!this.LastEditDate.Equals(document.LastEditDate))
-            {
-                return false;
-            }
-            if (!this.Preview.SequenceEqual(document.Preview))
-            {
-                return false;
-            }
             return true;
         }
 
@@ -77,7 +55,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         internal DocumentPreviewDTO ToDTO()
         {
-            return new DocumentPreviewDTO(this.Id,this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.ReadableId, this.Preview);
+            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.ReadableId,this.MIMEType.Value, this.Preview);
         }
     }
 }

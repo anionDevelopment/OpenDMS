@@ -35,6 +35,7 @@ CREATE TABLE `Documents` (
     `ImportDate` datetime(6) not null,
     `LastEditDate` datetime(6) null,
     `ReadableId` BIGINT unsigned not null,
+    `MIMEType` varchar(255) not null,
     `DocumentContent` longblob not null,
     `DocumentPreview` longblob not null,
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
@@ -84,10 +85,10 @@ CREATE TABLE `Role_InheritedRoles` (
     CONSTRAINT `PK_Role_InheritedRoles` PRIMARY KEY (`RoleId`, `InheritedRoleId`)
 ) CHARACTER SET=utf8mb4;
 
-CREATE TABLE `User_StorageLocations` (
-    `UserId` varchar(255) not null,
+CREATE TABLE `StorageLocations_User` (
     `StorageLocationId` varchar(255) not null,
-    CONSTRAINT `FK_User_StorageLocations_UsersId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`),
+    `UserId` varchar(255) not null,
     CONSTRAINT `FK_User_StorageLocations_StorageLocationsId` FOREIGN KEY (`StorageLocationId`) REFERENCES `StorageLocations`(`Id`),
+    CONSTRAINT `FK_User_StorageLocations_UsersId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`),
     CONSTRAINT `PK_User_StorageLocations` PRIMARY KEY (`UserId`, `StorageLocationId`)
 ) CHARACTER SET=utf8mb4;

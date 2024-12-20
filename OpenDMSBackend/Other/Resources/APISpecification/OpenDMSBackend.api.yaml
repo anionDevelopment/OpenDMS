@@ -1,0 +1,625 @@
+components:
+  schemas:
+    AccessToken:
+      additionalProperties: false
+      properties:
+        expiredMoment:
+          format: date-time
+          type: string
+        value:
+          nullable: true
+          type: string
+      type: object
+    DocumentDTO:
+      additionalProperties: false
+      properties:
+        documentContent:
+          format: byte
+          nullable: true
+          type: string
+        documentPreview:
+          format: byte
+          nullable: true
+          type: string
+        filename:
+          nullable: true
+          type: string
+        id:
+          nullable: true
+          type: string
+        importDate:
+          format: date-time
+          type: string
+        lastEditDate:
+          format: date-time
+          nullable: true
+          type: string
+        originalFilename:
+          nullable: true
+          type: string
+        readableId:
+          format: int64
+          type: integer
+        tags:
+          items:
+            $ref: '#/components/schemas/TagDTO'
+          nullable: true
+          type: array
+          uniqueItems: true
+        title:
+          nullable: true
+          type: string
+      type: object
+    DocumentPreviewDTO:
+      additionalProperties: false
+      properties:
+        filename:
+          nullable: true
+          type: string
+        id:
+          nullable: true
+          type: string
+        importDate:
+          format: date-time
+          type: string
+        lastEditDate:
+          format: date-time
+          nullable: true
+          type: string
+        originalFilename:
+          nullable: true
+          type: string
+        preview:
+          format: byte
+          nullable: true
+          type: string
+        readableId:
+          format: int64
+          type: integer
+        title:
+          nullable: true
+          type: string
+      type: object
+    TagDTO:
+      additionalProperties: false
+      properties:
+        colorCode:
+          nullable: true
+          type: string
+        id:
+          nullable: true
+          type: string
+        name:
+          nullable: true
+          type: string
+      type: object
+    UserInformationDTO:
+      additionalProperties: false
+      properties:
+        id:
+          nullable: true
+          type: string
+        isAdmin:
+          type: boolean
+        name:
+          nullable: true
+          type: string
+      type: object
+info:
+  description: OpenDMSBackend is the backend of OpenDMS.
+  title: OpenDMSBackend v1.0.0 API documentation
+  version: v1.0.0
+openapi: 3.0.1
+paths:
+  /API/Other/Maintenance/AvailabilityCheck:
+    get:
+      responses:
+        '200':
+          description: OK
+      tags:
+      - MaintenanceRoutes
+  /API/Other/Maintenance/CurrentVersion:
+    get:
+      responses:
+        '200':
+          description: OK
+      tags:
+      - MaintenanceRoutes
+  /API/Other/Maintenance/HealthCheck:
+    get:
+      responses:
+        '200':
+          description: OK
+      tags:
+      - MaintenanceRoutes
+  /API/Other/Maintenance/Metrics:
+    get:
+      responses:
+        '200':
+          description: OK
+      tags:
+      - MaintenanceRoutes
+  /API/Other/Maintenance/ShowAllEndpoints:
+    get:
+      responses:
+        '200':
+          description: OK
+      tags:
+      - MaintenanceRoutes
+  /API/v1/OpenDMSBackend/AddDocument/{containerId}:
+    post:
+      parameters:
+      - in: path
+        name: containerId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: filename
+        schema:
+          type: string
+      - in: query
+        name: title
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              content:
+                style: form
+            schema:
+              properties:
+                content:
+                  format: byte
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/AddFolder/{parentFolderId}/{name}:
+    post:
+      parameters:
+      - in: path
+        name: parentFolderId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/AddStorageLocation/{name}:
+    post:
+      parameters:
+      - in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
+    post:
+      parameters:
+      - in: path
+        name: storageLocationId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: sharedWithUserId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/Delete/{containerOrContaineeId}:
+    delete:
+      parameters:
+      - in: path
+        name: containerOrContaineeId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/GetAllTags:
+    put:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagDTO'
+                type: array
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/GetDocument:
+    get:
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/GetLatestDocuments:
+    get:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}:
+    post:
+      parameters:
+      - in: path
+        name: containeeIdToMove
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: targetContainerId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/Rename/{containerId}/{newName}:
+    post:
+      parameters:
+      - in: path
+        name: containerId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: newName
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/Search:
+    get:
+      parameters:
+      - in: query
+        name: searchTerm
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
+    post:
+      parameters:
+      - in: path
+        name: storageLocationId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: sharedWithUserId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/UserController/CreateUser:
+    put:
+      parameters:
+      - in: header
+        name: user
+        schema:
+          type: string
+      - in: header
+        name: password
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - User
+  /API/v1/UserController/GetRoles:
+    put:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+            text/json:
+              schema:
+                items:
+                  type: string
+                type: array
+            text/plain:
+              schema:
+                items:
+                  type: string
+                type: array
+          description: OK
+      tags:
+      - User
+  /API/v1/UserController/GetUserInformation:
+    get:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInformationDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/UserInformationDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/UserInformationDTO'
+          description: OK
+      tags:
+      - User
+  /API/v1/UserController/Login:
+    put:
+      parameters:
+      - in: header
+        name: user
+        schema:
+          type: string
+      - in: header
+        name: password
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+          description: OK
+      tags:
+      - User
+  /API/v1/UserController/Logout:
+    put:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - User
+  /API/v1/UserController/TokenIsValid:
+    get:
+      parameters:
+      - in: header
+        name: accessToken
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: boolean
+            text/json:
+              schema:
+                type: boolean
+            text/plain:
+              schema:
+                type: boolean
+          description: OK
+      tags:
+      - User
