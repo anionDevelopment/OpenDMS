@@ -5,10 +5,9 @@ using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
-using OpenDMSBackend.Core.Services;
 using System;
 
-namespace OpenDMSBackend.Core.Miscellaneous
+namespace OpenDMSBackend.Core.Services
 {
     public class ExampleDataCreator : IExampleDataCreator
     {
@@ -36,7 +35,8 @@ namespace OpenDMSBackend.Core.Miscellaneous
         {
             this._BusinessLogicService.Register("user01", "user01");
             this._BusinessLogicService.Register("user02", "user02");
-            //TODO add example data
+
+            //TODO add more example data
         }
     }
 }

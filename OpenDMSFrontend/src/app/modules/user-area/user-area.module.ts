@@ -4,7 +4,7 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
 import { UserSettingsComponent } from './user-settings/user-settings.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatPaginatedTabHeader, MatTabsModule } from '@angular/material/tabs';
 import { UserAreaContainerComponent } from './user-area-container/user-area-container.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { HomePageModule } from '../home-page/home-page.module';
@@ -21,6 +21,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { DocumentComponent } from './document/document.component';
 import { DocumentsListComponent } from './documents-list/documents-list.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { DocumentsListComponent } from './documents-list/documents-list.componen
     MatCheckboxModule,
     MatSelectModule,
     MatMenuModule,
+    MatPaginatorModule,
     MatTooltipModule,
     MatInputModule,
     MatDialogModule,

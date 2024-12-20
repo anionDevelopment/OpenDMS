@@ -11,7 +11,6 @@ using Moq;
 using OpenDMSBackendUtilities = OpenDMSBackend.Core.Miscellaneous.Utilities;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Database;
-using OpenDMSBackend.Core.Miscellaneous;
 using OpenDMSBackend.Core.ServiceInterfaces;
 using OpenDMSBackend.Tests.TestUtilities;
 using System;

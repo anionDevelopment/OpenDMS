@@ -5,7 +5,6 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Miscellaneous;
 using OpenDMSBackend.Core.Services;
 using System.Collections.Generic;
 
@@ -44,10 +43,10 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
                 string adminUserId = this._BusinessLogicService.Register(adminUsername, initialAdminPassword);
                 this._AuthenticationService.EnsureUserHasRole(adminUserId, adminsRole.Id);
 
-            }
-            if (this._Constants.Environment is Development)
-            {
-                this._ExampleDataCreator.AddExampleData();
+                if (this._Constants.Environment is Development)
+                {
+                    this._ExampleDataCreator.AddExampleData();
+                }
             }
             this._GeneralLogger.Log("Service is initialized.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
