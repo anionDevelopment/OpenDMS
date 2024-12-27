@@ -206,7 +206,7 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             throw new NotImplementedException();
         }
 
-        public void AddUser(GRYLibrary.Core.APIServer.CommonDBTypes.User user)
+        public void AddUser(User user)
         {
             throw new NotImplementedException();
         }
@@ -216,12 +216,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             throw new NotImplementedException();
         }
 
-        ISet<GRYLibrary.Core.APIServer.CommonDBTypes.User> IAuthenticationService.GetAllUser()
+        ISet<User> IAuthenticationService.GetAllUser()
         {
             throw new NotImplementedException();
         }
 
-        public GRYLibrary.Core.APIServer.CommonDBTypes.User GetUser(string userId)
+        public User GetUser(string userId)
         {
             throw new NotImplementedException();
         }
@@ -231,12 +231,12 @@ namespace OpenDMSBackend.Core.ServiceInterfaces
             throw new NotImplementedException();
         }
 
-        public GRYLibrary.Core.APIServer.CommonDBTypes.User GetUserByName(string name)
+        public User GetUserByName(string name)
         {
             throw new NotImplementedException();
         }
 
-        public GRYLibrary.Core.APIServer.CommonDBTypes.User GetUserByAccessToken(string accessToken)
+        public User GetUserByAccessToken(string accessToken)
         {
             throw new NotImplementedException();
         }

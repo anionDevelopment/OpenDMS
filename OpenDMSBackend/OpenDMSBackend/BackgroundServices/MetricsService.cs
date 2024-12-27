@@ -2,7 +2,6 @@
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
-using Microsoft.Extensions.Logging;
 using Prometheus;
 using OpenDMSBackend.Core.Constants;
 using System;

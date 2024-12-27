@@ -1,13 +1,10 @@
 ﻿using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.DTOs;
-using System;
-using System.Drawing;
 
 namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
-    public class Tag
+    public class Tag//TODO there should be global tags (managable by admins) and user-defined tags which are only visible for the user
     {
-
         public string Id { get; set; }
         public string Name { get; set; }
         public ExtendedColor Color { get; set; }
@@ -19,7 +16,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         internal TagDTO ToDTO()
         {
-            return new TagDTO(Id, Name, Color.GetRGBString());
+            return new TagDTO(this.Id, this.Name, this.Color.GetRGBString());
         }
     }
 }

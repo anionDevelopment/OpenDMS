@@ -28,11 +28,10 @@ namespace OpenDMSBackend.Core.Controller
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [Route($"{nameof(AddDocument)}/{{{nameof(containerId)}}}")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult AddDocument([FromForm] byte[] content, string containerId, [FromQuery] string filename, [FromQuery] string? title)
         {
-            this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content);
-            return this.Ok();
+            return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content));
         }
 
         [Authenticate]
@@ -100,12 +99,23 @@ namespace OpenDMSBackend.Core.Controller
         }
 
         [Authenticate]
-        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpGet]
-        [Route(nameof(GetDocument))]
-        [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
-        public IActionResult GetDocument([FromQuery] string id)
-        {  return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, id).ToDTO());
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetAllViewableStorageLocations)}")]
+        [ProducesResponseType(typeof(StorageLocationDTO[]), StatusCodes.Status200OK)]
+        public IActionResult GetAllViewableStorageLocations()
+        {
+            return this.Ok(this._BusinessLogicService.GetAllViewableStorageLocations(this.GetUser().Id).Select(sl => sl.ToDTO()));
+        }
+
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetFolder)}/{{{nameof(id)}}}")]
+        [ProducesResponseType(typeof(FolderDTO), StatusCodes.Status200OK)]
+        public IActionResult GetFolder(string id)
+        {
+            return this.Ok(this._BusinessLogicService.GetFolder(this.GetUser().Id, id).ToDTO());
         }
 
         [Authenticate]
@@ -116,6 +126,26 @@ namespace OpenDMSBackend.Core.Controller
         public IActionResult Search([FromQuery] string searchTerm)
         {
             return this.Ok(this._BusinessLogicService.Search(this.GetUser().Id, searchTerm));
+        }
+
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpGet]
+        [Route(nameof(GetDocument))]
+        [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
+        public IActionResult GetDocument([FromQuery] string id)
+        {
+            return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, id).ToDTO());
+        }
+
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpGet]
+        [Route(nameof(GetDocumentPreview))]
+        [ProducesResponseType(typeof(DocumentPreviewDTO), StatusCodes.Status200OK)]
+        public IActionResult GetDocumentPreview([FromQuery] string id)
+        {
+            return this.Ok(this._BusinessLogicService.GetDocumentPreview(this.GetUser().Id, id).ToDTO());
         }
 
         [Authenticate]

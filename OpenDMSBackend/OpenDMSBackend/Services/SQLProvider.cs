@@ -5,7 +5,7 @@ namespace OpenDMSBackend.Core.Services
     public class SQLProvider : AbstractSQLProvider,ISQLProvider
     {
         public SQLProvider() :base("OpenDMSBackend.Core.Resources.Database.SQL") { }
-       
+
         public string GetScriptResetDatabase()
         {
             return this.LoadSQLScript("ResetDatabase");
@@ -20,6 +20,7 @@ namespace OpenDMSBackend.Core.Services
         {
             return this.LoadSQLScript("AddDocument");
         }
+
         public string GetScriptInsertRole()
         {
             return this.LoadSQLScript("InsertRole");

@@ -22,10 +22,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { DocumentComponent } from './document/document.component';
 import { DocumentsListComponent } from './documents-list/documents-list.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTreeModule } from '@angular/material/tree';
+import { DocumentTableComponent } from './document-table/document-table.component';
+import { ContentTreeComponent } from './content-tree/content-tree.component';
 
 @NgModule({
   declarations: [
+    ContentTreeComponent,
     DocumentComponent,
+    DocumentTableComponent,
     DocumentsListComponent,
     UserIconComponent,
     UserAreaContainerComponent,
@@ -42,6 +47,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatSelectModule,
     MatMenuModule,
     MatPaginatorModule,
+    MatTreeModule,
     MatTooltipModule,
     MatInputModule,
     MatDialogModule,

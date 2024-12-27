@@ -1,6 +1,4 @@
-﻿using OpenDMSBackend.Core.Services;
-
-namespace OpenDMSBackend.Core.Model.BusinessTypes
+﻿namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public interface IContainee: IContent
     {

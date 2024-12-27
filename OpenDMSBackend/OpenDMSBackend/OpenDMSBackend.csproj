@@ -78,13 +78,11 @@
         <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+        <PackageReference Include="GRYLibrary" Version="0.12.128" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Resources\**">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="E:\Data\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
     </ItemGroup>
 </Project>

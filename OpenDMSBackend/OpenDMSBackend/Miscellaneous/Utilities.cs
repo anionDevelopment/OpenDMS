@@ -4,12 +4,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
 using Sprache;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace OpenDMSBackend.Core.Miscellaneous
 {
@@ -32,6 +27,7 @@ namespace OpenDMSBackend.Core.Miscellaneous
             throw new System.Collections.Generic.KeyNotFoundException("Unknown environmenttargettype.");
 #endif
         }
+
 
         internal static string GetMIMEType(string fileName)
         {
@@ -62,9 +58,10 @@ namespace OpenDMSBackend.Core.Miscellaneous
         {
             return System.Convert.ToBase64String(content);
         }
+
         public static byte[] FromBase64(string content)
         {
-           return System.Convert.FromBase64String(content);
+            return System.Convert.FromBase64String(content);
         }
     }
 }

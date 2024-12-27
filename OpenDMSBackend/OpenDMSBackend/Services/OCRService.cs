@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OpenDMSBackend.Core.Services
+﻿namespace OpenDMSBackend.Core.Services
 {
     public class OCRService : IOCRService
     {

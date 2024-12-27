@@ -9,12 +9,10 @@ using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Miscellaneous;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace OpenDMSBackend.Core.Services
@@ -24,12 +22,12 @@ namespace OpenDMSBackend.Core.Services
         private static readonly object _LockObject = new object();
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
         private readonly IPersistence _Persistence;
-        private readonly IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> _AuthenticationService;
+        private readonly IAuthenticationService<Model.BusinessTypes.User> _AuthenticationService;
         private readonly ITimeService _TimeService;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
         private readonly IOCRService _OCRService;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -43,7 +41,7 @@ namespace OpenDMSBackend.Core.Services
         public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content)
         {
             Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), OneLineString.From(OpenDMSBackend.Core.Miscellaneous.Utilities.GetMIMEType(originalFilename)), content, default, new HashSet<Tag>(), default);
-            AnalyseDocument(document);
+            this.AnalyseDocument(document);
             this._Persistence.CreateDocument(document);
             this._Persistence.SetParentOfContainee(document.Id, containerId);
             this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
@@ -58,7 +56,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new NotAuthorizedException();
                 }
-                OpenDMSBackend.Core.Model.BusinessTypes.User newUser = OpenDMSBackend.Core.Model.BusinessTypes.User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
+                Model.BusinessTypes.User newUser = OpenDMSBackend.Core.Model.BusinessTypes.User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
                 this._AuthenticationService.AddUserTyped(newUser);
 
                 Role userRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
@@ -71,15 +69,28 @@ namespace OpenDMSBackend.Core.Services
 
         public Document GetDocument(string requesterUserId, string id)
         {
-            //TODO do permission check
+            this.EnsureUserIsAllowedToViewContent(requesterUserId, id);
             return this._Persistence.GetDocument(id);
         }
-        private DocumentPreview GetDocumentPreview(string requesterUserId, string id)
+
+        public DocumentPreview GetDocumentPreview(string requesterUserId, string documentId)
         {
-            //TODO do permission check
-            return this._Persistence.GetDocumentPreview(id);
+            this.EnsureUserIsAllowedToViewContent(requesterUserId, documentId);
+            return this._Persistence.GetDocumentPreview(documentId);
         }
 
+        private void EnsureUserIsAllowedToViewContent(string requesterUserId, string contentId)
+        {
+            if (!this.UserIsAllowedToViewContent(requesterUserId, contentId))
+            {
+                throw new NotAuthorizedException($"No permission to view document '{contentId}'.");
+            }
+        }
+
+        public bool UserIsAllowedToEditContent(string userId, string documentId)
+        {
+            throw new NotImplementedException();
+        }
 
         public IEnumerable<DocumentPreview> Search(string requesterUserId, string searchTerm)
         {
@@ -98,7 +109,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 throw new NotImplementedException();//TODO search and add to result
             }
-            result = result.Where(document => this.UserIsAllowedToViewDocument(requesterUserId, document.Id));
+            result = result.Where(document => this.UserIsAllowedToViewContent(requesterUserId, document.Id));
             return result;
         }
 
@@ -125,20 +136,18 @@ namespace OpenDMSBackend.Core.Services
             this._Persistence.UnassignTag(documentId, tagId);
         }
 
-        public bool UserIsAllowedToViewDocument(string userId, string documentId)
+        public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
-            string storageLocationId = this._Persistence.GetStorageLocationId(documentId);
-            if (this.UserIsAllowedToViewStorageLocation(userId, storageLocationId))
-            {
-                return true;
-            }
-            //add more possibilities if desired
-            return false;
+            return this.DoForContentObject(contentId,
+                (storageLocationId) => this.UserIsAllowedToViewStorageLocation(userId, storageLocationId),
+                (folderId) => this.UserIsAllowedToViewFolder(userId, folderId),
+                (documentId) => this.UserIsAllowedToViewDocument(userId, documentId)
+            );
         }
 
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
         {
-            if (OpenDMSBackend.Core.Miscellaneous.Utilities.GetEnvironmentTargetType() is not Productive && this.UserIsAdministrator(userId))
+            if (Miscellaneous.Utilities.GetEnvironmentTargetType() is not Productive && this.UserIsAdministrator(userId))
             {
                 return true;
             }
@@ -147,6 +156,28 @@ namespace OpenDMSBackend.Core.Services
                 return true;
             }
             if (this._Persistence.StorageLocationIsSharedWithUser(storageLocationId, userId))
+            {
+                return true;
+            }
+            //add more possibilities if desired
+            return false;
+        }
+
+        public bool UserIsAllowedToViewFolder(string userId, string contentId)
+        {
+            string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(contentId);
+            if (this.UserIsAllowedToViewStorageLocation(userId, storageLocationId))
+            {
+                return true;
+            }
+            //add more possibilities if desired
+            return false;
+        }
+
+        public bool UserIsAllowedToViewDocument(string userId, string contentId)
+        {
+            string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(contentId);
+            if (this.UserIsAllowedToViewStorageLocation(userId, storageLocationId))
             {
                 return true;
             }
@@ -163,7 +194,7 @@ namespace OpenDMSBackend.Core.Services
         {
             return this._Persistence
                 .GetAllDocumentIds()
-                .Where(documentId => this.UserIsAllowedToViewDocument(requesterUserId, documentId))
+                .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
                 .OrderByDescending(document => document.LastEditDate)
                 .Take(10);
@@ -175,21 +206,16 @@ namespace OpenDMSBackend.Core.Services
             var existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
             if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content))
             {
-                AnalyseDocument(updatedDocument);
+                this.AnalyseDocument(updatedDocument);
             }
             this._Persistence.Update(requesterUserId, updatedDocument);
         }
 
         private void AnalyseDocument(Document document)
         {
-            _Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
+            this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
             document.Preview = OpenDMSBackend.Core.Miscellaneous.Utilities.GeneratePreview(document.Content, document.MIMEType.Value);
-            document.OCRContent = _OCRService.GetOCRContent(document.Content, document.MIMEType.Value);
-        }
-
-        public bool UserIsAllowedToEditDocument(string userId, string documentId)
-        {
-            throw new NotImplementedException();
+            document.OCRContent = this._OCRService.GetOCRContent(document.Content, document.MIMEType.Value);
         }
 
         public string AddStorageLocation(string requesterUserId, string name)
@@ -241,6 +267,41 @@ namespace OpenDMSBackend.Core.Services
         public bool UserIsAdministrator(string userId)
         {
             return this._AuthenticationService.GetUser(userId).GetAllRoles().Where(role => role.Name == Constants.CodeUnitSpecificConstants.RolenameAdmins).Any();
+        }
+
+        public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId)
+        {
+            return this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(storageLocationId => this._Persistence.GetStorageLocation(storageLocationId));
+        }
+
+        public Folder GetFolder(string requesterUserId, string folderId)
+        {
+            this.EnsureUserIsAllowedToViewContent(requesterUserId, folderId);
+            return this._Persistence.GetFolder(folderId);
+        }
+        public void DoForContentObject(string contentId, Action<string> isStorageLocationAction, Action<string> isFolderAction, Action<string> isDocumentAction) =>
+#pragma warning disable CS8603 // Possible null reference return.
+            this.DoForContentObject<object>(contentId, (contentId) => { isStorageLocationAction(contentId); return default; }, (contentId) => { isFolderAction(contentId); return default; }, (contentId) => { isDocumentAction(contentId); return default; });
+#pragma warning restore CS8603 // Possible null reference return.
+
+        public T DoForContentObject<T>(string contentId, Func<string, T> isStorageLocationAction, Func<string, T> isFolderAction, Func<string, T> isDocumentAction)
+        {
+            if (this._Persistence.IsDocument(contentId))
+            {
+                return isStorageLocationAction(contentId);
+            }
+            else if (this._Persistence.IsFolder(contentId))
+            {
+                return isFolderAction(contentId);
+            }
+            else if (this._Persistence.IsStorageLocation(contentId))
+            {
+                return isDocumentAction(contentId);
+            }
+            else
+            {
+                throw new KeyNotFoundException($"No content found with id '{contentId}'.");
+            }
         }
     }
 }

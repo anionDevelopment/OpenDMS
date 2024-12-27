@@ -72,7 +72,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentPreview GetPreview()
         {
-            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.ReadableId, Tags, this.MIMEType, this.Preview);
+            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.ReadableId, this.Tags, this.MIMEType, this.Preview);
         }
 
         public DocumentDTO ToDTO()

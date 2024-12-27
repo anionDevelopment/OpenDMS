@@ -1,48 +1,60 @@
 <app-frame-work>
     <app-user-area-container>
 
-        <!--TODO add folder-view-->
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center">
+            <mat-tab label="Latest documents">
 
-        <table mat-table [dataSource]="allAvailableDocumentPreviews">
-            <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef> Id </th>
-                <td mat-cell *matCellDef="let element"> {{element.readableId}} </td>
-            </ng-container>
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef> Title </th>
-                <td mat-cell *matCellDef="let element">
-                    <span class="link" (click)="onDocumentClick(element)">
-                        {{element.title}}
-                    </span>
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="importdate">
-                <th mat-header-cell *matHeaderCellDef> Created at </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element.importDate}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="options">
-                <th mat-header-cell *matHeaderCellDef> Options </th>
-                <td mat-cell *matCellDef="let element">
-                    <button mat-button (click)="viewDocument(element)"><mat-icon>visibility</mat-icon></button>
-                    <button mat-button (click)="downloadDocument(element)"><mat-icon>download</mat-icon></button>
-                    <button mat-button (click)="editDocument(element)"><mat-icon>edit</mat-icon></button>
-                    <button mat-button (click)="removeDocument(element)"><mat-icon>delete</mat-icon></button>
-                </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+                <!--TODO movethis to document-table-component and use this component here-->
+                <table mat-table [dataSource]="allAvailableDocumentPreviews">
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef> Id </th>
+                        <td mat-cell *matCellDef="let element"> {{element.readableId}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Title </th>
+                        <td mat-cell *matCellDef="let element">
+                            <span class="link" (click)="onDocumentClick(element)">
+                                {{element.title}}
+                            </span>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="importdate">
+                        <th mat-header-cell *matHeaderCellDef> Created at </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.importDate}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="options">
+                        <th mat-header-cell *matHeaderCellDef> Options </th>
+                        <td mat-cell *matCellDef="let element">
+                            <button mat-button (click)="viewDocument(element)"><mat-icon>visibility</mat-icon></button>
+                            <button mat-button
+                                (click)="downloadDocument(element)"><mat-icon>download</mat-icon></button>
+                            <button mat-button (click)="editDocument(element)"><mat-icon>edit</mat-icon></button>
+                            <button mat-button (click)="removeDocument(element)"><mat-icon>delete</mat-icon></button>
+                        </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
 
-        <mat-paginator [pageSizeOptions]="[10, 100]" showFirstLastButtons>
-        </mat-paginator>
+                <mat-paginator [pageSizeOptions]="[10, 100]" showFirstLastButtons>
+                </mat-paginator>
 
-        <br />
-        <input type="file" accept="image/*" #file>
-        <button mat-button (click)="addDocument()">
-            <mat-icon>add</mat-icon>
-        </button>
+            </mat-tab>
+            <mat-tab label="All documents" (selectedTabChange)="allDocumentsClicked()">
+
+                <!-- TODO use content-tree instead and move add-document-button to storageLocation- and folder-view -->
+                <div (click)="uploadFile.click()">
+                    <button mat-button color="primary">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <input #uploadFile (change)="addDocument($event)" type='file' style="display:none" />
+                </div>
+                <br />
+
+            </mat-tab>
+        </mat-tab-group>
 
     </app-user-area-container>
 </app-frame-work>

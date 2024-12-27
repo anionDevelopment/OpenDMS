@@ -37,10 +37,10 @@ namespace OpenDMSBackend.Core.Services
         private void AccessDatabase(Action<DatabaseContext> action)
         {
             this.AccessDatabase<object?>((database) =>
-                {
-                    action(database);
-                    return null;
-                });
+                                                                                    {
+                                                                                        action(database);
+                                                                                        return null;
+                                                                                    });
         }
 
         private T AccessDatabase<T>(Func<DatabaseContext, T> function)
@@ -61,10 +61,10 @@ namespace OpenDMSBackend.Core.Services
         public void RunTransaction(params Action<MySqlCommand>[] actions)
         {
             this.RunTransaction(actions.Select<Action<MySqlCommand>, Func<MySqlCommand, object>>(action => (command) =>
-                {
-                    action(command);
-                    return null;
-                }
+                                                                                          {
+                                                                                              action(command);
+                                                                                              return null;
+                                                                                          }
             ).ToArray());
         }
 
@@ -379,7 +379,7 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
-        public string GetStorageLocationId(string containeeId)
+        public string GetIdOfStorageLocationContainedIn(string containeeId)
         {
             throw new NotImplementedException();
         }
@@ -460,6 +460,36 @@ namespace OpenDMSBackend.Core.Services
         }
 
         public DocumentPreview GetDocumentPreview(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetAllStorageLocationIds()
+        {
+            throw new NotImplementedException();
+        }
+
+        public StorageLocation GetStorageLocation(string storageLocationId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Folder GetFolder(string folderId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsStorageLocation(string contentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsFolder(string contentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsDocument(string contentId)
         {
             throw new NotImplementedException();
         }
