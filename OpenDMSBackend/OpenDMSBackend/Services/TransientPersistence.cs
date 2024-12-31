@@ -183,14 +183,43 @@ namespace OpenDMSBackend.Core.Services
             return folder.Id;
         }
 
-        public void SetParentOfContainee(string containeeId, string parentContainerId)
+        public void SetParentOfContainee(IContainee containee, string parentContainerId)
         {
-            this._ContaineeContainerAssignments[containeeId] = parentContainerId;
+            this._ContaineeContainerAssignments[containee.Id] = parentContainerId;
+            OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this, parentContainerId,
+            (storageId) =>
+            {
+                _StorageLocations[parentContainerId].Content.Add(containee);
+            },
+            (folderId) =>
+            {
+                _Folders[parentContainerId].Content.Add(containee);
+            },
+            (documentId) =>
+            {
+                GRYLibrary.Core.Misc.Utilities.NoOperation();
+            });
         }
 
         public void Delete(string containerOrContaineeId)
         {
-            throw new NotImplementedException();
+            OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this, containerOrContaineeId,
+                (storageId) =>
+                {
+                    _StorageLocationOwnerAssignments.Remove(storageId);
+                    //TODO remove all related stuff from _ContaineeContainerAssignments
+                    _StorageLocations.Remove(storageId);
+                },
+                (folderId) =>
+                {
+                    //TODO remove all related stuff from _ContaineeContainerAssignments
+                    _Folders.Remove(folderId);
+                },
+                (documentId) =>
+                {
+                    //TODO remove all related stuff from _ContaineeContainerAssignments
+                    _Documents.Remove(documentId);
+                });
         }
 
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)

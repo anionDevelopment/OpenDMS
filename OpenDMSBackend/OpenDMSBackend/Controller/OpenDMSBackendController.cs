@@ -1,4 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.TS;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -18,10 +19,12 @@ namespace OpenDMSBackend.Core.Controller
 
         private readonly IBusinessLogicService _BusinessLogicService;
         private readonly IAuthenticationService _AuthenticationService;
-        public OpenDMSBackendController(IBusinessLogicService businessLogicService, IAuthenticationService authenticationService)
+        private readonly ITimeService _TimeService;
+        public OpenDMSBackendController(IBusinessLogicService businessLogicService, IAuthenticationService authenticationService,ITimeService timeService)
         {
             this._BusinessLogicService = businessLogicService;
             this._AuthenticationService = authenticationService;
+            this._TimeService = timeService;
         }
 
         [Authenticate]
@@ -31,7 +34,7 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult AddDocument([FromForm] byte[] content, string containerId, [FromQuery] string filename, [FromQuery] string? title)
         {
-            return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content));
+            return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, _TimeService.GetCurrentTimeAsGRYDateTime()));
         }
 
         [Authenticate]

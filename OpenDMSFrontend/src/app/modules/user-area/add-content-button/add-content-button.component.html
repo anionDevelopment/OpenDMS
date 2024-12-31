@@ -1,0 +1,7 @@
+<button mat-button color="primary" (click)="addFolder()" [disabled]="!userIsAllowedToAddDocument">
+    <mat-icon>create_new_folder</mat-icon>
+</button>
+<button mat-button color="primary" (click)="uploadFile.click()" [disabled]="!userIsAllowedToAddFolder">
+    <mat-icon>post_add</mat-icon>
+</button>
+<input #uploadFile (change)="addDocument($event)" type='file' style="display:none" />

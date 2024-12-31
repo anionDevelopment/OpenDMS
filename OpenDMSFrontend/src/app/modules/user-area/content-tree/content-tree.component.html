@@ -1,3 +1,10 @@
-<p>content-tree works!</p>
-
-<!--TODO use something like mat-tree and mat-tree-node or implement own tree-view -->
+<mat-accordion multi>
+    <mat-expansion-panel *ngFor="let storageLocation of storageLocations">
+        <mat-expansion-panel-header>
+            <mat-panel-title> {{storageLocation.name}} </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-content-view [title]="storageLocation.name" [folderIds]="storageLocation.containedFolderIds"
+            [documentIds]="storageLocation.containedDocumentIds" [parentContainerId]="storageLocation.id"
+            [isFolder]="false"></app-content-view>
+    </mat-expansion-panel>
+</mat-accordion>

@@ -409,7 +409,7 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
-        public void SetParentOfContainee(string containeeId, string parentContainerId)
+        public void SetParentOfContainee(IContainee containee, string parentContainerId)
         {
             throw new NotImplementedException();
         }

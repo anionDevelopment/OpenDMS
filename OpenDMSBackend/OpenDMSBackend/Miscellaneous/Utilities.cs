@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.StaticFiles;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
 using Sprache;
+using System.Collections.Generic;
+using System;
 using System.Linq;
+using System.Security;
+using OpenDMSBackend.Core.Services;
 
 namespace OpenDMSBackend.Core.Miscellaneous
 {
@@ -62,6 +66,30 @@ namespace OpenDMSBackend.Core.Miscellaneous
         public static byte[] FromBase64(string content)
         {
             return System.Convert.FromBase64String(content);
+        }
+        public static void DoForContentObject(IPersistence persistence, string contentId, Action<string> isStorageLocationAction, Action<string> isFolderAction, Action<string> isDocumentAction) =>
+#pragma warning disable CS8603 // Possible null reference return.
+    DoForContentObject<object>(persistence,contentId, (contentId) => { isStorageLocationAction(contentId); return default; }, (contentId) => { isFolderAction(contentId); return default; }, (contentId) => { isDocumentAction(contentId); return default; });
+#pragma warning restore CS8603 // Possible null reference return.
+
+        public static T DoForContentObject<T>(IPersistence persistence,string contentId, Func<string, T> isStorageLocationAction, Func<string, T> isFolderAction, Func<string, T> isDocumentAction)
+        {
+            if (persistence.IsStorageLocation(contentId))
+            {
+                return isStorageLocationAction(contentId);
+            }
+            else if (persistence.IsFolder(contentId))
+            {
+                return isFolderAction(contentId);
+            }
+            else if (persistence.IsDocument(contentId))
+            {
+                return isDocumentAction(contentId);
+            }
+            else
+            {
+                throw new KeyNotFoundException($"No content found with id '{contentId}'.");
+            }
         }
     }
 }

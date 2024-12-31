@@ -30,7 +30,7 @@ namespace OpenDMSBackend.Core.Services
         public string GetParentIdOfContainee(string containeeId);
         public bool IsContaineeId(string id);
         public bool IsStorageLocationId(string id);
-        public void SetParentOfContainee(string containeeId, string parentContainerId);
+        public void SetParentOfContainee(IContainee containee, string parentContainerId);
         public void Delete(string containerOrContaineeId);
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId);
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId);

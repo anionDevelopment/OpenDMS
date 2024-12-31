@@ -1,5 +1,10 @@
-﻿using System.IO;
+﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.Misc;
+using OpenDMSBackend.Core.Model.BusinessTypes;
+using System;
+using System.IO;
 using System.Reflection;
+using System.Threading;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -14,12 +19,49 @@ namespace OpenDMSBackend.Core.Services
 
         public void AddExampleData()
         {
-            (string userId, string storageLocationId) userDetails1 = this.AddUser(1);
-            this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId);
+            var now = DateTime.Now;
+            var initialDate = new DateTime(now.Year,now.Month,now.Day,now.Hour,0,0).AddHours(-1);
+            (string userId, string storageLocationId) userDetails1 = this.AddUser(1);//minimal example
+            this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId, initialDate);
 
-            (string userId, string storageLocationId) userDetails2 = this.AddUser(2);
-            this.AddExampleDocument(2, userDetails2.userId, userDetails2.storageLocationId);
-            this.AddExampleDocument(3, userDetails2.userId, userDetails2.storageLocationId);
+            (string userId, string storageLocationId) userDetails2 = this.AddUser(2);//example with some more documents
+            string folder1Id = this.AddFolder(1, userDetails2.userId, userDetails2.storageLocationId);
+            string folder2Id = this.AddFolder(2, userDetails2.userId, userDetails2.storageLocationId);
+            string folder3Id = this.AddFolder(3, userDetails2.userId, userDetails2.storageLocationId);
+            string folder4Id = this.AddFolder(4, userDetails2.userId, folder3Id);
+            string folder5Id = this.AddFolder(5, userDetails2.userId, userDetails2.storageLocationId);
+            this.AddExampleDocument(2, userDetails2.userId, folder2Id, initialDate);
+            this.AddExampleDocument(3, userDetails2.userId, folder2Id, initialDate);
+            this.AddExampleDocument(4, userDetails2.userId, folder4Id, initialDate);
+            this.AddExampleDocument(5, userDetails2.userId, folder3Id, initialDate);
+            this.AddExampleDocument(6, userDetails2.userId, folder5Id, initialDate);
+            this.AddExampleDocument(7, userDetails2.userId, folder5Id, initialDate);
+            this.AddExampleDocument(8, userDetails2.userId, userDetails2.storageLocationId, initialDate);
+            this.AddExampleDocument(9, userDetails2.userId, userDetails2.storageLocationId, initialDate);
+            this.AddExampleDocument(10, userDetails2.userId, userDetails2.storageLocationId, initialDate);
+            /* Structure for user02:
+                MainStorage
+                ├─ folder01/
+                ├─ folder02/
+                │  ├─ file02
+                │  └─ file03
+                ├─ folder03/
+                │  ├─ folder04/
+                │  │  └─ file04
+                │  └─ file05
+                ├─ folder05/
+                │  ├─ file06
+                │  └─ file07
+                ├─ file08
+                ├─ file09
+                └─ file10
+             */
+        }
+
+        private string AddFolder(int folderId, string userId, string container)
+        {
+            string folderName = $"Folder{folderId.ToString().PadLeft(2, '0')}";
+            return this._BusinessLogicService.AddFolder(userId, folderName, container);
         }
 
         private (string userId, string storageLocationId) AddUser(int userNumber)
@@ -27,16 +69,17 @@ namespace OpenDMSBackend.Core.Services
             string userName = $"user{userNumber.ToString().PadLeft(2, '0')}";
             string password = userName;
             string userId = this._BusinessLogicService.Register(userName, password);
-            string storageLocationId = this._BusinessLogicService.AddStorageLocation(userId, "MainStorage");
+            string storageLocationId = this._BusinessLogicService.AddStorageLocation(userId, $"MainStorage of {userName}");
             return (userId, storageLocationId);
         }
 
-        private void AddExampleDocument(int documentNumber, string ownerId, string locationId)
+        private void AddExampleDocument(int documentNumber, string ownerId, string locationId, DateTime initialDate)
         {
             string title = $"Document{documentNumber.ToString().PadLeft(2, '0')}";
             string filename = $"{title}.pdf";
             byte[] content = GetFileContentFromEmbeddedExampleDocuments(filename);
-            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content);
+            var creationDate = initialDate.AddMinutes(documentNumber);
+            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content, GRYDateTime.FromDateTime(creationDate));
         }
 
         public static byte[] GetFileContentFromEmbeddedExampleDocuments(string documentName)
@@ -46,7 +89,7 @@ namespace OpenDMSBackend.Core.Services
             using Stream stream = assembly.GetManifestResourceStream(resourceName)!;
             BinaryReader binaryReader = new BinaryReader(stream);
             using BinaryReader reader = binaryReader;
-            var result= reader.ReadBytes((int)stream.Length);
+            var result = reader.ReadBytes((int)stream.Length);
             return result;
         }
     }

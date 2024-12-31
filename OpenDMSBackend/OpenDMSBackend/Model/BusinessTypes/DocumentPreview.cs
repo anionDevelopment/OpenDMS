@@ -3,6 +3,7 @@ using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Model.DTOs;
 using System;
 using System.Collections.Generic;
+using YamlDotNet.Core.Events;
 
 namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
@@ -58,6 +59,18 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public DocumentPreviewDTO ToDTO()
         {
             return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.ReadableId, this.MIMEType.Value, Miscellaneous.Utilities.ToBase64(this.Preview));
+        }
+
+        public GRYDateTime GetNewestDate(DocumentPreview document)
+        {
+            if (document.LastEditDate == default)
+            {
+                return document.ImportDate;
+            }
+            else
+            {
+                return document.LastEditDate!.Value;
+            }
         }
     }
 }

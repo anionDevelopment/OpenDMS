@@ -38,12 +38,12 @@ namespace OpenDMSBackend.Core.Services
             this._OCRService = oCRService;
         }
 
-        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content)
+        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate)
         {
-            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentTimeAsGRYDateTime(), null, this._Persistence.GetNewReadableId(), OneLineString.From(OpenDMSBackend.Core.Miscellaneous.Utilities.GetMIMEType(originalFilename)), content, default, new HashSet<Tag>(), default);
+            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._Persistence.GetNewReadableId(), OneLineString.From(OpenDMSBackend.Core.Miscellaneous.Utilities.GetMIMEType(originalFilename)), content, default, new HashSet<Tag>(), default);
             this.AnalyseDocument(document);
             this._Persistence.CreateDocument(document);
-            this._Persistence.SetParentOfContainee(document.Id, containerId);
+            this._Persistence.SetParentOfContainee(document, containerId);
             this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
             return document.Id;
         }
@@ -138,7 +138,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
-            return this.DoForContentObject(contentId,
+            return OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(_Persistence, contentId,
                 (storageLocationId) => this.UserIsAllowedToViewStorageLocation(userId, storageLocationId),
                 (folderId) => this.UserIsAllowedToViewFolder(userId, folderId),
                 (documentId) => this.UserIsAllowedToViewDocument(userId, documentId)
@@ -192,12 +192,14 @@ namespace OpenDMSBackend.Core.Services
 
         public IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId)
         {
-            return this._Persistence
+            var result = this._Persistence
                 .GetAllDocumentIds()
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
-                .OrderByDescending(document => document.LastEditDate)
-                .Take(10);
+                .OrderByDescending(document => document.GetNewestDate(document))
+                .Take(5)
+                .ToList();
+            return result;
         }
 
         public void Update(string requesterUserId, Document updatedDocument)
@@ -230,7 +232,7 @@ namespace OpenDMSBackend.Core.Services
         {
             //TODO check permission
             string id = this._Persistence.AddFolder(name);
-            this._Persistence.SetParentOfContainee(id, parentContainerId);
+            this._Persistence.SetParentOfContainee(GetContainee(id), parentContainerId);
             return id;
         }
 
@@ -261,7 +263,17 @@ namespace OpenDMSBackend.Core.Services
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)
         {
             //TODO check permission
-            this._Persistence.SetParentOfContainee(containeeIdToMove, targetContainerId);
+            //TODO remove containeeToMove from previous parent
+            this._Persistence.SetParentOfContainee(this.GetContainee(containeeIdToMove), targetContainerId);
+        }
+
+        private IContainee GetContainee(string containeeId)
+        {
+            return Core.Miscellaneous.Utilities.DoForContentObject<IContainee>(this._Persistence, containeeId,
+                (storageLocationId) => { throw new NotSupportedException(); },
+                (folderId) => { return _Persistence.GetFolder(containeeId); },
+                (documentId) => { return _Persistence.GetDocument(containeeId); }
+            );
         }
 
         public bool UserIsAdministrator(string userId)
@@ -271,7 +283,8 @@ namespace OpenDMSBackend.Core.Services
 
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId)
         {
-            return this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(storageLocationId => this._Persistence.GetStorageLocation(storageLocationId));
+            var result = this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(storageLocationId => this._Persistence.GetStorageLocation(storageLocationId)).ToList();
+            return result;
         }
 
         public Folder GetFolder(string requesterUserId, string folderId)
@@ -279,29 +292,6 @@ namespace OpenDMSBackend.Core.Services
             this.EnsureUserIsAllowedToViewContent(requesterUserId, folderId);
             return this._Persistence.GetFolder(folderId);
         }
-        public void DoForContentObject(string contentId, Action<string> isStorageLocationAction, Action<string> isFolderAction, Action<string> isDocumentAction) =>
-#pragma warning disable CS8603 // Possible null reference return.
-            this.DoForContentObject<object>(contentId, (contentId) => { isStorageLocationAction(contentId); return default; }, (contentId) => { isFolderAction(contentId); return default; }, (contentId) => { isDocumentAction(contentId); return default; });
-#pragma warning restore CS8603 // Possible null reference return.
 
-        public T DoForContentObject<T>(string contentId, Func<string, T> isStorageLocationAction, Func<string, T> isFolderAction, Func<string, T> isDocumentAction)
-        {
-            if (this._Persistence.IsDocument(contentId))
-            {
-                return isStorageLocationAction(contentId);
-            }
-            else if (this._Persistence.IsFolder(contentId))
-            {
-                return isFolderAction(contentId);
-            }
-            else if (this._Persistence.IsStorageLocation(contentId))
-            {
-                return isDocumentAction(contentId);
-            }
-            else
-            {
-                throw new KeyNotFoundException($"No content found with id '{contentId}'.");
-            }
-        }
     }
 }

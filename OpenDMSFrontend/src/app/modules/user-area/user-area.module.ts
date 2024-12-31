@@ -25,10 +25,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTreeModule } from '@angular/material/tree';
 import { DocumentTableComponent } from './document-table/document-table.component';
 import { ContentTreeComponent } from './content-tree/content-tree.component';
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { AddContentButtonComponent } from './add-content-button/add-content-button.component';
+import { ContentViewComponent } from './content-view/content-view.component';
 
 @NgModule({
   declarations: [
+    AddContentButtonComponent,
     ContentTreeComponent,
+    ContentViewComponent,
     DocumentComponent,
     DocumentTableComponent,
     DocumentsListComponent,
@@ -41,6 +46,7 @@ import { ContentTreeComponent } from './content-tree/content-tree.component';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatDividerModule,
     MatCheckboxModule,
@@ -56,7 +62,7 @@ import { ContentTreeComponent } from './content-tree/content-tree.component';
     MatSidenavModule,
     MatButtonModule,
     MatTabsModule,
-    HomePageModule,
+    HomePageModule
   ]
 })
 export class UserAreaModule { }

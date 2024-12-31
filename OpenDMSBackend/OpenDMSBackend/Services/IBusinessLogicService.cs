@@ -21,7 +21,7 @@ namespace OpenDMSBackend.Core.Services
 
         #region Document
         /// <returns>Returns the id of the created document.</returns>
-        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content);
+        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate);
         public void Update(string requesterUserId, Document updatedDocument);
         public Document GetDocument(string requesterUserId, string id);
         public IEnumerable<DocumentPreview> Search(string requesterUserId, string searchTerm);
@@ -52,9 +52,7 @@ namespace OpenDMSBackend.Core.Services
         public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId);
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId);
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId);
-       public Folder GetFolder(string requesterUserId, string folderId);
-        public void DoForContentObject(string contentId, Action<string> isStorageLocationAction, Action<string> isFolderAction, Action<string> isDocumentAction);
-        public T DoForContentObject<T>(string contentId, Func<string, T> isStorageLocationAction, Func<string, T> isFolderAction, Func<string, T> isDocumentAction);
+        public Folder GetFolder(string requesterUserId, string folderId);
 
         #endregion
 
