@@ -19,18 +19,23 @@ export class UserAreaContainerComponent {
       this.userIsAdmin = isAdmin;
     });
   }
+
   onDashboardClick() {
     this.router.navigate(['user', 'dashboard']);
   }
+
   onDocumentsClick() {
     this.router.navigate(['user', 'documents']);
   }
+
   onSettingsClick() {
     this.router.navigate(['user', 'settings']);
   }
+
   onAdminAreaClick() {
     this.router.navigate(['admin', 'dashboard']);
   }
+
   getSiteTitle(urlSegment: string): string {
     switch (urlSegment) {
       case "admin": {

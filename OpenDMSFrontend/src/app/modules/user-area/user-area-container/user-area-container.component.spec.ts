@@ -7,13 +7,32 @@ import { of } from 'rxjs';
 import { UserIconComponent } from '../user-icon/user-icon.component';
 import { Component } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
+import { UtilitiesService } from '../../../services/utilities.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTabsModule } from '@angular/material/tabs';
+import { HomePageModule } from '../../home-page/home-page.module';
 
 @Component({
   selector: 'app-user-icon',
   standalone: false,
   template: '<span>app-user-icon-container-mock</span>'
 })
-class MockUserIconComponent { }
+class UserIconComponentMock { }
 
 describe('UserAreaContainerComponent', () => {
   let component: UserAreaContainerComponent;
@@ -22,10 +41,29 @@ describe('UserAreaContainerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MatExpansionModule,
+        MatFormFieldModule,
         MatDividerModule,
+        MatCheckboxModule,
+        MatSelectModule,
+        MatMenuModule,
+        MatPaginatorModule,
+        MatTreeModule,
+        MatTooltipModule,
+        MatInputModule,
+        MatDialogModule,
+        MatIconModule,
+        MatTableModule,
+        MatSidenavModule,
+        MatButtonModule,
+        MatTabsModule,
+        HomePageModule
       ],
       declarations: [
-        MockUserIconComponent,
+        UserIconComponentMock,
         UserAreaContainerComponent,
       ],
       providers: [
@@ -39,8 +77,13 @@ describe('UserAreaContainerComponent', () => {
           provide: Router,
           useValue: {
             url: "user/documents",
+            parseUrl: (url: string) => new Router().parseUrl(url),
           },
         },
+        {
+          provide: UtilitiesService,
+          useValue: new UtilitiesService()
+        }
       ]
     }).compileComponents();
 

@@ -9,22 +9,29 @@ import { UserDataService } from '../../../services/user-data.service';
   styleUrl: './admin-area-container.component.scss'
 })
 export class AdminAreaContainerComponent {
+
   activeSite: string;
+
   constructor(private router: Router) {
     this.activeSite = this.getSiteTitle(this.router.url.split('/').pop()!);
   }
+
   onDashboardClick() {
     this.router.navigate(['admin', 'dashboard']);
   }
+
   onUsersClick() {
     this.router.navigate(['admin', 'users']);
   }
+
   onSettingsClick() {
     this.router.navigate(['admin', 'settings']);
   }
+
   onUserAreaClick() {
     this.router.navigate(['user', 'dashboard']);
   }
+
   getSiteTitle(urlSegment: string): string {
     switch (urlSegment) {
       case "admin": {

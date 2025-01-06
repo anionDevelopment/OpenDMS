@@ -36,7 +36,7 @@ export class ContentViewComponent implements OnInit {
   folders: FolderDTO[] = []
   folders$: Subject<FolderDTO[]> = new BehaviorSubject<FolderDTO[]>([]);
 
-  constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, private router: Router, private httpClient: HttpClient, private utilitiesService: UtilitiesService) {
+  constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
 
   }
 

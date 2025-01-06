@@ -14,7 +14,7 @@ import { UtilitiesService } from '../../../services/utilities.service';
 export class ContentTreeComponent implements OnInit {
   storageLocations: StorageLocationDTO[] = [];
 
-  constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, private router: Router, private httpClient: HttpClient, private utilitiesService: UtilitiesService) {
+  constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
   }
 
   ngOnInit(): void {
