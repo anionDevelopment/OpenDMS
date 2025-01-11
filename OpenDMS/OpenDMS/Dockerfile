@@ -21,13 +21,13 @@ RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod
     apt-get update && \
     apt-get install -y dotnet-runtime-9.0
 
-ADD Other/Resources/DependentCodeUnits/OpenDMSBackend/BuildResult_DotNet_win-x64 /Workspace/Application/Backend
-
+ADD Other/Resources/DependentCodeUnits/OpenDMSBackend/BuildResult_DotNet_linux /Workspace/Application/Backend
 ADD Other/Resources/DependentCodeUnits/OpenDMSFrontend/BuildResult_WebApplication /Workspace/Application/Frontend/WebApplicationFiles
 COPY OpenDMS/nginx.configuration /Workspace/Application/Frontend
 
 COPY OpenDMS/EntryPoint.sh /Workspace/Other/EntryPoint
 RUN chmod +x /Workspace/Other/EntryPoint/EntryPoint.sh
+RUN chmod +x /Workspace/Application/Backend/OpenDMSBackend.exe
 
 HEALTHCHECK CMD curl --fail http://localhost:80/Backend/API/Other/Maintenance/HealthCheck
 #TODO add frontend to healthcheck

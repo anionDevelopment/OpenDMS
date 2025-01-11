@@ -56,6 +56,18 @@
 				]
 			},
 			{
+				"label": "Debug: Frontend",
+				"command": "npm run start",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/OpenDMSFrontend"
+				},
+				"aliases": [
+					"df"
+				]
+			},
+			{
 				"label": "LocalTestService: Database start",
 				"command": "python Start.py",
 				"args": [],

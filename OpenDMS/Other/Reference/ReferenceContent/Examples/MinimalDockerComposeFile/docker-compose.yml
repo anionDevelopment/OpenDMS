@@ -1,10 +1,9 @@
-version: '3.2'
+version: "3.2"
 
 services:
-
-  opendmsc:
-    image: opendmsc:0.0.1
-    container_name: 'opendmsc'
+  opendms:
+    image: opendms:1.0.0
+    container_name: "opendms"
     volumes:
       - "./Volumes/Data:/Workspace/Data"
       - "./Volumes/Configuration:/Workspace/Configuration"
@@ -12,25 +11,25 @@ services:
     ports:
       - 443:443
 
-  opendmsc_database:
-    # connectionstring: Server=opendmsc_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;
-    image: mariadb:11.1.2
-    container_name: 'opendmsc_database'
+  opendms_database:
+    # connectionstring: Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;
+    image: mariadb:11.6.2
+    container_name: "opendms_database"
     ports:
       - "3306:3306"
     volumes:
       - "./Volumes/Data:/var/lib/mysql"
     environment:
-      MARIADB_ROOT_HOST: '%'
-#     MARIADB_USER: user
-#     MARIADB_PASSWORD: password
+      MARIADB_ROOT_HOST: "%"
+      # MARIADB_USER: user
+      # MARIADB_PASSWORD: password
       MARIADB_ROOT_PASSWORD: R00tpa55w0rd
       MARIADB_DATABASE: OpenDMSDatabase
 
-  opendmsc_database_administration:
+  opendms_database_administration:
     image: adminer:4.8.1
-    container_name: 'opendmsc_database_administration'
+    container_name: "opendms_database_administration"
     ports:
       - 8080:8080
     depends_on:
-      - OpenDMSc_database
+      - opendms_database
