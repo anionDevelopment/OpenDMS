@@ -9,7 +9,7 @@
         <IsPackable>false</IsPackable>
         <PreserveCompilationContext>false</PreserveCompilationContext>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-        <Copyright>Copyright © 2024 Marius Göcke</Copyright>
+        <Copyright>Copyright © 2025 Marius Göcke</Copyright>
         <Description>OpenDMSBackendTests is the test-project for OpenDMSBackend.</Description>
         <PackageProjectUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend</PackageProjectUrl>
         <RepositoryUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend.git</RepositoryUrl>
@@ -67,26 +67,26 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ExtendedXmlSerializer" Version="3.8.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" />
+        <PackageReference Include="GRYLibrary" Version="0.12.132" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.1" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
-        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
         <PackageReference Include="Microsoft.CodeCoverage" Version="17.12.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="Moq" Version="4.20.72" />
-        <PackageReference Include="MSTest.TestAdapter" Version="3.7.0" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.7.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="3.7.1" />
+        <PackageReference Include="MSTest.TestFramework" Version="3.7.1" />
         <PackageReference Include="NJsonSchema" Version="11.1.0" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
         <PackageReference Include="prometheus-net" Version="8.2.1" />
-        <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
+        <PackageReference Include="System.Collections.Immutable" Version="9.0.1" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
-        <PackageReference Include="GRYLibrary" Version="0.12.128" />
     </ItemGroup>
 </Project>

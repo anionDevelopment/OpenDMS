@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Database;
-using OpenDMSBackend.Core.ServiceInterfaces;
 using OpenDMSBackend.Tests.TestUtilities;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using OpenDMSBackend.Core.Configuration;
@@ -39,13 +38,14 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = registrationIsEnabled;
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
             ISQLProvider sqlProvider = new SQLProvider();
+            Mock<IIdGenerator<ulong>> idGeneratorMock = new Mock<IIdGenerator<ulong>>(MockBehavior.Strict);
             DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
             persistence = databasePersistence;
             persistence.Reset();
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
             IAuthenticationService<User> authenticationService = new OpenDMSBackendPersistentAuthenticationService(timeService, databasePersistence, logger, constants);
             Mock<OCRService> ocrServiceMock = new Mock<OCRService>(MockBehavior.Strict);
-            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object);
+            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration,ocrServiceMock.Object,idGeneratorMock.Object);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService);
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator);
         }

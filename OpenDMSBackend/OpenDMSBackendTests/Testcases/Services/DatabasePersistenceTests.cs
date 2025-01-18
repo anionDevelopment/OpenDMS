@@ -30,9 +30,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services
     [TestClass]
     public class DatabasePersistenceTests
     {
-        [TestMethod(nameof(DatabasePersistenceCreateDocument))]
+        [TestMethod(nameof(DatabasePersistenceCreateDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
-        public void DatabasePersistenceCreateDocument()
+        public void DatabasePersistenceCreateDocumentTest()
         {
             //arrange
             using (DatabaseTestFramework databaseTestFramework = new DatabaseTestFramework())
@@ -46,6 +46,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = true;
                 Mock<IExampleDataCreator> exampleDataCreatorMock = new Mock<IExampleDataCreator>(MockBehavior.Strict);
+                Mock<IIdGenerator<ulong>> idGeneratorMock = new Mock<IIdGenerator<ulong>>(MockBehavior.Strict);
                 exampleDataCreatorMock.Setup(mock => mock.AddExampleData());
                 IGRYLog logger = GeneralLogger.CreateUsingConsole();
                 Mock<IApplicationConstants<CodeUnitSpecificConstants>> constantsMock = new Mock<IApplicationConstants<CodeUnitSpecificConstants>>(MockBehavior.Strict);
@@ -54,7 +55,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
 
                 DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
 
-                Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, new byte[] { 1, 2 }, new HashSet<Tag>(), string.Empty);
+                Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 });
 
                 //act
                 databasePersistence.CreateDocument(testDocument);
@@ -69,6 +70,47 @@ namespace OpenDMSBackend.Tests.Testcases.Services
                     return reader.GetString(0);
                 })[0];
                 Assert.AreEqual(testDocument.OriginalFilename.Value, reloadedDocumentOriginalFilename);
+            }
+        }
+        [TestMethod(nameof(GetAmountOfDocumentsTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void GetAmountOfDocumentsTest()
+        {
+            //arrange
+            using (DatabaseTestFramework databaseTestFramework = new DatabaseTestFramework())
+            {
+                IDatabaseManager databaseManager = new DatabaseManager();
+                GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager);
+                DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+                optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
+                ITimeService timeService = new TimeService();
+                IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
+                persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
+                persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = true;
+                Mock<IIdGenerator<ulong>> idGeneratorMock = new Mock<IIdGenerator<ulong>>(MockBehavior.Strict);
+                Mock<IExampleDataCreator> exampleDataCreatorMock = new Mock<IExampleDataCreator>(MockBehavior.Strict);
+                exampleDataCreatorMock.Setup(mock => mock.AddExampleData());
+                IGRYLog logger = GeneralLogger.CreateUsingConsole();
+                Mock<IApplicationConstants<CodeUnitSpecificConstants>> constantsMock = new Mock<IApplicationConstants<CodeUnitSpecificConstants>>(MockBehavior.Strict);
+                constantsMock.SetupGet(m => m.Environment).Returns(OpenDMSBackendUtilities.GetEnvironmentTargetType());
+                ISQLProvider sqlProvider = new SQLProvider();
+
+                DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
+
+                Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), timeService.GetCurrentTimeAsGRYDateTime(), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 });
+
+                uint expectedAmount1 = 0;
+                uint expectedAmount2 = 1;
+
+                //act
+                uint actualAmount1 = databasePersistence.GetAmountOfDocuments();
+                databasePersistence.CreateDocument(testDocument);
+                uint actualAmount2 = databasePersistence.GetAmountOfDocuments();
+
+                // assert
+
+                Assert.AreEqual(expectedAmount1, actualAmount1);
+                Assert.AreEqual(expectedAmount2, actualAmount2);
             }
         }
 
@@ -89,5 +131,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             string targetFile = Path.Join(targetFolder, "CreateDatabase.sql");
             File.WriteAllText(targetFile, sqlSource, new UTF8Encoding(false));
         }
+
     }
 }

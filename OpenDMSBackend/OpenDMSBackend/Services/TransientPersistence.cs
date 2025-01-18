@@ -19,7 +19,7 @@ namespace OpenDMSBackend.Core.Services
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
 
-        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence)
+        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence,IIdGenerator<ulong> idGenerator)
         {
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
             this._StorageLocations = new Dictionary<string, StorageLocation>();
@@ -28,7 +28,7 @@ namespace OpenDMSBackend.Core.Services
             this._ContaineeContainerAssignments = new Dictionary<string, string>();
             this._StorageLocationOwnerAssignments = new Dictionary<string, string>();
             this._Tags = new Dictionary<string, Tag>();
-            this._IdGenerator = IdGenerator.GetDefaultLongIdGenerator();
+            this._IdGenerator = idGenerator;
             this.Initialize();
         }
 
@@ -143,7 +143,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
         {
-            if (_StorageLocations.ContainsKey(storageLocationId))
+            if (this._StorageLocations.ContainsKey(storageLocationId))
             {
                 return this._StorageLocationOwnerAssignments[storageLocationId] == userId;
             }
@@ -189,11 +189,11 @@ namespace OpenDMSBackend.Core.Services
             OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this, parentContainerId,
             (storageId) =>
             {
-                _StorageLocations[parentContainerId].Content.Add(containee);
+                this._StorageLocations[parentContainerId].Content.Add(containee);
             },
             (folderId) =>
             {
-                _Folders[parentContainerId].Content.Add(containee);
+                this._Folders[parentContainerId].Content.Add(containee);
             },
             (documentId) =>
             {
@@ -206,19 +206,19 @@ namespace OpenDMSBackend.Core.Services
             OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this, containerOrContaineeId,
                 (storageId) =>
                 {
-                    _StorageLocationOwnerAssignments.Remove(storageId);
+                    this._StorageLocationOwnerAssignments.Remove(storageId);
                     //TODO remove all related stuff from _ContaineeContainerAssignments
-                    _StorageLocations.Remove(storageId);
+                    this._StorageLocations.Remove(storageId);
                 },
                 (folderId) =>
                 {
                     //TODO remove all related stuff from _ContaineeContainerAssignments
-                    _Folders.Remove(folderId);
+                    this._Folders.Remove(folderId);
                 },
                 (documentId) =>
                 {
                     //TODO remove all related stuff from _ContaineeContainerAssignments
-                    _Documents.Remove(documentId);
+                    this._Documents.Remove(documentId);
                 });
         }
 
@@ -303,6 +303,11 @@ namespace OpenDMSBackend.Core.Services
         public bool IsDocument(string contentId)
         {
             return this._Documents.ContainsKey(contentId);
+        }
+
+        public ulong GetLatestReadableId()
+        {
+            return this.GetAmountOfDocuments();
         }
     }
 }

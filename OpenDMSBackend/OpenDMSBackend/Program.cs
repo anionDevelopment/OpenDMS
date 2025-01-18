@@ -7,7 +7,6 @@ using GRYLibrary.Core.APIServer.CommonRoutes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.ExecutionModes;
 using Microsoft.Extensions.Logging;
-using OpenDMSBackend.Core.ServiceInterfaces;
 using OpenDMSBackend.Core.Database;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.APIServer.Utilities;
@@ -20,7 +19,6 @@ using GRYLibrary.Core.APIServer.MidT.Exception;
 using OpenDMSBackend.Core.Miscellaneous;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using OpenDMSBackendUtilities = OpenDMSBackend.Core.Miscellaneous.Utilities;
-using OpenDMSBackend.Core.BackgroundWorker;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Auth.R;
 using GRYLibrary.Core.APIServer.Mid.M05DLog;
@@ -31,6 +29,9 @@ using GRYLibrary.Core.APIServer.Mid.Ex;
 using OpenDMSBackend.Core.Services;
 using GRYLibrary.Core.APIServer.Services.CredH;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
+using System;
+using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
+using OpenDMSBackend.Core.BackgroundServices;
 
 namespace OpenDMSBackend.Core
 {
@@ -87,7 +88,14 @@ namespace OpenDMSBackend.Core
                         DatabaseConnectionString = "Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;",
                     };
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP();
+                    if (IsRunningInContainer())
+                    {
+                        initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP();
+                    }
+                    else
+                    {
+                        initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = initializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetProcolVisitor(domain));
+                    }
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
@@ -102,15 +110,15 @@ namespace OpenDMSBackend.Core
                     if (runPersistent)
                     {
                         logger.Log($"Run persistent.", LogLevel.Information);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManager>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePersistence>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendPersistentAuthenticationService>();
                         functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
                         {
                             string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
                             Tools.ConnectToDatabaseWrapper(() => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions => { sqlOptions.CommandTimeout(120); }), GeneralLogger.NoLog(), GUtilities.AdaptMariaDBSQLConnectionString(connectionString, true));
                         }, ServiceLifetime.Singleton);
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManager>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePersistence>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendPersistentAuthenticationService>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<DatabasePersistence>());
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => (IAuthenticationServicePersistence<Model.BusinessTypes.User>)sp.GetRequiredService<IPersistence>());
                     }
                     else
                     {
@@ -120,12 +128,12 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, OpenDMSBackendTransientAuthenticationServicePersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
                     }
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, IdGenerator>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProvider>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRService, OCRService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
-
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IUserAuthorizationService>(sp => sp.GetRequiredService<IRoleBasedAuthorizationService>());
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthorizationService>(sp => sp.GetRequiredService<IUserAuthorizationService>());
@@ -144,10 +152,7 @@ namespace OpenDMSBackend.Core
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService, InitializationService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
-                    if (functionalInformation.InitializationInformation.ApplicationConstants.Environment is Development)
-                    {
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
-                    }
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
@@ -166,6 +171,11 @@ namespace OpenDMSBackend.Core
                     };
                 };
             });
+        }
+
+        private static bool IsRunningInContainer()
+        {
+            return "true".Equals(Environment.GetEnvironmentVariable("IsRunningInDockerContainer"));
         }
     }
 }

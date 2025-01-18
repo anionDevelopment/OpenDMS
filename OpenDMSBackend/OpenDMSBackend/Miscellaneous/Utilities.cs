@@ -7,7 +7,6 @@ using Sprache;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using System.Security;
 using OpenDMSBackend.Core.Services;
 
 namespace OpenDMSBackend.Core.Miscellaneous

@@ -13,6 +13,8 @@ using Role = GRYLibrary.Core.APIServer.CommonDBTypes.Role;
 using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
+using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
+using GRYLibrary.Core.Misc.Strings;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -24,7 +26,6 @@ namespace OpenDMSBackend.Core.Services
         private readonly Semaphore _Semaphore = new Semaphore();
         private readonly ITimeService _TimeService;
         private readonly IGRYLog _Log;
-
         public DatabasePersistence(DbContextOptions<DatabaseContext> options, IGeneralLogger logger, ITimeService timeService, IDatabaseManager databaseManager, IGRYLog log, ISQLProvider sqlProvider)
         {
             this._TimeService = timeService;
@@ -37,10 +38,10 @@ namespace OpenDMSBackend.Core.Services
         private void AccessDatabase(Action<DatabaseContext> action)
         {
             this.AccessDatabase<object?>((database) =>
-                                                                                    {
-                                                                                        action(database);
-                                                                                        return null;
-                                                                                    });
+            {
+                action(database);
+                return null;
+            });
         }
 
         private T AccessDatabase<T>(Func<DatabaseContext, T> function)
@@ -61,10 +62,10 @@ namespace OpenDMSBackend.Core.Services
         public void RunTransaction(params Action<MySqlCommand>[] actions)
         {
             this.RunTransaction(actions.Select<Action<MySqlCommand>, Func<MySqlCommand, object>>(action => (command) =>
-                                                                                          {
-                                                                                              action(command);
-                                                                                              return null;
-                                                                                          }
+            {
+                action(command);
+                return null;
+            }
             ).ToArray());
         }
 
@@ -129,6 +130,7 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(new MySqlParameter("ReadableId", document.ReadableId));
                 command.Parameters.Add(new MySqlParameter("MIMEType", document.MIMEType.Value));
                 command.Parameters.Add(new MySqlParameter("DocumentContent", document.Content));
+                command.Parameters.Add(new MySqlParameter("OCRContent", document.OCRContent));
                 command.Parameters.Add(new MySqlParameter("DocumentPreview", document.Preview));
                 command.ExecuteNonQuery();
             });
@@ -251,12 +253,101 @@ namespace OpenDMSBackend.Core.Services
 
         public User GetUserById(string userId)
         {
-            throw new NotImplementedException();
+            User result = this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetUserById();
+                cmd.Parameters.Add(new MySqlParameter("Id", userId));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    User user = new User();
+                    user.Id = userId;
+                    user.Name = reader.GetString(1);
+                    user.PasswordHash = reader.GetString(2);
+                    user.EMailAddress = this.ConvertValue<string>(reader["EMailAddress"]);
+                    user.UserIsActivated = reader.GetBoolean(4);
+                    user.UserIsLocked = reader.GetBoolean(5);
+                    user.RegistrationMoment = reader.GetDateTime(6);
+                    return user;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No user found with id '{userId}'");
+                }
+            })[0];
+            this.EnrichWhichAccessToken(result);
+            this.EnrichWhichTOTPToken(result);
+            return result;
         }
 
         public User GetUserByName(string userName)
         {
-            throw new NotImplementedException();
+            User result = this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetUserByName();
+                cmd.Parameters.Add(new MySqlParameter("Name", userName));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    User user = new User();
+                    user.Id = reader.GetString(0);
+                    user.Name = reader.GetString(1);
+                    user.PasswordHash = reader.GetString(2);
+                    user.EMailAddress = this.ConvertValue<string>(reader["EMailAddress"]);
+                    user.UserIsActivated = reader.GetBoolean(4);
+                    user.UserIsLocked = reader.GetBoolean(5);
+                    user.RegistrationMoment = reader.GetDateTime(6);
+                    return user;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No user found with username '{userName}'");
+                }
+            })[0];
+            this.EnrichWhichAccessToken(result);
+            this.EnrichWhichTOTPToken(result);
+            return result;
+        }
+
+        private void EnrichWhichTOTPToken(User result)
+        {
+            //TODO
+        }
+
+        private void EnrichWhichAccessToken(User user)
+        {
+            this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetAllAccessTokenForUser();
+                cmd.Parameters.Add(new MySqlParameter("UserId", user.Id));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        user.AccessToken.Add(new AccessToken()
+                        {
+                            Value = reader.GetString(0),
+                            ExpiredMoment = reader.GetDateTime(1),
+                            OwnerUserId = user.Id
+                        });
+                    }
+                }
+            });
+        }
+
+        private T? ConvertValue<T>(object value)
+        {
+            if (value == null || value == DBNull.Value)
+            {
+                return default(T);
+            }
+            else
+            {
+                return (T)value;
+            }
         }
 
         public void RemoveUser(string userId)
@@ -306,7 +397,7 @@ namespace OpenDMSBackend.Core.Services
 
         public User GetUserByAccessToken(string accessToken)
         {
-            throw new NotImplementedException();
+            return this.GetUserById(this.GetAccessToken(accessToken).OwnerUserId);
         }
 
         public void UpdateUser(User user)
@@ -321,7 +412,20 @@ namespace OpenDMSBackend.Core.Services
 
         public uint GetAmountOfDocuments()
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetAmountOfDocuments();
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return (uint)reader.GetInt32(0);
+                }
+                else
+                {
+                    return (uint)0;
+                }
+            })[0];
         }
 
         public void Reset()
@@ -336,22 +440,33 @@ namespace OpenDMSBackend.Core.Services
 
         public bool IsAvailable()
         {
-            throw new NotImplementedException();
+            return true;//TODO implement correctly
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
-        }
-
-        public ulong GetNewReadableId()
-        {
-            throw new NotImplementedException();
+            this._DatabaseContext?.Dispose();
         }
 
         public Document GetDocument(string id)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
+                cmd.Parameters.Add(new MySqlParameter("Id", id));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    Document document = new Document(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), GRYDateTime.FromDateTime(reader.GetDateTime(3)), GRYDateTime.FromDateTime(this.ConvertValue<DateTime>(reader.GetDateTime(4))), reader.GetUInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetString(8), (byte[])reader.GetValue(9));
+                    //TODO load tags
+                    return document;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No document found with document '{id}'");
+                }
+            })[0];
         }
 
         public void CreateTag(Tag tag)
@@ -441,7 +556,15 @@ namespace OpenDMSBackend.Core.Services
 
         public IContainee GetContaineeById(string containeeId)
         {
-            throw new NotImplementedException();
+            if (this.IsDocument(containeeId))
+            {
+                return this.GetDocument(containeeId);
+            }
+            if (this.IsFolder(containeeId))
+            {
+                return this.GetFolder(containeeId);
+            }
+            throw new KeyNotFoundException($"No {nameof(IContainee)} available with id \"{containeeId}\".");
         }
 
         public string GetParentIdOfContainee(string containeeId)
@@ -451,7 +574,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool IsContaineeId(string id)
         {
-            throw new NotImplementedException();
+            return this.IsDocument(id) || this.IsFolder(id);
         }
 
         public bool IsStorageLocationId(string id)
@@ -461,7 +584,23 @@ namespace OpenDMSBackend.Core.Services
 
         public DocumentPreview GetDocumentPreview(string id)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
+                cmd.Parameters.Add(new MySqlParameter("Id", id));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), GRYDateTime.FromDateTime(reader.GetDateTime(3)), GRYDateTime.FromDateTime(this.ConvertValue<DateTime>(reader.GetDateTime(4))), reader.GetUInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7));
+                    //TODO load tags
+                    return document;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No document found with document '{id}'");
+                }
+            })[0];
         }
 
         public IEnumerable<string> GetAllStorageLocationIds()
@@ -481,17 +620,116 @@ namespace OpenDMSBackend.Core.Services
 
         public bool IsStorageLocation(string contentId)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptIsStorageLocation();
+                cmd.Parameters.Add(new MySqlParameter("ContentId", contentId));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                if (reader.HasRows)
+                {
+                    return reader.GetUInt32(0) == 1;
+                }
+                else
+                {
+                    return false;
+                }
+            })[0];
         }
 
         public bool IsFolder(string contentId)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptIsFolder();
+                cmd.Parameters.Add(new MySqlParameter("ContentId", contentId));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                if (reader.HasRows)
+                {
+                    return reader.GetUInt32(0) == 1;
+                }
+                else
+                {
+                    return false;
+                }
+            })[0];
         }
 
         public bool IsDocument(string contentId)
         {
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptIsDocument();
+                cmd.Parameters.Add(new MySqlParameter("ContentId", contentId));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                if (reader.HasRows)
+                {
+                    return reader.GetUInt32(0) == 1;
+                }
+                else
+                {
+                    return false;
+                }
+            })[0];
+        }
+
+        public AccessToken GetAccessToken(string accessToken)
+        {
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetAccessToken();
+                cmd.Parameters.Add(new MySqlParameter("Value", accessToken));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    AccessToken result = new AccessToken();
+                    result.Value = accessToken;
+                    result.ExpiredMoment = reader.GetDateTime(1);
+                    result.OwnerUserId = reader.GetString(2);
+                    return result;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No access-token found with value '{accessToken}'");
+                }
+            })[0];
+        }
+
+        public void AddAccessToken(string userId, AccessToken newAccessToken)
+        {
+            this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptAddAccessToken();
+                cmd.Prepare();
+                cmd.Parameters.Add(new MySqlParameter("Value", newAccessToken.Value));
+                cmd.Parameters.Add(new MySqlParameter("ExpiredMoment", newAccessToken.ExpiredMoment));
+                cmd.Parameters.Add(new MySqlParameter("UserId", userId));
+                cmd.ExecuteNonQuery();
+            });
+        }
+
+        public void RemoveAccessToken(string accessToken)
+        {
+            this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptRemoveAccessToken();
+                cmd.Parameters.Add(new MySqlParameter("Value", accessToken));
+                cmd.ExecuteNonQuery();
+            });
+        }
+
+        public void Housekeeping()
+        {
+            //TODO 
             throw new NotImplementedException();
+        }
+
+        public ulong GetLatestReadableId()
+        {
+            return this.GetAmountOfDocuments();
         }
     }
 }

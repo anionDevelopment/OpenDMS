@@ -1,6 +1,6 @@
 ﻿using GRYLibrary.Core.APIServer.BaseServices;
 
-namespace OpenDMSBackend.Core.BackgroundWorker
+namespace OpenDMSBackend.Core.BackgroundServices
 {
     public interface IMetricsService : IIteratingBackgroundService
     {

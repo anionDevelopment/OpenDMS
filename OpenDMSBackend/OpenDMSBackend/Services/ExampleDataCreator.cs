@@ -1,10 +1,7 @@
-﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
-using GRYLibrary.Core.Misc;
-using OpenDMSBackend.Core.Model.BusinessTypes;
+﻿using GRYLibrary.Core.Misc;
 using System;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 
 namespace OpenDMSBackend.Core.Services
 {

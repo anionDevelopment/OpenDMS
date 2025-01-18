@@ -2,7 +2,7 @@
 using GRYLibrary.Core.APIServer.Services.Trans;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 
-namespace OpenDMSBackend.Core.ServiceInterfaces
+namespace OpenDMSBackend.Core.Services
 {
     public class OpenDMSBackendTransientAuthenticationServicePersistence : TransientAuthenticationServicePersistence<User>
     {

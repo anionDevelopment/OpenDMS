@@ -13,5 +13,16 @@
         string GetScriptUserHasRole();
         string GetScriptUserWithIdExists();
         string GetScriptUserWithNameExists();
+        string GetScriptGetAmountOfDocuments();
+        string GetScriptGetUserByName();
+        string GetScriptAddAccessToken();
+        string GetScriptGetAccessToken();
+        string GetScriptGetDocument();
+        string GetScriptIsFolder();
+        string GetScriptIsStorageLocation();
+        string GetScriptIsDocument();
+        string GetScriptGetUserById();
+        string GetScriptGetAllAccessTokenForUser();
+        string GetScriptRemoveAccessToken();
     }
 }
