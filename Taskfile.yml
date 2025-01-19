@@ -6,7 +6,7 @@ tasks:
     desc: "Base: Build all codeunits"
     dir: "."
     cmds:
-      - scbuildcodeunits {{.CLI_ARGS}}
+      - scbuildcodeunits
     aliases:
       - basebuildallcodeunits
       - bb
@@ -15,7 +15,7 @@ tasks:
     desc: "Base: Example start"
     dir: "./OpenDMS/Other/Reference/ReferenceContent/Examples/MinimalDockerComposeFile"
     cmds:
-      - python StartExample.py {{.CLI_ARGS}}
+      - python StartExample.py
     aliases:
       - baseexamplestart
       - beu
@@ -24,7 +24,7 @@ tasks:
     desc: "Base: Example stop"
     dir: "./OpenDMS/Other/Reference/ReferenceContent/Examples/MinimalDockerComposeFile"
     cmds:
-      - python StopExample.py {{.CLI_ARGS}}
+      - python StopExample.py
     aliases:
       - baseexamplestop
       - bed
@@ -33,7 +33,7 @@ tasks:
     desc: "LocalTestService: Database start"
     dir: "./Other/Resources/LocalTestServices/Database"
     cmds:
-      - python Start.py {{.CLI_ARGS}}
+      - python Start.py
     aliases:
       - localtestservicedatabasestart
       - ldu
@@ -42,7 +42,7 @@ tasks:
     desc: "LocalTestService: Database stop"
     dir: "./Other/Resources/LocalTestServices/Database"
     cmds:
-      - python Stop.py {{.CLI_ARGS}}
+      - python Stop.py
     aliases:
       - localtestservicedatabasestop
       - ldd
@@ -51,7 +51,7 @@ tasks:
     desc: "LocalTestService: Reverse-proxy start"
     dir: "./Other/Resources/LocalTestServices/ReverseProxy"
     cmds:
-      - python Start.py {{.CLI_ARGS}}
+      - python Start.py
     aliases:
       - localtestservicereverseproxystart
       - lru
@@ -60,7 +60,7 @@ tasks:
     desc: "LocalTestService: Reverse-proxy stop"
     dir: "./Other/Resources/LocalTestServices/ReverseProxy"
     cmds:
-      - python Stop.py {{.CLI_ARGS}}
+      - python Stop.py
     aliases:
       - localtestservicereverseproxystop
       - lrd
