@@ -7,7 +7,7 @@ using OpenDMSBackend.Core.Constants;
 using System;
 using OpenDMSBackend.Core.Services;
 
-namespace OpenDMSBackend.Core.BackgroundWorker
+namespace OpenDMSBackend.Core.BackgroundServices
 {
     public class MetricsService : IteratingBackgroundService, IMetricsService
     {

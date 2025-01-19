@@ -21,7 +21,7 @@ export class DocumentTableComponent implements OnInit {
   documents$: Observable<DocumentPreviewDTO[]> | null = null;
   documents: DocumentPreviewDTO[] = [];
 
-  public constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, private router: Router, private httpClient: HttpClient, private utilitiesService: UtilitiesService) {
+  public constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, private router: Router, private utilitiesService: UtilitiesService) {
   }
 
   ngOnInit(): void {

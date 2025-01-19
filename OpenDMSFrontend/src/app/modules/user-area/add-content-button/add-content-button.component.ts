@@ -27,7 +27,7 @@ export class AddContentButtonComponent {
   @Output()
   documentAdded: EventEmitter<DocumentDTO> = new EventEmitter<DocumentDTO>();
 
-  constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, private router: Router, private httpClient: HttpClient, private utilitiesService: UtilitiesService) {
+  constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
   }
 
   addDocument(event: any): void {

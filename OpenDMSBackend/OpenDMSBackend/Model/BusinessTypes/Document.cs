@@ -21,7 +21,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public byte[] Content { get; set; }
         public byte[] Preview { get; set; }
         public string OCRContent { get; set; }
-        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, OneLineString mimeType, byte[] documentContent, byte[] documentPreview, ISet<Tag> tags, string oCRContent)
+        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentPreview, string oCRContent, byte[] documentContent)
         {
             this.Id = id;
             this.Title = title;

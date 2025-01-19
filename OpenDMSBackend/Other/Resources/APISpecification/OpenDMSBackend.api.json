@@ -1022,6 +1022,10 @@
       "AccessToken": {
         "type": "object",
         "properties": {
+          "ownerUserId": {
+            "type": "string",
+            "nullable": true
+          },
           "value": {
             "type": "string",
             "nullable": true

@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { UserSettingsComponent } from './user-settings.component';
 import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
@@ -12,11 +11,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { UserAreaContainerComponent } from '../user-area-container/user-area-container.component';
 import { UserService } from '../../../generated/open-dms-backend';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
 import { of } from 'rxjs';
 import { UserIconComponent } from '../user-icon/user-icon.component';
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-user-area-container',
+  standalone: false,
+  template: '<ng-content></ng-content>'
+})
+class UserAreaContainerComponentMock { }
 
 describe('UserSettingsComponent', () => {
   let component: UserSettingsComponent;
@@ -37,14 +43,14 @@ describe('UserSettingsComponent', () => {
       ],
       declarations: [
         UserIconComponent,
-        UserAreaContainerComponent,
+        UserAreaContainerComponentMock,
         UserSettingsComponent,
       ],
       providers: [
         {
           provide: StorageService,
           useValue: {
-            getAccessToken: () => "at1",
+            getAccessToken: () => "accesstoken1",
           }
         },
         {
@@ -60,12 +66,11 @@ describe('UserSettingsComponent', () => {
         {
           provide: Router,
           useValue: {
-            url: '/user/settings'
+            url: 'user/settings'
           }
         }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UserSettingsComponent);
     component = fixture.componentInstance;

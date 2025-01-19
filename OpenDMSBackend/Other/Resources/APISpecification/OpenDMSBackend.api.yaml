@@ -6,6 +6,9 @@ components:
         expiredMoment:
           format: date-time
           type: string
+        ownerUserId:
+          nullable: true
+          type: string
         value:
           nullable: true
           type: string

@@ -27,7 +27,8 @@ namespace OpenDMSBackend.Core.Services
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
         private readonly IOCRService _OCRService;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService)
+        private readonly IIdGenerator<ulong> _IdGenerator;
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService, IIdGenerator<ulong> idGenerator)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -36,16 +37,20 @@ namespace OpenDMSBackend.Core.Services
             this._Logger = logger;
             this._Configuration = configuration;
             this._OCRService = oCRService;
+            this._IdGenerator = idGenerator;
         }
 
         public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate)
         {
-            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._Persistence.GetNewReadableId(), OneLineString.From(OpenDMSBackend.Core.Miscellaneous.Utilities.GetMIMEType(originalFilename)), content, default, new HashSet<Tag>(), default);
-            this.AnalyseDocument(document);
-            this._Persistence.CreateDocument(document);
-            this._Persistence.SetParentOfContainee(document, containerId);
-            this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
-            return document.Id;
+            lock (_LockObject)
+            {
+                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(OpenDMSBackend.Core.Miscellaneous.Utilities.GetMIMEType(originalFilename)), default, default, content);
+                this.AnalyseDocument(document);
+                this._Persistence.CreateDocument(document);
+                this._Persistence.SetParentOfContainee(document, containerId);
+                this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
+                return document.Id;
+            }
         }
 
         public string Register(string username, string password)
@@ -138,7 +143,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
-            return OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(_Persistence, contentId,
+            return OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this._Persistence, contentId,
                 (storageLocationId) => this.UserIsAllowedToViewStorageLocation(userId, storageLocationId),
                 (folderId) => this.UserIsAllowedToViewFolder(userId, folderId),
                 (documentId) => this.UserIsAllowedToViewDocument(userId, documentId)
@@ -232,7 +237,7 @@ namespace OpenDMSBackend.Core.Services
         {
             //TODO check permission
             string id = this._Persistence.AddFolder(name);
-            this._Persistence.SetParentOfContainee(GetContainee(id), parentContainerId);
+            this._Persistence.SetParentOfContainee(this.GetContainee(id), parentContainerId);
             return id;
         }
 
@@ -271,8 +276,8 @@ namespace OpenDMSBackend.Core.Services
         {
             return Core.Miscellaneous.Utilities.DoForContentObject<IContainee>(this._Persistence, containeeId,
                 (storageLocationId) => { throw new NotSupportedException(); },
-                (folderId) => { return _Persistence.GetFolder(containeeId); },
-                (documentId) => { return _Persistence.GetDocument(containeeId); }
+                (folderId) => { return this._Persistence.GetFolder(containeeId); },
+                (documentId) => { return this._Persistence.GetDocument(containeeId); }
             );
         }
 
@@ -293,5 +298,9 @@ namespace OpenDMSBackend.Core.Services
             return this._Persistence.GetFolder(folderId);
         }
 
+        public void Housekeeping()
+        {
+            throw new NotImplementedException();//TODO remove expired accesstoken
+        }
     }
 }

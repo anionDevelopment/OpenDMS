@@ -12,6 +12,7 @@ CREATE TABLE `Users` (
     `RegistrationMoment` datetime(6) not null,
     `TOTPActivated` tinyint(1) null,
     `TOTPSecretKey` varchar(255) null,
+    unique(`Name`),
     CONSTRAINT `PK_Users` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 
@@ -36,8 +37,9 @@ CREATE TABLE `Documents` (
     `LastEditDate` datetime(6) null,
     `ReadableId` BIGINT unsigned not null,
     `MIMEType` varchar(255) not null,
-    `DocumentContent` longblob not null,
     `DocumentPreview` longblob not null,
+    `OCRContent` longtext not null,
+    `DocumentContent` longblob not null,
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 

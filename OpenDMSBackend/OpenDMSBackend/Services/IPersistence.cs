@@ -14,7 +14,6 @@ namespace OpenDMSBackend.Core.Services
         public void Reset();
         public bool UserWithNameExists(string username);
         public bool UserWithIdExists(string userId);
-        public ulong GetNewReadableId();
         public Document GetDocument(string id);
         public void CreateTag(Tag tag);
         public void AssignTag(string documentId, string tagId);
@@ -43,5 +42,6 @@ namespace OpenDMSBackend.Core.Services
         public bool IsStorageLocation(string contentId);
         public bool IsFolder(string contentId);
         public bool IsDocument(string contentId);
+        public ulong GetLatestReadableId();
     }
 }

@@ -5,7 +5,7 @@ using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 
-namespace OpenDMSBackend.Core.ServiceInterfaces
+namespace OpenDMSBackend.Core.Services
 {
     /// <summary>
     /// Represetns a authenticationservice.

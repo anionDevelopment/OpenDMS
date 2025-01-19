@@ -10,6 +10,7 @@
 
 
 export interface AccessToken { 
+    ownerUserId?: string | null;
     value?: string | null;
     expiredMoment?: string;
 }

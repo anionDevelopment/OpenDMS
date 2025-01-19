@@ -29,6 +29,15 @@ tasks:
       - baseexamplestop
       - bed
 
+  DebugFrontend:
+    desc: "Debug: Frontend"
+    dir: "./OpenDMSFrontend"
+    cmds:
+      - npm run start
+    aliases:
+      - debugfrontend
+      - df
+
   LocaltestserviceDatabaseStart:
     desc: "LocalTestService: Database start"
     dir: "./Other/Resources/LocalTestServices/Database"

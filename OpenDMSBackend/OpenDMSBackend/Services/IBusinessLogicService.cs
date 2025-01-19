@@ -1,7 +1,6 @@
 ﻿using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
-using System;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
@@ -14,6 +13,8 @@ namespace OpenDMSBackend.Core.Services
         bool UserWithNameExists(string username);
         bool UserIsAdministrator(string userId);
         #endregion
+
+        public void Housekeeping();//TODO call this function regulary
 
         #region BusinessLogic
 

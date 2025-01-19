@@ -18,7 +18,7 @@ export class DocumentsListComponent {
 
   latestDocuments$: Subject<DocumentPreviewDTO[]> = new Subject<DocumentPreviewDTO[]>();
 
-  constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, private router: Router, private httpClient: HttpClient, private utilitiesService: UtilitiesService) {
+  constructor(storageService: StorageService, openDMSBackendService: OpenDMSBackendService) {
     openDMSBackendService.aPIV1OpenDMSBackendGetLatestDocumentsGet(storageService.getAccessToken()).subscribe(documents => {
       var sortedDocuments = documents.sort((a, b) => {
         const aD: Date = this.getNewestDate(a);
