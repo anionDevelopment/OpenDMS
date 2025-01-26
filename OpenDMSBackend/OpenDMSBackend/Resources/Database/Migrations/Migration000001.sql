@@ -1,7 +1,6 @@
 -- MariaDB-syntax
 ALTER DATABASE CHARACTER SET utf8mb4;
 
-
 CREATE TABLE `Users` (
     `Id` varchar(255) not null,
     `Name` varchar(255) not null,
