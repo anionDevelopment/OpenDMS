@@ -4,12 +4,13 @@ using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
+using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class InitializationService : IInitializationService
+    public class InitializationService : IInitializationService<CodeUnitSpecificCommandlineParameter>
     {
         private readonly IAuthenticationService<Model.BusinessTypes.User> _AuthenticationService;
         private readonly IBusinessLogicService _BusinessLogicService;
@@ -25,7 +26,7 @@ namespace OpenDMSBackend.Core.Services
             this._ExampleDataCreator = exampleDataCreator;
         }
 
-        public void Initialize()
+        public void Initialize(CodeUnitSpecificCommandlineParameter codeUnitSpecificCommandlineParameter)
         {
             string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
             if (!this._BusinessLogicService.UserWithNameExists(adminUsername))

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
@@ -19,7 +20,7 @@ namespace OpenDMSBackend.Core.Services
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
 
-        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence,IIdGenerator<ulong> idGenerator)
+        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence, IIdGenerator<ulong> idGenerator)
         {
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
             this._StorageLocations = new Dictionary<string, StorageLocation>();
@@ -308,6 +309,107 @@ namespace OpenDMSBackend.Core.Services
         public ulong GetLatestReadableId()
         {
             return this.GetAmountOfDocuments();
+        }
+
+        public IDictionary<string, User> GetAllUsers()
+        {
+            return _TransientAuthenticationServicePersistence.GetAllUsers();
+        }
+
+        public ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> GetAllRoles()
+        {
+            return _TransientAuthenticationServicePersistence.GetAllRoles();
+        }
+
+        public void AddRole(GRYLibrary.Core.APIServer.CommonDBTypes.Role role)
+        {
+            _TransientAuthenticationServicePersistence.AddRole(role);
+        }
+
+        public void UpdateRole(GRYLibrary.Core.APIServer.CommonDBTypes.Role role)
+        {
+            _TransientAuthenticationServicePersistence.UpdateRole(role);
+        }
+
+        public void DeleteRoleByName(string roleName)
+        {
+            _TransientAuthenticationServicePersistence.DeleteRoleByName(roleName);
+        }
+
+        public bool AccessTokenExists(string accessToken, out User? user)
+        {
+            return _TransientAuthenticationServicePersistence.AccessTokenExists(accessToken, out user);
+        }
+
+        public void AddUser(User newUser)
+        {
+            _TransientAuthenticationServicePersistence.AddUser(newUser);
+        }
+
+        public User GetUserById(string userId)
+        {
+            return _TransientAuthenticationServicePersistence.GetUserById(userId);
+        }
+
+        public User GetUserByName(string userName)
+        {
+            return _TransientAuthenticationServicePersistence.GetUserByName(userName);
+        }
+
+        public void RemoveUser(string userId)
+        {
+            _TransientAuthenticationServicePersistence.RemoveUser(userId);
+        }
+
+        public bool RoleExists(string roleName)
+        {
+            return _TransientAuthenticationServicePersistence.RoleExists(roleName);
+        }
+
+        public void AddRoleToUser(string userId, string roleId)
+        {
+
+            _TransientAuthenticationServicePersistence.AddRoleToUser(userId, roleId);
+        }
+
+        public void RemoveRoleFromUser(string userId, string roleId)
+        {
+            _TransientAuthenticationServicePersistence.RemoveRoleFromUser(userId, roleId);
+        }
+
+        public bool UserHasRole(string userId, string roleId)
+        {
+            return _TransientAuthenticationServicePersistence.UserHasRole(userId, roleId);
+        }
+
+        public User GetUserByAccessToken(string accessToken)
+        {
+            return _TransientAuthenticationServicePersistence.GetUserByAccessToken(accessToken);
+        }
+
+        public void UpdateUser(User user)
+        {
+            _TransientAuthenticationServicePersistence.UpdateUser(user);
+        }
+
+        public AccessToken GetAccessToken(string accessToken)
+        {
+            return _TransientAuthenticationServicePersistence.GetAccessToken(accessToken);
+        }
+
+        public void AddAccessToken(string userId, AccessToken newAccessToken)
+        {
+            _TransientAuthenticationServicePersistence.AddAccessToken(userId, newAccessToken);
+        }
+
+        public void RemoveAccessToken(string accessToken)
+        {
+            _TransientAuthenticationServicePersistence.RemoveAccessToken(accessToken);
+        }
+
+        public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
+        {
+            return _TransientAuthenticationServicePersistence.GetAllAccessTokenOfUser(userId);
         }
     }
 }

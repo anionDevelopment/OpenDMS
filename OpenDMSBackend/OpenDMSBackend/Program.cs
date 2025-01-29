@@ -149,7 +149,7 @@ namespace OpenDMSBackend.Core
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthenticationMiddleware);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthorizationMiddleware);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService, InitializationService>();
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CodeUnitSpecificCommandlineParameter>, InitializationService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
@@ -160,7 +160,7 @@ namespace OpenDMSBackend.Core
                     functionalInformationForWebApplication.PreRun = () =>
                     {
                         //initialize
-                        functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService>().Initialize();
+                        functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CodeUnitSpecificCommandlineParameter>>().Initialize(apiServerConfiguration.CommandlineParameter);
 
                         //start background-services
                         metricsService.StartAsync();

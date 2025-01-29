@@ -18,7 +18,7 @@ using GRYLibrary.Core.Misc.Strings;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public sealed class DatabasePersistence : IPersistence, IAuthenticationServicePersistence<User>
+    public sealed class DatabasePersistence : IPersistence
     {
         private readonly ISQLProvider _SQLProvider;
         private readonly DatabaseContext _DatabaseContext;
@@ -730,6 +730,11 @@ namespace OpenDMSBackend.Core.Services
         public ulong GetLatestReadableId()
         {
             return this.GetAmountOfDocuments();
+        }
+
+        public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
