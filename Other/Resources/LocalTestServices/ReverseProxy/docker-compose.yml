@@ -1,0 +1,17 @@
+version: "3.2"
+
+services:
+  opendms_reverseproxy:
+    image: nginx:latest
+    container_name: "opendms_reverseproxy"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+      - "../../DevelopmentCertificate:/Workspace/Certificates"
+    ports:
+      - "443:443"
+    networks:
+      - opendms_net
+      
+networks:
+  opendms_net:
+    external: true

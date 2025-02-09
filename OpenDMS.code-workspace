@@ -1,0 +1,147 @@
+{
+	"folders": [
+		{
+			"path": ".",
+			"name": "Entire repository"
+		},
+		{
+			"path": "./OpenDMS",
+			"name": "OpenDMS"
+		},
+		{
+			"path": "./OpenDMSBackend",
+			"name": "OpenDMSBackend"
+		},
+		{
+			"path": "./OpenDMSFrontend",
+			"name": "OpenDMSFrontend"
+		}
+	],
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Base: Build all codeunits",
+				"command": "scbuildcodeunits",
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}"
+				},
+				"aliases": [
+					"bb"
+				]
+			},
+			{
+				"label": "Base: Example start",
+				"command": "python StartExample.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/OpenDMS/Other/Reference/ReferenceContent/Examples/MinimalDockerComposeFile"
+				},
+				"aliases": [
+					"beu"
+				]
+			},
+			{
+				"label": "Base: Example stop",
+				"command": "python StopExample.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/OpenDMS/Other/Reference/ReferenceContent/Examples/MinimalDockerComposeFile"
+				},
+				"aliases": [
+					"bed"
+				]
+			},
+			{
+				"label": "Debug: Frontend",
+				"command": "npm run start",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/OpenDMSFrontend"
+				},
+				"aliases": [
+					"df"
+				]
+			},
+			{
+				"label": "LocalTestService: Database start",
+				"command": "python Start.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/Database"
+				},
+				"aliases": [
+					"ldu"
+				]
+			},
+			{
+				"label": "LocalTestService: Database stop",
+				"command": "python Stop.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/Database"
+				},
+				"aliases": [
+					"ldd"
+				]
+			},
+			{
+				"label": "LocalTestService: Reverse-proxy start",
+				"command": "python Start.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/ReverseProxy"
+				},
+				"aliases": [
+					"lru"
+				]
+			},
+			{
+				"label": "LocalTestService: Reverse-proxy stop",
+				"command": "python Stop.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/ReverseProxy"
+				},
+				"aliases": [
+					"lrd"
+				]
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Debug current file",
+				"type": "debugpy",
+				"request": "launch",
+				"program": "${file}",
+				"console": "integratedTerminal"
+			}
+		]
+	},
+	"settings": {
+		"window.title": "${dirty} ${rootName}",
+		"files.exclude": {
+			".coverage": true,
+			"TestResults": true,
+			".vs": true
+		},
+		"spellright.language": [
+			"en"
+		],
+		"spellright.documentTypes": [
+			"markdown",
+			"plaintext"
+		]
+	}
+}

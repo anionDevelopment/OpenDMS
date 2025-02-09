@@ -1,0 +1,10 @@
+<mat-accordion multi>
+    <mat-expansion-panel *ngFor="let storageLocation of storageLocations">
+        <mat-expansion-panel-header>
+            <mat-panel-title> {{storageLocation.name}} </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-content-view [title]="storageLocation.name" [folderIds]="storageLocation.containedFolderIds"
+            [documentIds]="storageLocation.containedDocumentIds" [parentContainerId]="storageLocation.id"
+            [isFolder]="false"></app-content-view>
+    </mat-expansion-panel>
+</mat-accordion>

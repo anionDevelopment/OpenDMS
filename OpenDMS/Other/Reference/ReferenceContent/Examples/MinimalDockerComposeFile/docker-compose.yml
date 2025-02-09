@@ -1,0 +1,35 @@
+version: "3.2"
+
+services:
+  opendms:
+    image: opendms:1.0.0
+    container_name: "opendms"
+    volumes:
+      - "./Volumes/Data:/Workspace/Data"
+      - "./Volumes/Configuration:/Workspace/Configuration"
+      - "./Volumes/Logs:/Workspace/Logs"
+    ports:
+      - 443:443
+
+  opendms_database:
+    # connectionstring: Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;
+    image: mariadb:11.6.2
+    container_name: "opendms_database"
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./Volumes/Data:/var/lib/mysql"
+    environment:
+      MARIADB_ROOT_HOST: "%"
+      # MARIADB_USER: user
+      # MARIADB_PASSWORD: password
+      MARIADB_ROOT_PASSWORD: R00tpa55w0rd
+      MARIADB_DATABASE: OpenDMSDatabase
+
+  opendms_database_administration:
+    image: adminer:4.8.1
+    container_name: "opendms_database_administration"
+    ports:
+      - 8080:8080
+    depends_on:
+      - opendms_database

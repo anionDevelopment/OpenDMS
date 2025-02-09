@@ -1,0 +1,9 @@
+<button mat-icon-button matTooltip="{{this.userName}}" [matMenuTriggerFor]="menu">
+    <mat-icon>
+        account_circle
+    </mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+    <span>Hello {{this.userName}}</span>
+    <button mat-menu-item (click)="logout()">Logout</button>
+</mat-menu>
