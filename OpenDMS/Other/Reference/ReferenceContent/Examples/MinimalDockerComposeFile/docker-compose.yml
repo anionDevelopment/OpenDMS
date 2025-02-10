@@ -2,7 +2,7 @@ version: "3.2"
 
 services:
   opendms:
-    image: opendms:1.0.0
+    image: opendms:1.0.1
     container_name: "opendms"
     volumes:
       - "./Volumes/Data:/Workspace/Data"
