@@ -90,5 +90,10 @@ namespace OpenDMSBackend.Core.Miscellaneous
                 throw new KeyNotFoundException($"No content found with id '{contentId}'.");
             }
         }
+
+        internal static bool IsRunningInContainer()
+        {
+            return "true".Equals(Environment.GetEnvironmentVariable("IsRunningInDockerContainer"));
+        }
     }
 }

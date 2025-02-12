@@ -6,11 +6,10 @@ namespace OpenDMSBackend.Core.Services
 {
     public class IdGenerator : IIdGenerator<ulong>
     {
-        private readonly IPersistence _Persistence;
-        
-        public IdGenerator(IPersistence persistence)
+        private ulong _LastValue;
+
+        public IdGenerator()
         {
-            this._Persistence = persistence;
         }
 
         public ISet<ulong> GeneratedIds()
@@ -20,12 +19,18 @@ namespace OpenDMSBackend.Core.Services
 
         public ulong GenerateNewId()
         {
-           return this._Persistence.GetLatestReadableId()+1;
+            _LastValue = _LastValue + 1;
+            return _LastValue;
         }
 
         public void Reset()
         {
-            GRYLibrary.Core.Misc.Utilities.NoOperation();
+            _LastValue = 0;
+        }
+
+        public void Reset(ulong lastValue)
+        {
+            _LastValue = lastValue;
         }
     }
 }

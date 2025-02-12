@@ -11,7 +11,6 @@ using OpenDMSBackend.Core.Database;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.APIServer.Utilities;
 using System.Collections.Generic;
-using GRYLibrary.Core.APIServer.Services.TS;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.APIServer.Mid.AuthS;
@@ -32,6 +31,7 @@ using GRYLibrary.Core.APIServer.Settings.Configuration;
 using System;
 using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
 using OpenDMSBackend.Core.BackgroundServices;
+using GRYLibrary.Core.APIServer.Services.OtherServices;
 
 namespace OpenDMSBackend.Core
 {
@@ -61,8 +61,7 @@ namespace OpenDMSBackend.Core
                         NotLoggedRoutes = new HashSet<string>()
                         {
                             @$"^/favicon\.ico$",
-                            @$"^{Controller.OpenDMSBackendController.ControllerRoute}/Design\.css$",
-                            @$"^{Controller.OpenDMSBackendController.ControllerRoute}/Logo$",
+                            @$"^/API/Other/Resources/APISpecification/*",
                         },
                         MaximalLengthofResponseBodies = 50,
                     };
@@ -88,14 +87,7 @@ namespace OpenDMSBackend.Core
                         DatabaseConnectionString = "Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;",
                     };
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    if (IsRunningInContainer())
-                    {
-                        initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP();
-                    }
-                    else
-                    {
-                        initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = initializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetProcolVisitor(domain));
-                    }
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
@@ -171,11 +163,6 @@ namespace OpenDMSBackend.Core
                     };
                 };
             });
-        }
-
-        private static bool IsRunningInContainer()
-        {
-            return "true".Equals(Environment.GetEnvironmentVariable("IsRunningInDockerContainer"));
         }
     }
 }

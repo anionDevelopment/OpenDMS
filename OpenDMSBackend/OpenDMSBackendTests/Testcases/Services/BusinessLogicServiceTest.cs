@@ -1,6 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Trans;
-using GRYLibrary.Core.APIServer.Services.TS;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
@@ -19,6 +18,7 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Services;
 using Moq;
 using OpenDMSBackend.Core.Model.BusinessTypes;
+using GRYLibrary.Core.APIServer.Services.OtherServices;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
@@ -29,25 +29,25 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         {
             databaseTestFramework = new DatabaseTestFramework();
             IDatabaseManager databaseManager = new DatabaseManager();
-            GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager);
+            ITimeService timeService = new TimeService();
+            GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager, timeService);
             DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
-            ITimeService timeService = new TimeService();
             IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = registrationIsEnabled;
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
             ISQLProvider sqlProvider = new SQLProvider();
-            Mock<IIdGenerator<ulong>> idGeneratorMock = new Mock<IIdGenerator<ulong>>(MockBehavior.Strict);
+            IIdGenerator<ulong> idGenerator = new OpenDMSBackend.Core.Services.IdGenerator();
             DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
             persistence = databasePersistence;
             persistence.Reset();
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
             IAuthenticationService<User> authenticationService = new OpenDMSBackendPersistentAuthenticationService(timeService, databasePersistence, logger, constants);
             Mock<OCRService> ocrServiceMock = new Mock<OCRService>(MockBehavior.Strict);
-            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration,ocrServiceMock.Object,idGeneratorMock.Object);
+            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration,ocrServiceMock.Object, idGenerator);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService);
-            initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator);
+            initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, databasePersistence, idGenerator);
         }
 
         [TestMethod(nameof(DatabaseInitializationTest))]

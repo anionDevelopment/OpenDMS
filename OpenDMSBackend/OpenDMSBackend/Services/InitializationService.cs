@@ -4,6 +4,7 @@ using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
+using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using System.Collections.Generic;
@@ -17,18 +18,23 @@ namespace OpenDMSBackend.Core.Services
         private readonly IGeneralLogger _GeneralLogger;
         private readonly IExampleDataCreator _ExampleDataCreator;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
-        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator)
+        private readonly IPersistence _Persistence;
+        private readonly IIdGenerator<ulong> _IdGenerator;
+        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator)
         {
             this._AuthenticationService = authenticationService;
             this._BusinessLogicService = businessLogicService;
             this._GeneralLogger = generalLogger;
             this._Constants = constants;
             this._ExampleDataCreator = exampleDataCreator;
+            this._Persistence = persistence;
+            this._IdGenerator = idGenerator;
         }
 
         public void Initialize(CodeUnitSpecificCommandlineParameter codeUnitSpecificCommandlineParameter)
         {
             string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
+            this._IdGenerator.Reset(_Persistence.GetLatestReadableId());
             if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
             {
                 this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);

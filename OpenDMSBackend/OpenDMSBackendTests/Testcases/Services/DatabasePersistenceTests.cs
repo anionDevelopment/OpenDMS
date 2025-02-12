@@ -1,6 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Trans;
-using GRYLibrary.Core.APIServer.Services.TS;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
@@ -24,6 +23,7 @@ using GRYLibrary.Core.Misc.Strings;
 using MySqlConnector;
 using System.Collections.Generic;
 using OpenDMSBackend.Core.Model.BusinessTypes;
+using GRYLibrary.Core.APIServer.Services.OtherServices;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
@@ -38,10 +38,10 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             using (DatabaseTestFramework databaseTestFramework = new DatabaseTestFramework())
             {
                 IDatabaseManager databaseManager = new DatabaseManager();
-                GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager);
+                ITimeService timeService = new TimeService();
+                GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager, timeService);
                 DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
                 optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
-                ITimeService timeService = new TimeService();
                 IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = true;
@@ -80,11 +80,11 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             using (DatabaseTestFramework databaseTestFramework = new DatabaseTestFramework())
             {
                 IDatabaseManager databaseManager = new DatabaseManager();
-                GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager);
+               ITimeService timeService = new TimeService();
+                GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager, timeService);
                 DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
                 optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
-                ITimeService timeService = new TimeService();
-                IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
+                 IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = true;
                 Mock<IIdGenerator<ulong>> idGeneratorMock = new Mock<IIdGenerator<ulong>>(MockBehavior.Strict);
@@ -120,7 +120,8 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         {
             using DatabaseTestFramework databaseTestFramework = new DatabaseTestFramework();
             IDatabaseManager databaseManager = new DatabaseManager();
-            GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager);
+            ITimeService timeService = new TimeService();
+            GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager, timeService);
             DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
             DatabaseContext context = new DatabaseContext(optionsBuilder.Options, GeneralLogger.CreateUsingConsole(), new TimeService(), databaseManager);
