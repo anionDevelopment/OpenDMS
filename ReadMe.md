@@ -17,6 +17,7 @@
 - Allow uploading and deleting documents.
 - Allow setting retention-date-metadata.
 - Allow setting contact-metadata.
+- Allow setting document-type.
 - Allow defining arbitrary-metadata.
 - Allow linkig other documents.
 - Allow setting permissions to share documents with other users.
