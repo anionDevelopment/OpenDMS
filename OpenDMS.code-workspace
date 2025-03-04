@@ -130,6 +130,7 @@
 		]
 	},
 	"settings": {
+		"terminal.integrated.cwd": "${workspaceFolder}",
 		"window.title": "${dirty} ${rootName}",
 		"files.exclude": {
 			".coverage": true,
