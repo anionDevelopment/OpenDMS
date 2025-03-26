@@ -9,6 +9,7 @@ namespace OpenDMSBackend.Core.Services
     public interface IPersistence : IExternalService, IAuthenticationServicePersistence<Model.BusinessTypes.User>
     {
         public IContainee GetContaineeById(string containeeId);
+        public IContainer GetContainerById(string containerId);
         public void CreateDocument(Document document);
         public bool DocumentExists(string id);
         public uint GetAmountOfDocuments();
@@ -42,5 +43,7 @@ namespace OpenDMSBackend.Core.Services
         public bool IsFolder(string contentId);
         public bool IsDocument(string contentId);
         public ulong GetLatestReadableId();
+        public void RemoveChild(string parentId, string childId);
+        string GetIdFromReadableId(uint readableId);
     }
 }

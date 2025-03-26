@@ -28,7 +28,6 @@ using GRYLibrary.Core.APIServer.Mid.Ex;
 using OpenDMSBackend.Core.Services;
 using GRYLibrary.Core.APIServer.Services.CredH;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
-using System;
 using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
 using OpenDMSBackend.Core.BackgroundServices;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
@@ -39,7 +38,7 @@ namespace OpenDMSBackend.Core
     {
         internal static int Main(string[] commandlineArguments)
         {
-            return Tools.RunAPIServer<CodeUnitSpecificCommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, (apiServerConfiguration) =>
+            return Tools.RunAPIServer<CodeUnitSpecificCommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
             {
                 apiServerConfiguration.SetInitialzationInformationAction = (initializationInformation) =>
                 {

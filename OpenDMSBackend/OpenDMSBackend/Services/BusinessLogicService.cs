@@ -48,7 +48,7 @@ namespace OpenDMSBackend.Core.Services
                 this.AnalyseDocument(document);
                 this._Persistence.CreateDocument(document);
                 this._Persistence.SetParentOfContainee(document, containerId);
-                this._Logger.Log($"Document {document.ReadableId} added.", Microsoft.Extensions.Logging.LogLevel.Information);
+                this._Logger.Log($"Document '{document.ReadableId}' added. (Technical-id: {document.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
                 return document.Id;
             }
         }
@@ -67,7 +67,7 @@ namespace OpenDMSBackend.Core.Services
                 Role userRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
                 this._AuthenticationService.EnsureUserHasRole(newUser.Id, userRole.Id);
 
-                this._Logger.Log($"User '{username}' registered.", Microsoft.Extensions.Logging.LogLevel.Information);
+                this._Logger.Log($"User '{newUser.Name}' registered. (Technical-id: {newUser.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
                 return newUser.Id;
             }
         }
@@ -238,6 +238,7 @@ namespace OpenDMSBackend.Core.Services
             //TODO check permission
             string id = this._Persistence.AddFolder(name);
             this._Persistence.SetParentOfContainee(this.GetContainee(id), parentContainerId);
+            this._Logger.Log($"Folder '{name}' added. (Technical-id: {id})", Microsoft.Extensions.Logging.LogLevel.Information);
             return id;
         }
 
@@ -262,6 +263,17 @@ namespace OpenDMSBackend.Core.Services
         public void Delete(string requesterUserId, string containerOrContaineeId)
         {
             //TODO check permission
+
+            //remove from parent container
+            if (_Persistence.IsContaineeId(containerOrContaineeId))
+            {
+                string parentId = _Persistence.GetParentIdOfContainee(containerOrContaineeId);
+                this._Persistence.RemoveChild(parentId, containerOrContaineeId);
+            }
+
+            //remove content
+            Miscellaneous.Utilities.DoForContentObject(_Persistence, containerOrContaineeId, (storageLocationId) => RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => RemoveEntireContent(requesterUserId, folderId), null);
+
             this._Persistence.Delete(containerOrContaineeId);
         }
 
@@ -301,6 +313,20 @@ namespace OpenDMSBackend.Core.Services
         public void Housekeeping()
         {
             throw new NotImplementedException();//TODO remove expired accesstoken
+        }
+
+        public void RemoveEntireContent(string requesterUserId, string containerId)
+        {
+            IContainer container = _Persistence.GetContainerById(containerId);
+            foreach (var child in container.Content)
+            {
+                Delete(requesterUserId, child.Id);
+            }
+        }
+
+        public Document GetDocumentFromReadableId(string requesterUserId, uint readableId)
+        {
+            return this.GetDocument(requesterUserId, this._Persistence.GetIdFromReadableId(readableId));
         }
     }
 }

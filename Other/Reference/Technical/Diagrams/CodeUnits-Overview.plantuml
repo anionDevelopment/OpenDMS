@@ -19,8 +19,8 @@ note as OpenDMSFrontendNote
 end note
 OpenDMSFrontend .. OpenDMSFrontendNote
 
-OpenDMS --> OpenDMSBackend
 OpenDMS --> OpenDMSFrontend
+OpenDMS --> OpenDMSBackend
 OpenDMSFrontend --> OpenDMSBackend
 
 @enduml

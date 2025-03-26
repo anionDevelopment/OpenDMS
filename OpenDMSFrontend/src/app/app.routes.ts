@@ -8,8 +8,8 @@ import { UsersListComponent } from './modules/admin-area/users-list/users-list.c
 import { UserComponent } from './modules/admin-area/user/user.component';
 import { AdminSettingsComponent } from './modules/admin-area/admin-settings/admin-settings.component';
 import { DocumentsListComponent } from './modules/user-area/documents-list/documents-list.component';
-import { DocumentComponent } from './modules/user-area/document/document.component';
 import { HintNotFoundComponent } from './modules/home-page/hint-not-found/hint-not-found.component';
+import { ViewDocumentComponent } from './modules/user-area/view-document/view-document.component';
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
@@ -20,6 +20,6 @@ export const routes: Routes = [
     { path: 'user/dashboard', component: UserDashboardComponent, canActivate: [authenticationCheckGuard] },
     { path: 'user/settings', component: UserSettingsComponent, canActivate: [authenticationCheckGuard] },
     { path: 'user/documents', component: DocumentsListComponent, canActivate: [authenticationCheckGuard] },
-    { path: 'user/document', component: DocumentComponent, canActivate: [authenticationCheckGuard] },
+    { path: 'user/document/:readableId', component: ViewDocumentComponent, canActivate: [authenticationCheckGuard] },
     { path: '**', component: HintNotFoundComponent },
 ];

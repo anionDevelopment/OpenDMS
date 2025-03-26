@@ -2,21 +2,23 @@
 
     <mat-expansion-panel *ngFor="let folder of folders">
         <mat-expansion-panel-header>
-            <mat-panel-title> {{folder.name}}</mat-panel-title>
+            <mat-panel-title><mat-icon>folder</mat-icon> {{folder.name}}</mat-panel-title>
         </mat-expansion-panel-header>
         <app-content-view [title]="folder.name" [folderIds]="folder.containedFolderIds"
-            [documentIds]="folder.containedDocumentIds" [parentContainerId]="folder.id!"
-            [isFolder]="true"></app-content-view>
+            [documentIds]="folder.containedDocumentIds" [containerId]="folder.id!" [isFolder]="true"
+            (containerRemoved)="onContainerRemoved($event)"></app-content-view>
     </mat-expansion-panel>
 
     <mat-expansion-panel *ngIf="(documents$|async)!.length>0">
         <mat-expansion-panel-header>
-            <mat-panel-title> {{(documents$|async)!.length}} document(s) </mat-panel-title>
+            <mat-panel-title><mat-icon>description</mat-icon> {{(documents$|async)!.length}} document(s)
+            </mat-panel-title>
         </mat-expansion-panel-header>
-        <app-document-table [documents$]="documents$"></app-document-table>
+        <app-document-table [documents$]="documents$"
+            (documentRemoved)="onDocumentRemoved($event)"></app-document-table>
     </mat-expansion-panel>
 
 </mat-accordion>
-<app-add-content-button [parentId]="parentContainerId!" (documentAdded)="onDocumentAdded($event)"
-    (folderAdded)="onFolderAdded($event)">
-</app-add-content-button><!--TODO set userIsAllowedToAddDocument and userIsAllowedToAddFolder-->
+<app-edit-container-menu [containerId]="containerId!" (documentAdded)="onDocumentAdded($event)"
+    (folderAdded)="onFolderAdded($event)" (containerRemoved)="onRemoved()">
+</app-edit-container-menu><!--TODO set userIsAllowedToAddDocument and userIsAllowedToAddFolder-->

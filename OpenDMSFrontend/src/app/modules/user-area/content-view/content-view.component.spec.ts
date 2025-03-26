@@ -21,7 +21,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AddContentButtonComponent } from '../add-content-button/add-content-button.component';
+import { EditContainerMenuComponent } from '../edit-container-menu/edit-container-menu.component';
 
 describe('ContentViewComponent', () => {
   let component: ContentViewComponent;
@@ -52,7 +52,7 @@ describe('ContentViewComponent', () => {
         HomePageModule
       ],
       declarations: [
-        AddContentButtonComponent,
+        EditContainerMenuComponent,
         ContentViewComponent,
       ],
       providers: [

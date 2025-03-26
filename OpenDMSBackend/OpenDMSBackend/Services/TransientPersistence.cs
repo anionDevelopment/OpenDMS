@@ -256,6 +256,19 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No {nameof(IContainee)} available with id \"{containeeId}\".");
         }
 
+        public IContainer GetContainerById(string containerId)
+        {
+            if (this._StorageLocations.TryGetValue(containerId, out StorageLocation? storageLocation))
+            {
+                return storageLocation;
+            }
+            if (this._Folders.TryGetValue(containerId, out Folder? folder))
+            {
+                return folder;
+            }
+            throw new KeyNotFoundException($"No {nameof(IContainer)} available with id \"{containerId}\".");
+        }
+
         public string GetParentIdOfContainee(string containeeId)
         {
             return this._ContaineeContainerAssignments[containeeId];
@@ -410,6 +423,24 @@ namespace OpenDMSBackend.Core.Services
         public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
         {
             return _TransientAuthenticationServicePersistence.GetAllAccessTokenOfUser(userId);
+        }
+
+        public void RemoveChild(string parentId, string childId)
+        {
+            IContainer container = this.GetContainerById(parentId);
+            container.Content = container.Content.Where(child => child.Id!=childId).ToHashSet();
+        }
+
+        public string GetIdFromReadableId(uint readableId)
+        {
+          foreach(var document in _Documents)
+            {
+                if (document.Value.ReadableId == readableId)
+                {
+                    return document.Value.Id;
+                }
+            }
+            throw new KeyNotFoundException($"No document found with readable id '{readableId}'.");
         }
     }
 }

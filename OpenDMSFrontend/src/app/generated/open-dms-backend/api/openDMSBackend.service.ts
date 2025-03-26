@@ -48,14 +48,14 @@ export class OpenDMSBackendService extends BaseService {
      * @param xAccessToken Access Token
      * @param filename 
      * @param title 
-     * @param content 
+     * @param body 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, content?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<string>;
-    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, content?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<string>>;
-    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, content?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<string>>;
-    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, content?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, body?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<string>;
+    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, body?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<string>>;
+    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, body?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<string>>;
+    public aPIV1OpenDMSBackendAddDocumentContainerIdPost(containerId: string, xAccessToken: string, filename?: string, title?: string, body?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (containerId === null || containerId === undefined) {
             throw new Error('Required parameter containerId was null or undefined when calling aPIV1OpenDMSBackendAddDocumentContainerIdPost.');
         }
@@ -87,24 +87,16 @@ export class OpenDMSBackendService extends BaseService {
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
+
         // to determine the Content-Type header
         const consumes: string[] = [
-            'multipart/form-data'
+            'application/json',
+            'text/json',
+            'application/*+json'
         ];
-
-        const canConsumeForm = this.canConsumeForm(consumes);
-
-        let localVarFormParams: { append(param: string, value: any): any; };
-        let localVarUseForm = false;
-        let localVarConvertFormParamsToString = false;
-        if (localVarUseForm) {
-            localVarFormParams = new FormData();
-        } else {
-            localVarFormParams = new HttpParams({encoder: this.encoder});
-        }
-
-        if (content !== undefined) {
-            localVarFormParams = localVarFormParams.append('content', <any>content) as any || localVarFormParams;
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
         }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -122,7 +114,7 @@ export class OpenDMSBackendService extends BaseService {
         return this.httpClient.request<string>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
+                body: body,
                 params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,

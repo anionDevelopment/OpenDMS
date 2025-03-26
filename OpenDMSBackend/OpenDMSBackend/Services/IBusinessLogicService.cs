@@ -20,6 +20,8 @@ namespace OpenDMSBackend.Core.Services
 
         public void Delete(string requesterUserId, string containerOrContaineeId);
 
+        public void RemoveEntireContent(string requesterUserId, string containerId);
+
         #region Document
         /// <returns>Returns the id of the created document.</returns>
         public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate);
@@ -54,6 +56,7 @@ namespace OpenDMSBackend.Core.Services
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId);
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId);
         public Folder GetFolder(string requesterUserId, string folderId);
+        public Document GetDocumentFromReadableId(string requesterUserId, uint readableDocumentId);
 
         #endregion
 

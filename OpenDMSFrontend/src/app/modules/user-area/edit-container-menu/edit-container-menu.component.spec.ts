@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddContentButtonComponent } from './add-content-button.component';
+import { EditContainerMenuComponent } from './edit-container-menu.component';
 import { CommonModule } from '@angular/common';
 import { HomePageModule } from '../../home-page/home-page.module';
 import { HttpClient } from '@angular/common/http';
@@ -23,8 +23,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 
 describe('AddContentButtonComponent', () => {
-  let component: AddContentButtonComponent;
-  let fixture: ComponentFixture<AddContentButtonComponent>;
+  let component: EditContainerMenuComponent;
+  let fixture: ComponentFixture<EditContainerMenuComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -51,7 +51,7 @@ describe('AddContentButtonComponent', () => {
         HomePageModule
       ],
       declarations: [
-        AddContentButtonComponent,
+        EditContainerMenuComponent,
       ],
       providers: [
         {
@@ -62,7 +62,7 @@ describe('AddContentButtonComponent', () => {
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AddContentButtonComponent);
+    fixture = TestBed.createComponent(EditContainerMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -736,5 +736,20 @@ namespace OpenDMSBackend.Core.Services
         {
             throw new NotImplementedException();
         }
+
+        public IContainer GetContainerById(string containerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveChild(string parentId, string childId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetIdFromReadableId(uint readableId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import saveAs from 'file-saver';
 import { UtilitiesService } from '../../../services/utilities.service';
 import { FactoryTarget } from '@angular/compiler';
-import { Observable, Subject, of, subscribeOn } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of, subscribeOn } from 'rxjs';
 
 @Component({
   selector: 'app-documents-list',
@@ -16,7 +16,7 @@ import { Observable, Subject, of, subscribeOn } from 'rxjs';
 })
 export class DocumentsListComponent {
 
-  latestDocuments$: Subject<DocumentPreviewDTO[]> = new Subject<DocumentPreviewDTO[]>();
+  latestDocuments$: BehaviorSubject<DocumentPreviewDTO[]> = new BehaviorSubject<DocumentPreviewDTO[]>([]);
 
   constructor(storageService: StorageService, openDMSBackendService: OpenDMSBackendService) {
     openDMSBackendService.aPIV1OpenDMSBackendGetLatestDocumentsGet(storageService.getAccessToken()).subscribe(documents => {
@@ -46,5 +46,12 @@ export class DocumentsListComponent {
   private parseDate(str: string): Date {
     const result: Date = new Date(str);
     return result;
+  }
+  private removeDocument(documentId: string) {
+    var latestDocuments = this.latestDocuments$.value.filter(document => document.id! != documentId);
+    this.latestDocuments$.next([...latestDocuments]);
+  }
+  onDocumentRemoved(documentId: string): void {
+    this.removeDocument(documentId);
   }
 }
