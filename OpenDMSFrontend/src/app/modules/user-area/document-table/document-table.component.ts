@@ -2,10 +2,9 @@ import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular
 import { DocumentPreviewDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { UtilitiesService } from '../../../services/utilities.service';
 import saveAs from 'file-saver';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EditDocumentDialogComponent } from '../edit-document-dialog/edit-document-dialog.component';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';

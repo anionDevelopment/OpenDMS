@@ -13,6 +13,7 @@ namespace OpenDMSBackend.Core.Miscellaneous
 {
     internal static class Utilities
     {
+        /// <returns>Returns a picture of the first-site of the document.</returns>
         internal static byte[] GeneratePreview(byte[] documentContent, string mimeType)
         {
             return new byte[] { 1, 2, 3 };//TODO implement function

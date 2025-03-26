@@ -488,6 +488,69 @@ export class OpenDMSBackendService extends BaseService {
 
     /**
      * @param xAccessToken Access Token
+     * @param readableId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV1OpenDMSBackendGetDocumentFromReadableIdGet(xAccessToken: string, readableId?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<DocumentDTO>;
+    public aPIV1OpenDMSBackendGetDocumentFromReadableIdGet(xAccessToken: string, readableId?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<DocumentDTO>>;
+    public aPIV1OpenDMSBackendGetDocumentFromReadableIdGet(xAccessToken: string, readableId?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<DocumentDTO>>;
+    public aPIV1OpenDMSBackendGetDocumentFromReadableIdGet(xAccessToken: string, readableId?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV1OpenDMSBackendGetDocumentFromReadableIdGet.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>readableId, 'readableId');
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v1/OpenDMSBackend/GetDocumentFromReadableId`;
+        return this.httpClient.request<DocumentDTO>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param xAccessToken Access Token
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

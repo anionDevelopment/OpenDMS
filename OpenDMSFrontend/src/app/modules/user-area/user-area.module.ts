@@ -33,6 +33,7 @@ import { ViewDocumentComponent } from './view-document/view-document.component';
 import { EditContainerDialogComponent } from './edit-container-dialog/edit-container-dialog.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { LinkToDocumentComponent } from './link-to-document/link-to-document.component';
+import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { LinkToDocumentComponent } from './link-to-document/link-to-document.com
     ContentViewComponent,
     DocumentTableComponent,
     DocumentsListComponent,
+    DocumentPreviewComponent,
     EditDocumentDialogComponent,
     EditContainerDialogComponent,
     LinkToDocumentComponent,

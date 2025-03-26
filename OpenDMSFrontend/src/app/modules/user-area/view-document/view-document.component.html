@@ -1,1 +1,16 @@
-<p>view-document works!</p>
+<app-frame-work>
+    <app-user-area-container>
+        <p>
+            Document meta-data:<br />
+            Title: {{document?.title}}<br />
+            ID: {{document?.readableId}}<br />
+            Technical ID: {{document?.id}}<br />
+            Filename: {{document?.filename}}<br />
+            Original filename: {{document?.originalFilename}}<br />
+            Import-date: {{document?.importDate}}<br />
+            Last edit-date: {{document?.lastEditDate}}<br />
+            Tags: {{formatTags(document?.tags!)}}<br />
+        </p>
+        <app-document-preview [document]="document"></app-document-preview>
+    </app-user-area-container>
+</app-frame-work>
