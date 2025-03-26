@@ -2,6 +2,7 @@
 using GRYLibrary.Core.APIServer.Services.Trans;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
@@ -44,6 +45,12 @@ namespace OpenDMSBackend.Core.Services
         public bool IsDocument(string contentId);
         public ulong GetLatestReadableId();
         public void RemoveChild(string parentId, string childId);
-        string GetIdFromReadableId(uint readableId);
+        public string GetIdFromReadableId(uint readableId);
+        /// <summary>
+        /// This function searches for documents which are available for the given user and matches at least one search-term in any kind.
+        /// This function is supposed to order the results descending regarding to relevance.
+        /// The result-list does not contain duplicated items.
+        /// </summary>
+        public IList<DocumentPreview> Search(string requesterUserId, string[] searchTerms);
     }
 }

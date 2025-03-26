@@ -15,6 +15,7 @@ using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.Misc.Strings;
+using System.Collections;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -748,6 +749,11 @@ namespace OpenDMSBackend.Core.Services
         }
 
         public string GetIdFromReadableId(uint readableId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<DocumentPreview> Search(string requesterUserId, string[] searchTerms)
         {
             throw new NotImplementedException();
         }

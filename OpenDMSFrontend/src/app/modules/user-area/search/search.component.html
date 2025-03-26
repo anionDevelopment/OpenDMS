@@ -1,1 +1,15 @@
-<p>search works!</p>
+<mat-form-field>
+    <mat-label>Search term</mat-label>
+    <input matInput [(ngModel)]='searchText' (keydown.enter)="search()">
+</mat-form-field>
+<button mat-button type="submit" (click)="search()">
+    <mat-icon>search</mat-icon>
+</button>
+<!--
+<form (submit)="search()">
+</form>-->
+<!--<button #btnFocus [autofocus]="btnFocus.focus()" mat-button
+    (keyup.enter)="cancelOrClose()" (click)="cancelOrClose()" mat-dialog-close>
+    <mat-icon type="submit">search</mat-icon>
+</button>-->
+<app-document-table [documents$]="documents$" (documentRemoved)="onDocumentRemoved($event)"></app-document-table>

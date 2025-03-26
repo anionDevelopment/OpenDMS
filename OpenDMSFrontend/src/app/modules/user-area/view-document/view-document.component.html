@@ -11,6 +11,8 @@
             Last edit-date: {{document?.lastEditDate}}<br />
             Tags: {{formatTags(document?.tags!)}}<br />
         </p>
+        <app-edit-document-menu [document]="documentPreview"
+            (documentRemoved)="onDocumentRemoved()"></app-edit-document-menu>
         <app-document-preview [document]="document"></app-document-preview>
     </app-user-area-container>
 </app-frame-work>

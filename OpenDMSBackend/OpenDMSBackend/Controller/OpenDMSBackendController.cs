@@ -127,7 +127,7 @@ namespace OpenDMSBackend.Core.Controller
         [Route(nameof(Search))]
         public IActionResult Search([FromQuery] string searchTerm)
         {
-            return this.Ok(this._BusinessLogicService.Search(this.GetUser().Id, searchTerm));
+            return this.Ok(this._BusinessLogicService.Search(this.GetUser().Id, searchTerm).Select(searchResult=>searchResult.ToDTO()));
         }
 
         [Authenticate]

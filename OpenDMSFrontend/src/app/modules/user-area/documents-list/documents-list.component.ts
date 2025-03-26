@@ -1,12 +1,7 @@
 import { Component } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
-import { DocumentPreviewDTO, FolderDTO, OpenDMSBackendService, StorageLocationDTO } from '../../../generated/open-dms-backend';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import saveAs from 'file-saver';
-import { UtilitiesService } from '../../../services/utilities.service';
-import { FactoryTarget } from '@angular/compiler';
-import { BehaviorSubject, Observable, Subject, of, subscribeOn } from 'rxjs';
+import { DocumentPreviewDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-documents-list',

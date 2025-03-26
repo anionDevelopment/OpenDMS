@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
@@ -187,7 +188,7 @@ namespace OpenDMSBackend.Core.Services
         public void SetParentOfContainee(IContainee containee, string parentContainerId)
         {
             this._ContaineeContainerAssignments[containee.Id] = parentContainerId;
-            OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this, parentContainerId,
+            Miscellaneous.Utilities.DoForContentObject(this, parentContainerId,
             (storageId) =>
             {
                 this._StorageLocations[parentContainerId].Content.Add(containee);
@@ -198,13 +199,13 @@ namespace OpenDMSBackend.Core.Services
             },
             (documentId) =>
             {
-                GRYLibrary.Core.Misc.Utilities.NoOperation();
+                Utilities.NoOperation();
             });
         }
 
         public void Delete(string containerOrContaineeId)
         {
-            OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this, containerOrContaineeId,
+            Miscellaneous.Utilities.DoForContentObject(this, containerOrContaineeId,
                 (storageId) =>
                 {
                     this._StorageLocationOwnerAssignments.Remove(storageId);
@@ -326,114 +327,114 @@ namespace OpenDMSBackend.Core.Services
 
         public IDictionary<string, User> GetAllUsers()
         {
-            return _TransientAuthenticationServicePersistence.GetAllUsers();
+            return this._TransientAuthenticationServicePersistence.GetAllUsers();
         }
 
         public ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> GetAllRoles()
         {
-            return _TransientAuthenticationServicePersistence.GetAllRoles();
+            return this._TransientAuthenticationServicePersistence.GetAllRoles();
         }
 
         public void AddRole(GRYLibrary.Core.APIServer.CommonDBTypes.Role role)
         {
-            _TransientAuthenticationServicePersistence.AddRole(role);
+            this._TransientAuthenticationServicePersistence.AddRole(role);
         }
 
         public void UpdateRole(GRYLibrary.Core.APIServer.CommonDBTypes.Role role)
         {
-            _TransientAuthenticationServicePersistence.UpdateRole(role);
+            this._TransientAuthenticationServicePersistence.UpdateRole(role);
         }
 
         public void DeleteRoleByName(string roleName)
         {
-            _TransientAuthenticationServicePersistence.DeleteRoleByName(roleName);
+            this._TransientAuthenticationServicePersistence.DeleteRoleByName(roleName);
         }
 
         public bool AccessTokenExists(string accessToken, out User? user)
         {
-            return _TransientAuthenticationServicePersistence.AccessTokenExists(accessToken, out user);
+            return this._TransientAuthenticationServicePersistence.AccessTokenExists(accessToken, out user);
         }
 
         public void AddUser(User newUser)
         {
-            _TransientAuthenticationServicePersistence.AddUser(newUser);
+            this._TransientAuthenticationServicePersistence.AddUser(newUser);
         }
 
         public User GetUserById(string userId)
         {
-            return _TransientAuthenticationServicePersistence.GetUserById(userId);
+            return this._TransientAuthenticationServicePersistence.GetUserById(userId);
         }
 
         public User GetUserByName(string userName)
         {
-            return _TransientAuthenticationServicePersistence.GetUserByName(userName);
+            return this._TransientAuthenticationServicePersistence.GetUserByName(userName);
         }
 
         public void RemoveUser(string userId)
         {
-            _TransientAuthenticationServicePersistence.RemoveUser(userId);
+            this._TransientAuthenticationServicePersistence.RemoveUser(userId);
         }
 
         public bool RoleExists(string roleName)
         {
-            return _TransientAuthenticationServicePersistence.RoleExists(roleName);
+            return this._TransientAuthenticationServicePersistence.RoleExists(roleName);
         }
 
         public void AddRoleToUser(string userId, string roleId)
         {
 
-            _TransientAuthenticationServicePersistence.AddRoleToUser(userId, roleId);
+            this._TransientAuthenticationServicePersistence.AddRoleToUser(userId, roleId);
         }
 
         public void RemoveRoleFromUser(string userId, string roleId)
         {
-            _TransientAuthenticationServicePersistence.RemoveRoleFromUser(userId, roleId);
+            this._TransientAuthenticationServicePersistence.RemoveRoleFromUser(userId, roleId);
         }
 
         public bool UserHasRole(string userId, string roleId)
         {
-            return _TransientAuthenticationServicePersistence.UserHasRole(userId, roleId);
+            return this._TransientAuthenticationServicePersistence.UserHasRole(userId, roleId);
         }
 
         public User GetUserByAccessToken(string accessToken)
         {
-            return _TransientAuthenticationServicePersistence.GetUserByAccessToken(accessToken);
+            return this._TransientAuthenticationServicePersistence.GetUserByAccessToken(accessToken);
         }
 
         public void UpdateUser(User user)
         {
-            _TransientAuthenticationServicePersistence.UpdateUser(user);
+            this._TransientAuthenticationServicePersistence.UpdateUser(user);
         }
 
         public AccessToken GetAccessToken(string accessToken)
         {
-            return _TransientAuthenticationServicePersistence.GetAccessToken(accessToken);
+            return this._TransientAuthenticationServicePersistence.GetAccessToken(accessToken);
         }
 
         public void AddAccessToken(string userId, AccessToken newAccessToken)
         {
-            _TransientAuthenticationServicePersistence.AddAccessToken(userId, newAccessToken);
+            this._TransientAuthenticationServicePersistence.AddAccessToken(userId, newAccessToken);
         }
 
         public void RemoveAccessToken(string accessToken)
         {
-            _TransientAuthenticationServicePersistence.RemoveAccessToken(accessToken);
+            this._TransientAuthenticationServicePersistence.RemoveAccessToken(accessToken);
         }
 
         public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
         {
-            return _TransientAuthenticationServicePersistence.GetAllAccessTokenOfUser(userId);
+            return this._TransientAuthenticationServicePersistence.GetAllAccessTokenOfUser(userId);
         }
 
         public void RemoveChild(string parentId, string childId)
         {
             IContainer container = this.GetContainerById(parentId);
-            container.Content = container.Content.Where(child => child.Id!=childId).ToHashSet();
+            container.Content = container.Content.Where(child => child.Id != childId).ToHashSet();
         }
 
         public string GetIdFromReadableId(uint readableId)
         {
-          foreach(var document in _Documents)
+            foreach (var document in this._Documents)
             {
                 if (document.Value.ReadableId == readableId)
                 {
@@ -441,6 +442,51 @@ namespace OpenDMSBackend.Core.Services
                 }
             }
             throw new KeyNotFoundException($"No document found with readable id '{readableId}'.");
+        }
+
+        public IList<DocumentPreview> Search(string requesterUserId, string[] searchTerms)
+        {
+            IList<DocumentPreview> result = new List<DocumentPreview>();
+            foreach (var document in this._Documents.Values)
+            {
+                foreach (var searchTerm in searchTerms)
+                {
+                    if (this.DocumentMatchesSearch(document, requesterUserId, searchTerm))
+                    {
+                        result.Add(document.GetPreview());
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        private bool DocumentMatchesSearch(Document document, string requesterUserId, string searchTerm)
+        {
+            if (document.Title.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return true;
+            }
+            if (document.Filename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return true;
+            }
+            if (document.OriginalFilename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return true;
+            }
+            if (document.OCRContent.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return true;
+            }
+            foreach (var tag in document.Tags)
+            {
+                if (tag.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

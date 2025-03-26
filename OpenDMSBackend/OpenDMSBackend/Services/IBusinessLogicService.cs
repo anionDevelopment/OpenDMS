@@ -27,7 +27,7 @@ namespace OpenDMSBackend.Core.Services
         public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate);
         public void Update(string requesterUserId, Document updatedDocument);
         public Document GetDocument(string requesterUserId, string id);
-        public IEnumerable<DocumentPreview> Search(string requesterUserId, string searchTerm);
+        public IList<DocumentPreview> Search(string requesterUserId, string searchTerm);
         public void CreateTag(string tagName, ExtendedColor tagColor);
         /// <remarks>
         /// <paramref name="contentId"/> can be an id of any existing <see cref="IContent"/>-object.

@@ -19,18 +19,18 @@ namespace OpenDMSBackend.Core.Services
 
         public ulong GenerateNewId()
         {
-            _LastValue = _LastValue + 1;
-            return _LastValue;
+            this._LastValue = this._LastValue + 1;
+            return this._LastValue;
         }
 
         public void Reset()
         {
-            _LastValue = 0;
+            this._LastValue = 0;
         }
 
         public void Reset(ulong lastValue)
         {
-            _LastValue = lastValue;
+            this._LastValue = lastValue;
         }
     }
 }

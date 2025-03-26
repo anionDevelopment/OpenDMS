@@ -44,7 +44,7 @@ namespace OpenDMSBackend.Core.Services
         {
             lock (_LockObject)
             {
-                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(OpenDMSBackend.Core.Miscellaneous.Utilities.GetMIMEType(originalFilename)), default, default, content);
+                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Miscellaneous.Utilities.GetMIMEType(originalFilename)), default, default, content);
                 this.AnalyseDocument(document);
                 this._Persistence.CreateDocument(document);
                 this._Persistence.SetParentOfContainee(document, containerId);
@@ -61,7 +61,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new NotAuthorizedException();
                 }
-                Model.BusinessTypes.User newUser = OpenDMSBackend.Core.Model.BusinessTypes.User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
+                Model.BusinessTypes.User newUser = Model.BusinessTypes.User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
                 this._AuthenticationService.AddUserTyped(newUser);
 
                 Role userRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
@@ -97,7 +97,7 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DocumentPreview> Search(string requesterUserId, string searchTerm)
+        public IList<DocumentPreview> Search(string requesterUserId, string searchTerm)
         {
             string[] searchTerms;
             if (searchTerm.Contains(' '))
@@ -109,12 +109,12 @@ namespace OpenDMSBackend.Core.Services
                 searchTerms = new string[] { searchTerm };
             }
             searchTerms = searchTerms.Select(searchTerm => searchTerm.Trim()).Where(searchTerm => !string.IsNullOrEmpty(searchTerm)).ToArray();
-            IEnumerable<DocumentPreview> result = new List<DocumentPreview>();
+            IList<DocumentPreview> result = new List<DocumentPreview>();
             if (searchTerms.Length != 0)
             {
-                throw new NotImplementedException();//TODO search and add to result
+                result = this._Persistence.Search(requesterUserId, searchTerms);
             }
-            result = result.Where(document => this.UserIsAllowedToViewContent(requesterUserId, document.Id));
+            result = result.Where(document => this.UserIsAllowedToViewContent(requesterUserId, document.Id)).ToList();
             return result;
         }
 
@@ -143,7 +143,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
-            return OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this._Persistence, contentId,
+            return Miscellaneous.Utilities.DoForContentObject(this._Persistence, contentId,
                 (storageLocationId) => this.UserIsAllowedToViewStorageLocation(userId, storageLocationId),
                 (folderId) => this.UserIsAllowedToViewFolder(userId, folderId),
                 (documentId) => this.UserIsAllowedToViewDocument(userId, documentId)
@@ -221,7 +221,7 @@ namespace OpenDMSBackend.Core.Services
         private void AnalyseDocument(Document document)
         {
             this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
-            document.Preview = OpenDMSBackend.Core.Miscellaneous.Utilities.GeneratePreview(document.Content, document.MIMEType.Value);
+            document.Preview = Miscellaneous.Utilities.GeneratePreview(document.Content, document.MIMEType.Value);
             document.OCRContent = this._OCRService.GetOCRContent(document.Content, document.MIMEType.Value);
         }
 
@@ -265,14 +265,14 @@ namespace OpenDMSBackend.Core.Services
             //TODO check permission
 
             //remove from parent container
-            if (_Persistence.IsContaineeId(containerOrContaineeId))
+            if (this._Persistence.IsContaineeId(containerOrContaineeId))
             {
-                string parentId = _Persistence.GetParentIdOfContainee(containerOrContaineeId);
+                string parentId = this._Persistence.GetParentIdOfContainee(containerOrContaineeId);
                 this._Persistence.RemoveChild(parentId, containerOrContaineeId);
             }
 
             //remove content
-            Miscellaneous.Utilities.DoForContentObject(_Persistence, containerOrContaineeId, (storageLocationId) => RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => RemoveEntireContent(requesterUserId, folderId), null);
+            Miscellaneous.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => this.RemoveEntireContent(requesterUserId, folderId), null);
 
             this._Persistence.Delete(containerOrContaineeId);
         }
@@ -286,7 +286,7 @@ namespace OpenDMSBackend.Core.Services
 
         private IContainee GetContainee(string containeeId)
         {
-            return Core.Miscellaneous.Utilities.DoForContentObject<IContainee>(this._Persistence, containeeId,
+            return Miscellaneous.Utilities.DoForContentObject<IContainee>(this._Persistence, containeeId,
                 (storageLocationId) => { throw new NotSupportedException(); },
                 (folderId) => { return this._Persistence.GetFolder(containeeId); },
                 (documentId) => { return this._Persistence.GetDocument(containeeId); }
@@ -295,7 +295,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAdministrator(string userId)
         {
-            return this._AuthenticationService.GetUser(userId).GetAllRoles().Where(role => role.Name == Constants.CodeUnitSpecificConstants.RolenameAdmins).Any();
+            return this._AuthenticationService.GetUser(userId).GetAllRoles().Where(role => role.Name == CodeUnitSpecificConstants.RolenameAdmins).Any();
         }
 
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId)
@@ -317,10 +317,10 @@ namespace OpenDMSBackend.Core.Services
 
         public void RemoveEntireContent(string requesterUserId, string containerId)
         {
-            IContainer container = _Persistence.GetContainerById(containerId);
+            IContainer container = this._Persistence.GetContainerById(containerId);
             foreach (var child in container.Content)
             {
-                Delete(requesterUserId, child.Id);
+                this.Delete(requesterUserId, child.Id);
             }
         }
 

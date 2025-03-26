@@ -60,35 +60,27 @@ namespace OpenDMSBackend.Core.Miscellaneous
 
         public static string ToBase64(byte[] content)
         {
-            return System.Convert.ToBase64String(content);
+            return Convert.ToBase64String(content);
         }
 
         public static byte[] FromBase64(string content)
         {
-            return System.Convert.FromBase64String(content);
+            return Convert.FromBase64String(content);
         }
         public static void DoForContentObject(IPersistence persistence, string contentId, Action<string>? isStorageLocationAction, Action<string>? isFolderAction, Action<string>? isDocumentAction) =>
 #pragma warning disable CS8603 // Possible null reference return.
     DoForContentObject<object>(persistence, contentId, (contentId) =>
     {
-        if (isStorageLocationAction != null)
-        {
-            isStorageLocationAction(contentId);
-        };
+        isStorageLocationAction?.Invoke(contentId);
+        ;
         return default;
     }, (contentId) =>
     {
-        if (isFolderAction != null)
-        {
-            isFolderAction(contentId);
-        }
+        isFolderAction?.Invoke(contentId);
         return default;
     }, (contentId) =>
     {
-        if (isDocumentAction != null)
-        {
-            isDocumentAction(contentId);
-        }
+        isDocumentAction?.Invoke(contentId);
         return default;
     });
 #pragma warning restore CS8603 // Possible null reference return.

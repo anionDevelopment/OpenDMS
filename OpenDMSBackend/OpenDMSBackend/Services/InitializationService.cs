@@ -34,7 +34,7 @@ namespace OpenDMSBackend.Core.Services
         public void Initialize(CodeUnitSpecificCommandlineParameter codeUnitSpecificCommandlineParameter)
         {
             string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
-            this._IdGenerator.Reset(_Persistence.GetLatestReadableId());
+            this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
             if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
             {
                 this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);
