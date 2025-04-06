@@ -28,7 +28,6 @@ using GRYLibrary.Core.APIServer.Mid.Ex;
 using OpenDMSBackend.Core.Services;
 using GRYLibrary.Core.APIServer.Services.CredH;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
-using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
 using OpenDMSBackend.Core.BackgroundServices;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
@@ -120,7 +119,7 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, TransientAuthenticationServicePersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
                     }
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, IdGenerator>();
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProvider>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();

@@ -8,17 +8,14 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using OpenDMSBackend.Core.Services;
-using GRYLibrary.Core.APIServer.Services.Res;
+using OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes;
+using System.IO;
+using System.Drawing;
 
 namespace OpenDMSBackend.Core.Miscellaneous
 {
     internal static class Utilities
     {
-        /// <returns>Returns a picture of the first-site of the document.</returns>
-        internal static byte[] GeneratePreview(byte[] documentContent, string mimeType)
-        {
-            return new byte[] { 1, 2, 3 };//TODO implement function
-        }
 
         internal static GRYEnvironment GetEnvironmentTargetType()
         {
@@ -105,6 +102,64 @@ namespace OpenDMSBackend.Core.Miscellaneous
             }
         }
 
+        public static DocumentType GetDocumentType(string mimeType)
+        {
+            foreach (DocumentType documentType in DocumentType.AllDocumentTypes)
+            {
+                if (documentType.GetMimeTypes().Contains(mimeType))
+                {
+                    return documentType;
+                }
+            }
+            return Unknown.Instance;
+        }
+        public static byte[] ResizeImage(byte[] originalImageBytes, int maxWidth, int maxHeight)
+        {
+            using var inputStream = new MemoryStream(originalImageBytes);
+            using var originalImage = Image.FromStream(inputStream);
+
+            // Berechne das Seitenverhältnis
+            float aspectRatio = (float)originalImage.Width / originalImage.Height;
+
+            // Bestimme neue Breite und Höhe unter Beibehaltung des Seitenverhältnisses
+            int newWidth, newHeight;
+
+            if (originalImage.Width > originalImage.Height)
+            {
+                // Breite ist größer als Höhe, skaliere basierend auf maxWidth
+                newWidth = maxWidth;
+                newHeight = (int)(maxWidth / aspectRatio);
+            }
+            else
+            {
+                // Höhe ist größer als Breite, skaliere basierend auf maxHeight
+                newHeight = maxHeight;
+                newWidth = (int)(maxHeight * aspectRatio);
+            }
+
+            // Stelle sicher, dass die neue Breite und Höhe die Maximalwerte nicht überschreiten
+            if (newWidth > maxWidth)
+            {
+                newWidth = maxWidth;
+                newHeight = (int)(maxWidth / aspectRatio);
+            }
+
+            if (newHeight > maxHeight)
+            {
+                newHeight = maxHeight;
+                newWidth = (int)(maxHeight * aspectRatio);
+            }
+
+            using var resizedImage = new Bitmap(newWidth, newHeight);
+            using var graphics = Graphics.FromImage(resizedImage);
+
+            graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            graphics.DrawImage(originalImage, 0, 0, newWidth, newHeight);
+
+            using var outputStream = new MemoryStream();
+            resizedImage.Save(outputStream, System.Drawing.Imaging.ImageFormat.Jpeg); 
+            return outputStream.ToArray();
+        }
         internal static bool IsRunningInContainer()
         {
             return "true".Equals(Environment.GetEnvironmentVariable("IsRunningInDockerContainer"));

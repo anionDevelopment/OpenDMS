@@ -1,12 +1,6 @@
 @startuml CodeUnits-Overview
 title CodeUnits of OpenDMS
 
-[OpenDMS]
-note as OpenDMSNote
-  OpenDMS is an open source document-management-system.
-end note
-OpenDMS .. OpenDMSNote
-
 [OpenDMSBackend]
 note as OpenDMSBackendNote
   OpenDMSBackend is the backend of OpenDMS.
@@ -19,8 +13,14 @@ note as OpenDMSFrontendNote
 end note
 OpenDMSFrontend .. OpenDMSFrontendNote
 
+[OpenDMS]
+note as OpenDMSNote
+  OpenDMS is an open source document-management-system.
+end note
+OpenDMS .. OpenDMSNote
+
+OpenDMSFrontend --> OpenDMSBackend
 OpenDMS --> OpenDMSFrontend
 OpenDMS --> OpenDMSBackend
-OpenDMSFrontend --> OpenDMSBackend
 
 @enduml

@@ -11,6 +11,7 @@ using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
+using OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using System;
 using System.Collections.Generic;
@@ -200,7 +201,7 @@ namespace OpenDMSBackend.Core.Services
 
         public IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId)
         {
-            var result = this._Persistence
+            List<DocumentPreview> result = this._Persistence
                 .GetAllDocumentIds()
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
@@ -213,7 +214,7 @@ namespace OpenDMSBackend.Core.Services
         public void Update(string requesterUserId, Document updatedDocument)
         {
             //TODO check permission
-            var existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
+            Document existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
             if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content))
             {
                 this.AnalyseDocument(updatedDocument);
@@ -224,21 +225,40 @@ namespace OpenDMSBackend.Core.Services
         private void AnalyseDocument(Document document)
         {
             this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
+            DocumentType docType = Miscellaneous.Utilities.GetDocumentType(document.MIMEType.Value);
+
+            byte[] noPreviewAvailablePicture = this._GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
             try
             {
-            document.Preview = Miscellaneous.Utilities.GeneratePreview(document.Content, document.MIMEType.Value);
-                            }
+                if (docType is Unknown)
+                {
+                    document.Preview = noPreviewAvailablePicture;
+                }
+                else
+                {
+                    document.Preview = docType.GetPreview(document.Content);
+                }
+            }
             catch
             {
-                document.Preview = _GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
+                document.Preview = noPreviewAvailablePicture;
             }
+
+            string noOCRContentAvailableResult = string.Empty;
             try
             {
-                document.OCRContent = this._OCRService.GetOCRContent(document.Content, document.MIMEType.Value);
+                if (docType is Unknown)
+                {
+                    document.OCRContent = noOCRContentAvailableResult;
+                }
+                else
+                {
+                    document.OCRContent = docType.GetOCRContent(document.Content, this._OCRService);
+                }
             }
             catch
             {
-                document.OCRContent = string.Empty;
+                document.OCRContent = noOCRContentAvailableResult;
             }
         }
 
@@ -317,7 +337,7 @@ namespace OpenDMSBackend.Core.Services
 
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId)
         {
-            var result = this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(storageLocationId => this._Persistence.GetStorageLocation(storageLocationId)).ToList();
+            List<StorageLocation> result = this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(storageLocationId => this._Persistence.GetStorageLocation(storageLocationId)).ToList();
             return result;
         }
 
@@ -335,7 +355,7 @@ namespace OpenDMSBackend.Core.Services
         public void RemoveEntireContent(string requesterUserId, string containerId)
         {
             IContainer container = this._Persistence.GetContainerById(containerId);
-            foreach (var child in container.Content)
+            foreach (IContainee child in container.Content)
             {
                 this.Delete(requesterUserId, child.Id);
             }

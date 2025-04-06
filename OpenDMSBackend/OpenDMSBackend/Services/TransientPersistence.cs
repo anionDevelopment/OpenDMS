@@ -87,7 +87,7 @@ namespace OpenDMSBackend.Core.Services
 
         public Document GetDocument(string id)
         {
-            var result = this._Documents[id];
+            Document result = this._Documents[id];
             return result;
         }
 
@@ -156,7 +156,7 @@ namespace OpenDMSBackend.Core.Services
 
         public string AddStoragLocation(string name)
         {
-            var sl = new StorageLocation();
+            StorageLocation sl = new StorageLocation();
             sl.Id = Guid.NewGuid().ToString();
             sl.Name = name;
             this._StorageLocations[sl.Id] = sl;
@@ -170,7 +170,7 @@ namespace OpenDMSBackend.Core.Services
 
         public string AddFolder(string name)
         {
-            var folder = new Folder()
+            Folder folder = new Folder()
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = name,
@@ -428,7 +428,7 @@ namespace OpenDMSBackend.Core.Services
 
         public string GetIdFromReadableId(uint readableId)
         {
-            foreach (var document in this._Documents)
+            foreach (KeyValuePair<string, Document> document in this._Documents)
             {
                 if (document.Value.ReadableId == readableId)
                 {
@@ -441,9 +441,9 @@ namespace OpenDMSBackend.Core.Services
         public IList<DocumentPreview> Search(string requesterUserId, string[] searchTerms)
         {
             IList<DocumentPreview> result = new List<DocumentPreview>();
-            foreach (var document in this._Documents.Values)
+            foreach (Document document in this._Documents.Values)
             {
-                foreach (var searchTerm in searchTerms)
+                foreach (string searchTerm in searchTerms)
                 {
                     if (this.DocumentMatchesSearch(document, requesterUserId, searchTerm))
                     {
@@ -473,7 +473,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 return true;
             }
-            foreach (var tag in document.Tags)
+            foreach (Tag tag in document.Tags)
             {
                 if (tag.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
                 {

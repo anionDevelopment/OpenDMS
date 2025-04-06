@@ -1,55 +1,55 @@
-<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" contentStyleType="text/css" data-diagram-type="DESCRIPTION" height="402px" preserveAspectRatio="none" style="width:861px;height:402px;background:#FFFFFF;" version="1.1" viewBox="0 0 861 402" width="861px" zoomAndPan="magnify">
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" contentStyleType="text/css" data-diagram-type="DESCRIPTION" height="402px" preserveAspectRatio="none" style="width:791px;height:402px;background:#FFFFFF;" version="1.1" viewBox="0 0 791 402" width="791px" zoomAndPan="magnify">
   <ns0:title>CodeUnits of OpenDMS</ns0:title>
   <ns0:defs />
   <ns0:g>
-    <ns0:text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="157.8828" x="344.6021" y="24.5332">CodeUnits of OpenDMS</ns0:text>
-    <ns0:g class="entity" data-entity="OpenDMS" data-source-line="3" data-uid="ent0002" id="entity_OpenDMS">
-      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="105.3584" x="384.5" y="45.6094" />
-      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="469.8584" y="50.6094" />
-      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="467.8584" y="52.6094" />
-      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="467.8584" y="56.6094" />
-      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="65.3584" x="399.5" y="80.1426">OpenDMS</ns0:text>
+    <ns0:text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="157.8828" x="310.0325" y="24.5332">CodeUnits of OpenDMS</ns0:text>
+    <ns0:g class="entity" data-entity="OpenDMSBackend" data-source-line="3" data-uid="ent0002" id="entity_OpenDMSBackend">
+      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="159.8408" x="77" y="261.6094" />
+      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="216.8408" y="266.6094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="214.8408" y="268.6094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="214.8408" y="272.6094" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="119.8408" x="92" y="296.1426">OpenDMSBackend</ns0:text>
     </ns0:g>
-    <ns0:g class="entity" data-entity="OpenDMSNote" data-source-line="5" data-uid="ent0003" id="entity_OpenDMSNote">
-      <ns0:path d="M6,164.6094 L6,190.9609 A0,0 0 0 0 6,190.9609 L383.9478,190.9609 A0,0 0 0 0 383.9478,190.9609 L383.9478,174.6094 L373.9478,164.6094 L226.61,164.6094 L384.49,93.6094 L218.61,164.6094 L6,164.6094 A0,0 0 0 0 6,164.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
-      <ns0:path d="M373.9478,164.6094 L373.9478,174.6094 L383.9478,174.6094 L373.9478,164.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
-      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="356.9478" x="12" y="183.1045">OpenDMS is an open source document-management-system.</ns0:text>
+    <ns0:g class="entity" data-entity="OpenDMSBackendNote" data-source-line="5" data-uid="ent0003" id="entity_OpenDMSBackendNote">
+      <ns0:path d="M6,369.6094 L6,395.9609 A0,0 0 0 0 6,395.9609 L308.0933,395.9609 A0,0 0 0 0 308.0933,395.9609 L308.0933,379.6094 L298.0933,369.6094 L161,369.6094 L157,310.0894 L153,369.6094 L6,369.6094 A0,0 0 0 0 6,369.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M298.0933,369.6094 L298.0933,379.6094 L308.0933,379.6094 L298.0933,369.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="281.0933" x="12" y="388.1045">OpenDMSBackend is the backend of OpenDMS.</ns0:text>
     </ns0:g>
-    <ns0:g class="entity" data-entity="OpenDMSBackend" data-source-line="9" data-uid="ent0005" id="entity_OpenDMSBackend">
-      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="159.8408" x="357" y="261.6094" />
-      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="496.8408" y="266.6094" />
-      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="494.8408" y="268.6094" />
-      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="494.8408" y="272.6094" />
-      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="119.8408" x="372" y="296.1426">OpenDMSBackend</ns0:text>
+    <ns0:g class="entity" data-entity="OpenDMSFrontend" data-source-line="9" data-uid="ent0005" id="entity_OpenDMSFrontend">
+      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="161.3926" x="210.5" y="153.6094" />
+      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="351.8926" y="158.6094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="349.8926" y="160.6094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="349.8926" y="164.6094" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="121.3926" x="225.5" y="188.1426">OpenDMSFrontend</ns0:text>
     </ns0:g>
-    <ns0:g class="entity" data-entity="OpenDMSBackendNote" data-source-line="11" data-uid="ent0006" id="entity_OpenDMSBackendNote">
-      <ns0:path d="M286,369.6094 L286,395.9609 A0,0 0 0 0 286,395.9609 L588.0933,395.9609 A0,0 0 0 0 588.0933,395.9609 L588.0933,379.6094 L578.0933,369.6094 L441,369.6094 L437,310.0894 L433,369.6094 L286,369.6094 A0,0 0 0 0 286,369.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
-      <ns0:path d="M578.0933,369.6094 L578.0933,379.6094 L588.0933,379.6094 L578.0933,369.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
-      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="281.0933" x="292" y="388.1045">OpenDMSBackend is the backend of OpenDMS.</ns0:text>
+    <ns0:g class="entity" data-entity="OpenDMSFrontendNote" data-source-line="11" data-uid="ent0006" id="entity_OpenDMSFrontendNote">
+      <ns0:path d="M272,272.6094 L272,298.9609 A0,0 0 0 0 272,298.9609 L574.0869,298.9609 A0,0 0 0 0 574.0869,298.9609 L574.0869,282.6094 L564.0869,272.6094 L411.94,272.6094 L319.64,201.6094 L403.94,272.6094 L272,272.6094 A0,0 0 0 0 272,272.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M564.0869,272.6094 L564.0869,282.6094 L574.0869,282.6094 L564.0869,272.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="281.0869" x="278" y="291.1045">OpenDMSFrontend is the frontend of OpenDMS.</ns0:text>
     </ns0:g>
-    <ns0:g class="entity" data-entity="OpenDMSFrontend" data-source-line="15" data-uid="ent0008" id="entity_OpenDMSFrontend">
-      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="161.3926" x="490.5" y="153.6094" />
-      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="631.8926" y="158.6094" />
-      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="629.8926" y="160.6094" />
-      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="629.8926" y="164.6094" />
-      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="121.3926" x="505.5" y="188.1426">OpenDMSFrontend</ns0:text>
+    <ns0:g class="entity" data-entity="OpenDMS" data-source-line="15" data-uid="ent0008" id="entity_OpenDMS">
+      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="105.3584" x="238.5" y="45.6094" />
+      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="323.8584" y="50.6094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="321.8584" y="52.6094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="321.8584" y="56.6094" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="65.3584" x="253.5" y="80.1426">OpenDMS</ns0:text>
     </ns0:g>
-    <ns0:g class="entity" data-entity="OpenDMSFrontendNote" data-source-line="17" data-uid="ent0009" id="entity_OpenDMSFrontendNote">
-      <ns0:path d="M552,272.6094 L552,298.9609 A0,0 0 0 0 552,298.9609 L854.0869,298.9609 A0,0 0 0 0 854.0869,298.9609 L854.0869,282.6094 L844.0869,272.6094 L691.94,272.6094 L599.64,201.6094 L683.94,272.6094 L552,272.6094 A0,0 0 0 0 552,272.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
-      <ns0:path d="M844.0869,272.6094 L844.0869,282.6094 L854.0869,282.6094 L844.0869,272.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
-      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="281.0869" x="558" y="291.1045">OpenDMSFrontend is the frontend of OpenDMS.</ns0:text>
+    <ns0:g class="entity" data-entity="OpenDMSNote" data-source-line="17" data-uid="ent0009" id="entity_OpenDMSNote">
+      <ns0:path d="M407,164.6094 L407,190.9609 A0,0 0 0 0 407,190.9609 L784.9478,190.9609 A0,0 0 0 0 784.9478,190.9609 L784.9478,174.6094 L774.9478,164.6094 L565.39,164.6094 L343.78,88.9494 L557.39,164.6094 L407,164.6094 A0,0 0 0 0 407,164.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M774.9478,164.6094 L774.9478,174.6094 L784.9478,174.6094 L774.9478,164.6094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="356.9478" x="413" y="183.1045">OpenDMS is an open source document-management-system.</ns0:text>
     </ns0:g>
-    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSFrontend" data-source-line="21" data-uid="lnk11" id="link_OpenDMS_OpenDMSFrontend">
-      <ns0:path d="M466.08,93.6094 C488.4,111.2694 514.384,131.8274 536.814,149.5674" fill="none" id="OpenDMS-to-OpenDMSFrontend" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="#181818" points="541.52,153.2894,536.9423,144.569,537.5983,150.1877,531.9796,150.8437,541.52,153.2894" style="stroke:#181818;stroke-width:1;" />
+    <ns0:g class="link" data-entity-1="OpenDMSFrontend" data-entity-2="OpenDMSBackend" data-source-line="21" data-uid="lnk11" id="link_OpenDMSFrontend_OpenDMSBackend">
+      <ns0:path d="M261.92,201.6094 C239.6,219.2694 213.616,239.8274 191.186,257.5674" fill="none" id="OpenDMSFrontend-to-OpenDMSBackend" style="stroke:#181818;stroke-width:1;" />
+      <ns0:polygon fill="#181818" points="186.48,261.2894,196.0204,258.8437,190.4017,258.1877,191.0577,252.569,186.48,261.2894" style="stroke:#181818;stroke-width:1;" />
     </ns0:g>
-    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSBackend" data-source-line="22" data-uid="lnk12" id="link_OpenDMS_OpenDMSBackend">
-      <ns0:path d="M437,93.9194 C437,135.0794 437,214.1894 437,255.3294" fill="none" id="OpenDMS-to-OpenDMSBackend" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="#181818" points="437,261.3294,441,252.3294,437,256.3294,433,252.3294,437,261.3294" style="stroke:#181818;stroke-width:1;" />
+    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSFrontend" data-source-line="22" data-uid="lnk12" id="link_OpenDMS_OpenDMSFrontend">
+      <ns0:path d="M291,93.6094 C291,111.2694 291,129.5494 291,147.2894" fill="none" id="OpenDMS-to-OpenDMSFrontend" style="stroke:#181818;stroke-width:1;" />
+      <ns0:polygon fill="#181818" points="291,153.2894,295,144.2894,291,148.2894,287,144.2894,291,153.2894" style="stroke:#181818;stroke-width:1;" />
     </ns0:g>
-    <ns0:g class="link" data-entity-1="OpenDMSFrontend" data-entity-2="OpenDMSBackend" data-source-line="23" data-uid="lnk13" id="link_OpenDMSFrontend_OpenDMSBackend">
-      <ns0:path d="M541.92,201.6094 C519.6,219.2694 493.616,239.8274 471.186,257.5674" fill="none" id="OpenDMSFrontend-to-OpenDMSBackend" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="#181818" points="466.48,261.2894,476.0204,258.8437,470.4017,258.1877,471.0577,252.569,466.48,261.2894" style="stroke:#181818;stroke-width:1;" />
+    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSBackend" data-source-line="23" data-uid="lnk13" id="link_OpenDMS_OpenDMSBackend">
+      <ns0:path d="M254,93.7194 C233.24,108.4794 208.48,129.3694 193,153.6094 C171.55,187.2094 163.4867,227.5873 159.9767,255.1973" fill="none" id="OpenDMS-to-OpenDMSBackend" style="stroke:#181818;stroke-width:1;" />
+      <ns0:polygon fill="#181818" points="159.22,261.1494,164.3231,252.7257,159.8506,256.1893,156.387,251.7168,159.22,261.1494" style="stroke:#181818;stroke-width:1;" />
     </ns0:g>
   </ns0:g>
 </ns0:svg>

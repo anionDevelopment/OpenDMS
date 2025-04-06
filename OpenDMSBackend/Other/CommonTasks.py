@@ -10,8 +10,8 @@ def get_data_from_submodule(codeunit_folder: str) -> None:
     repository_folder = GeneralUtilities.resolve_relative_path("..", codeunit_folder)
     datasubmodule_folder = GeneralUtilities.resolve_relative_path("Other/Resources/Submodules/tessdata_best", repository_folder)
     tessdata_folder = GeneralUtilities.resolve_relative_path(".", datasubmodule_folder)
-    target_folder = GeneralUtilities.resolve_relative_path("./Resources/OCRData", codeunit_folder)
-    GeneralUtilities.copy_content_of_folder(tessdata_folder, target_folder)
+    target_folder = GeneralUtilities.resolve_relative_path("./Other/Resources/OCRData", codeunit_folder)
+    GeneralUtilities.copy_content_of_folder(tessdata_folder, target_folder,True,None)
 
 
 def common_tasks():

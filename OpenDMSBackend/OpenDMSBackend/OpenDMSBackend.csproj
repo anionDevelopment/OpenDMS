@@ -77,6 +77,7 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.3" />
         <PackageReference Include="NJsonSchema" Version="11.2.0" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.3.0" />
+        <PackageReference Include="System.Drawing.Common" Version="9.0.3" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
         <PackageReference Include="Tesseract" Version="5.2.0" />

@@ -16,8 +16,8 @@ namespace OpenDMSBackend.Core.Services
 
         public void AddExampleData()
         {
-            var now = DateTime.Now;
-            var initialDate = new DateTime(now.Year,now.Month,now.Day,now.Hour,0,0).AddHours(-1);
+            DateTime now = DateTime.Now;
+            DateTime initialDate = new DateTime(now.Year,now.Month,now.Day,now.Hour,0,0).AddHours(-1);
             (string userId, string storageLocationId) userDetails1 = this.AddUser(1);//minimal example
             this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId, initialDate);
 
@@ -75,7 +75,7 @@ namespace OpenDMSBackend.Core.Services
             string title = $"Document{documentNumber.ToString().PadLeft(2, '0')}";
             string filename = $"{title}.pdf";
             byte[] content = GetFileContentFromEmbeddedExampleDocuments(filename);
-            var creationDate = initialDate.AddMinutes(documentNumber);
+            DateTime creationDate = initialDate.AddMinutes(documentNumber);
             this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content, GRYDateTime.FromDateTime(creationDate));
         }
 
@@ -86,7 +86,7 @@ namespace OpenDMSBackend.Core.Services
             using Stream stream = assembly.GetManifestResourceStream(resourceName)!;
             BinaryReader binaryReader = new BinaryReader(stream);
             using BinaryReader reader = binaryReader;
-            var result = reader.ReadBytes((int)stream.Length);
+            byte[] result = reader.ReadBytes((int)stream.Length);
             return result;
         }
     }
