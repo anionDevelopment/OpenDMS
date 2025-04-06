@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
@@ -54,11 +53,6 @@ namespace OpenDMSBackend.Core.Services
         public void CreateDocument(Document document)
         {
             this._Documents[document.Id] = document;
-        }
-
-        public bool DocumentExists(string id)
-        {
-            return this._Documents.ContainsKey(id);
         }
 
         public bool IsAvailable()

@@ -2,7 +2,6 @@
 using GRYLibrary.Core.APIServer.Services.Trans;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
@@ -12,7 +11,6 @@ namespace OpenDMSBackend.Core.Services
         public IContainee GetContaineeById(string containeeId);
         public IContainer GetContainerById(string containerId);
         public void CreateDocument(Document document);
-        public bool DocumentExists(string id);
         public uint GetAmountOfDocuments();
         public void Reset();
         public Document GetDocument(string id);

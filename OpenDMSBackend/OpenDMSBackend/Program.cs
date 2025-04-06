@@ -31,6 +31,7 @@ using GRYLibrary.Core.APIServer.Settings.Configuration;
 using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
 using OpenDMSBackend.Core.BackgroundServices;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
+using GRYLibrary.Core.APIServer.Services.Res;
 
 namespace OpenDMSBackend.Core
 {
@@ -116,12 +117,13 @@ namespace OpenDMSBackend.Core
                         logger.Log($"Run transient.", LogLevel.Information);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, TransientPersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendTransientAuthenticationService>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, OpenDMSBackendTransientAuthenticationServicePersistence>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, TransientAuthenticationServicePersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
                     }
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, IdGenerator>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProvider>();
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRService, OCRService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());

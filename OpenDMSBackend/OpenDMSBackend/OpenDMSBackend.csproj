@@ -59,8 +59,8 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="ExtendedXmlSerializer" Version="3.8.0" />
-        <PackageReference Include="GRYLibrary" Version="0.12.143" />
+        <PackageReference Include="ExtendedXmlSerializer" Version="3.9.4" />
+        <PackageReference Include="GRYLibrary" Version="0.12.144" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.0" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
@@ -75,10 +75,11 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.3" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.3" />
-        <PackageReference Include="NJsonSchema" Version="11.1.0" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.2.0" />
+        <PackageReference Include="NJsonSchema" Version="11.2.0" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.3.0" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
+        <PackageReference Include="Tesseract" Version="5.2.0" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Resources\**">

@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Exceptions;
@@ -28,7 +29,8 @@ namespace OpenDMSBackend.Core.Services
         private readonly IGeneralLogger _Logger;
         private readonly IOCRService _OCRService;
         private readonly IIdGenerator<ulong> _IdGenerator;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService, IIdGenerator<ulong> idGenerator)
+        private readonly IGeneralResourceLoader _GeneralResourceLoader;
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -38,6 +40,7 @@ namespace OpenDMSBackend.Core.Services
             this._Configuration = configuration;
             this._OCRService = oCRService;
             this._IdGenerator = idGenerator;
+            this._GeneralResourceLoader = generalResourceLoader;
         }
 
         public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate)
@@ -221,8 +224,22 @@ namespace OpenDMSBackend.Core.Services
         private void AnalyseDocument(Document document)
         {
             this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
+            try
+            {
             document.Preview = Miscellaneous.Utilities.GeneratePreview(document.Content, document.MIMEType.Value);
-            document.OCRContent = this._OCRService.GetOCRContent(document.Content, document.MIMEType.Value);
+                            }
+            catch
+            {
+                document.Preview = _GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
+            }
+            try
+            {
+                document.OCRContent = this._OCRService.GetOCRContent(document.Content, document.MIMEType.Value);
+            }
+            catch
+            {
+                document.OCRContent = string.Empty;
+            }
         }
 
         public string AddStorageLocation(string requesterUserId, string name)

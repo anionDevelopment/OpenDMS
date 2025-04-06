@@ -4,9 +4,9 @@ using OpenDMSBackend.Core.Model.BusinessTypes;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class OpenDMSBackendTransientAuthenticationServicePersistence : TransientAuthenticationServicePersistence<User>
+    public class TransientAuthenticationServicePersistence : TransientAuthenticationServicePersistence<User>
     {
-        public OpenDMSBackendTransientAuthenticationServicePersistence(ITimeService timeService) : base(timeService)
+        public TransientAuthenticationServicePersistence(ITimeService timeService) : base(timeService)
         {
         }
     }

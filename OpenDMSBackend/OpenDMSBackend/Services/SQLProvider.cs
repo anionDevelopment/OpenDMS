@@ -115,5 +115,30 @@ namespace OpenDMSBackend.Core.Services
         {
             return this.LoadSQLScript("RemoveAccessToken");
         }
+
+        public string GetScriptGetParentIdOfContainee()
+        {
+            return this.LoadSQLScript("GetParentIdOfContainee");
+        }
+
+        public string GetScriptGetAllStorageLocations()
+        {
+            return this.LoadSQLScript("GetAllStorageLocations");
+        }
+
+        public string GetScriptGetStorageLocation()
+        {
+            return this.LoadSQLScript("GetStorageLocation");
+        }
+
+        public string GetScriptGetFolder()
+        {
+            return this.LoadSQLScript("GetFolder");
+        }
+
+        public string GetScriptGetIdFromReadableId()
+        {
+            return this.LoadSQLScript("GetIdFromReadableId");
+        }
     }
 }

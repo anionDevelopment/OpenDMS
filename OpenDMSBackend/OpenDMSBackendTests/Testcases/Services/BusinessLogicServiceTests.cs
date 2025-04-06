@@ -19,11 +19,12 @@ using OpenDMSBackend.Core.Services;
 using Moq;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
+using GRYLibrary.Core.APIServer.Services.Res;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
     [TestClass]
-    public class BusinessLogicServiceTest
+    public class BusinessLogicServiceTests
     {
         private void InitializeServices(bool registrationIsEnabled, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CodeUnitSpecificCommandlineParameter> initializationService, out IPersistence persistence)
         {
@@ -45,7 +46,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
             IAuthenticationService<User> authenticationService = new OpenDMSBackendPersistentAuthenticationService(timeService, databasePersistence, logger, constants);
             Mock<OCRService> ocrServiceMock = new Mock<OCRService>(MockBehavior.Strict);
-            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration,ocrServiceMock.Object, idGenerator);
+            IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
+
+            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object, idGenerator, generalResourceLoader);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService);
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, databasePersistence, idGenerator);
         }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using OpenDMSBackend.Core.Services;
+using GRYLibrary.Core.APIServer.Services.Res;
 
 namespace OpenDMSBackend.Core.Miscellaneous
 {
@@ -31,7 +32,6 @@ namespace OpenDMSBackend.Core.Miscellaneous
             throw new System.Collections.Generic.KeyNotFoundException("Unknown environmenttargettype.");
 #endif
         }
-
 
         internal static string GetMIMEType(string fileName)
         {
