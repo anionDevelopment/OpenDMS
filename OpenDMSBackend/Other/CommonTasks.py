@@ -1,6 +1,5 @@
 import sys
 import os
-import shutil
 from pathlib import Path
 from ScriptCollection.ScriptCollectionCore import ScriptCollectionCore
 from ScriptCollection.GeneralUtilities import GeneralUtilities

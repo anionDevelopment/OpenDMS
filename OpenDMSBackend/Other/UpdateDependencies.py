@@ -3,8 +3,6 @@ from pathlib import Path
 from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjectStructure
 
 
-
-
 def update_dependencies():
     t=TasksForCommonProjectStructure()
     t.update_dependencies_of_typical_dotnet_codeunit(str(Path(__file__).absolute()), 1, sys.argv)
