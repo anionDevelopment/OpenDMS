@@ -5,6 +5,14 @@ from ScriptCollection.ScriptCollectionCore import ScriptCollectionCore
 from ScriptCollection.GeneralUtilities import GeneralUtilities
 from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjectStructure
 
+@GeneralUtilities.check_arguments
+def get_data_from_submodule(codeunit_folder: str) -> None:
+    repository_folder = GeneralUtilities.resolve_relative_path("..", codeunit_folder)
+    datasubmodule_folder = GeneralUtilities.resolve_relative_path("Other/Resources/Submodules/tessdata_best", repository_folder)
+    tessdata_folder = GeneralUtilities.resolve_relative_path(".", datasubmodule_folder)
+    target_folder = GeneralUtilities.resolve_relative_path("./Other/Resources/OCRData", codeunit_folder)
+    GeneralUtilities.copy_content_of_folder(tessdata_folder, target_folder,True,None)
+
 
 def common_tasks():
     cmd_args = sys.argv
@@ -27,6 +35,7 @@ def common_tasks():
     t.set_constants_for_certificate_private_information(codeunit_folder)
     t.t4_transform(file, verbosity)
     t.update_year_for_dotnet_codeunit_in_common_scripts_file(file)
+    get_data_from_submodule(codeunit_folder)
 
 
 if __name__ == "__main__":

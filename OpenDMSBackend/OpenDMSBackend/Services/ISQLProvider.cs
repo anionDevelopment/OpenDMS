@@ -24,5 +24,10 @@
         string GetScriptGetUserById();
         string GetScriptGetAllAccessTokenForUser();
         string GetScriptRemoveAccessToken();
+        string GetScriptGetParentIdOfContainee();
+        string GetScriptGetAllStorageLocations();
+        string GetScriptGetStorageLocation();
+        string GetScriptGetFolder();
+        string GetScriptGetIdFromReadableId();
     }
 }

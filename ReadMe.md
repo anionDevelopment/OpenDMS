@@ -4,7 +4,31 @@
 ![Coverage](./OpenDMS/Other/Resources/TestCoverageBadges/badge_shieldsio_linecoverage_blue.svg)
 ![Lines of code](https://img.shields.io/tokei/lines/github/anionDev/OpenDMS)
 
+## Purpose
+
 `OpenDMS` is an open source document-management-system.
+
+## Features
+
+- Show and download exiting documents.
+
+## Not implemented features
+
+- Allow uploading and deleting documents.
+- Allow setting retention-date-metadata.
+- Allow setting contact-metadata.
+- Allow setting document-type.
+- Allow defining arbitrary-metadata.
+- Allow linkig other documents.
+- Allow setting permissions to share documents with other users.
+- Allow moving documents to another folder.
+- Implement OCR.
+- Allow defining a folder where documents will be pulled from.
+- Allow actions (web requests for example) to be done when a specific event occurs (e. g. when a document will be moved to a specific folder).
+- Implement search/filter by title/OCR-content/metadata/etc.
+- Allow setting tags.
+- Allow login with OpenID.
+- Refactor authentication-mechanism if required for security-purposes.
 
 ## Getting Started
 

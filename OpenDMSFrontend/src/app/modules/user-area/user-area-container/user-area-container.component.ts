@@ -14,7 +14,7 @@ export class UserAreaContainerComponent {
   activeSite: string;
   userIsAdmin: boolean | null = null;
   constructor(private router: Router, userDataService: UserDataService, utilitiesService: UtilitiesService) {
-    this.activeSite = this.getSiteTitle(utilitiesService.getURLWithoutQueryParameter(this.router).split('/').pop()!);
+    this.activeSite = this.getSiteTitle(utilitiesService.getURLWithoutQueryParameter(this.router).split('/')[2]);
     userDataService.userIsAdmin().subscribe((isAdmin) => {
       this.userIsAdmin = isAdmin;
     });

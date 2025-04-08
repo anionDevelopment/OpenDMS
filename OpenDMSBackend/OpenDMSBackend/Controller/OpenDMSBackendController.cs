@@ -19,7 +19,7 @@ namespace OpenDMSBackend.Core.Controller
         private readonly IBusinessLogicService _BusinessLogicService;
         private readonly IAuthenticationService _AuthenticationService;
         private readonly ITimeService _TimeService;
-        public OpenDMSBackendController(IBusinessLogicService businessLogicService, IAuthenticationService authenticationService,ITimeService timeService)
+        public OpenDMSBackendController(IBusinessLogicService businessLogicService, IAuthenticationService authenticationService, ITimeService timeService)
         {
             this._BusinessLogicService = businessLogicService;
             this._AuthenticationService = authenticationService;
@@ -31,7 +31,7 @@ namespace OpenDMSBackend.Core.Controller
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [Route($"{nameof(AddDocument)}/{{{nameof(containerId)}}}")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public IActionResult AddDocument([FromForm] byte[] content, string containerId, [FromQuery] string filename, [FromQuery] string? title)
+        public IActionResult AddDocument([FromBody] byte[] content, [FromRoute] string containerId, [FromQuery] string filename, [FromQuery] string? title)
         {
             return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._TimeService.GetCurrentTimeAsGRYDateTime()));
         }
@@ -127,7 +127,7 @@ namespace OpenDMSBackend.Core.Controller
         [Route(nameof(Search))]
         public IActionResult Search([FromQuery] string searchTerm)
         {
-            return this.Ok(this._BusinessLogicService.Search(this.GetUser().Id, searchTerm));
+            return this.Ok(this._BusinessLogicService.Search(this.GetUser().Id, searchTerm).Select(searchResult=>searchResult.ToDTO()));
         }
 
         [Authenticate]
@@ -138,6 +138,16 @@ namespace OpenDMSBackend.Core.Controller
         public IActionResult GetDocument([FromQuery] string id)
         {
             return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, id).ToDTO());
+        }
+
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpGet]
+        [Route(nameof(GetDocumentFromReadableId))]
+        [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
+        public IActionResult GetDocumentFromReadableId([FromQuery] uint readableId)
+        {
+            return this.Ok(this._BusinessLogicService.GetDocumentFromReadableId(this.GetUser().Id, readableId).ToDTO());
         }
 
         [Authenticate]

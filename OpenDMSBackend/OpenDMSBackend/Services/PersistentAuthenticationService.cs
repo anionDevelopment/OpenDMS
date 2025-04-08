@@ -204,7 +204,7 @@ namespace OpenDMSBackend.Core.Services
 
         public void Logout(string accessToken)
         {
-            _AuthentificationPersistence.RemoveAccessToken(accessToken);
+            this._AuthentificationPersistence.RemoveAccessToken(accessToken);
         }
 
         public void Logout(ClaimsPrincipal user)
@@ -259,7 +259,7 @@ namespace OpenDMSBackend.Core.Services
 
         public User GetUser(string userId)
         {
-          return _AuthentificationPersistence.GetUserById(userId);
+          return this._AuthentificationPersistence.GetUserById(userId);
         }
 
         public ISet<string> GetRolesOfUser(string userId)

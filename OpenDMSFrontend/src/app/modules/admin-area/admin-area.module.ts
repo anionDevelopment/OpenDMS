@@ -7,7 +7,6 @@ import { UsersListComponent } from './users-list/users-list.component';
 import { AdminAreaContainerComponent } from './admin-area-container/admin-area-container.component';
 import { HomePageModule } from '../home-page/home-page.module';
 import { UserAreaModule } from '../user-area/user-area.module';
-import { FrameWorkComponent } from "../home-page/frame-work/frame-work.component";
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';

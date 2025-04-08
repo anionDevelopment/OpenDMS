@@ -1,10 +1,10 @@
 <mat-accordion multi>
     <mat-expansion-panel *ngFor="let storageLocation of storageLocations">
         <mat-expansion-panel-header>
-            <mat-panel-title> {{storageLocation.name}} </mat-panel-title>
+            <mat-panel-title><mat-icon>inventory-2</mat-icon> {{storageLocation.name}} </mat-panel-title>
         </mat-expansion-panel-header>
         <app-content-view [title]="storageLocation.name" [folderIds]="storageLocation.containedFolderIds"
-            [documentIds]="storageLocation.containedDocumentIds" [parentContainerId]="storageLocation.id"
-            [isFolder]="false"></app-content-view>
+            [documentIds]="storageLocation.containedDocumentIds" [containerId]="storageLocation.id" [isFolder]="false"
+            (containerRemoved)="onContainerRemoved($event)"></app-content-view>
     </mat-expansion-panel>
 </mat-accordion>

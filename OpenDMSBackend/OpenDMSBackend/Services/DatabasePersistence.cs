@@ -405,11 +405,6 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
-        public bool DocumentExists(string id)
-        {
-            throw new NotImplementedException();
-        }
-
         public uint GetAmountOfDocuments()
         {
             return this.RunTransaction((cmd) =>
@@ -554,6 +549,19 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
+        public IContainer GetContainerById(string containerId)
+        {
+            if (this.IsStorageLocation(containerId))
+            {
+                return this.GetStorageLocation(containerId);
+            }
+            if (this.IsFolder(containerId))
+            {
+                return this.GetFolder(containerId);
+            }
+            throw new KeyNotFoundException($"No {nameof(IContainer)} available with id \"{containerId}\".");
+        }
+
         public IContainee GetContaineeById(string containeeId)
         {
             if (this.IsDocument(containeeId))
@@ -569,7 +577,22 @@ namespace OpenDMSBackend.Core.Services
 
         public string GetParentIdOfContainee(string containeeId)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetParentIdOfContainee();
+                cmd.Parameters.Add(new MySqlParameter("Id", containeeId));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    string result = reader.GetString(0);
+                    return result;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No container found for containee '{containeeId}'.");
+                }
+            })[0];
         }
 
         public bool IsContaineeId(string id)
@@ -579,7 +602,21 @@ namespace OpenDMSBackend.Core.Services
 
         public bool IsStorageLocationId(string id)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptIsStorageLocation();
+                cmd.Parameters.Add(new MySqlParameter("ContentId", id));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                reader.Read();
+                if (reader.HasRows)
+                {
+                    return reader.GetUInt32(0) == 1;
+                }
+                else
+                {
+                    return false;
+                }
+            })[0];
         }
 
         public DocumentPreview GetDocumentPreview(string id)
@@ -605,17 +642,68 @@ namespace OpenDMSBackend.Core.Services
 
         public IEnumerable<string> GetAllStorageLocationIds()
         {
-            throw new NotImplementedException();
+            ISet<string> result = this.RunTransaction((command) =>
+            {
+                ISet<string> resultInternal = new HashSet<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetAllStorageLocations();
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string id = reader.GetString(0);
+                        resultInternal.Add(id);
+                    }
+                    reader.Close();
+                    return resultInternal;
+                };
+            })[0];
+            return result;
         }
 
         public StorageLocation GetStorageLocation(string storageLocationId)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((command) =>
+            {
+                StorageLocation result = null;
+                command.CommandText = this._SQLProvider.GetScriptGetStorageLocation();
+                command.Parameters.Add(new MySqlParameter("Id", storageLocationId));
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result = new StorageLocation()
+                        {
+                            Id = storageLocationId,
+                            Name = reader.GetString(0),
+                        };
+                    }
+                    reader.Close();
+                    return result;
+                };
+            })[0];
         }
 
         public Folder GetFolder(string folderId)
         {
-            throw new NotImplementedException();
+            return this.RunTransaction((command) =>
+            {
+                Folder result = null;
+                command.CommandText = this._SQLProvider.GetScriptGetFolder();
+                command.Parameters.Add(new MySqlParameter("Id", folderId));
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result = new Folder()
+                        {
+                            Id = folderId,
+                            Name = reader.GetString(0),
+                        };
+                    }
+                    reader.Close();
+                    return result;
+                };
+            })[0];
         }
 
         public bool IsStorageLocation(string contentId)
@@ -724,7 +812,6 @@ namespace OpenDMSBackend.Core.Services
         public void Housekeeping()
         {
             //TODO 
-            throw new NotImplementedException();
         }
 
         public ulong GetLatestReadableId()
@@ -733,6 +820,41 @@ namespace OpenDMSBackend.Core.Services
         }
 
         public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveChild(string parentId, string childId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetIdFromReadableId(uint readableId)
+        {
+            return this.RunTransaction((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetIdFromReadableId();
+                cmd.Parameters.Add(new MySqlParameter("ReadableId", readableId));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    string result = reader.GetString(0);
+                    return result;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No document found for containee '{readableId}'.");
+                }
+            })[0];
+        }
+
+        public IList<DocumentPreview> Search(string requesterUserId, string[] searchTerms)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool DocumentExists(string id)
         {
             throw new NotImplementedException();
         }

@@ -2,10 +2,14 @@
     <app-user-area-container>
         <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center">
             <mat-tab label="Latest documents">
-                <app-document-table [documents$]="latestDocuments$"></app-document-table>
+                <app-document-table [documents$]="latestDocuments$"
+                    (documentRemoved)="onDocumentRemoved($event)"></app-document-table>
             </mat-tab>
             <mat-tab label="All documents">
                 <app-content-tree></app-content-tree>
+            </mat-tab>
+            <mat-tab label="Search">
+                <app-search></app-search>
             </mat-tab>
         </mat-tab-group>
     </app-user-area-container>

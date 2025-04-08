@@ -16,7 +16,7 @@ using IAuthenticationService = GRYLibrary.Core.APIServer.Services.Interfaces.IAu
 namespace OpenDMSBackend.Core.Controller
 {
     [ApiController]
-    [Route(UserController.ControllerRoute)]
+    [Route(ControllerRoute)]
     public class UserController : ControllerBase
     {
         public const string ControllerRoute = $"{ServerConfiguration.APIRoutePrefix}/v{GeneralConstants.CodeUnitMajorVersion}/{nameof(UserController)}";

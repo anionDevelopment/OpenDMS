@@ -28,7 +28,7 @@ using GRYLibrary.Core.APIServer.Services.OtherServices;
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
     [TestClass]
-    public class DatabasePersistenceTests
+    public class DatabasePersistenceTests : PersistenceTests
     {
         [TestMethod(nameof(DatabasePersistenceCreateDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
@@ -80,11 +80,11 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             using (DatabaseTestFramework databaseTestFramework = new DatabaseTestFramework())
             {
                 IDatabaseManager databaseManager = new DatabaseManager();
-               ITimeService timeService = new TimeService();
+                ITimeService timeService = new TimeService();
                 GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager, timeService);
                 DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
                 optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
-                 IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
+                IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
                 persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = true;
                 Mock<IIdGenerator<ulong>> idGeneratorMock = new Mock<IIdGenerator<ulong>>(MockBehavior.Strict);
@@ -133,5 +133,38 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             File.WriteAllText(targetFile, sqlSource, new UTF8Encoding(false));
         }
 
+        private (DatabasePersistence databasePersistence, ITimeService timeService) GetDatabasePersistence(DatabaseTestFramework databaseTestFramework)
+        {
+            IDatabaseManager databaseManager = new DatabaseManager();
+            ITimeService timeService = new TimeService();
+            GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager, timeService);
+            DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+            optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
+            IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
+            persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
+            persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = true;
+            Mock<IIdGenerator<ulong>> idGeneratorMock = new Mock<IIdGenerator<ulong>>(MockBehavior.Strict);
+            Mock<IExampleDataCreator> exampleDataCreatorMock = new Mock<IExampleDataCreator>(MockBehavior.Strict);
+            exampleDataCreatorMock.Setup(mock => mock.AddExampleData());
+            IGRYLog logger = GeneralLogger.CreateUsingConsole();
+            Mock<IApplicationConstants<CodeUnitSpecificConstants>> constantsMock = new Mock<IApplicationConstants<CodeUnitSpecificConstants>>(MockBehavior.Strict);
+            constantsMock.SetupGet(m => m.Environment).Returns(OpenDMSBackendUtilities.GetEnvironmentTargetType());
+            ISQLProvider sqlProvider = new SQLProvider();
+
+            DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
+
+            return (databasePersistence, timeService);
+        }
+
+        [TestMethod(nameof(PersistDocumentTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public override void PersistDocumentTest()
+        {
+            using (DatabaseTestFramework databaseTestFramework = new DatabaseTestFramework())
+            {
+                (DatabasePersistence persistence, ITimeService timeService) = this.GetDatabasePersistence(databaseTestFramework);
+                this.PersistDocumentTest(persistence, timeService);
+            }
+        }
     }
 }
