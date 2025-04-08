@@ -59,7 +59,6 @@ describe('ContentViewComponent', () => {
         {
           provide: OpenDMSBackendService,
           useValue: {
-
           }
         }
       ]

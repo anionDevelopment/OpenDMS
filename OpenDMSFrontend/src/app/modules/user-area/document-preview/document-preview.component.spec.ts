@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DocumentPreviewComponent } from './document-preview.component';
+import { UserService } from '../../../generated/open-dms-backend';
 
 describe('DocumentPreviewComponent', () => {
   let component: DocumentPreviewComponent;
@@ -8,9 +9,18 @@ describe('DocumentPreviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DocumentPreviewComponent]
-    })
-    .compileComponents();
+      imports: [DocumentPreviewComponent],
+      providers: [
+        {
+          provide: UserService,
+          useValue: {
+          },
+        },
+      ],
+      declarations: [
+        DocumentPreviewComponent,
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DocumentPreviewComponent);
     component = fixture.componentInstance;

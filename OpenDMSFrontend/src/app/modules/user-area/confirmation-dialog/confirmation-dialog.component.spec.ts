@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ConfirmationDialogComponent } from './confirmation-dialog.component';
+import { UserService } from '../../../generated/open-dms-backend';
 
 describe('ConfirmationDialogComponent', () => {
   let component: ConfirmationDialogComponent;
@@ -8,9 +9,19 @@ describe('ConfirmationDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ConfirmationDialogComponent]
-    })
-    .compileComponents();
+      imports: [
+      ],
+      declarations: [
+        ConfirmationDialogComponent,
+      ],
+      providers: [
+        {
+          provide: UserService,
+          useValue: {
+          },
+        },
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ConfirmationDialogComponent);
     component = fixture.componentInstance;

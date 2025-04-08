@@ -5,7 +5,7 @@ import { HomePageModule } from '../../home-page/home-page.module';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from '../../../services/storage.service';
-import { OpenDMSBackendService } from '../../../generated/open-dms-backend';
+import { OpenDMSBackendService, UserService } from '../../../generated/open-dms-backend';
 import { of } from 'rxjs';
 import { UserAreaContainerComponent } from '../user-area-container/user-area-container.component';
 import { UserDataService } from '../../../services/user-data.service';
@@ -76,6 +76,11 @@ describe('DocumentsListComponent', () => {
       ],
       providers: [
         {
+          provide: UserService,
+          useValue: {
+          },
+        },
+        {
           provide: OpenDMSBackendService,
           useValue: {
             aPIV1OpenDMSBackendGetLatestDocumentsGet: () => of([]),
@@ -91,7 +96,6 @@ describe('DocumentsListComponent', () => {
         {
           provide: UserDataService,
           useValue: {
-            getAccessToken: () => "accesstoken1",
           }
         },
         {
