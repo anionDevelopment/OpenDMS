@@ -21,6 +21,8 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public byte[] Content { get; set; }
         public byte[] Preview { get; set; }
         public string OCRContent { get; set; }
+        //TODO add a concept to be able to apply a can-not-be-deleted-before-timestamp
+        //TODO add a concept to be able to apply a must-be-deleted-after-timestamp
         public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentPreview, string oCRContent, byte[] documentContent)
         {
             this.Id = id;
