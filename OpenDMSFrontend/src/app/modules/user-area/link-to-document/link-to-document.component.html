@@ -1,1 +1,3 @@
-<a href="/user/document/{{documentPreview!.readableId!}}">{{documentPreview!.readableId!}}</a>
+<div *ngIf="documentPreview">
+    <a href="/user/document/{{documentPreview!.readableId!}}">{{documentPreview!.readableId!}}</a>
+</div>

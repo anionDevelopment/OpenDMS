@@ -49,7 +49,7 @@ describe('ContentTreeComponent', () => {
         MatSidenavModule,
         MatButtonModule,
         MatTabsModule,
-        HomePageModule
+        HomePageModule,
       ],
       declarations: [
         ContentTreeComponent,

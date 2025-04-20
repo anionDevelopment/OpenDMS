@@ -31,6 +31,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { DocumentTableComponent } from '../document-table/document-table.component';
 import { ContentTreeComponent } from '../content-tree/content-tree.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { SearchComponent } from '../search/search.component';
 
 @Component({
   selector: 'app-user-area-container',
@@ -73,6 +74,7 @@ describe('DocumentsListComponent', () => {
         DocumentTableComponent,
         UserAreaContainerComponentMock,
         DocumentsListComponent,
+        SearchComponent,
       ],
       providers: [
         {

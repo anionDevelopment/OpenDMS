@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { LinkToDocumentComponent } from './link-to-document.component';
 import { UserService } from '../../../generated/open-dms-backend';
 

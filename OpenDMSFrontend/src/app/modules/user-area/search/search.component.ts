@@ -17,7 +17,6 @@ export class SearchComponent {
   }
 
   search() {
-    console.log("log");
     this.openDMSBackendService.aPIV1OpenDMSBackendSearchGet(this.storageService.getAccessToken(), this.searchText).subscribe((result => {
       this.documents$.next(result);
     }));
