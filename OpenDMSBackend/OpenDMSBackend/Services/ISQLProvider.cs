@@ -29,5 +29,6 @@
         string GetScriptGetStorageLocation();
         string GetScriptGetFolder();
         string GetScriptGetIdFromReadableId();
+        string GetScriptSearch();
     }
 }

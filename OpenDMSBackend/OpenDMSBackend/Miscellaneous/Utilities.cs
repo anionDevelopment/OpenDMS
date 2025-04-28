@@ -10,7 +10,9 @@ using System.Linq;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes;
 using System.IO;
-using System.Drawing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp;
 
 namespace OpenDMSBackend.Core.Miscellaneous
 {
@@ -115,49 +117,17 @@ namespace OpenDMSBackend.Core.Miscellaneous
         }
         public static byte[] ResizeImage(byte[] originalImageBytes, int maxWidth, int maxHeight)
         {
-            using var inputStream = new MemoryStream(originalImageBytes);
-            using var originalImage = Image.FromStream(inputStream);
+            using MemoryStream inputStream = new MemoryStream(originalImageBytes);
+            using Image<Rgba32> image = Image.Load<Rgba32>(inputStream);
 
-            // Berechne das Seitenverhältnis
-            float aspectRatio = (float)originalImage.Width / originalImage.Height;
-
-            // Bestimme neue Breite und Höhe unter Beibehaltung des Seitenverhältnisses
-            int newWidth, newHeight;
-
-            if (originalImage.Width > originalImage.Height)
+            image.Mutate(x => x.Resize(new ResizeOptions
             {
-                // Breite ist größer als Höhe, skaliere basierend auf maxWidth
-                newWidth = maxWidth;
-                newHeight = (int)(maxWidth / aspectRatio);
-            }
-            else
-            {
-                // Höhe ist größer als Breite, skaliere basierend auf maxHeight
-                newHeight = maxHeight;
-                newWidth = (int)(maxHeight * aspectRatio);
-            }
+                Mode = ResizeMode.Max,
+                Size = new Size(maxWidth, maxHeight)
+            }));
 
-            // Stelle sicher, dass die neue Breite und Höhe die Maximalwerte nicht überschreiten
-            if (newWidth > maxWidth)
-            {
-                newWidth = maxWidth;
-                newHeight = (int)(maxWidth / aspectRatio);
-            }
-
-            if (newHeight > maxHeight)
-            {
-                newHeight = maxHeight;
-                newWidth = (int)(maxHeight * aspectRatio);
-            }
-
-            using var resizedImage = new Bitmap(newWidth, newHeight);
-            using var graphics = Graphics.FromImage(resizedImage);
-
-            graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            graphics.DrawImage(originalImage, 0, 0, newWidth, newHeight);
-
-            using var outputStream = new MemoryStream();
-            resizedImage.Save(outputStream, System.Drawing.Imaging.ImageFormat.Jpeg); 
+            using MemoryStream outputStream = new MemoryStream();
+            image.Save(outputStream, GRYLibrary.Core.Misc.Utilities.GetValue(image.Metadata.DecodedImageFormat));
             return outputStream.ToArray();
         }
         internal static bool IsRunningInContainer()

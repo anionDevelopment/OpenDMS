@@ -20,7 +20,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes
         }
         public override byte[] GetPreview(byte[] content)
         {
-            var factor = 4;
+            int factor = 4;
             return Miscellaneous.Utilities.ResizeImage(content, 210 * factor, 297 * factor);//aspect ratio of DIN-A4
         }
         public override bool Equals(object? obj)

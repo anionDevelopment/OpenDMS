@@ -148,11 +148,11 @@ namespace OpenDMSBackend.Core
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
-                    IMetricsService metricsService = functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>();
+                    IMetricsService metricsService =GUtilities.GetValue( functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
                     functionalInformationForWebApplication.PreRun = () =>
                     {
                         //initialize
-                        functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CodeUnitSpecificCommandlineParameter>>().Initialize(apiServerConfiguration.CommandlineParameter);
+                        GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CodeUnitSpecificCommandlineParameter>>()).Initialize(apiServerConfiguration.CommandlineParameter);
 
                         //start background-services
                         metricsService.StartAsync();

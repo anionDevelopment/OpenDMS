@@ -140,5 +140,10 @@ namespace OpenDMSBackend.Core.Services
         {
             return this.LoadSQLScript("GetIdFromReadableId");
         }
+
+        public string GetScriptSearch()
+        {
+            return this.LoadSQLScript("Search");
+        }
     }
 }

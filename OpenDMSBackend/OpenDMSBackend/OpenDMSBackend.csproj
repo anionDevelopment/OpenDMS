@@ -60,7 +60,7 @@
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.4" />
-        <PackageReference Include="GRYLibrary" Version="0.12.144" />
+        <PackageReference Include="GRYLibrary" Version="0.12.145" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.4" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
@@ -70,12 +70,12 @@
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
         <PackageReference Include="prometheus-net" Version="8.2.1" />
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.8" />
         <PackageReference Include="System.Collections.Immutable" Version="9.0.4" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.4" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
-        <PackageReference Include="NJsonSchema" Version="11.2.0" />
+        <PackageReference Include="NJsonSchema" Version="11.3.2" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.3.0" />
         <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
@@ -86,5 +86,10 @@
         <EmbeddedResource Include="Resources\**">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Database\SQL\Search.sql">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </EmbeddedResource>
     </ItemGroup>
 </Project>

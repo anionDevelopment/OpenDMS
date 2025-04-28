@@ -42,9 +42,24 @@ CREATE TABLE `Documents` (
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 
+CREATE TABLE `Tags` (
+    `Id` varchar(255) not null,
+    `Name` varchar(255) not null,
+    `NameLower` varchar(255) not null,
+    `Color` varchar(8) not null,
+    CONSTRAINT `PK_Tags` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `Document_Tag` (
+    `DocumentId` varchar(255) not null,
+    `TagId` varchar(255) not null,
+    CONSTRAINT `PK_Tags` PRIMARY KEY (`DocumentId`, `TagId`)
+) CHARACTER SET=utf8mb4;
+
 CREATE TABLE `Container_Containee` (
     `ContainerId` varchar(255) not null,
-    `ContaineeId` varchar(255) not null
+    `ContaineeId` varchar(255) not null,
+    CONSTRAINT `PK_Tags` PRIMARY KEY (`ContainerId`, `ContaineeId`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `AccessToken` (
