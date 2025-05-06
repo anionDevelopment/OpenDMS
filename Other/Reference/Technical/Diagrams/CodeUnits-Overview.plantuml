@@ -20,7 +20,7 @@ end note
 OpenDMS .. OpenDMSNote
 
 OpenDMSFrontend --> OpenDMSBackend
-OpenDMS --> OpenDMSBackend
 OpenDMS --> OpenDMSFrontend
+OpenDMS --> OpenDMSBackend
 
 @enduml

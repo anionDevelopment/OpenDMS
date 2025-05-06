@@ -880,5 +880,10 @@ namespace OpenDMSBackend.Core.Services
                 return result.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToList();
             })[0]);
         }
+
+        public Role GetRoleByName(string roleName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

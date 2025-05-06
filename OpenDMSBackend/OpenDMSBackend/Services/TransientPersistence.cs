@@ -479,5 +479,10 @@ namespace OpenDMSBackend.Core.Services
             }
             return 0;
         }
+
+        public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleByName(string roleName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
