@@ -10,6 +10,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public ExtendedColor Color { get; set; }
         public Tag(string id, string name, ExtendedColor color)
         {
+            this.Id = id;
             this.Name = name;
             this.Color = color;
         }

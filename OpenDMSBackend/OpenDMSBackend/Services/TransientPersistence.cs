@@ -438,49 +438,51 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No document found with readable id '{readableId}'.");
         }
 
-        public IList<DocumentPreview> Search(string requesterUserId, string[] searchTerms)
+        public IList<string> Search(string searchTerm)
         {
-            IList<DocumentPreview> result = new List<DocumentPreview>();
+            IDictionary<string, uint> result = new Dictionary<string, uint>();
             foreach (Document document in this._Documents.Values)
             {
-                foreach (string searchTerm in searchTerms)
+                uint score = this.DocumentMatchesSearch(document, searchTerm);
+                if (0 < score)
                 {
-                    if (this.DocumentMatchesSearch(document, requesterUserId, searchTerm))
-                    {
-                        result.Add(document.GetPreview());
-                        break;
-                    }
+                    result[document.Id] = score;
                 }
             }
-            return result;
+            return result.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToList();
         }
 
-        private bool DocumentMatchesSearch(Document document, string requesterUserId, string searchTerm)
+        private uint DocumentMatchesSearch(Document document, string searchTerm)
         {
             if (document.Title.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
             {
-                return true;
+                return 5;
             }
             if (document.Filename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
             {
-                return true;
-            }
-            if (document.OriginalFilename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return true;
-            }
-            if (document.OCRContent.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return true;
+                return 4;
             }
             foreach (Tag tag in document.Tags)
             {
                 if (tag.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    return true;
+                    return 3;
                 }
             }
-            return false;
+            if (document.OriginalFilename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return 2;
+            }
+            if (document.OCRContent.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return 1;
+            }
+            return 0;
+        }
+
+        public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleByName(string roleName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

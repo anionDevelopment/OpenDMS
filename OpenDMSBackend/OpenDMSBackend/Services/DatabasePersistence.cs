@@ -10,6 +10,7 @@ using System.Linq;
 using System.Data;
 using MySqlConnector;
 using Role = GRYLibrary.Core.APIServer.CommonDBTypes.Role;
+using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
@@ -61,7 +62,7 @@ namespace OpenDMSBackend.Core.Services
         }
         public void RunTransaction(params Action<MySqlCommand>[] actions)
         {
-            this.RunTransaction(actions.Select<Action<MySqlCommand>, Func<MySqlCommand, object>>(action => (command) =>
+            this.RunTransaction(actions.Select<Action<MySqlCommand>, Func<MySqlCommand, object?>>(action => (command) =>
             {
                 action(command);
                 return null;
@@ -69,9 +70,9 @@ namespace OpenDMSBackend.Core.Services
             ).ToArray());
         }
 
-        public T[] RunTransaction<T>(params Func<MySqlCommand, T>[] functions)
+        public T?[] RunTransaction<T>(params Func<MySqlCommand, T?>[] functions)
         {
-            List<T> results = new List<T>();
+            List<T?> results = new List<T?>();
             this.AccessDatabase(context =>
            {
                MySqlConnection connection = context.Connection;
@@ -79,7 +80,7 @@ namespace OpenDMSBackend.Core.Services
                bool commit = true;
                try
                {
-                   foreach (Func<MySqlCommand, T> function in functions)
+                   foreach (Func<MySqlCommand, T?> function in functions)
                    {
                        using (MySqlCommand cmd = connection.CreateCommand())
                        {
@@ -88,7 +89,7 @@ namespace OpenDMSBackend.Core.Services
                            cmd.Transaction = transaction;
                            try
                            {
-                               T result = function(cmd);
+                               T? result = function(cmd);
                                results.Add(result);
                            }
                            catch
@@ -143,7 +144,7 @@ namespace OpenDMSBackend.Core.Services
 
         public ISet<Role> GetAllRoles()
         {
-            ISet<Role> roles = this.RunTransaction((command) =>
+            ISet<Role> roles = GUtilities.GetValue(this.RunTransaction((command) =>
             {
                 ISet<Role> rolesInternal = new HashSet<Role>();
                 command.CommandText = this._SQLProvider.GetScriptGetAllRoles();
@@ -158,7 +159,7 @@ namespace OpenDMSBackend.Core.Services
                     reader.Close();
                     return rolesInternal;
                 };
-            })[0];
+            })[0]);
             foreach (Role role in roles)
             {
                 this.EnrichWithInheritedRoles(role);
@@ -253,7 +254,7 @@ namespace OpenDMSBackend.Core.Services
 
         public User GetUserById(string userId)
         {
-            User result = this.RunTransaction((cmd) =>
+            User result = GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetUserById();
                 cmd.Parameters.Add(new MySqlParameter("Id", userId));
@@ -275,7 +276,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new KeyNotFoundException($"No user found with id '{userId}'");
                 }
-            })[0];
+            })[0]);
             this.EnrichWhichAccessToken(result);
             this.EnrichWhichTOTPToken(result);
             return result;
@@ -283,7 +284,7 @@ namespace OpenDMSBackend.Core.Services
 
         public User GetUserByName(string userName)
         {
-            User result = this.RunTransaction((cmd) =>
+            User result = GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetUserByName();
                 cmd.Parameters.Add(new MySqlParameter("Name", userName));
@@ -305,7 +306,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new KeyNotFoundException($"No user found with username '{userName}'");
                 }
-            })[0];
+            })[0]);
             this.EnrichWhichAccessToken(result);
             this.EnrichWhichTOTPToken(result);
             return result;
@@ -445,7 +446,7 @@ namespace OpenDMSBackend.Core.Services
 
         public Document GetDocument(string id)
         {
-            return this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
                 cmd.Parameters.Add(new MySqlParameter("Id", id));
@@ -461,7 +462,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new KeyNotFoundException($"No document found with document '{id}'");
                 }
-            })[0];
+            })[0]);
         }
 
         public void CreateTag(Tag tag)
@@ -577,7 +578,7 @@ namespace OpenDMSBackend.Core.Services
 
         public string GetParentIdOfContainee(string containeeId)
         {
-            return this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetParentIdOfContainee();
                 cmd.Parameters.Add(new MySqlParameter("Id", containeeId));
@@ -592,7 +593,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new KeyNotFoundException($"No container found for containee '{containeeId}'.");
                 }
-            })[0];
+            })[0]);
         }
 
         public bool IsContaineeId(string id)
@@ -621,7 +622,7 @@ namespace OpenDMSBackend.Core.Services
 
         public DocumentPreview GetDocumentPreview(string id)
         {
-            return this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
                 cmd.Parameters.Add(new MySqlParameter("Id", id));
@@ -637,12 +638,12 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new KeyNotFoundException($"No document found with document '{id}'");
                 }
-            })[0];
+            })[0]);
         }
 
         public IEnumerable<string> GetAllStorageLocationIds()
         {
-            ISet<string> result = this.RunTransaction((command) =>
+            ISet<string> result = GUtilities.GetValue(this.RunTransaction((command) =>
             {
                 ISet<string> resultInternal = new HashSet<string>();
                 command.CommandText = this._SQLProvider.GetScriptGetAllStorageLocations();
@@ -656,15 +657,15 @@ namespace OpenDMSBackend.Core.Services
                     reader.Close();
                     return resultInternal;
                 };
-            })[0];
+            })[0]);
             return result;
         }
 
         public StorageLocation GetStorageLocation(string storageLocationId)
         {
-            return this.RunTransaction((command) =>
+            return GUtilities.GetValue(this.RunTransaction((command) =>
             {
-                StorageLocation result = null;
+                StorageLocation? result = null;
                 command.CommandText = this._SQLProvider.GetScriptGetStorageLocation();
                 command.Parameters.Add(new MySqlParameter("Id", storageLocationId));
                 using (MySqlDataReader reader = command.ExecuteReader())
@@ -678,16 +679,20 @@ namespace OpenDMSBackend.Core.Services
                         };
                     }
                     reader.Close();
+                    if (result == null)
+                    {
+                        throw new KeyNotFoundException($"No storage location found with id '{storageLocationId}'");
+                    }
                     return result;
                 };
-            })[0];
+            })[0]);
         }
 
         public Folder GetFolder(string folderId)
         {
-            return this.RunTransaction((command) =>
+            return GUtilities.GetValue(this.RunTransaction((command) =>
             {
-                Folder result = null;
+                Folder? result = null;
                 command.CommandText = this._SQLProvider.GetScriptGetFolder();
                 command.Parameters.Add(new MySqlParameter("Id", folderId));
                 using (MySqlDataReader reader = command.ExecuteReader())
@@ -701,9 +706,13 @@ namespace OpenDMSBackend.Core.Services
                         };
                     }
                     reader.Close();
+                    if (result == null)
+                    {
+                        throw new KeyNotFoundException($"No folder found with id '{folderId}'");
+                    }
                     return result;
                 };
-            })[0];
+            })[0]);
         }
 
         public bool IsStorageLocation(string contentId)
@@ -765,7 +774,7 @@ namespace OpenDMSBackend.Core.Services
 
         public AccessToken GetAccessToken(string accessToken)
         {
-            return this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetAccessToken();
                 cmd.Parameters.Add(new MySqlParameter("Value", accessToken));
@@ -783,7 +792,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new KeyNotFoundException($"No access-token found with value '{accessToken}'");
                 }
-            })[0];
+            })[0]);
         }
 
         public void AddAccessToken(string userId, AccessToken newAccessToken)
@@ -831,7 +840,7 @@ namespace OpenDMSBackend.Core.Services
 
         public string GetIdFromReadableId(uint readableId)
         {
-            return this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetIdFromReadableId();
                 cmd.Parameters.Add(new MySqlParameter("ReadableId", readableId));
@@ -846,15 +855,33 @@ namespace OpenDMSBackend.Core.Services
                 {
                     throw new KeyNotFoundException($"No document found for containee '{readableId}'.");
                 }
-            })[0];
+            })[0]);
         }
 
-        public IList<DocumentPreview> Search(string requesterUserId, string[] searchTerms)
+        public IList<string> Search(string searchTerm)
         {
-            throw new NotImplementedException();
+            return GUtilities.GetValue(this.RunTransaction((cmd) =>
+            {
+                IDictionary<string, uint> result = new Dictionary<string, uint>();
+                cmd.CommandText = this._SQLProvider.GetScriptSearch();
+                cmd.Parameters.Add(new MySqlParameter("SearchTerm", searchTerm));
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        uint score = reader.GetUInt32(1);
+                        if (0 < score)
+                        {
+                            result[reader.GetString(0)] = score;
+                        }
+                    }
+                }
+                return result.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToList();
+            })[0]);
         }
 
-        public bool DocumentExists(string id)
+        public Role GetRoleByName(string roleName)
         {
             throw new NotImplementedException();
         }

@@ -103,23 +103,15 @@ namespace OpenDMSBackend.Core.Services
 
         public IList<DocumentPreview> Search(string requesterUserId, string searchTerm)
         {
-            string[] searchTerms;
-            if (searchTerm.Contains(' '))
+            IList<string> searchResults = new List<string>();
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                searchTerms = searchTerm.Split(' ');
+                searchResults = this._Persistence.Search(searchTerm.ToLower());
             }
-            else
-            {
-                searchTerms = new string[] { searchTerm };
-            }
-            searchTerms = searchTerms.Select(searchTerm => searchTerm.Trim()).Where(searchTerm => !string.IsNullOrEmpty(searchTerm)).ToArray();
-            IList<DocumentPreview> result = new List<DocumentPreview>();
-            if (searchTerms.Length != 0)
-            {
-                result = this._Persistence.Search(requesterUserId, searchTerms);
-            }
-            result = result.Where(document => this.UserIsAllowedToViewContent(requesterUserId, document.Id)).ToList();
-            return result;
+            return searchResults
+                .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
+                .Select(this._Persistence.GetDocumentPreview)
+                .ToList();
         }
 
         public bool UserWithNameExists(string username)
@@ -253,7 +245,7 @@ namespace OpenDMSBackend.Core.Services
                 }
                 else
                 {
-                    document.OCRContent = docType.GetOCRContent(document.Content, this._OCRService);
+                    document.OCRContent = docType.GetOCRContent(document.Content, this._OCRService).ToLower();
                 }
             }
             catch

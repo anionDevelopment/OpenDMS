@@ -35,6 +35,7 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import { LinkToDocumentComponent } from './link-to-document/link-to-document.component';
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 import { EditDocumentMenuComponent } from './edit-document-menu/edit-document-menu.component';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { EditDocumentMenuComponent } from './edit-document-menu/edit-document-me
     MatFormFieldModule,
     MatDividerModule,
     MatCheckboxModule,
+    MatGridListModule,
     MatSelectModule,
     MatMenuModule,
     MatPaginatorModule,

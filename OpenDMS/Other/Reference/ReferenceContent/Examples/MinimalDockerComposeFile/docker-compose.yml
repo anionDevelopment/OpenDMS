@@ -7,11 +7,20 @@ services:
     volumes:
       - "./Volumes/Configuration:/Workspace/Configuration"
       - "./Volumes/Logs:/Workspace/Logs"
+    env_file: "Variables.env"
     ports:
       - 443:443
 
   opendms_database:
     # connectionstring: Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;
+
+    # Data for adminer:
+    # System: MySQL
+    # Server: opendms_database
+    # Username: root
+    # Password: R00tpa55w0rd
+    # Database: OpenDMSDatabase
+
     image: mariadb:11.6.2
     container_name: "opendms_database"
     ports:

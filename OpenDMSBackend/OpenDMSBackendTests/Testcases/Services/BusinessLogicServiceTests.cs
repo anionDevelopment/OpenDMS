@@ -26,7 +26,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
     [TestClass]
     public class BusinessLogicServiceTests
     {
-        private void InitializeServices(bool registrationIsEnabled, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CodeUnitSpecificCommandlineParameter> initializationService, out IPersistence persistence)
+        private void InitializeServices(bool registrationIsEnabled, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence)
         {
             databaseTestFramework = new DatabaseTestFramework();
             IDatabaseManager databaseManager = new DatabaseManager();
@@ -58,13 +58,13 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         public void DatabaseInitializationTest()
         {
             // arrange
-            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CodeUnitSpecificCommandlineParameter> initializationService, out IPersistence _);
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence _);
             using (databaseTestFramework)
             {
                 string adminUserName = CodeUnitSpecificConstants.UsernameAdmin;
 
                 // act
-                initializationService.Initialize(new CodeUnitSpecificCommandlineParameter());
+                initializationService.Initialize(new CommandlineParameter());
 
                 // assert
                 Assert.IsTrue(businessLogicService.UserWithNameExists(adminUserName));
@@ -77,10 +77,10 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         public void RegisterTest()
         {
             // arrange
-            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CodeUnitSpecificCommandlineParameter> initializationService, out IPersistence persistence);
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
             using (databaseTestFramework)
             {
-                initializationService.Initialize(new CodeUnitSpecificCommandlineParameter());
+                initializationService.Initialize(new CommandlineParameter());
                 string user = "someuser";
                 string password = "somepassword";
                 Assert.IsFalse(persistence.UserWithNameExists(user));

@@ -5,13 +5,14 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc.ConsoleApplication;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class InitializationService : IInitializationService<CodeUnitSpecificCommandlineParameter>
+    public class InitializationService : IInitializationService<CommandlineParameter>
     {
         private readonly IAuthenticationService<Model.BusinessTypes.User> _AuthenticationService;
         private readonly IBusinessLogicService _BusinessLogicService;
@@ -31,8 +32,9 @@ namespace OpenDMSBackend.Core.Services
             this._IdGenerator = idGenerator;
         }
 
-        public void Initialize(CodeUnitSpecificCommandlineParameter codeUnitSpecificCommandlineParameter)
+        public void Initialize(CommandlineParameter commandlineParameter)
         {
+            this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
             string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
             this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
             if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
@@ -45,7 +47,7 @@ namespace OpenDMSBackend.Core.Services
                 adminsRole.InheritedRoles = new HashSet<Role>() { usersRole };
                 this._AuthenticationService.UpdateRole(adminsRole);
 
-                string initialAdminPassword = CodeUnitSpecificConstants.UsernameAdmin;//only initial password. must be changed on production
+                string initialAdminPassword = string.IsNullOrWhiteSpace(commandlineParameter.InitialAdminPassword) ? CodeUnitSpecificConstants.UsernameAdmin : commandlineParameter.InitialAdminPassword;//only initial password. should be changed as soon as possible by the admin of course.
                 string adminUserId = this._BusinessLogicService.Register(adminUsername, initialAdminPassword);
                 this._AuthenticationService.EnsureUserHasRole(adminUserId, adminsRole.Id);
 

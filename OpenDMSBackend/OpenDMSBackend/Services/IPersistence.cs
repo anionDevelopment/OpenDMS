@@ -44,11 +44,16 @@ namespace OpenDMSBackend.Core.Services
         public ulong GetLatestReadableId();
         public void RemoveChild(string parentId, string childId);
         public string GetIdFromReadableId(uint readableId);
+
         /// <summary>
         /// This function searches for documents which are available for the given user and matches at least one search-term in any kind.
         /// This function is supposed to order the results descending regarding to relevance.
         /// The result-list does not contain duplicated items.
         /// </summary>
-        public IList<DocumentPreview> Search(string requesterUserId, string[] searchTerms);
+        /// <returns>
+        /// Returns an ordered list of document-ids which are available for the given user and match at least one search-term in any kind.
+        /// The order is descending regarding to relevance.
+        /// </returns>
+        public IList<string> Search( string searchTerm);
     }
 }

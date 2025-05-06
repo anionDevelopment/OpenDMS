@@ -6,8 +6,8 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public class User : GRYLibrary.Core.APIServer.CommonDBTypes.User
     {
-        public ISet<IStorageLocation> StorageLocations { get; set; }
-        internal static User Create(string username, string? passwordHash, ITimeService timeService)
+        public ISet<IStorageLocation> StorageLocations { get; set; } = new HashSet<IStorageLocation>();
+        internal static User Create(string username, string passwordHash, ITimeService timeService)
         {
             User user = CreateNewUser(new User(), username, passwordHash, timeService);
             user.EMailAddress = null;

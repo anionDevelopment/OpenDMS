@@ -31,6 +31,9 @@ using GRYLibrary.Core.APIServer.Settings.Configuration;
 using OpenDMSBackend.Core.BackgroundServices;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
+using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Misc.FilePath;
 
 namespace OpenDMSBackend.Core
 {
@@ -38,7 +41,8 @@ namespace OpenDMSBackend.Core
     {
         internal static int Main(string[] commandlineArguments)
         {
-            return Tools.RunAPIServer<CodeUnitSpecificCommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
+            bool runPersistent = false;
+            return Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
             {
                 apiServerConfiguration.SetInitialzationInformationAction = (initializationInformation) =>
                 {
@@ -62,29 +66,32 @@ namespace OpenDMSBackend.Core
                             @$"^/favicon\.ico$",
                             @$"^/API/Other/Resources/APISpecification/*",
                         },
-                        MaximalLengthofResponseBodies = 50,
+                        MaximalLengthOfResponseBodies = 50,
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ConfigurationForExceptionManagerMiddleware = new ExceptionManagerConfiguration();
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation();
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthenticationConfiguration = new AuthSConfiguration()
+                    {
+                        RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>() {
+                            @$"^/API/Other/Resources/APISpecification/*",
+                            @$"^/API/Other/Maintenance/HealthCheck$",
+                        },
+                    };
+                    runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
+                    {
+                        DatabaseConnectionString = "Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;",
+                    };
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
                     {
                         ContactLink = $"https://information.{domain}/Products/{GeneralConstants.CodeUnitName}/Contact",
                         LicenseLink = $"https://information.{domain}/Products/{GeneralConstants.CodeUnitName}/License",
                         TermsOfServiceLink = $"https://information.{domain}/Products/{GeneralConstants.CodeUnitName}/TermsOfService"
                     };
-                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation();
-                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthenticationConfiguration = new AuthSConfiguration()
-                    {
-                        RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>() {
-                            @$"^/API/Other/Resources/APISpecification/*",
-                        },
-                    };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration = new AutSRConfiguration();
-                    bool runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
+                    runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
-                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
-                    {
-                        DatabaseConnectionString = "Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;",
-                    };
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
@@ -97,7 +104,9 @@ namespace OpenDMSBackend.Core
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
                     IGeneralLogger logger = functionalInformation.Logger;
-                    bool runPersistent = functionalInformation.InitializationInformation.ApplicationConstants.Environment is not Development && functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
+
+                    IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog")));
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
                     if (runPersistent)
                     {
                         logger.Log($"Run persistent.", LogLevel.Information);
@@ -141,18 +150,18 @@ namespace OpenDMSBackend.Core
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthenticationMiddleware);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthorizationMiddleware);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CodeUnitSpecificCommandlineParameter>, InitializationService>();
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CommandlineParameter>, InitializationService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
-                    IMetricsService metricsService = functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>();
+                    IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
                     functionalInformationForWebApplication.PreRun = () =>
                     {
                         //initialize
-                        functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CodeUnitSpecificCommandlineParameter>>().Initialize(apiServerConfiguration.CommandlineParameter);
+                        GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>()).Initialize(apiServerConfiguration.CommandlineParameter);
 
                         //start background-services
                         metricsService.StartAsync();
