@@ -43,13 +43,13 @@
       <ns0:path d="M261.92,201.6094 C239.6,219.2694 213.616,239.8274 191.186,257.5674" fill="none" id="OpenDMSFrontend-to-OpenDMSBackend" style="stroke:#181818;stroke-width:1;" />
       <ns0:polygon fill="#181818" points="186.48,261.2894,196.0204,258.8437,190.4017,258.1877,191.0577,252.569,186.48,261.2894" style="stroke:#181818;stroke-width:1;" />
     </ns0:g>
-    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSBackend" data-source-line="22" data-uid="lnk12" id="link_OpenDMS_OpenDMSBackend">
-      <ns0:path d="M254,93.7194 C233.24,108.4794 208.48,129.3694 193,153.6094 C171.55,187.2094 163.4867,227.5873 159.9767,255.1973" fill="none" id="OpenDMS-to-OpenDMSBackend" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="#181818" points="159.22,261.1494,164.3231,252.7257,159.8506,256.1893,156.387,251.7168,159.22,261.1494" style="stroke:#181818;stroke-width:1;" />
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSFrontend" data-source-line="23" data-uid="lnk13" id="link_OpenDMS_OpenDMSFrontend">
+    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSFrontend" data-source-line="22" data-uid="lnk12" id="link_OpenDMS_OpenDMSFrontend">
       <ns0:path d="M291,93.6094 C291,111.2694 291,129.5494 291,147.2894" fill="none" id="OpenDMS-to-OpenDMSFrontend" style="stroke:#181818;stroke-width:1;" />
       <ns0:polygon fill="#181818" points="291,153.2894,295,144.2894,291,148.2894,287,144.2894,291,153.2894" style="stroke:#181818;stroke-width:1;" />
+    </ns0:g>
+    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSBackend" data-source-line="23" data-uid="lnk13" id="link_OpenDMS_OpenDMSBackend">
+      <ns0:path d="M254,93.7194 C233.24,108.4794 208.48,129.3694 193,153.6094 C171.55,187.2094 163.4867,227.5873 159.9767,255.1973" fill="none" id="OpenDMS-to-OpenDMSBackend" style="stroke:#181818;stroke-width:1;" />
+      <ns0:polygon fill="#181818" points="159.22,261.1494,164.3231,252.7257,159.8506,256.1893,156.387,251.7168,159.22,261.1494" style="stroke:#181818;stroke-width:1;" />
     </ns0:g>
   </ns0:g>
 </ns0:svg>
