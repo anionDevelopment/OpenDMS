@@ -5,7 +5,6 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
-using GRYLibrary.Core.Misc.ConsoleApplication;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using System.Collections.Generic;

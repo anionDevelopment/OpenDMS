@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenDMSBackendTests", "Open
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C0DBDDF5-3B3E-479B-9C18-0E7271FD559C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRYLibrary", "..\..\..\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj", "{92E4651C-8D97-A588-315D-A9978A1290A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRYLibrary", "E:\Data\Projects\Common\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj", "{92E4651C-8D97-A588-315D-A9978A1290A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
