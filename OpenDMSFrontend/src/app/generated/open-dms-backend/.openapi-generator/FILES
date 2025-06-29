@@ -20,4 +20,5 @@ model/storageLocationDTO.ts
 model/tagDTO.ts
 model/userInformationDTO.ts
 param.ts
+provide-api.ts
 variables.ts
