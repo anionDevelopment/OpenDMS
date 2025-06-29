@@ -5,9 +5,8 @@ from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjec
 
 def update_dependencies():
     current_file = str(Path(__file__).absolute())
-    repository_folder = GeneralUtilities.resolve_relative_path("../../..", current_file)
-    t: TasksForCommonProjectStructure = TasksForCommonProjectStructure()
-    t.update_images_in_example(repository_folder)
+    codeunit_folder = GeneralUtilities.resolve_relative_path("../..", current_file)
+    TasksForCommonProjectStructure().update_images_in_example(codeunit_folder)
 
 
 if __name__ == "__main__":
