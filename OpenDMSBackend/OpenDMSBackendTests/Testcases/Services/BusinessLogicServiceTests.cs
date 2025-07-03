@@ -1,46 +1,47 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+﻿using GRYLibrary.Core.APIServer.ConcreteEnvironments;
+using GRYLibrary.Core.APIServer.ExecutionModes;
+using GRYLibrary.Core.APIServer.Services.Init;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.OtherServices;
+using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Migration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Database;
-using OpenDMSBackend.Tests.TestUtilities;
-using GRYLibrary.Core.APIServer.Settings.Configuration;
-using OpenDMSBackend.Core.Configuration;
-using GRYLibrary.Core.APIServer.Services.Init;
-using GRYLibrary.Core.APIServer.ExecutionModes;
-using GRYLibrary.Core.APIServer.ConcreteEnvironments;
-using GRYLibrary.Core.Logging.GRYLogger;
-using OpenDMSBackend.Core.Services;
-using Moq;
 using OpenDMSBackend.Core.Model.BusinessTypes;
-using GRYLibrary.Core.APIServer.Services.OtherServices;
-using GRYLibrary.Core.APIServer.Services.Res;
+using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Tests.TestUtilities;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
     [TestClass]
     public class BusinessLogicServiceTests
     {
-        private void InitializeServices(bool registrationIsEnabled, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence)
+        private void InitializeServices(bool registrationIsEnabled, out IBusinessLogicService businessLogicService, out DatabaseTestFrameworkTemplate databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence)
         {
-            databaseTestFramework = new DatabaseTestFramework();
-            IDatabaseManager databaseManager = new DatabaseManager();
+            databaseTestFramework = new DatabaseTestFrameworkForPostgreSQL();
+            IDatabaseManager databaseManager = new DatabaseManagerPostgreSQL();
             ITimeService timeService = new TimeService();
-            GRYMigrator.DoAllMigrations(databaseTestFramework.MySqlConnection, databaseManager, timeService);
+            GRYMigrator.DoAllMigrations(databaseTestFramework.Connection, databaseManager, timeService);
             DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
             optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
             IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = registrationIsEnabled;
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
-            ISQLProvider sqlProvider = new SQLProvider();
+            ISQLProvider sqlProvider = new SQLProviderPostgreSQL();
             IIdGenerator<ulong> idGenerator = new OpenDMSBackend.Core.Services.IdGenerator();
-            DatabasePersistence databasePersistence = new DatabasePersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
+            IPersistence databasePersistence = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTransientPersistence();
             persistence = databasePersistence;
             persistence.Reset();
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
@@ -58,7 +59,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         public void DatabaseInitializationTest()
         {
             // arrange
-            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence _);
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFrameworkTemplate databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence _);
             using (databaseTestFramework)
             {
                 string adminUserName = CodeUnitSpecificConstants.UsernameAdmin;
@@ -77,7 +78,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         public void RegisterTest()
         {
             // arrange
-            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFramework databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFrameworkTemplate databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
             using (databaseTestFramework)
             {
                 initializationService.Initialize(new CommandlineParameter());

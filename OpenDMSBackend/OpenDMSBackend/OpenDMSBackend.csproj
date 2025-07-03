@@ -60,7 +60,6 @@
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.5" />
-        <PackageReference Include="GRYLibrary" Version="0.12.149" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.6" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
@@ -68,6 +67,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.6" />
         <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.6" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+        <PackageReference Include="Npgsql" Version="9.0.3" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
         <PackageReference Include="prometheus-net" Version="8.2.1" />
         <PackageReference Include="SixLabors.ImageSharp" Version="3.1.10" />
@@ -86,5 +86,8 @@
         <EmbeddedResource Include="Resources\**">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
     </ItemGroup>
 </Project>

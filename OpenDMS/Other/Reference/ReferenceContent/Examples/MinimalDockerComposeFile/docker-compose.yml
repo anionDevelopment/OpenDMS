@@ -11,15 +11,14 @@ services:
     - ./Volumes/Logs:/Workspace/Logs
   opendms_database:
     container_name: opendms_database
+    image: postgres:17.5
     environment:
-      MARIADB_DATABASE: OpenDMSDatabase
-      MARIADB_ROOT_HOST: '%'
-      MARIADB_ROOT_PASSWORD: R00tpa55w0rd
-    image: mariadb:11.7.2
+      POSTGRES_PASSWORD: R00tpa55w0rd
+      POSTGRES_DB: OpenDMSDatabase
     ports:
-    - 3306:3306
+      - "5432:5432"
     volumes:
-    - ./Volumes/Data:/var/lib/mysql
+      - ./Volumes/Data:/var/lib/postgresql/data
   opendms_database_administration:
     container_name: opendms_database_administration
     depends_on:

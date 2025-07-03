@@ -1,0 +1,29 @@
+version: "3.2"
+
+services:
+  opendmsbackend_mariadbdatabase:
+    container_name: "opendmsbackend_mariadbdatabase"
+    image: mariadb:11.5.2
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_USER: user
+      MARIADB_PASSWORD: pa55w0rd
+      MARIADB_ROOT_PASSWORD: R00tpa55w0rd
+      MARIADB_DATABASE: OpenDMSBackendDatabase
+    networks:
+      - opendms_net
+
+  opendmsbackend_mariadbdatabase_administration:
+    image: adminer:4.8.1
+    container_name: "opendmsbackend_mariadbdatabase_administration"
+    ports:
+      - 3307:3306
+    depends_on:
+      - opendmsbackend_mariadbdatabase
+    networks:
+      - opendms_net
+
+networks:
+  opendms_net:
+    external: true

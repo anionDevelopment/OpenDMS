@@ -4,11 +4,11 @@
 
 ### Database
 
-connectionstring: `Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;`
+connectionstring: `postgresql://root:R00tpa55w0rd@opendms_database:5432/OpenDMSDatabase`
 
 Data for adminer:
 
-System: `MySQL`
+System: `PostgreSQL`
 
 Server: `opendms_database`
 

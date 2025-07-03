@@ -8,6 +8,14 @@
 
 `OpenDMS` is an open source document-management-system.
 
+## Quick-start
+
+See [the reference of the OpenDMS-codeunit](./OpenDMS/Other/Reference/ReferenceContent/index.md).
+
+## Technical product reference
+
+See the general [product reference](./Other/Reference/Reference.md).
+
 ## Features
 
 - Show and download exiting documents.

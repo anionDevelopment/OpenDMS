@@ -33,6 +33,7 @@ using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.FilePath;
+using System;
 
 namespace OpenDMSBackend.Core
 {
@@ -79,7 +80,8 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
-                        DatabaseConnectionString = "Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;",
+                        DatabaseType = initializationInformation.CommandlineParameter.InitialDatabaseType,
+                        DatabaseConnectionString = (initializationInformation.CommandlineParameter.InitialDatabaseType == null) ? "[insert database-connectionstring here and set InitialDatabaseType accordingly]" : initializationInformation.CommandlineParameter.InitialDatabaseType,
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
@@ -103,21 +105,44 @@ namespace OpenDMSBackend.Core
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
                     IGeneralLogger logger = functionalInformation.Logger;
-
                     IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog")));
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
-                    if (runPersistent)
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
+                    bool useDatabase = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != null;
+                    if (useDatabase)
                     {
-                        logger.Log($"Run persistent.", LogLevel.Information);
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManager>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePersistence>();
+                        logger.Log($"Run persistent using database \"{functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType}\".", LogLevel.Information);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendPersistentAuthenticationService>();
-                        functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
-                        {
-                            string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                            Tools.ConnectToDatabaseWrapper(() => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions => { sqlOptions.CommandTimeout(120); }), GeneralLogger.NoLog(), GUtilities.AdaptMariaDBSQLConnectionString(connectionString, true));
-                        }, ServiceLifetime.Singleton);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<IPersistence>());
+                        if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "PostgreSQL")
+                        {
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePostgreSQLPersistence>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerPostgreSQL>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderPostgreSQL>();
+                            //TODO prepare database-usage with something like "functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>{ }, ServiceLifetime.Singleton);"
+                        }
+                        else if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "MariaDB")
+                        {
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabaseMariaDBPersistence>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerMariaDB>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderMariaDB>();
+                            functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
+                            {
+                                string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
+                                Tools.ConnectToDatabaseWrapper(() =>
+                                {
+                                    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions =>
+                                    {
+                                        sqlOptions.CommandTimeout(120);
+                                    });
+                                }, GeneralLogger.NoLog(), GUtilities.AdaptMariaDBSQLConnectionString(connectionString, true));
+                            }, ServiceLifetime.Singleton);
+                        }
+                        else
+                        {
+                            throw new NotSupportedException("Database not supported. For a list of supported databases see the documentation.");
+                        }
                     }
                     else
                     {
@@ -127,9 +152,6 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, TransientAuthenticationServicePersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
                     }
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProvider>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRService, OCRService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
@@ -138,7 +160,6 @@ namespace OpenDMSBackend.Core
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IUserAuthorizationService>(sp => sp.GetRequiredService<IRoleBasedAuthorizationService>());
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthorizationService>(sp => sp.GetRequiredService<IUserAuthorizationService>());
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<ICredentialsProvider, HeaderService>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProvider>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation);

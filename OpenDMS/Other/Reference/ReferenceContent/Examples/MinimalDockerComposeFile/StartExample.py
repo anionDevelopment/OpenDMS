@@ -9,6 +9,8 @@ def start_dockerfile_example():
     t: TasksForCommonProjectStructure = TasksForCommonProjectStructure()
     t.ensure_env_file_is_generated(current_file, env_file_name, dict({
         'InitialAdminPassword': 'Adm1npa55w0rd',
+        'InitialDatabaseType': 'PostgreSQL',
+        'InitialDatabaseConnectionString': 'postgresql://root:R00tpa55w0rd@opendms_database:5432/OpenDMSDatabase',
     }))
     t.start_dockerfile_example(current_file, 3, True, False, sys.argv, env_file_name)
 

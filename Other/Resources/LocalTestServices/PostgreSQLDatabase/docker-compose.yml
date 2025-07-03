@@ -1,0 +1,27 @@
+version: "3.2"
+
+services:
+  opendmsbackend_postgresqldatabase:
+    container_name: "opendmsbackend_postgresqldatabase"
+    image: postgres:17.5
+    environment:
+      POSTGRES_PASSWORD: R00tpa55w0rd
+      POSTGRES_DB: OpenDMSBackendDatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./Volumes/Data:/var/lib/postgresql/data
+
+  opendmsbackend_postgresqldatabase_administration:
+    image: adminer:4.8.1
+    container_name: "opendmsbackend_postgresqldatabase_administration"
+    ports:
+      - 8080:8080
+    depends_on:
+      - opendmsbackend_postgresqldatabase
+    networks:
+      - opendms_net
+
+networks:
+  opendms_net:
+    external: true
