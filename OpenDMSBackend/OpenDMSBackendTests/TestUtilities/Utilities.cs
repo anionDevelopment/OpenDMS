@@ -27,7 +27,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         }
         public static string GetTestPostgreSQLDatabaseFolder()
         {
-            return GUtilities.ResolveToFullPath(@$"{GeneralConstants.RepositoryFolder}\Other\Resources\LocalTestServices\MariaDBDatabase");
+            return GUtilities.ResolveToFullPath(@$"{GeneralConstants.RepositoryFolder}\Other\Resources\LocalTestServices\PostgreSQLDatabase");
         }
 
         public static string GetTestDatabaseCreationScriptArtifactFolder(string databaseName)

@@ -10,7 +10,7 @@ services:
       MARIADB_USER: user
       MARIADB_PASSWORD: pa55w0rd
       MARIADB_ROOT_PASSWORD: R00tpa55w0rd
-      MARIADB_DATABASE: OpenDMSBackendDatabase
+      MARIADB_DATABASE: OpenDMSDatabase
     networks:
       - opendms_net
 

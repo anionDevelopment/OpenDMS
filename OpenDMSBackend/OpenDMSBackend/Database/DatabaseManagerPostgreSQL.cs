@@ -8,8 +8,8 @@ namespace OpenDMSBackend.Core.Database
 {
     public class DatabaseManagerPostgreSQL : IDatabaseManager
     {
-        private readonly MariaDBDatabaseInteractor _MariaDBDatabaseInteractor = new MariaDBDatabaseInteractor();
-        private readonly IList<MigrationInstance> _Migrations = GRYMigrator.LoadMigrationsFromResources(Assembly.GetExecutingAssembly(), "OpenDMSBackend.Core.Resources.Database.Migrations.PostgreSQL");
+        private readonly PostgreSQLDatabaseInteractor _PostgreSQLDatabaseInteractor = new PostgreSQLDatabaseInteractor();
+        private readonly IList<MigrationInstance> _Migrations = GRYMigrator.LoadMigrationsFromResources(Assembly.GetExecutingAssembly(), "OpenDMSBackend.Core.Resources.Database.PostgreSQL.Migrations.");
         public IList<MigrationInstance> GetAllMigrations()
         {
             return this._Migrations;
@@ -17,7 +17,7 @@ namespace OpenDMSBackend.Core.Database
 
         public IGenericDatabaseInteractor GetGenericDatabaseInteractor()
         {
-            return this._MariaDBDatabaseInteractor;
+            return this._PostgreSQLDatabaseInteractor;
         }
     }
 }

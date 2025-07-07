@@ -14,12 +14,7 @@ using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using OpenDMSBackendUtilities = OpenDMSBackend.Core.Miscellaneous.Utilities;
-using System.Threading.Tasks;
 
 namespace OpenDMSBackend.Tests.TestUtilities
 {
@@ -34,8 +29,9 @@ namespace OpenDMSBackend.Tests.TestUtilities
         public abstract DatabaseTestFrameworkTemplate GetTestFramework();
         public override IPersistence GetPersistence()
         {
-            DatabaseTestFrameworkTemplate databaseTestFramework = GetTestFramework();
-            IDatabaseManager databaseManager = GetDatabaseManager();
+            DatabaseTestFrameworkTemplate databaseTestFramework = this.GetTestFramework();
+            IDatabaseManager databaseManager = this.GetDatabaseManager();
+            var interactor = databaseManager.GetGenericDatabaseInteractor();
             ITimeService timeService = new TimeService();
             GRYMigrator.DoAllMigrations(databaseTestFramework.Connection, databaseManager, timeService);
             DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
@@ -49,8 +45,8 @@ namespace OpenDMSBackend.Tests.TestUtilities
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
             Mock<IApplicationConstants<CodeUnitSpecificConstants>> constantsMock = new Mock<IApplicationConstants<CodeUnitSpecificConstants>>(MockBehavior.Strict);
             constantsMock.SetupGet(m => m.Environment).Returns(OpenDMSBackendUtilities.GetEnvironmentTargetType());
-            ISQLProvider sqlProvider = GetSQLProvider();
-            IPersistence result = GetPersistenceObject(databaseManager, timeService, optionsBuilder, logger, sqlProvider);
+            ISQLProvider sqlProvider = this.GetSQLProvider();
+            IPersistence result = this.GetPersistenceObject(databaseManager, timeService, optionsBuilder, logger, sqlProvider);
             return result;
         }
 

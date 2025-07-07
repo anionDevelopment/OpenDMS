@@ -5,7 +5,7 @@ namespace OpenDMSBackend.Core.Miscellaneous
 {
     public abstract class SQLProvider : AbstractSQLProvider, ISQLProvider
     {
-        public SQLProvider(string databaseType) : base($"OpenDMSBackend.Core.Resources.Database.SQL.{databaseType}") { }
+        public SQLProvider(string databaseType) : base($"OpenDMSBackend.Core.Resources.Database.{databaseType}.Statements.") { }
 
         public string GetScriptResetDatabase()
         {

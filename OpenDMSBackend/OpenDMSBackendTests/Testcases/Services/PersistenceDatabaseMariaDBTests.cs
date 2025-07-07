@@ -38,7 +38,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void DatabasePersistenceCreateDocumentTest()
         {
-            DatabasePersistenceCreateDocument();
+            this.DatabasePersistenceCreateDocument();
         }
 
 
@@ -46,14 +46,14 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void GetAmountOfDocumentsTest()
         {
-            GetAmountOfDocuments();
+            this.GetAmountOfDocuments();
         }
 
         [TestMethod(nameof(PersistDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void PersistDocumentTest()
         {
-            PersistDocument();
+            this.PersistDocument();
         }
 
     }

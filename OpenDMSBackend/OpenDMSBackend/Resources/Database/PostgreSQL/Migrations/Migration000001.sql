@@ -4,10 +4,10 @@ CREATE TABLE "Users" (
     "Name" varchar(255) not null,
     "PasswordHash" varchar(255) null,-- when this properties are null then this means that the user uses an external authenticationprovider (for example OpenID) to login.
     "EMailAddress" varchar(255) null,
-    "UserIsActivated" tinyint(1) not null,
-    "UserIsLocked" tinyint(1) not null,
+    "UserIsActivated" boolean not null,
+    "UserIsLocked" boolean not null,
     "RegistrationMoment" timestamp(6) not null,
-    "TOTPActivated" tinyint(1) null,
+    "TOTPActivated" boolean null,
     "TOTPSecretKey" varchar(255) null,
     unique("Name"),
     CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
@@ -22,7 +22,7 @@ CREATE TABLE "StorageLocations" (
 CREATE TABLE "Folders" (
     "Id" varchar(255) not null,
     "Name" varchar(255) not null,
-    CONSTRAINT "PK_StorageLocations" PRIMARY KEY ("Id")
+    CONSTRAINT "PK_Folders" PRIMARY KEY ("Id")
 ) ;
 
 CREATE TABLE "Documents" (
@@ -51,13 +51,13 @@ CREATE TABLE "Tags" (
 CREATE TABLE "Document_Tag" (
     "DocumentId" varchar(255) not null,
     "TagId" varchar(255) not null,
-    CONSTRAINT "PK_Tags" PRIMARY KEY ("DocumentId", "TagId")
+    CONSTRAINT "PK_Document_Tag" PRIMARY KEY ("DocumentId", "TagId")
 ) ;
 
 CREATE TABLE "Container_Containee" (
     "ContainerId" varchar(255) not null,
     "ContaineeId" varchar(255) not null,
-    CONSTRAINT "PK_Tags" PRIMARY KEY ("ContainerId", "ContaineeId")
+    CONSTRAINT "PK_Container_Containee" PRIMARY KEY ("ContainerId", "ContaineeId")
 ) ;
 
 CREATE TABLE "AccessToken" (

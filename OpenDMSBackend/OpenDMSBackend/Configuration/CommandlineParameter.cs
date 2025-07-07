@@ -6,13 +6,13 @@ namespace OpenDMSBackend.Core.Configuration
     public class CommandlineParameter : RunServer
     {
 
-        [Option(nameof(InitialAdminPassword), Required = true)]
+        [Option(nameof(InitialAdminPassword), Required = false)]
         public string? InitialAdminPassword { get; set; }
 
-        [Option(nameof(InitialDatabaseType), Required = true)]
+        [Option(nameof(InitialDatabaseType), Required = false)]
         public string? InitialDatabaseType { get; set; }
 
-        [Option(nameof(InitialDatabaseConnectionString), Required = true)]
+        [Option(nameof(InitialDatabaseConnectionString), Required = false)]
         public string? InitialDatabaseConnectionString { get; set; }
     }
 }

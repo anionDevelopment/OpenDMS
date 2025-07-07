@@ -34,6 +34,7 @@ using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.FilePath;
 using System;
+using GRYLibrary.Core.APIServer.Services.Database;
 
 namespace OpenDMSBackend.Core
 {
@@ -81,7 +82,7 @@ namespace OpenDMSBackend.Core
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
                         DatabaseType = initializationInformation.CommandlineParameter.InitialDatabaseType,
-                        DatabaseConnectionString = (initializationInformation.CommandlineParameter.InitialDatabaseType == null) ? "[insert database-connectionstring here and set InitialDatabaseType accordingly]" : initializationInformation.CommandlineParameter.InitialDatabaseType,
+                        DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseType ?? "[insert database-connectionstring here and set InitialDatabaseType accordingly]",
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
@@ -115,8 +116,10 @@ namespace OpenDMSBackend.Core
                         logger.Log($"Run persistent using database \"{functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType}\".", LogLevel.Information);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendPersistentAuthenticationService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<IPersistence>());
+                        IGenericDatabaseInteractor genericDatabaseInteractor;
                         if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "PostgreSQL")
                         {
+                            genericDatabaseInteractor = new PostgreSQLDatabaseInteractor();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePostgreSQLPersistence>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerPostgreSQL>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderPostgreSQL>();
@@ -124,6 +127,7 @@ namespace OpenDMSBackend.Core
                         }
                         else if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "MariaDB")
                         {
+                            genericDatabaseInteractor = new MariaDBDatabaseInteractor();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabaseMariaDBPersistence>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerMariaDB>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderMariaDB>();
@@ -136,13 +140,14 @@ namespace OpenDMSBackend.Core
                                     {
                                         sqlOptions.CommandTimeout(120);
                                     });
-                                }, GeneralLogger.NoLog(), GUtilities.AdaptMariaDBSQLConnectionString(connectionString, true));
+                                }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
                             }, ServiceLifetime.Singleton);
                         }
                         else
                         {
                             throw new NotSupportedException("Database not supported. For a list of supported databases see the documentation.");
                         }
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGenericDatabaseInteractor>(genericDatabaseInteractor);
                     }
                     else
                     {

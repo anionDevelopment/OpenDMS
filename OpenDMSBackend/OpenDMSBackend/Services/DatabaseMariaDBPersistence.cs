@@ -18,7 +18,7 @@ namespace OpenDMSBackend.Core.Services
         {
             return new MySqlParameter(parameterName, value ?? DBNull.Value)
             {
-                MySqlDbType = GetType(type)
+                MySqlDbType = this.GetType(type)
             };
         }
         private MySqlDbType GetType(Type type)

@@ -5,8 +5,9 @@ services:
     container_name: "opendmsbackend_postgresqldatabase"
     image: postgres:17.5
     environment:
-      POSTGRES_PASSWORD: R00tpa55w0rd
-      POSTGRES_DB: OpenDMSBackendDatabase
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pa55w0rd
+      POSTGRES_DB: OpenDMSDatabase
     ports:
       - "5432:5432"
     volumes:

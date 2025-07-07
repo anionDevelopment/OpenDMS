@@ -23,7 +23,7 @@ CREATE TABLE `StorageLocations` (
 CREATE TABLE `Folders` (
     `Id` varchar(255) not null,
     `Name` varchar(255) not null,
-    CONSTRAINT `PK_StorageLocations` PRIMARY KEY (`Id`)
+    CONSTRAINT `PK_Folders` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `Documents` (
@@ -52,13 +52,13 @@ CREATE TABLE `Tags` (
 CREATE TABLE `Document_Tag` (
     `DocumentId` varchar(255) not null,
     `TagId` varchar(255) not null,
-    CONSTRAINT `PK_Tags` PRIMARY KEY (`DocumentId`, `TagId`)
+    CONSTRAINT `PK_Document_Tag` PRIMARY KEY (`DocumentId`, `TagId`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `Container_Containee` (
     `ContainerId` varchar(255) not null,
     `ContaineeId` varchar(255) not null,
-    CONSTRAINT `PK_Tags` PRIMARY KEY (`ContainerId`, `ContaineeId`)
+    CONSTRAINT `PK_Container_Containee` PRIMARY KEY (`ContainerId`, `ContaineeId`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `AccessToken` (

@@ -9,7 +9,7 @@ namespace OpenDMSBackend.Core.Database
     public class DatabaseManagerMariaDB : IDatabaseManager
     {
         private readonly MariaDBDatabaseInteractor _MariaDBDatabaseInteractor = new MariaDBDatabaseInteractor();
-        private readonly IList<MigrationInstance> _Migrations = GRYMigrator.LoadMigrationsFromResources(Assembly.GetExecutingAssembly(), "OpenDMSBackend.Core.Resources.Database.Migrations.MariaDB");
+        private readonly IList<MigrationInstance> _Migrations = GRYMigrator.LoadMigrationsFromResources(Assembly.GetExecutingAssembly(), "OpenDMSBackend.Core.Resources.Database.MariaDB.Migrations.");
         public IList<MigrationInstance> GetAllMigrations()
         {
             return this._Migrations;

@@ -38,7 +38,7 @@ namespace OpenDMSBackend.Core.Services
         public DbParameter GetParameter(string parameterName, object value)
         {
             GUtilities.AssertCondition(value != null, $"value for parameter {parameterName} is null, so a speicfic type for it must be set.");
-            return GetParameter(parameterName, value, value.GetType());
+            return this.GetParameter(parameterName, value, value.GetType());
         }
 
 
@@ -130,17 +130,17 @@ namespace OpenDMSBackend.Core.Services
             {
                 command.CommandText = this._SQLProvider.GetScriptAddDocument();
                 command.Prepare();
-                command.Parameters.Add(GetParameter("Id", document.Id));
-                command.Parameters.Add(GetParameter("Title", document.Title.Value));
-                command.Parameters.Add(GetParameter("Filename", document.Filename.Value));
-                command.Parameters.Add(GetParameter("OriginalFilename", document.OriginalFilename.Value));
-                command.Parameters.Add(GetParameter("ImportDate", document.ImportDate.ToDateTime()));
-                command.Parameters.Add(GetParameter("LastEditDate", document.LastEditDate.HasValue ? document.LastEditDate.Value.ToDateTime() : null, typeof(DateTime)));
-                command.Parameters.Add(GetParameter("ReadableId", document.ReadableId));
-                command.Parameters.Add(GetParameter("MIMEType", document.MIMEType.Value));
-                command.Parameters.Add(GetParameter("DocumentContent", document.Content));
-                command.Parameters.Add(GetParameter("OCRContent", document.OCRContent));
-                command.Parameters.Add(GetParameter("DocumentPreview", document.Preview));
+                command.Parameters.Add(this.GetParameter("Id", document.Id));
+                command.Parameters.Add(this.GetParameter("Title", document.Title.Value));
+                command.Parameters.Add(this.GetParameter("Filename", document.Filename.Value));
+                command.Parameters.Add(this.GetParameter("OriginalFilename", document.OriginalFilename.Value));
+                command.Parameters.Add(this.GetParameter("ImportDate", document.ImportDate.ToDateTime()));
+                command.Parameters.Add(this.GetParameter("LastEditDate", document.LastEditDate.HasValue ? document.LastEditDate.Value.ToDateTime() : null, typeof(DateTime)));
+                command.Parameters.Add(this.GetParameter("ReadableId", document.ReadableId));
+                command.Parameters.Add(this.GetParameter("MIMEType", document.MIMEType.Value));
+                command.Parameters.Add(this.GetParameter("DocumentContent", document.Content));
+                command.Parameters.Add(this.GetParameter("OCRContent", document.OCRContent));
+                command.Parameters.Add(this.GetParameter("DocumentPreview", document.Preview));
                 command.ExecuteNonQuery();
             });
         }
@@ -187,8 +187,8 @@ namespace OpenDMSBackend.Core.Services
             {
                 command.CommandText = this._SQLProvider.GetScriptInsertRole();
                 command.Prepare();
-                command.Parameters.Add(GetParameter("Id", role.Id));
-                command.Parameters.Add(GetParameter("Name", role.Name));
+                command.Parameters.Add(this.GetParameter("Id", role.Id));
+                command.Parameters.Add(this.GetParameter("Name", role.Name));
                 command.ExecuteNonQuery();
             }, (command) =>
             {
@@ -201,8 +201,8 @@ namespace OpenDMSBackend.Core.Services
             this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUpdateRole();
-                cmd.Parameters.Add(GetParameter("Id", role.Id));
-                cmd.Parameters.Add(GetParameter("Name", role.Name));
+                cmd.Parameters.Add(this.GetParameter("Id", role.Id));
+                cmd.Parameters.Add(this.GetParameter("Name", role.Name));
                 using DbDataReader reader = cmd.ExecuteReader();
             }, (cmd) =>
             {
@@ -225,15 +225,15 @@ namespace OpenDMSBackend.Core.Services
             this.RunTransaction((command) =>
             {
                 command.CommandText = this._SQLProvider.GetScriptAddUser();
-                command.Parameters.Add(GetParameter("Id", user.Id));
-                command.Parameters.Add(GetParameter("Name", user.Name));
-                command.Parameters.Add(GetParameter("PasswordHash", user.PasswordHash, typeof(string)));
-                command.Parameters.Add(GetParameter("EMailAddress", user.EMailAddress, typeof(string)));
-                command.Parameters.Add(GetParameter("UserIsActivated", user.UserIsActivated));
-                command.Parameters.Add(GetParameter("UserIsLocked", user.UserIsLocked));
-                command.Parameters.Add(GetParameter("RegistrationMoment", user.RegistrationMoment));
-                command.Parameters.Add(GetParameter("TOTPActivated", user.TOTP == null ? null : user.TOTP.IsActicated, typeof(bool)));
-                command.Parameters.Add(GetParameter("TOTPSecretKey", user.TOTP == null ? null : user.TOTP.SecretKey, typeof(string)));
+                command.Parameters.Add(this.GetParameter("Id", user.Id));
+                command.Parameters.Add(this.GetParameter("Name", user.Name));
+                command.Parameters.Add(this.GetParameter("PasswordHash", user.PasswordHash, typeof(string)));
+                command.Parameters.Add(this.GetParameter("EMailAddress", user.EMailAddress, typeof(string)));
+                command.Parameters.Add(this.GetParameter("UserIsActivated", user.UserIsActivated));
+                command.Parameters.Add(this.GetParameter("UserIsLocked", user.UserIsLocked));
+                command.Parameters.Add(this.GetParameter("RegistrationMoment", user.RegistrationMoment));
+                command.Parameters.Add(this.GetParameter("TOTPActivated", user.TOTP == null ? null : user.TOTP.IsActicated, typeof(bool)));
+                command.Parameters.Add(this.GetParameter("TOTPSecretKey", user.TOTP == null ? null : user.TOTP.SecretKey, typeof(string)));
                 command.Prepare();
                 command.ExecuteNonQuery();
             });
@@ -244,7 +244,7 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUserWithNameExists();
-                cmd.Parameters.Add(GetParameter("UserName", userName));
+                cmd.Parameters.Add(this.GetParameter("UserName", userName));
                 using DbDataReader reader = cmd.ExecuteReader();
                 return reader.HasRows;
             })[0];
@@ -255,7 +255,7 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUserWithIdExists();
-                cmd.Parameters.Add(GetParameter(nameof(userId), userId));
+                cmd.Parameters.Add(this.GetParameter(nameof(userId), userId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 return reader.HasRows;
             })[0];
@@ -266,7 +266,7 @@ namespace OpenDMSBackend.Core.Services
             User result = GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetUserById();
-                cmd.Parameters.Add(GetParameter("Id", userId));
+                cmd.Parameters.Add(this.GetParameter("Id", userId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -296,7 +296,7 @@ namespace OpenDMSBackend.Core.Services
             User result = GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetUserByName();
-                cmd.Parameters.Add(GetParameter("Name", userName));
+                cmd.Parameters.Add(this.GetParameter("Name", userName));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -331,7 +331,7 @@ namespace OpenDMSBackend.Core.Services
             this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetAllAccessTokenForUser();
-                cmd.Parameters.Add(GetParameter("UserId", user.Id));
+                cmd.Parameters.Add(this.GetParameter("UserId", user.Id));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -370,7 +370,7 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptRoleExists();
-                cmd.Parameters.Add(GetParameter("RoleName", roleName));
+                cmd.Parameters.Add(this.GetParameter("RoleName", roleName));
                 using DbDataReader reader = cmd.ExecuteReader();
                 return reader.HasRows;
             })[0];
@@ -382,8 +382,8 @@ namespace OpenDMSBackend.Core.Services
             {
                 command.CommandText = this._SQLProvider.GetScriptAddRoleToUser();
                 command.Prepare();
-                command.Parameters.Add(GetParameter("UserId", userId));
-                command.Parameters.Add(GetParameter("RoleId", roleId));
+                command.Parameters.Add(this.GetParameter("UserId", userId));
+                command.Parameters.Add(this.GetParameter("RoleId", roleId));
                 command.ExecuteNonQuery();
             });
         }
@@ -398,8 +398,8 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUserHasRole();
-                cmd.Parameters.Add(GetParameter("UserId", userId));
-                cmd.Parameters.Add(GetParameter("RoleId", roleId));
+                cmd.Parameters.Add(this.GetParameter("UserId", userId));
+                cmd.Parameters.Add(this.GetParameter("RoleId", roleId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 return reader.HasRows;
             })[0];
@@ -458,7 +458,7 @@ namespace OpenDMSBackend.Core.Services
             return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
-                cmd.Parameters.Add(GetParameter("Id", id));
+                cmd.Parameters.Add(this.GetParameter("Id", id));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -590,7 +590,7 @@ namespace OpenDMSBackend.Core.Services
             return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetParentIdOfContainee();
-                cmd.Parameters.Add(GetParameter("Id", containeeId));
+                cmd.Parameters.Add(this.GetParameter("Id", containeeId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -615,7 +615,7 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsStorageLocation();
-                cmd.Parameters.Add(GetParameter("ContentId", id));
+                cmd.Parameters.Add(this.GetParameter("ContentId", id));
                 using DbDataReader reader = cmd.ExecuteReader();
                 reader.Read();
                 if (reader.HasRows)
@@ -634,7 +634,7 @@ namespace OpenDMSBackend.Core.Services
             return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
-                cmd.Parameters.Add(GetParameter("Id", id));
+                cmd.Parameters.Add(this.GetParameter("Id", id));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -677,7 +677,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 StorageLocation? result = null;
                 command.CommandText = this._SQLProvider.GetScriptGetStorageLocation();
-                command.Parameters.Add(GetParameter("Id", storageLocationId));
+                command.Parameters.Add(this.GetParameter("Id", storageLocationId));
                 using (DbDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -705,7 +705,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 Folder? result = null;
                 command.CommandText = this._SQLProvider.GetScriptGetFolder();
-                command.Parameters.Add(GetParameter("Id", folderId));
+                command.Parameters.Add(this.GetParameter("Id", folderId));
                 using (DbDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -732,7 +732,7 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsStorageLocation();
-                cmd.Parameters.Add(GetParameter("ContentId", contentId));
+                cmd.Parameters.Add(this.GetParameter("ContentId", contentId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 reader.Read();
                 if (reader.HasRows)
@@ -751,7 +751,7 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsFolder();
-                cmd.Parameters.Add(GetParameter("ContentId", contentId));
+                cmd.Parameters.Add(this.GetParameter("ContentId", contentId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 reader.Read();
                 if (reader.HasRows)
@@ -770,7 +770,7 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsDocument();
-                cmd.Parameters.Add(GetParameter("ContentId", contentId));
+                cmd.Parameters.Add(this.GetParameter("ContentId", contentId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 reader.Read();
                 if (reader.HasRows)
@@ -789,7 +789,7 @@ namespace OpenDMSBackend.Core.Services
             return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetAccessToken();
-                cmd.Parameters.Add(GetParameter("Value", accessToken));
+                cmd.Parameters.Add(this.GetParameter("Value", accessToken));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -813,9 +813,9 @@ namespace OpenDMSBackend.Core.Services
             {
                 cmd.CommandText = this._SQLProvider.GetScriptAddAccessToken();
                 cmd.Prepare();
-                cmd.Parameters.Add(GetParameter("Value", newAccessToken.Value));
-                cmd.Parameters.Add(GetParameter("ExpiredMoment", newAccessToken.ExpiredMoment));
-                cmd.Parameters.Add(GetParameter("UserId", userId));
+                cmd.Parameters.Add(this.GetParameter("Value", newAccessToken.Value));
+                cmd.Parameters.Add(this.GetParameter("ExpiredMoment", newAccessToken.ExpiredMoment));
+                cmd.Parameters.Add(this.GetParameter("UserId", userId));
                 cmd.ExecuteNonQuery();
             });
         }
@@ -825,7 +825,7 @@ namespace OpenDMSBackend.Core.Services
             this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptRemoveAccessToken();
-                cmd.Parameters.Add(GetParameter("Value", accessToken));
+                cmd.Parameters.Add(this.GetParameter("Value", accessToken));
                 cmd.ExecuteNonQuery();
             });
         }
@@ -855,7 +855,7 @@ namespace OpenDMSBackend.Core.Services
             return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetIdFromReadableId();
-                cmd.Parameters.Add(GetParameter("ReadableId", readableId));
+                cmd.Parameters.Add(this.GetParameter("ReadableId", readableId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -876,7 +876,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 IDictionary<string, uint> result = new Dictionary<string, uint>();
                 cmd.CommandText = this._SQLProvider.GetScriptSearch();
-                cmd.Parameters.Add(GetParameter("SearchTerm", searchTerm));
+                cmd.Parameters.Add(this.GetParameter("SearchTerm", searchTerm));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {

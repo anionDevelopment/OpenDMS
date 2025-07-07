@@ -21,7 +21,7 @@ namespace OpenDMSBackend.Core.Services
         {
             return new NpgsqlParameter(parameterName, value ?? DBNull.Value)
             {
-                NpgsqlDbType = GetType(type)
+                NpgsqlDbType = this.GetType(type)
             };
         }
         private NpgsqlDbType GetType(Type type)
