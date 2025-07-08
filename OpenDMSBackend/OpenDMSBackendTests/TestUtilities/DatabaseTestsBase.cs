@@ -18,45 +18,47 @@ namespace OpenDMSBackend.Tests.TestUtilities
     public abstract class DatabaseTestsBase
     {
         protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFramework();
-
-
+        protected abstract IDatabaseManager GetDatabaseManager();
         public abstract void Migration000001Test();
         public void Migration000001()
         {
             //arrange
-            using DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework();
-            IDatabaseManager databaseManager = new DatabaseManagerPostgreSQL();
-            IList<MigrationInstance> migrations = databaseManager.GetAllMigrations();
-            Assert.IsFalse(databaseManager.GetGenericDatabaseInteractor().GetAllTableNames(databaseTestFramework.Connection).Any());
-            GRYMigrator migrator = new GRYMigrator(GeneralLogger.CreateUsingConsole(), new TimeService(), databaseTestFramework.Connection, migrations.Take(1).ToList(), databaseManager.GetGenericDatabaseInteractor());
+            using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework())
+            {
+                IDatabaseManager databaseManager = GetDatabaseManager();
+                IList<MigrationInstance> migrations = databaseManager.GetAllMigrations();
+                Assert.IsFalse(databaseManager.GetGenericDatabaseInteractor().GetAllTableNames(databaseTestFramework.Connection).Any());
+                GRYMigrator migrator = new GRYMigrator(GeneralLogger.CreateUsingConsole(), new TimeService(), databaseTestFramework.Connection, migrations.Take(1).ToList(), databaseManager.GetGenericDatabaseInteractor());
 
-            //act
-            migrator.InitializeDatabaseAndMigrateIfRequired();
+                //act
+                migrator.InitializeDatabaseAndMigrateIfRequired();
 
-            //assert
-            Assert.IsTrue(databaseManager.GetGenericDatabaseInteractor().GetAllTableNames(databaseTestFramework.Connection).Any());
-            Assert.AreEqual(1, migrator.GetExecutedMigrations().Count);
-            Assert.AreEqual("Migration000001", migrator.GetExecutedMigrations().First().MigrationName);
-            //TODO add the migration-specific assertions
+                //assert
+                Assert.IsTrue(databaseManager.GetGenericDatabaseInteractor().GetAllTableNames(databaseTestFramework.Connection).Any());
+                Assert.AreEqual(1, migrator.GetExecutedMigrations().Count);
+                Assert.AreEqual("Migration000001", migrator.GetExecutedMigrations().First().MigrationName);
+                //TODO add the migration-specific assertions
+            }
         }
 
         public abstract void GenerateDatabaseGenerationScriptTest();
         public void GenerateDatabaseGenerationScript()
         {
-            using DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework();
-            IDatabaseManager databaseManager = new DatabaseManagerPostgreSQL();
-            ITimeService timeService = new TimeService();
-            GRYMigrator.DoAllMigrations(databaseTestFramework.Connection, databaseManager, timeService);
-            DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
-            DatabaseContext context = new DatabaseContext(optionsBuilder.Options, GeneralLogger.CreateUsingConsole(), new TimeService(), databaseManager);
-            string sqlSource = context.Database.GenerateCreateScript();
-            string targetFolder = TestUtilities.Utilities.GetTestDatabaseCreationScriptArtifactFolder(databaseTestFramework.GetDatabaseName());
-            GUtilities.EnsureDirectoryDoesNotExist(targetFolder);
-            GUtilities.EnsureDirectoryExists(targetFolder);
-            string targetFile = Path.Join(targetFolder, "CreateDatabase.sql");
-            File.WriteAllText(targetFile, sqlSource, new UTF8Encoding(false));
+            using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework())
+            {
+                IDatabaseManager databaseManager = GetDatabaseManager();
+                ITimeService timeService = new TimeService();
+                GRYMigrator.DoAllMigrations(databaseTestFramework.Connection, databaseManager, timeService);
+                DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
+                databaseTestFramework.ConfigureDb(optionsBuilder);
+                DatabaseContext context = new DatabaseContext(optionsBuilder.Options, GeneralLogger.CreateUsingConsole(), new TimeService(), databaseManager);
+                string sqlSource = context.Database.GenerateCreateScript();
+                string targetFolder = TestUtilities.Utilities.GetTestDatabaseCreationScriptArtifactFolder(databaseTestFramework.GetDatabaseName());
+                GUtilities.EnsureDirectoryDoesNotExist(targetFolder);
+                GUtilities.EnsureDirectoryExists(targetFolder);
+                string targetFile = Path.Join(targetFolder, "CreateDatabase.sql");
+                File.WriteAllText(targetFile, sqlSource, new UTF8Encoding(false));
+            }
         }
-
     }
 }

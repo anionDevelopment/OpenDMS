@@ -1,8 +1,13 @@
--- MariaDB-syntax
 delete from `Role_InheritedRoles`;
 delete from `User_Roles`;
-delete from `Roles`;
-delete from `RefreshToken`;
+delete from `StorageLocations_User`;
+delete from `Document_Tag`;
+delete from `Container_Containee`;
 delete from `AccessToken`;
+delete from `RefreshToken`;
 delete from `Documents`;
+delete from `Folders`;
+delete from `StorageLocations`;
+delete from `Tags`;
+delete from `Roles`;
 delete from `Users`;

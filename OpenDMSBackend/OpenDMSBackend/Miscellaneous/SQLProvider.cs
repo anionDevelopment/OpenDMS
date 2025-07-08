@@ -1,11 +1,12 @@
-﻿using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Services;
 
 namespace OpenDMSBackend.Core.Miscellaneous
 {
     public abstract class SQLProvider : AbstractSQLProvider, ISQLProvider
     {
-        public SQLProvider(string databaseType) : base($"OpenDMSBackend.Core.Resources.Database.{databaseType}.Statements.") { }
+        public SQLProvider(string databaseType,IGRYLog log) : base($"OpenDMSBackend.Core.Resources.Database.{databaseType}.Statements",log) { }
 
         public string GetScriptResetDatabase()
         {

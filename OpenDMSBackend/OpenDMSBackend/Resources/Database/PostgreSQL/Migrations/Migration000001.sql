@@ -6,7 +6,7 @@ CREATE TABLE "Users" (
     "EMailAddress" varchar(255) null,
     "UserIsActivated" boolean not null,
     "UserIsLocked" boolean not null,
-    "RegistrationMoment" timestamp(6) not null,
+    "RegistrationMoment" timestamp with time zone not null,
     "TOTPActivated" boolean null,
     "TOTPSecretKey" varchar(255) null,
     unique("Name"),
@@ -30,13 +30,13 @@ CREATE TABLE "Documents" (
     "Title" varchar(255) not null,
     "Filename" varchar(255) not null,
     "OriginalFilename" varchar(255) not null,
-    "ImportDate" timestamp(6) not null,
-    "LastEditDate" timestamp(6) null,
+    "ImportDate" timestamp with time zone not null,
+    "LastEditDate" timestamp with time zone null,
     "ReadableId" BIGINT not null,
     "MIMEType" varchar(255) not null,
-    "DocumentPreview" bytea not null,
-    "OCRContent" text not null,
     "DocumentContent" bytea not null,
+    "OCRContent" text not null,
+    "DocumentPreview" bytea not null,
     CONSTRAINT "PK_Documents" PRIMARY KEY ("Id")
 ) ;
 
@@ -62,7 +62,7 @@ CREATE TABLE "Container_Containee" (
 
 CREATE TABLE "AccessToken" (
     "Value" varchar(255) not null,
-    "ExpiredMoment" timestamp(6) not null,
+    "ExpiredMoment" timestamp with time zone not null,
     "UserId" varchar(255) not null,
     CONSTRAINT "PK_AccessToken" PRIMARY KEY ("Value"),
     CONSTRAINT "FK_AccessToken_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users"("Id")
@@ -70,7 +70,7 @@ CREATE TABLE "AccessToken" (
 
 CREATE TABLE "RefreshToken" (
     "Value" varchar(255) not null,
-    "ExpiredMoment" timestamp(6) not null,
+    "ExpiredMoment" timestamp with time zone not null,
     "UserId" varchar(255) not null,
     CONSTRAINT "PK_RefreshToken" PRIMARY KEY ("Value"),
     CONSTRAINT "FK_RefreshToken_UserId" FOREIGN KEY ("UserId") REFERENCES "Users"("Id")

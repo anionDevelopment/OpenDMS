@@ -1,2 +1,2 @@
--- MariaDB-syntax
-select `Value`, `ExpiredMoment` from AccessToken where `UserId`=UserId;
+
+select `Value`, `ExpiredMoment` from AccessToken where `UserId`=@UserId;

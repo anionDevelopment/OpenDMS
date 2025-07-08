@@ -1,8 +1,8 @@
 version: "3.2"
 
 services:
-  opendmsbackend_postgresqldatabase:
-    container_name: "opendmsbackend_postgresqldatabase"
+  opendmsbackend_database:
+    container_name: "opendmsbackend_database"
     image: postgres:17.5
     environment:
       POSTGRES_USER: user
@@ -12,14 +12,18 @@ services:
       - "5432:5432"
     volumes:
       - ./Volumes/Data:/var/lib/postgresql/data
+    networks:
+      - opendms_net
+    command: >
+      postgres -c log_connections=on -c log_disconnections=on
 
-  opendmsbackend_postgresqldatabase_administration:
+  opendmsbackend_database_administration:
     image: adminer:4.8.1
-    container_name: "opendmsbackend_postgresqldatabase_administration"
+    container_name: "opendmsbackend_database_administration"
     ports:
       - 8080:8080
     depends_on:
-      - opendmsbackend_postgresqldatabase
+      - opendmsbackend_database
     networks:
       - opendms_net
 

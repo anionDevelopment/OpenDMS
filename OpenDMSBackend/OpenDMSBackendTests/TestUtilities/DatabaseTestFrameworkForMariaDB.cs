@@ -1,13 +1,21 @@
 ﻿using GRYLibrary.Core.APIServer.Utilities;
+using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
+using OpenDMSBackend.Core.Database;
 using System.Data.Common;
 
 namespace OpenDMSBackend.Tests.TestUtilities
 {
     public sealed class DatabaseTestFrameworkForMariaDB : DatabaseTestFrameworkTemplate
     {
-        public DatabaseTestFrameworkForMariaDB() : base("opendmsbackend_mariadbdatabase", "Host=localhost;Port=3306;Username=user;Password=pa55w0rd;Database=OpenDMSDatabase", Utilities.GetTestMariaDBDatabaseFolder() )
+        public DatabaseTestFrameworkForMariaDB() : base("opendmsbackend_database", "Host=localhost; Port=3306;Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;", Utilities.GetTestMariaDBDatabaseFolder() )
         {
+        }
+
+
+        public override void ConfigureDb<TDbContext>(DbContextOptionsBuilder<TDbContext> optionsBuilder)
+        {
+            optionsBuilder.UseMySql(this.ConnectionString, ServerVersion.AutoDetect(this.ConnectionString));
         }
 
         public override DbConnection CreateConnection(string connectionString)

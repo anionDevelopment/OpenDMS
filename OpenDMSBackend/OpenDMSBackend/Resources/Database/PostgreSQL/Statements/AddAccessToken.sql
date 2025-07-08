@@ -1,4 +1,4 @@
--- MariaDB-syntax
+
 insert 
-	into AccessToken(`Value`, `ExpiredMoment`, `UserId`) 
-	values          (@Value , @ExpiredMoment , @UserId );
+	into "AccessToken"("Value", "ExpiredMoment", "UserId") 
+	values            (@Value , @ExpiredMoment , @UserId );

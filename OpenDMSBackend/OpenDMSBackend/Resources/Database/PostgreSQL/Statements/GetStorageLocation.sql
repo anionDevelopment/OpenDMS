@@ -1,2 +1,2 @@
--- MariaDB-syntax
-select `Name` from `StorageLocations` where `Id`=@Id;
+
+select "Name" from "StorageLocations" where "Id"=$1;

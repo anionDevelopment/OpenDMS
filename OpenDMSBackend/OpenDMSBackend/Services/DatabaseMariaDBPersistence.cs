@@ -35,9 +35,15 @@ namespace OpenDMSBackend.Core.Services
                 var t when t == typeof(double) => MySqlDbType.Double,
                 var t when t == typeof(decimal) => MySqlDbType.Decimal,
                 var t when t == typeof(Guid) => MySqlDbType.Guid,
-                var t when t == typeof(byte[]) => MySqlDbType.Blob,
+                var t when t == typeof(sbyte) => MySqlDbType.Byte,
+                var t when t == typeof(byte) => MySqlDbType.UByte,
+                var t when t == typeof(byte[]) => MySqlDbType.VarBinary,
                 var t when t == typeof(char) => MySqlDbType.VarChar,
                 var t when t == typeof(TimeSpan) => MySqlDbType.Time,
+                var t when t == typeof(UInt16) => MySqlDbType.UInt16,
+                var t when t == typeof(UInt32) => MySqlDbType.UInt32,
+                var t when t == typeof(UInt64) => MySqlDbType.UInt64,
+                var t when t == typeof(UInt128) => MySqlDbType.UInt64,
 
                 _ => throw new NotSupportedException($"Type '{type.FullName}' is not supported.")
             };

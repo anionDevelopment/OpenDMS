@@ -82,7 +82,7 @@ namespace OpenDMSBackend.Core.Services
             List<T?> results = new List<T?>();
             this.AccessDatabase(context =>
            {
-               using DbConnection connection = context.Connection;
+               DbConnection connection = context.Connection;
                using DbTransaction transaction = connection.BeginTransaction();
                bool commit = true;
                try
@@ -129,7 +129,7 @@ namespace OpenDMSBackend.Core.Services
             this.RunTransaction((command) =>
             {
                 command.CommandText = this._SQLProvider.GetScriptAddDocument();
-                command.Prepare();
+
                 command.Parameters.Add(this.GetParameter("Id", document.Id));
                 command.Parameters.Add(this.GetParameter("Title", document.Title.Value));
                 command.Parameters.Add(this.GetParameter("Filename", document.Filename.Value));
@@ -186,7 +186,7 @@ namespace OpenDMSBackend.Core.Services
             this.RunTransaction((command) =>
             {
                 command.CommandText = this._SQLProvider.GetScriptInsertRole();
-                command.Prepare();
+
                 command.Parameters.Add(this.GetParameter("Id", role.Id));
                 command.Parameters.Add(this.GetParameter("Name", role.Name));
                 command.ExecuteNonQuery();
@@ -234,7 +234,7 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this.GetParameter("RegistrationMoment", user.RegistrationMoment));
                 command.Parameters.Add(this.GetParameter("TOTPActivated", user.TOTP == null ? null : user.TOTP.IsActicated, typeof(bool)));
                 command.Parameters.Add(this.GetParameter("TOTPSecretKey", user.TOTP == null ? null : user.TOTP.SecretKey, typeof(string)));
-                command.Prepare();
+
                 command.ExecuteNonQuery();
             });
         }
@@ -348,8 +348,22 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        private T? GetValue<T>(DbDataReader reader, int parameterIndex, bool allowNull)
+        {
+            if (allowNull && reader.IsDBNull(parameterIndex))
+            {
+                return default(T);
+            }
+            return this.ConvertValue<T>(reader.GetDateTime(parameterIndex));
+        }
+
         private T? ConvertValue<T>(object value)
         {
+            if (typeof(T).Equals(typeof(GRYDateTime)))
+            {
+                DateTime extractedValue = ConvertValue<DateTime>(value);
+                return (T)(object)GRYDateTime.FromDateTime(extractedValue);
+            }
             if (value == null || value == DBNull.Value)
             {
                 return default(T);
@@ -381,7 +395,7 @@ namespace OpenDMSBackend.Core.Services
             this.RunTransaction((command) =>
             {
                 command.CommandText = this._SQLProvider.GetScriptAddRoleToUser();
-                command.Prepare();
+
                 command.Parameters.Add(this.GetParameter("UserId", userId));
                 command.Parameters.Add(this.GetParameter("RoleId", roleId));
                 command.ExecuteNonQuery();
@@ -450,6 +464,11 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual void Dispose()
         {
+            if (_DatabaseContext != null && _DatabaseContext.Connection != null)
+            {
+                _DatabaseContext.Connection.Close();
+                _DatabaseContext.Connection.Dispose();
+            }
             this._DatabaseContext?.Dispose();
         }
 
@@ -457,19 +476,28 @@ namespace OpenDMSBackend.Core.Services
         {
             return GUtilities.GetValue(this.RunTransaction((cmd) =>
             {
-                cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
-                cmd.Parameters.Add(this.GetParameter("Id", id));
-                using DbDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                try
                 {
-                    reader.Read();
-                    Document document = new Document(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), GRYDateTime.FromDateTime(reader.GetDateTime(3)), GRYDateTime.FromDateTime(this.ConvertValue<DateTime>(reader.GetDateTime(4))), (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetString(8), (byte[])reader.GetValue(9));
-                    //TODO load tags
-                    return document;
+                    cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
+                    cmd.Parameters.Add(this.GetParameter("Id", id));
+                    using DbDataReader reader = cmd.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        GRYDateTime importDate = GetValue<GRYDateTime>(reader, 3, false);
+                        GRYDateTime? lastEditDate = GetValue<GRYDateTime>(reader, 4, true);
+                        Document document = new Document(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), importDate, lastEditDate, (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetString(8), (byte[])reader.GetValue(9));
+                        //TODO load tags
+                        return document;
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"No document found with document '{id}'");
+                    }
                 }
-                else
+                catch
                 {
-                    throw new KeyNotFoundException($"No document found with document '{id}'");
+                    throw;
                 }
             })[0]);
         }

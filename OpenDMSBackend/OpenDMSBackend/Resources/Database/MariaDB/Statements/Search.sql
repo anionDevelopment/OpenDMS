@@ -1,4 +1,4 @@
--- MariaDB-syntax
+
 SELECT *
 FROM (
   SELECT

@@ -1,2 +1,2 @@
--- MariaDB-syntax
-delete from AccessToken where `Value`=@Value;
+
+delete from "AccessToken" where "Value"=$1;

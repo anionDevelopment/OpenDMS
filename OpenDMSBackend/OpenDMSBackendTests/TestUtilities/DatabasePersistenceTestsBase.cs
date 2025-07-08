@@ -20,7 +20,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
 {
     public abstract class DatabasePersistenceTestsBase: PersistenceTestsBase
     {
-        public abstract ISQLProvider GetSQLProvider();
+        public abstract ISQLProvider GetSQLProvider(IGRYLog log);
 
         public abstract IDatabaseManager GetDatabaseManager();
 
@@ -35,7 +35,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
             ITimeService timeService = new TimeService();
             GRYMigrator.DoAllMigrations(databaseTestFramework.Connection, databaseManager, timeService);
             DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
+            databaseTestFramework.ConfigureDb(optionsBuilder);
             IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = true;
@@ -45,8 +45,9 @@ namespace OpenDMSBackend.Tests.TestUtilities
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
             Mock<IApplicationConstants<CodeUnitSpecificConstants>> constantsMock = new Mock<IApplicationConstants<CodeUnitSpecificConstants>>(MockBehavior.Strict);
             constantsMock.SetupGet(m => m.Environment).Returns(OpenDMSBackendUtilities.GetEnvironmentTargetType());
-            ISQLProvider sqlProvider = this.GetSQLProvider();
+            ISQLProvider sqlProvider = this.GetSQLProvider(logger);
             IPersistence result = this.GetPersistenceObject(databaseManager, timeService, optionsBuilder, logger, sqlProvider);
+            result.Reset();
             return result;
         }
 

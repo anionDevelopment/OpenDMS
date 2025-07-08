@@ -34,7 +34,7 @@ using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.FilePath;
 using System;
-using GRYLibrary.Core.APIServer.Services.Database;
+using GRYLibrary.Core.APIServer.Services.Database.DatabaseInterator;
 
 namespace OpenDMSBackend.Core
 {
@@ -123,7 +123,17 @@ namespace OpenDMSBackend.Core
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePostgreSQLPersistence>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerPostgreSQL>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderPostgreSQL>();
-                            //TODO prepare database-usage with something like "functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>{ }, ServiceLifetime.Singleton);"
+                            functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
+                            {
+                                string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
+                                Tools.ConnectToDatabaseWrapper(() =>
+                                {
+                                    options.UseNpgsql(connectionString, sqlOptions =>
+                                    {
+                                        sqlOptions.CommandTimeout(120);
+                                    });
+                                }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
+                            }, ServiceLifetime.Singleton);
                         }
                         else if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "MariaDB")
                         {

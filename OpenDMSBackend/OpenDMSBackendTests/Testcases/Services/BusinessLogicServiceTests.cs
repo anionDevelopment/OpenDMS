@@ -27,19 +27,14 @@ namespace OpenDMSBackend.Tests.Testcases.Services
     [TestClass]
     public class BusinessLogicServiceTests
     {
-        private void InitializeServices(bool registrationIsEnabled, out IBusinessLogicService businessLogicService, out DatabaseTestFrameworkTemplate databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence)
+        private void InitializeServices(bool registrationIsEnabled, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence)
         {
-            databaseTestFramework = new DatabaseTestFrameworkForPostgreSQL();
-            IDatabaseManager databaseManager = new DatabaseManagerPostgreSQL();
             ITimeService timeService = new TimeService();
-            GRYMigrator.DoAllMigrations(databaseTestFramework.Connection, databaseManager, timeService);
-            DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            optionsBuilder.UseMySql(databaseTestFramework.ConnectionString, ServerVersion.AutoDetect(databaseTestFramework.ConnectionString));
             IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = registrationIsEnabled;
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
-            ISQLProvider sqlProvider = new SQLProviderPostgreSQL();
+            ISQLProvider sqlProvider = new SQLProviderPostgreSQL(logger);
             IIdGenerator<ulong> idGenerator = new OpenDMSBackend.Core.Services.IdGenerator();
             IPersistence databasePersistence = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTransientPersistence();
             persistence = databasePersistence;
@@ -48,7 +43,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             IAuthenticationService<User> authenticationService = new OpenDMSBackendPersistentAuthenticationService(timeService, databasePersistence, logger, constants);
             Mock<OCRService> ocrServiceMock = new Mock<OCRService>(MockBehavior.Strict);
             IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
-
             businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object, idGenerator, generalResourceLoader);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService);
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, databasePersistence, idGenerator);
@@ -59,18 +53,15 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         public void DatabaseInitializationTest()
         {
             // arrange
-            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFrameworkTemplate databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence _);
-            using (databaseTestFramework)
-            {
-                string adminUserName = CodeUnitSpecificConstants.UsernameAdmin;
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence _);
+            string adminUserName = CodeUnitSpecificConstants.UsernameAdmin;
 
-                // act
-                initializationService.Initialize(new CommandlineParameter());
+            // act
+            initializationService.Initialize(new CommandlineParameter());
 
-                // assert
-                Assert.IsTrue(businessLogicService.UserWithNameExists(adminUserName));
-                // TODO add more assertions
-            }
+            // assert
+            Assert.IsTrue(businessLogicService.UserWithNameExists(adminUserName));
+            // TODO add more assertions
         }
 
         [TestMethod(nameof(RegisterTest))]
@@ -78,22 +69,19 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         public void RegisterTest()
         {
             // arrange
-            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out DatabaseTestFrameworkTemplate databaseTestFramework, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
-            using (databaseTestFramework)
-            {
-                initializationService.Initialize(new CommandlineParameter());
-                string user = "someuser";
-                string password = "somepassword";
-                Assert.IsFalse(persistence.UserWithNameExists(user));
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string user = "someuser";
+            string password = "somepassword";
+            Assert.IsFalse(persistence.UserWithNameExists(user));
 
-                // act
-                string userId = businessLogicService.Register(user, password);
+            // act
+            string userId = businessLogicService.Register(user, password);
 
-                // assert
-                Assert.IsTrue(persistence.UserWithIdExists(userId));
-                Assert.IsTrue(businessLogicService.UserWithNameExists(user));
-                // TODO add more assertions
-            }
+            // assert
+            Assert.IsTrue(persistence.UserWithIdExists(userId));
+            Assert.IsTrue(businessLogicService.UserWithNameExists(user));
+            // TODO add more assertions
         }
 
         //TODO write testcases for the things which are not allowed to verify the user is really not able to do certain things

@@ -9,34 +9,32 @@ using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities;
 
-namespace OpenDMSBackend.Tests.Testcases.Services
+namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     [TestClass]
-    public class PersistenceDatabasePostgreSQLTests : DatabasePersistenceTestsBase
+    public class DatabaseMariaDBTests : DatabasePersistenceTestsBase
     {
-
         public override IDatabaseManager GetDatabaseManager()
         {
-            return new DatabaseManagerPostgreSQL();
+            return new DatabaseManagerMariaDB();
         }
 
         public override GenericPersistence GetPersistenceObject(IDatabaseManager databaseManager, ITimeService timeService, DbContextOptionsBuilder<DatabaseContext> optionsBuilder, IGRYLog logger, ISQLProvider sqlProvider)
         {
-            return new DatabasePostgreSQLPersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
+            return new DatabaseMariaDBPersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
         }
 
-        public override ISQLProvider GetSQLProvider()
+        public override ISQLProvider GetSQLProvider(IGRYLog log)
         {
-            return new SQLProviderPostgreSQL();
+            return new SQLProviderMariaDB(log);
         }
 
         public override DatabaseTestFrameworkTemplate GetTestFramework()
         {
-            return new DatabaseTestFrameworkForPostgreSQL();
+            return new DatabaseTestFrameworkForMariaDB();
         }
 
-
-        [TestMethod(nameof(PersistDocumentTest))]
+        [TestMethod(nameof(DatabasePersistenceCreateDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void DatabasePersistenceCreateDocumentTest()
         {
@@ -44,7 +42,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
 
-        [TestMethod(nameof(PersistDocumentTest))]
+        [TestMethod(nameof(GetAmountOfDocumentsTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void GetAmountOfDocumentsTest()
         {
@@ -57,5 +55,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         {
             this.PersistDocument();
         }
+
     }
 }

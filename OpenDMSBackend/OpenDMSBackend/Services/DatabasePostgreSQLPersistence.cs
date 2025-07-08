@@ -17,18 +17,71 @@ namespace OpenDMSBackend.Core.Services
         {
         }
 
-        public override DbParameter GetParameter(string parameterName, object? value,Type type)
+        public override DbParameter GetParameter(string parameterName, object? value, Type type)
         {
-            return new NpgsqlParameter(parameterName, value ?? DBNull.Value)
+            var formattedValue = FormatValue(value);
+            var adaptedType = AdaptType(type);
+            var dbType = this.GetType(adaptedType);
+            return new NpgsqlParameter()
             {
-                NpgsqlDbType = this.GetType(type)
+                Value = formattedValue,
+                NpgsqlDbType = dbType,
             };
         }
+
+        private Type AdaptType(Type type)
+        {
+            return type switch
+            {
+                var t when t == typeof(UInt16) => typeof(Int16),
+                var t when t == typeof(UInt32) => typeof(Int32),
+                var t when t == typeof(UInt64) => typeof(Int64),
+                var t when t == typeof(UInt128) => typeof(Int128),
+                _ => type
+            };
+        }
+
+        private object FormatValue(object? value)
+        {
+            object result;
+            if (value == null)
+            {
+                result = DBNull.Value;
+            }
+            /*
+            else if (value is DateTime typedValue)
+            {
+                 result= typedValue.ToString("yyyy-MM-dd'T'HH:mm:ss");
+            }
+            */
+            else if (value is UInt16 valusAsUInt16)
+            {
+                result = (Int16)valusAsUInt16;
+            }
+            else if (value is UInt32 valusAsUInt32)
+            {
+                result = (Int32)valusAsUInt32;
+            }
+            else if (value is UInt64 valusAsUInt64)
+            {
+                result = (Int64)valusAsUInt64;
+            }
+            else if (value is UInt128 valusAsUInt128)
+            {
+                result = (Int128)valusAsUInt128;
+            }
+            else
+            {
+                result = value;
+            }
+            return result;
+        }
+
         private NpgsqlDbType GetType(Type type)
         {
             return type switch
             {
-                var t when t == typeof(string) => NpgsqlDbType.Text,
+                var t when t == typeof(string) => NpgsqlDbType.Varchar,
                 var t when t == typeof(int) => NpgsqlDbType.Integer,
                 var t when t == typeof(long) => NpgsqlDbType.Bigint,
                 var t when t == typeof(short) => NpgsqlDbType.Smallint,
@@ -39,7 +92,7 @@ namespace OpenDMSBackend.Core.Services
                 var t when t == typeof(decimal) => NpgsqlDbType.Numeric,
                 var t when t == typeof(Guid) => NpgsqlDbType.Uuid,
                 var t when t == typeof(byte[]) => NpgsqlDbType.Bytea,
-                var t when t == typeof(char) => NpgsqlDbType.Char,
+                var t when t == typeof(char) => NpgsqlDbType.Varchar,
                 var t when t == typeof(TimeSpan) => NpgsqlDbType.Interval,
 
                 _ => throw new NotSupportedException($"Type '{type.FullName}' is not supported.")

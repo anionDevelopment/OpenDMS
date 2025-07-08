@@ -3,14 +3,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities;
 
-namespace OpenDMSBackend.Tests.Testcases.Services
+namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     [TestClass]
     public class PersistenceTransientTests : PersistenceTestsBase
     {
         public override IPersistence GetPersistence()
         {
-            return OpenDMSBackend.Tests.TestUtilities.Utilities.GetTransientPersistence();
+            return TestUtilities.Utilities.GetTransientPersistence();
         }
 
 
