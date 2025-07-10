@@ -15,9 +15,9 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.APIServer.Mid.AuthS;
 using GRYLibrary.Core.APIServer.MidT.Exception;
-using OpenDMSBackend.Core.Miscellaneous;
+using OpenDMSBackend.Core.Misc;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
-using OpenDMSBackendUtilities = OpenDMSBackend.Core.Miscellaneous.Utilities;
+using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Auth.R;
 using GRYLibrary.Core.APIServer.Mid.M05DLog;
@@ -35,6 +35,7 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.FilePath;
 using System;
 using GRYLibrary.Core.APIServer.Services.Database.DatabaseInterator;
+using OpenDMSBackend.Core.Services.Misc;
 
 namespace OpenDMSBackend.Core
 {
@@ -114,7 +115,7 @@ namespace OpenDMSBackend.Core
                     if (useDatabase)
                     {
                         logger.Log($"Run persistent using database \"{functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType}\".", LogLevel.Information);
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendPersistentAuthenticationService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, PersistentAuthenticationService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<IPersistence>());
                         IGenericDatabaseInteractor genericDatabaseInteractor;
                         if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "PostgreSQL")

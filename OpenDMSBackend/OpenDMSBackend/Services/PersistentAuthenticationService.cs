@@ -19,13 +19,13 @@ namespace OpenDMSBackend.Core.Services
     /// <summary>
     /// Represetns a authenticationservice where userdata (user, roles, accesstoken, etc.) will be stored persistent.
     /// </summary>
-    public class OpenDMSBackendPersistentAuthenticationService : IAuthenticationService<Model.BusinessTypes.User>
+    public class PersistentAuthenticationService : IAuthenticationService<Model.BusinessTypes.User>
     {
         private readonly IAuthenticationServicePersistence<Model.BusinessTypes.User> _AuthentificationPersistence;
         private readonly IGeneralLogger _Logger;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly ITimeService _TimeService;
-        public OpenDMSBackendPersistentAuthenticationService(ITimeService timeService, IAuthenticationServicePersistence<Model.BusinessTypes.User> authentificationPersistence, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants)
+        public PersistentAuthenticationService(ITimeService timeService, IAuthenticationServicePersistence<Model.BusinessTypes.User> authentificationPersistence, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants)
         {
             this._AuthentificationPersistence = authentificationPersistence;
             this._Logger = logger;

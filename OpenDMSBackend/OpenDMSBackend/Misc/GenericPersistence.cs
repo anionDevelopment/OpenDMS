@@ -17,7 +17,7 @@ using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.Misc.Strings;
 using System.Data.Common;
 
-namespace OpenDMSBackend.Core.Services
+namespace OpenDMSBackend.Core.Services.Misc
 {
     public abstract class GenericPersistence : IPersistence
     {

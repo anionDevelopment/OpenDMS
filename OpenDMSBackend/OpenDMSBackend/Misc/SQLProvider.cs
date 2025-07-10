@@ -2,7 +2,7 @@
 using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Services;
 
-namespace OpenDMSBackend.Core.Miscellaneous
+namespace OpenDMSBackend.Core.Misc
 {
     public abstract class SQLProvider : AbstractSQLProvider, ISQLProvider
     {

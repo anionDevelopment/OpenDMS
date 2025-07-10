@@ -14,7 +14,7 @@ using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Services;
-using OpenDMSBackendUtilities = OpenDMSBackend.Core.Miscellaneous.Utilities;
+using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
 
 namespace OpenDMSBackend.Tests.TestUtilities
 {

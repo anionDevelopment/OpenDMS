@@ -15,7 +15,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 
 
 
-        [TestMethod(nameof(PersistDocumentTest))]
+        [TestMethod(nameof(DatabasePersistenceCreateDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void DatabasePersistenceCreateDocumentTest()
         {
@@ -23,7 +23,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         }
 
 
-        [TestMethod(nameof(PersistDocumentTest))]
+        [TestMethod(nameof(GetAmountOfDocumentsTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void GetAmountOfDocumentsTest()
         {

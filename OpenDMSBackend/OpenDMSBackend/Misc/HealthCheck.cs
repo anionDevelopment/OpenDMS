@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OpenDMSBackend.Core.Miscellaneous
+namespace OpenDMSBackend.Core.Services.Misc
 {
     public class HealthCheck : IHealthCheck
     {

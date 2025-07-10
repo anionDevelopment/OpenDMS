@@ -1,5 +1,5 @@
 ﻿using GRYLibrary.Core.Logging.GRYLogger;
-using OpenDMSBackend.Core.Miscellaneous;
+using OpenDMSBackend.Core.Misc;
 
 namespace OpenDMSBackend.Core.Services
 {

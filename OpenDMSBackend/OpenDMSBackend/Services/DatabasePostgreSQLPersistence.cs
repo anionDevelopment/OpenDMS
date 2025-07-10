@@ -8,6 +8,7 @@ using OpenDMSBackend.Core.Database;
 using System;
 using System.Data.Common;
 using NpgsqlTypes;
+using OpenDMSBackend.Core.Services.Misc;
 
 namespace OpenDMSBackend.Core.Services
 {

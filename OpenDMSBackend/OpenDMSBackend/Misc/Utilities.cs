@@ -14,7 +14,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp;
 
-namespace OpenDMSBackend.Core.Miscellaneous
+namespace OpenDMSBackend.Core.Misc
 {
     internal static class Utilities
     {

@@ -1,5 +1,17 @@
 # Minimal docker-compose-file
 
+## Start
+
+Run `task BaseExampleStart` from the repository-base-folder.
+
+Optionally you can create a `Variables.env` in this folder to add some configuration-values.
+
+Example-content for a valid `Variables.env`-file:
+
+```bash
+InitialAdminPassword=Adm1npa55w0rd
+```
+
 ## Access
 
 ### Database

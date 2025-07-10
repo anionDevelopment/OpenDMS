@@ -8,7 +8,7 @@ using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Miscellaneous;
+using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
 using IAuthenticationService = GRYLibrary.Core.APIServer.Services.Interfaces.IAuthenticationService;

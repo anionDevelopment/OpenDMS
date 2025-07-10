@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Core.Services.Misc;
 using OpenDMSBackend.Tests.TestUtilities;
 
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests

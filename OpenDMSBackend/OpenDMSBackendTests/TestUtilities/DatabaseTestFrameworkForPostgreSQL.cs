@@ -6,7 +6,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
 {
     public sealed class DatabaseTestFrameworkForPostgreSQL : DatabaseTestFrameworkTemplate
     {
-        public DatabaseTestFrameworkForPostgreSQL() : base("opendmsbackend_database", "Host=localhost; Port=5432; Username=user; Database=OpenDMSDatabase; Password=pa55w0rd; Database=OpenDMSDatabase;", Utilities.GetTestPostgreSQLDatabaseFolder())
+        public DatabaseTestFrameworkForPostgreSQL() : base("opendmsbackend_database", "Host=localhost; Port=5432; Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;", Utilities.GetTestPostgreSQLDatabaseFolder())
         {
         }
 

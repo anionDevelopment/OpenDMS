@@ -5,6 +5,7 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using OpenDMSBackend.Core.Database;
+using OpenDMSBackend.Core.Services.Misc;
 using System;
 
 namespace OpenDMSBackend.Core.Services
