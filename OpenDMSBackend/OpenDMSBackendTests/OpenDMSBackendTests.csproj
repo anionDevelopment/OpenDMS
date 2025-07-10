@@ -67,7 +67,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.6" />
-        <PackageReference Include="GRYLibrary" Version="0.12.150" />
+        <PackageReference Include="GRYLibrary" Version="0.12.151" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.7" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />

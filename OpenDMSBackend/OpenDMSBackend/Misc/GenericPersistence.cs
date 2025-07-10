@@ -16,6 +16,7 @@ using OpenDMSBackend.Core.Model.DTOs;
 using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.Misc.Strings;
 using System.Data.Common;
+using GRYLibrary.Core.APIServer.Services.Database;
 
 namespace OpenDMSBackend.Core.Services.Misc
 {
@@ -275,7 +276,7 @@ namespace OpenDMSBackend.Core.Services.Misc
                     user.Id = userId;
                     user.Name = reader.GetString(1);
                     user.PasswordHash = reader.GetString(2);
-                    user.EMailAddress = this.ConvertValue<string>(reader["EMailAddress"]);
+                    user.EMailAddress = DBUtilities.ConvertValue<string>(reader["EMailAddress"]);
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
                     user.RegistrationMoment = reader.GetDateTime(6);
@@ -305,7 +306,7 @@ namespace OpenDMSBackend.Core.Services.Misc
                     user.Id = reader.GetString(0);
                     user.Name = reader.GetString(1);
                     user.PasswordHash = reader.GetString(2);
-                    user.EMailAddress = this.ConvertValue<string>(reader["EMailAddress"]);
+                    user.EMailAddress = DBUtilities.ConvertValue<string>(reader["EMailAddress"]);
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
                     user.RegistrationMoment = reader.GetDateTime(6);
@@ -458,8 +459,8 @@ namespace OpenDMSBackend.Core.Services.Misc
                     if (reader.HasRows)
                     {
                         reader.Read();
-                        GRYDateTime importDate = this.GetValue<GRYDateTime>(reader, 3, false);
-                        GRYDateTime? lastEditDate = this.GetValue<GRYDateTime>(reader, 4, true);
+                        GRYDateTime importDate = DBUtilities.GetValue<GRYDateTime>(reader, 3, false);
+                        GRYDateTime? lastEditDate = DBUtilities.GetValue<GRYDateTime>(reader, 4, true);
                         Document document = new Document(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), importDate, lastEditDate, (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetString(8), (byte[])reader.GetValue(9));
                         //TODO load tags
                         return document;
@@ -641,7 +642,7 @@ namespace OpenDMSBackend.Core.Services.Misc
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), GRYDateTime.FromDateTime(reader.GetDateTime(3)), GRYDateTime.FromDateTime(this.ConvertValue<DateTime>(reader.GetDateTime(4))), (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7));
+                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), GRYDateTime.FromDateTime(reader.GetDateTime(3)), GRYDateTime.FromDateTime(DBUtilities.ConvertValue<DateTime>(reader.GetDateTime(4))), (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7));
                     //TODO load tags
                     return document;
                 }
