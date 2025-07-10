@@ -259,7 +259,7 @@ namespace OpenDMSBackend.Core.Services
 
         public User GetUser(string userId)
         {
-          return this._AuthentificationPersistence.GetUserById(userId);
+            return this._AuthentificationPersistence.GetUserById(userId);
         }
 
         public ISet<string> GetRolesOfUser(string userId)

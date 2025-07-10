@@ -19,7 +19,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes
         {
             return obj != null && this.GetType().Equals(obj?.GetType());
         }
-        
+
         public override int GetHashCode()
         {
             return this.GetType().GetHashCode();

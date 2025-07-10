@@ -361,7 +361,7 @@ namespace OpenDMSBackend.Core.Services
         {
             if (typeof(T).Equals(typeof(GRYDateTime)))
             {
-                DateTime extractedValue = ConvertValue<DateTime>(value);
+                DateTime extractedValue = this.ConvertValue<DateTime>(value);
                 return (T)(object)GRYDateTime.FromDateTime(extractedValue);
             }
             if (value == null || value == DBNull.Value)
@@ -464,10 +464,10 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual void Dispose()
         {
-            if (_DatabaseContext != null && _DatabaseContext.Connection != null)
+            if (this._DatabaseContext != null && this._DatabaseContext.Connection != null)
             {
-                _DatabaseContext.Connection.Close();
-                _DatabaseContext.Connection.Dispose();
+                this._DatabaseContext.Connection.Close();
+                this._DatabaseContext.Connection.Dispose();
             }
             this._DatabaseContext?.Dispose();
         }
@@ -484,8 +484,8 @@ namespace OpenDMSBackend.Core.Services
                     if (reader.HasRows)
                     {
                         reader.Read();
-                        GRYDateTime importDate = GetValue<GRYDateTime>(reader, 3, false);
-                        GRYDateTime? lastEditDate = GetValue<GRYDateTime>(reader, 4, true);
+                        GRYDateTime importDate = this.GetValue<GRYDateTime>(reader, 3, false);
+                        GRYDateTime? lastEditDate = this.GetValue<GRYDateTime>(reader, 4, true);
                         Document document = new Document(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), importDate, lastEditDate, (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetString(8), (byte[])reader.GetValue(9));
                         //TODO load tags
                         return document;

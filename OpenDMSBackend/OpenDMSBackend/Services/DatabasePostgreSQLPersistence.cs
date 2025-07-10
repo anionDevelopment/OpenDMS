@@ -19,9 +19,9 @@ namespace OpenDMSBackend.Core.Services
 
         public override DbParameter GetParameter(string parameterName, object? value, Type type)
         {
-            var formattedValue = FormatValue(value);
-            var adaptedType = AdaptType(type);
-            var dbType = this.GetType(adaptedType);
+            object formattedValue = this.FormatValue(value);
+            Type adaptedType = this.AdaptType(type);
+            NpgsqlDbType dbType = this.GetType(adaptedType);
             return new NpgsqlParameter()
             {
                 Value = formattedValue,

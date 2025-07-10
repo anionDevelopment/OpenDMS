@@ -54,6 +54,6 @@ namespace OpenDMSBackend.Core.Services
         /// Returns an ordered list of document-ids which are available for the given user and match at least one search-term in any kind.
         /// The order is descending regarding to relevance.
         /// </returns>
-        public IList<string> Search( string searchTerm);
+        public IList<string> Search(string searchTerm);
     }
 }

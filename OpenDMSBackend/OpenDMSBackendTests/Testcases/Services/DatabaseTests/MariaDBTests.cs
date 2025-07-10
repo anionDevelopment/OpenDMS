@@ -24,14 +24,14 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public override void Migration000001Test()
         {
-            Migration000001();
+            this.Migration000001();
         }
 
         [TestMethod(nameof(GenerateDatabaseGenerationScriptTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public override void GenerateDatabaseGenerationScriptTest()
         {
-            GenerateDatabaseGenerationScript();
+            this.GenerateDatabaseGenerationScript();
         }
     }
 }

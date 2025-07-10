@@ -6,7 +6,7 @@ namespace OpenDMSBackend.Core.Miscellaneous
 {
     public abstract class SQLProvider : AbstractSQLProvider, ISQLProvider
     {
-        public SQLProvider(string databaseType,IGRYLog log) : base($"OpenDMSBackend.Core.Resources.Database.{databaseType}.Statements",log) { }
+        public SQLProvider(string databaseType, IGRYLog log) : base($"OpenDMSBackend.Core.Resources.Database.{databaseType}.Statements", log) { }
 
         public string GetScriptResetDatabase()
         {

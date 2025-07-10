@@ -29,6 +29,6 @@ namespace OpenDMSBackend.Core.Configuration
         public IAuthenticationConfiguration ConfigurationForAuthenticationMiddleware { get { return this.AuthenticationConfiguration; } }
         public IExceptionManagerConfiguration ConfigurationForExceptionManagerMiddleware { get; set; }
         public IHeaderServiceConfiguration HeaderServiceConfiguration { get; set; }
-        public IGRYLogConfiguration AuditLogConfiguration { get;  set; }
+        public IGRYLogConfiguration AuditLogConfiguration { get; set; }
     }
 }

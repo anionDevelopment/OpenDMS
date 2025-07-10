@@ -5,6 +5,6 @@ namespace OpenDMSBackend.Tests.Testcases.Miscellaneous
     [TestClass]
     public class UtilitiesTests
     {
-       
+
     }
 }

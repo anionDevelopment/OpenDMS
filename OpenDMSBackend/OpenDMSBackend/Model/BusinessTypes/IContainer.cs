@@ -2,7 +2,7 @@
 
 namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
-    public interface IContainer: IContent
+    public interface IContainer : IContent
     {
         string Name { get; set; }
         public ISet<IContainee> Content { get; set; }

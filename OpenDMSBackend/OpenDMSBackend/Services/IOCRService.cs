@@ -2,6 +2,6 @@
 {
     public interface IOCRService
     {
-       public string GetOCRContent(byte[] documentContent);
+        public string GetOCRContent(byte[] documentContent);
     }
 }

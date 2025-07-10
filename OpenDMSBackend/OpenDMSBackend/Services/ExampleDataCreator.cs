@@ -17,7 +17,7 @@ namespace OpenDMSBackend.Core.Services
         public void AddExampleData()
         {
             DateTime now = DateTime.Now;
-            DateTime initialDate = new DateTime(now.Year,now.Month,now.Day,now.Hour,0,0).AddHours(-1);
+            DateTime initialDate = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0).AddHours(-1);
             (string userId, string storageLocationId) userDetails1 = this.AddUser(1);//minimal example
             this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId, initialDate);
 

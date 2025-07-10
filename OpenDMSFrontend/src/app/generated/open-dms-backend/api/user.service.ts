@@ -1,5 +1,5 @@
 /**
- * OpenDMSBackend v1.0.1 API documentation
+ * OpenDMSBackend v1.1.0 API documentation
  *
  * 
  *

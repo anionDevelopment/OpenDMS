@@ -18,7 +18,7 @@ using OpenDMSBackendUtilities = OpenDMSBackend.Core.Miscellaneous.Utilities;
 
 namespace OpenDMSBackend.Tests.TestUtilities
 {
-    public abstract class DatabasePersistenceTestsBase: PersistenceTestsBase
+    public abstract class DatabasePersistenceTestsBase : PersistenceTestsBase
     {
         public abstract ISQLProvider GetSQLProvider(IGRYLog log);
 
@@ -31,7 +31,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         {
             DatabaseTestFrameworkTemplate databaseTestFramework = this.GetTestFramework();
             IDatabaseManager databaseManager = this.GetDatabaseManager();
-            var interactor = databaseManager.GetGenericDatabaseInteractor();
+            GRYLibrary.Core.APIServer.Services.Database.DatabaseInterator.IGenericDatabaseInteractor interactor = databaseManager.GetGenericDatabaseInteractor();
             ITimeService timeService = new TimeService();
             GRYMigrator.DoAllMigrations(databaseTestFramework.Connection, databaseManager, timeService);
             DbContextOptionsBuilder<DatabaseContext> optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
@@ -50,6 +50,5 @@ namespace OpenDMSBackend.Tests.TestUtilities
             result.Reset();
             return result;
         }
-
     }
 }
