@@ -5,7 +5,6 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
-using GRYLibrary.Core.Misc.ConsoleApplication;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using System.Collections.Generic;
@@ -47,7 +46,7 @@ namespace OpenDMSBackend.Core.Services
                 adminsRole.InheritedRoles = new HashSet<Role>() { usersRole };
                 this._AuthenticationService.UpdateRole(adminsRole);
 
-                string initialAdminPassword = string.IsNullOrWhiteSpace(commandlineParameter.InitialAdminPassword) ? CodeUnitSpecificConstants.UsernameAdmin : commandlineParameter.InitialAdminPassword;//only initial password. should be changed as soon as possible by the admin of course.
+                string initialAdminPassword = string.IsNullOrWhiteSpace(commandlineParameter.InitialAdminPassword) ? CodeUnitSpecificConstants.UsernameAdmin : commandlineParameter.InitialAdminPassword;
                 string adminUserId = this._BusinessLogicService.Register(adminUsername, initialAdminPassword);
                 this._AuthenticationService.EnsureUserHasRole(adminUserId, adminsRole.Id);
 

@@ -21,7 +21,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes
         public override byte[] GetPreview(byte[] content)
         {
             int factor = 4;
-            return Miscellaneous.Utilities.ResizeImage(content, 210 * factor, 297 * factor);//aspect ratio of DIN-A4
+            return Misc.Utilities.ResizeImage(content, 210 * factor, 297 * factor);//aspect ratio of DIN-A4
         }
         public override bool Equals(object? obj)
         {
@@ -35,7 +35,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes
 
         public override string GetOCRContent(byte[] content, IOCRService ocrService)
         {
-           return ocrService.GetOCRContent(content);
+            return ocrService.GetOCRContent(content);
         }
     }
 }

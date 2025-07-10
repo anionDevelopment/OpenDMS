@@ -2,9 +2,9 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Authors>Marius Göcke</Authors>
-        <Version>1.0.1</Version>
-        <AssemblyVersion>1.0.1</AssemblyVersion>
-        <FileVersion>1.0.1</FileVersion>
+        <Version>1.1.0</Version>
+        <AssemblyVersion>1.1.0</AssemblyVersion>
+        <FileVersion>1.1.0</FileVersion>
         <SelfContained>false</SelfContained>
         <IsPackable>false</IsPackable>
         <PreserveCompilationContext>false</PreserveCompilationContext>
@@ -59,37 +59,34 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="ExtendedXmlSerializer" Version="3.9.4" />
-        <PackageReference Include="GRYLibrary" Version="0.12.146" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.4" />
+        <PackageReference Include="ExtendedXmlSerializer" Version="3.9.6" />
+        <PackageReference Include="GRYLibrary" Version="0.12.151" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.7" />
         <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
         <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.4" />
-        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.7" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+        <PackageReference Include="Npgsql" Version="9.0.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
         <PackageReference Include="prometheus-net" Version="8.2.1" />
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.8" />
-        <PackageReference Include="System.Collections.Immutable" Version="9.0.4" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.4" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.10" />
+        <PackageReference Include="System.Collections.Immutable" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
         <PackageReference Include="NJsonSchema" Version="11.3.2" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.4.0" />
-        <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
+        <PackageReference Include="System.Drawing.Common" Version="9.0.7" />
         <PackageReference Include="System.Reactive" Version="6.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
         <PackageReference Include="Tesseract" Version="5.2.0" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Resources\**">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Update="Resources\Database\SQL\Search.sql">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </EmbeddedResource>
     </ItemGroup>
 </Project>

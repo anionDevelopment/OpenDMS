@@ -182,7 +182,7 @@ namespace OpenDMSBackend.Core.Services
         public void SetParentOfContainee(IContainee containee, string parentContainerId)
         {
             this._ContaineeContainerAssignments[containee.Id] = parentContainerId;
-            Miscellaneous.Utilities.DoForContentObject(this, parentContainerId,
+            Core.Misc.Utilities.DoForContentObject(this, parentContainerId,
             (storageId) =>
             {
                 this._StorageLocations[parentContainerId].Content.Add(containee);
@@ -199,7 +199,7 @@ namespace OpenDMSBackend.Core.Services
 
         public void Delete(string containerOrContaineeId)
         {
-            Miscellaneous.Utilities.DoForContentObject(this, containerOrContaineeId,
+            Core.Misc.Utilities.DoForContentObject(this, containerOrContaineeId,
                 (storageId) =>
                 {
                     this._StorageLocationOwnerAssignments.Remove(storageId);

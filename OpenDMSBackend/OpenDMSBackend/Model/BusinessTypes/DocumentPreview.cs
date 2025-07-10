@@ -57,7 +57,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentPreviewDTO ToDTO()
         {
-            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.ReadableId, this.MIMEType.Value, Miscellaneous.Utilities.ToBase64(this.Preview));
+            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview));
         }
 
         public GRYDateTime GetNewestDate(DocumentPreview document)

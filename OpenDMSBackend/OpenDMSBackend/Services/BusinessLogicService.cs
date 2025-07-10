@@ -48,7 +48,7 @@ namespace OpenDMSBackend.Core.Services
         {
             lock (_LockObject)
             {
-                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Miscellaneous.Utilities.GetMIMEType(originalFilename)), default, default, content);
+                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Core.Misc.Utilities.GetMIMEType(originalFilename)), default, default, content);
                 this.AnalyseDocument(document);
                 this._Persistence.CreateDocument(document);
                 this._Persistence.SetParentOfContainee(document, containerId);
@@ -139,7 +139,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
-            return Miscellaneous.Utilities.DoForContentObject(this._Persistence, contentId,
+            return Core.Misc.Utilities.DoForContentObject(this._Persistence, contentId,
                 (storageLocationId) => this.UserIsAllowedToViewStorageLocation(userId, storageLocationId),
                 (folderId) => this.UserIsAllowedToViewFolder(userId, folderId),
                 (documentId) => this.UserIsAllowedToViewDocument(userId, documentId)
@@ -148,7 +148,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
         {
-            if (Miscellaneous.Utilities.GetEnvironmentTargetType() is not Productive && this.UserIsAdministrator(userId))
+            if (Core.Misc.Utilities.GetEnvironmentTargetType() is not Productive && this.UserIsAdministrator(userId))
             {
                 return true;
             }
@@ -217,7 +217,7 @@ namespace OpenDMSBackend.Core.Services
         private void AnalyseDocument(Document document)
         {
             this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
-            DocumentType docType = Miscellaneous.Utilities.GetDocumentType(document.MIMEType.Value);
+            DocumentType docType = Core.Misc.Utilities.GetDocumentType(document.MIMEType.Value);
 
             byte[] noPreviewAvailablePicture = this._GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
             try
@@ -301,7 +301,7 @@ namespace OpenDMSBackend.Core.Services
             }
 
             //remove content
-            Miscellaneous.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => this.RemoveEntireContent(requesterUserId, folderId), null);
+            Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => this.RemoveEntireContent(requesterUserId, folderId), null);
 
             this._Persistence.Delete(containerOrContaineeId);
         }
@@ -315,7 +315,7 @@ namespace OpenDMSBackend.Core.Services
 
         private IContainee GetContainee(string containeeId)
         {
-            return Miscellaneous.Utilities.DoForContentObject<IContainee>(this._Persistence, containeeId,
+            return Core.Misc.Utilities.DoForContentObject<IContainee>(this._Persistence, containeeId,
                 (storageLocationId) => { throw new NotSupportedException(); },
                 (folderId) => { return this._Persistence.GetFolder(containeeId); },
                 (documentId) => { return this._Persistence.GetDocument(containeeId); }
