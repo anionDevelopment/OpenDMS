@@ -348,32 +348,6 @@ namespace OpenDMSBackend.Core.Services.Misc
             });
         }
 
-        private T? GetValue<T>(DbDataReader reader, int parameterIndex, bool allowNull)
-        {
-            if (allowNull && reader.IsDBNull(parameterIndex))
-            {
-                return default(T);
-            }
-            return this.ConvertValue<T>(reader.GetDateTime(parameterIndex));
-        }
-
-        private T? ConvertValue<T>(object value)
-        {
-            if (typeof(T).Equals(typeof(GRYDateTime)))
-            {
-                DateTime extractedValue = this.ConvertValue<DateTime>(value);
-                return (T)(object)GRYDateTime.FromDateTime(extractedValue);
-            }
-            if (value == null || value == DBNull.Value)
-            {
-                return default(T);
-            }
-            else
-            {
-                return (T)value;
-            }
-        }
-
         public virtual void RemoveUser(string userId)
         {
             throw new NotImplementedException();
