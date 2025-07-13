@@ -21,6 +21,8 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public byte[] Content { get; set; }
         public byte[] Preview { get; set; }
         public string OCRContent { get; set; }
+        //TODO add a concept to be able to apply a can-not-be-deleted-before-timestamp
+        //TODO add a concept to be able to apply a must-be-deleted-after-timestamp
         public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentPreview, string oCRContent, byte[] documentContent)
         {
             this.Id = id;
@@ -77,7 +79,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentDTO ToDTO()
         {
-            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Miscellaneous.Utilities.ToBase64(this.Content), Miscellaneous.Utilities.ToBase64(this.Preview));
+            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview));
         }
     }
 }

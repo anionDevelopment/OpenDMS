@@ -1,6 +1,7 @@
 .gitignore
 .openapi-generator-ignore
 README.md
+api.base.service.ts
 api.module.ts
 api/api.ts
 api/maintenanceRoutes.service.ts
@@ -19,4 +20,5 @@ model/storageLocationDTO.ts
 model/tagDTO.ts
 model/userInformationDTO.ts
 param.ts
+provide-api.ts
 variables.ts

@@ -4,6 +4,7 @@ tasks:
 
   BaseBuildAllCodeunits:
     desc: "Base: Build all codeunits"
+    silent: true
     dir: "."
     cmds:
       - scbuildcodeunits
@@ -13,6 +14,7 @@ tasks:
 
   BaseExampleStart:
     desc: "Base: Example start"
+    silent: true
     dir: "./OpenDMS/Other/Reference/ReferenceContent/Examples/MinimalDockerComposeFile"
     cmds:
       - python StartExample.py
@@ -22,6 +24,7 @@ tasks:
 
   BaseExampleStop:
     desc: "Base: Example stop"
+    silent: true
     dir: "./OpenDMS/Other/Reference/ReferenceContent/Examples/MinimalDockerComposeFile"
     cmds:
       - python StopExample.py
@@ -31,6 +34,7 @@ tasks:
 
   DebugFrontend:
     desc: "Debug: Frontend"
+    silent: true
     dir: "./OpenDMSFrontend"
     cmds:
       - npm run start
@@ -40,6 +44,7 @@ tasks:
 
   LocaltestserviceDatabaseStart:
     desc: "LocalTestService: Database start"
+    silent: true
     dir: "./Other/Resources/LocalTestServices/Database"
     cmds:
       - python Start.py
@@ -49,6 +54,7 @@ tasks:
 
   LocaltestserviceDatabaseStop:
     desc: "LocalTestService: Database stop"
+    silent: true
     dir: "./Other/Resources/LocalTestServices/Database"
     cmds:
       - python Stop.py
@@ -58,6 +64,7 @@ tasks:
 
   LocaltestserviceReverseProxyStart:
     desc: "LocalTestService: Reverse-proxy start"
+    silent: true
     dir: "./Other/Resources/LocalTestServices/ReverseProxy"
     cmds:
       - python Start.py
@@ -67,6 +74,7 @@ tasks:
 
   LocaltestserviceReverseProxyStop:
     desc: "LocalTestService: Reverse-proxy stop"
+    silent: true
     dir: "./Other/Resources/LocalTestServices/ReverseProxy"
     cmds:
       - python Stop.py

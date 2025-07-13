@@ -8,7 +8,7 @@ using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Miscellaneous;
+using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
 using IAuthenticationService = GRYLibrary.Core.APIServer.Services.Interfaces.IAuthenticationService;
@@ -16,7 +16,7 @@ using IAuthenticationService = GRYLibrary.Core.APIServer.Services.Interfaces.IAu
 namespace OpenDMSBackend.Core.Controller
 {
     [ApiController]
-    [Route(UserController.ControllerRoute)]
+    [Route(ControllerRoute)]
     public class UserController : ControllerBase
     {
         public const string ControllerRoute = $"{ServerConfiguration.APIRoutePrefix}/v{GeneralConstants.CodeUnitMajorVersion}/{nameof(UserController)}";

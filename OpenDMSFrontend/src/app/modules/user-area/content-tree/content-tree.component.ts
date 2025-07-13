@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { OpenDMSBackendService, StorageLocationDTO } from '../../../generated/open-dms-backend';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { UtilitiesService } from '../../../services/utilities.service';
 
 @Component({
   selector: 'app-content-tree',
@@ -23,5 +20,10 @@ export class ContentTreeComponent implements OnInit {
         this.storageLocations.push(storageLocation);
       });
     });
+  }
+
+  onContainerRemoved(containerId: string) {
+    var storageLocations = this.storageLocations.filter(storageLocation => storageLocation.id != containerId);
+    this.storageLocations = [...storageLocations];
   }
 }

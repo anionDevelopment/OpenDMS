@@ -1,35 +1,29 @@
-version: "3.2"
-
 services:
   opendms:
-    image: opendms:1.0.0
-    container_name: "opendms"
-    volumes:
-      - "./Volumes/Data:/Workspace/Data"
-      - "./Volumes/Configuration:/Workspace/Configuration"
-      - "./Volumes/Logs:/Workspace/Logs"
+    container_name: opendms
+    env_file: Variables.env
+    image: opendms:1.1.0
     ports:
-      - 443:443
-
+    - 443:443
+    volumes:
+    - ./Volumes/Data:/Workspace/Data
+    - ./Volumes/Configuration:/Workspace/Configuration
+    - ./Volumes/Logs:/Workspace/Logs
   opendms_database:
-    # connectionstring: Server=opendms_database;Port=3306;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;
-    image: mariadb:11.6.2
-    container_name: "opendms_database"
-    ports:
-      - "3306:3306"
-    volumes:
-      - "./Volumes/Data:/var/lib/mysql"
+    container_name: opendms_database
+    image: postgres:17.5
     environment:
-      MARIADB_ROOT_HOST: "%"
-      # MARIADB_USER: user
-      # MARIADB_PASSWORD: password
-      MARIADB_ROOT_PASSWORD: R00tpa55w0rd
-      MARIADB_DATABASE: OpenDMSDatabase
-
-  opendms_database_administration:
-    image: adminer:4.8.1
-    container_name: "opendms_database_administration"
+      POSTGRES_PASSWORD: R00tpa55w0rd
+      POSTGRES_DB: OpenDMSDatabase
     ports:
-      - 8080:8080
+      - "5432:5432"
+    volumes:
+      - ./Volumes/Data:/var/lib/postgresql/data
+  opendms_database_administration:
+    container_name: opendms_database_administration
     depends_on:
-      - opendms_database
+    - opendms_database
+    image: adminer:4.17.1
+    ports:
+    - 8080:8080
+version: '3.2'

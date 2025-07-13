@@ -8,6 +8,7 @@ using GRYLibrary.Core.APIServer.MidT.Auth;
 using GRYLibrary.Core.APIServer.MidT.Exception;
 using GRYLibrary.Core.APIServer.MidT.RLog;
 using GRYLibrary.Core.APIServer.Services.CredH;
+using GRYLibrary.Core.Logging.GRYLogger;
 
 namespace OpenDMSBackend.Core.Configuration
 {
@@ -28,5 +29,6 @@ namespace OpenDMSBackend.Core.Configuration
         public IAuthenticationConfiguration ConfigurationForAuthenticationMiddleware { get { return this.AuthenticationConfiguration; } }
         public IExceptionManagerConfiguration ConfigurationForExceptionManagerMiddleware { get; set; }
         public IHeaderServiceConfiguration HeaderServiceConfiguration { get; set; }
+        public IGRYLogConfiguration AuditLogConfiguration { get; set; }
     }
 }

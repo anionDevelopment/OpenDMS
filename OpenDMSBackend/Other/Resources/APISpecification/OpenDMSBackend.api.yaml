@@ -153,9 +153,9 @@ components:
       type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
-  title: OpenDMSBackend v1.0.0 API documentation
-  version: v1.0.0
-openapi: 3.0.1
+  title: OpenDMSBackend v1.1.0 API documentation
+  version: v1.1.0
+openapi: 3.0.4
 paths:
   /API/Other/Maintenance/AvailabilityCheck:
     get:
@@ -216,16 +216,18 @@ paths:
           type: string
       requestBody:
         content:
-          multipart/form-data:
-            encoding:
-              content:
-                style: form
+          application/*+json:
             schema:
-              properties:
-                content:
-                  format: byte
-                  type: string
-              type: object
+              format: byte
+              type: string
+          application/json:
+            schema:
+              format: byte
+              type: string
+          text/json:
+            schema:
+              format: byte
+              type: string
       responses:
         '200':
           content:
@@ -414,6 +416,35 @@ paths:
         name: id
         schema:
           type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v1/OpenDMSBackend/GetDocumentFromReadableId:
+    get:
+      parameters:
+      - in: query
+        name: readableId
+        schema:
+          format: int32
+          type: integer
       - description: Access Token
         in: header
         name: X-AccessToken

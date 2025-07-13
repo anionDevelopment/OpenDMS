@@ -5,7 +5,7 @@ import { HomePageModule } from '../../home-page/home-page.module';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from '../../../services/storage.service';
-import { OpenDMSBackendService } from '../../../generated/open-dms-backend';
+import { OpenDMSBackendService, UserService } from '../../../generated/open-dms-backend';
 import { of } from 'rxjs';
 import { UserAreaContainerComponent } from '../user-area-container/user-area-container.component';
 import { UserDataService } from '../../../services/user-data.service';
@@ -31,6 +31,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { DocumentTableComponent } from '../document-table/document-table.component';
 import { ContentTreeComponent } from '../content-tree/content-tree.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { SearchComponent } from '../search/search.component';
 
 @Component({
   selector: 'app-user-area-container',
@@ -73,8 +74,14 @@ describe('DocumentsListComponent', () => {
         DocumentTableComponent,
         UserAreaContainerComponentMock,
         DocumentsListComponent,
+        SearchComponent,
       ],
       providers: [
+        {
+          provide: UserService,
+          useValue: {
+          },
+        },
         {
           provide: OpenDMSBackendService,
           useValue: {
@@ -91,7 +98,6 @@ describe('DocumentsListComponent', () => {
         {
           provide: UserDataService,
           useValue: {
-            getAccessToken: () => "accesstoken1",
           }
         },
         {

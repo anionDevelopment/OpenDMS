@@ -1,0 +1,16 @@
+@startuml Model
+
+interface IContainer
+interface IContainee
+interface IFolder
+
+IContainer -right-> "*" IContainee : Content
+StorageLocation -up-|> IContainer 
+IFolder -up-|> IContainer
+IFolder -up-|> IContainee
+Document -up-|> IContainee
+Folder -up-|> IFolder
+
+User -right-> "*" StorageLocation : Store
+
+@enduml

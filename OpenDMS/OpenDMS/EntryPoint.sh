@@ -1,8 +1,22 @@
 #!/bin/bash
 export IsRunningInDockerContainer=true
 
-{ cd /Workspace/Application/Backend && dotnet ./OpenDMSBackend.dll; } &
-{ cd /Workspace/Application/Frontend && nginx -c /Workspace/Application/Frontend/nginx.configuration -g "daemon off;"; } &
+argument=""
+
+if [[ -n "${InitialAdminPassword}" ]]; then
+  argument+=" --InitialAdminPassword $InitialAdminPassword"
+fi
+
+if [[ -n "${InitialDatabaseType}" ]]; then
+  argument+=" --InitialDatabaseType $InitialDatabaseType"
+fi
+
+if [[ -n "${InitialDatabaseConnectionString}" ]]; then
+  argument+=" --InitialDatabaseConnectionString $InitialDatabaseConnectionString"
+fi
+
+{ cd /Workspace/Application/Backend && dotnet ./OpenDMSBackend.dll $argument; } &
+{ cd /Workspace/Application/Frontend && nginx -c /Workspace/Application/Frontend/nginx.conf -g "daemon off;"; } &
 
 wait -n
 

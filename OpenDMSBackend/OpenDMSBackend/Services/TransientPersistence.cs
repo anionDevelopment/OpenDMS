@@ -55,11 +55,6 @@ namespace OpenDMSBackend.Core.Services
             this._Documents[document.Id] = document;
         }
 
-        public bool DocumentExists(string id)
-        {
-            return this._Documents.ContainsKey(id);
-        }
-
         public bool IsAvailable()
         {
             return true;
@@ -92,7 +87,7 @@ namespace OpenDMSBackend.Core.Services
 
         public Document GetDocument(string id)
         {
-            var result = this._Documents[id];
+            Document result = this._Documents[id];
             return result;
         }
 
@@ -161,7 +156,7 @@ namespace OpenDMSBackend.Core.Services
 
         public string AddStoragLocation(string name)
         {
-            var sl = new StorageLocation();
+            StorageLocation sl = new StorageLocation();
             sl.Id = Guid.NewGuid().ToString();
             sl.Name = name;
             this._StorageLocations[sl.Id] = sl;
@@ -175,7 +170,7 @@ namespace OpenDMSBackend.Core.Services
 
         public string AddFolder(string name)
         {
-            var folder = new Folder()
+            Folder folder = new Folder()
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = name,
@@ -187,7 +182,7 @@ namespace OpenDMSBackend.Core.Services
         public void SetParentOfContainee(IContainee containee, string parentContainerId)
         {
             this._ContaineeContainerAssignments[containee.Id] = parentContainerId;
-            OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this, parentContainerId,
+            Core.Misc.Utilities.DoForContentObject(this, parentContainerId,
             (storageId) =>
             {
                 this._StorageLocations[parentContainerId].Content.Add(containee);
@@ -198,13 +193,13 @@ namespace OpenDMSBackend.Core.Services
             },
             (documentId) =>
             {
-                GRYLibrary.Core.Misc.Utilities.NoOperation();
+                Utilities.NoOperation();
             });
         }
 
         public void Delete(string containerOrContaineeId)
         {
-            OpenDMSBackend.Core.Miscellaneous.Utilities.DoForContentObject(this, containerOrContaineeId,
+            Core.Misc.Utilities.DoForContentObject(this, containerOrContaineeId,
                 (storageId) =>
                 {
                     this._StorageLocationOwnerAssignments.Remove(storageId);
@@ -254,6 +249,19 @@ namespace OpenDMSBackend.Core.Services
                 return folder;
             }
             throw new KeyNotFoundException($"No {nameof(IContainee)} available with id \"{containeeId}\".");
+        }
+
+        public IContainer GetContainerById(string containerId)
+        {
+            if (this._StorageLocations.TryGetValue(containerId, out StorageLocation? storageLocation))
+            {
+                return storageLocation;
+            }
+            if (this._Folders.TryGetValue(containerId, out Folder? folder))
+            {
+                return folder;
+            }
+            throw new KeyNotFoundException($"No {nameof(IContainer)} available with id \"{containerId}\".");
         }
 
         public string GetParentIdOfContainee(string containeeId)
@@ -313,103 +321,168 @@ namespace OpenDMSBackend.Core.Services
 
         public IDictionary<string, User> GetAllUsers()
         {
-            return _TransientAuthenticationServicePersistence.GetAllUsers();
+            return this._TransientAuthenticationServicePersistence.GetAllUsers();
         }
 
         public ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> GetAllRoles()
         {
-            return _TransientAuthenticationServicePersistence.GetAllRoles();
+            return this._TransientAuthenticationServicePersistence.GetAllRoles();
         }
 
         public void AddRole(GRYLibrary.Core.APIServer.CommonDBTypes.Role role)
         {
-            _TransientAuthenticationServicePersistence.AddRole(role);
+            this._TransientAuthenticationServicePersistence.AddRole(role);
         }
 
         public void UpdateRole(GRYLibrary.Core.APIServer.CommonDBTypes.Role role)
         {
-            _TransientAuthenticationServicePersistence.UpdateRole(role);
+            this._TransientAuthenticationServicePersistence.UpdateRole(role);
         }
 
         public void DeleteRoleByName(string roleName)
         {
-            _TransientAuthenticationServicePersistence.DeleteRoleByName(roleName);
+            this._TransientAuthenticationServicePersistence.DeleteRoleByName(roleName);
         }
 
         public bool AccessTokenExists(string accessToken, out User? user)
         {
-            return _TransientAuthenticationServicePersistence.AccessTokenExists(accessToken, out user);
+            return this._TransientAuthenticationServicePersistence.AccessTokenExists(accessToken, out user);
         }
 
         public void AddUser(User newUser)
         {
-            _TransientAuthenticationServicePersistence.AddUser(newUser);
+            this._TransientAuthenticationServicePersistence.AddUser(newUser);
         }
 
         public User GetUserById(string userId)
         {
-            return _TransientAuthenticationServicePersistence.GetUserById(userId);
+            return this._TransientAuthenticationServicePersistence.GetUserById(userId);
         }
 
         public User GetUserByName(string userName)
         {
-            return _TransientAuthenticationServicePersistence.GetUserByName(userName);
+            return this._TransientAuthenticationServicePersistence.GetUserByName(userName);
         }
 
         public void RemoveUser(string userId)
         {
-            _TransientAuthenticationServicePersistence.RemoveUser(userId);
+            this._TransientAuthenticationServicePersistence.RemoveUser(userId);
         }
 
         public bool RoleExists(string roleName)
         {
-            return _TransientAuthenticationServicePersistence.RoleExists(roleName);
+            return this._TransientAuthenticationServicePersistence.RoleExists(roleName);
         }
 
         public void AddRoleToUser(string userId, string roleId)
         {
 
-            _TransientAuthenticationServicePersistence.AddRoleToUser(userId, roleId);
+            this._TransientAuthenticationServicePersistence.AddRoleToUser(userId, roleId);
         }
 
         public void RemoveRoleFromUser(string userId, string roleId)
         {
-            _TransientAuthenticationServicePersistence.RemoveRoleFromUser(userId, roleId);
+            this._TransientAuthenticationServicePersistence.RemoveRoleFromUser(userId, roleId);
         }
 
         public bool UserHasRole(string userId, string roleId)
         {
-            return _TransientAuthenticationServicePersistence.UserHasRole(userId, roleId);
+            return this._TransientAuthenticationServicePersistence.UserHasRole(userId, roleId);
         }
 
         public User GetUserByAccessToken(string accessToken)
         {
-            return _TransientAuthenticationServicePersistence.GetUserByAccessToken(accessToken);
+            return this._TransientAuthenticationServicePersistence.GetUserByAccessToken(accessToken);
         }
 
         public void UpdateUser(User user)
         {
-            _TransientAuthenticationServicePersistence.UpdateUser(user);
+            this._TransientAuthenticationServicePersistence.UpdateUser(user);
         }
 
         public AccessToken GetAccessToken(string accessToken)
         {
-            return _TransientAuthenticationServicePersistence.GetAccessToken(accessToken);
+            return this._TransientAuthenticationServicePersistence.GetAccessToken(accessToken);
         }
 
         public void AddAccessToken(string userId, AccessToken newAccessToken)
         {
-            _TransientAuthenticationServicePersistence.AddAccessToken(userId, newAccessToken);
+            this._TransientAuthenticationServicePersistence.AddAccessToken(userId, newAccessToken);
         }
 
         public void RemoveAccessToken(string accessToken)
         {
-            _TransientAuthenticationServicePersistence.RemoveAccessToken(accessToken);
+            this._TransientAuthenticationServicePersistence.RemoveAccessToken(accessToken);
         }
 
         public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
         {
-            return _TransientAuthenticationServicePersistence.GetAllAccessTokenOfUser(userId);
+            return this._TransientAuthenticationServicePersistence.GetAllAccessTokenOfUser(userId);
+        }
+
+        public void RemoveChild(string parentId, string childId)
+        {
+            IContainer container = this.GetContainerById(parentId);
+            container.Content = container.Content.Where(child => child.Id != childId).ToHashSet();
+        }
+
+        public string GetIdFromReadableId(uint readableId)
+        {
+            foreach (KeyValuePair<string, Document> document in this._Documents)
+            {
+                if (document.Value.ReadableId == readableId)
+                {
+                    return document.Value.Id;
+                }
+            }
+            throw new KeyNotFoundException($"No document found with readable id '{readableId}'.");
+        }
+
+        public IList<string> Search(string searchTerm)
+        {
+            IDictionary<string, uint> result = new Dictionary<string, uint>();
+            foreach (Document document in this._Documents.Values)
+            {
+                uint score = this.DocumentMatchesSearch(document, searchTerm);
+                if (0 < score)
+                {
+                    result[document.Id] = score;
+                }
+            }
+            return result.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToList();
+        }
+
+        private uint DocumentMatchesSearch(Document document, string searchTerm)
+        {
+            if (document.Title.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return 5;
+            }
+            if (document.Filename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return 4;
+            }
+            foreach (Tag tag in document.Tags)
+            {
+                if (tag.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return 3;
+                }
+            }
+            if (document.OriginalFilename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return 2;
+            }
+            if (document.OCRContent.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return 1;
+            }
+            return 0;
+        }
+
+        public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleByName(string roleName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

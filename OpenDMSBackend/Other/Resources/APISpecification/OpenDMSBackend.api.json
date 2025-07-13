@@ -1,9 +1,9 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v1.0.0 API documentation",
+    "title": "OpenDMSBackend v1.1.0 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v1.0.0"
+    "version": "v1.1.0"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
@@ -106,20 +106,22 @@
         ],
         "requestBody": {
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "content": {
-                    "type": "string",
-                    "format": "byte"
-                  }
-                }
-              },
-              "encoding": {
-                "content": {
-                  "style": "form"
-                }
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
               }
             }
           }
@@ -572,6 +574,54 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v1/OpenDMSBackend/GetDocumentFromReadableId": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "parameters": [
+          {
+            "name": "readableId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           },
           {

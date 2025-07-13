@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { DocumentDTO, DocumentPreviewDTO, FolderDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { Router } from '@angular/router';
@@ -12,12 +12,13 @@ import { BehaviorSubject, Subject } from 'rxjs';
   templateUrl: './content-view.component.html',
   styleUrl: './content-view.component.scss'
 })
-export class ContentViewComponent implements OnInit {
+export class ContentViewComponent implements OnInit {//shows the content of a container
+
   @Input()
   title: string | null | undefined = null;
 
   @Input()
-  parentContainerId: string | null | undefined = null;
+  containerId: string | null | undefined = null;
 
   @Input()
   userIsAllowedToAddDocuments: boolean = false;
@@ -35,6 +36,9 @@ export class ContentViewComponent implements OnInit {
   documents$: Subject<DocumentPreviewDTO[]> = new BehaviorSubject<DocumentPreviewDTO[]>([]);
   folders: FolderDTO[] = []
   folders$: Subject<FolderDTO[]> = new BehaviorSubject<FolderDTO[]>([]);
+
+  @Output()
+  containerRemoved: EventEmitter<string/*container-id*/> = new EventEmitter<string>();
 
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
 
@@ -65,14 +69,31 @@ export class ContentViewComponent implements OnInit {
     this.addDocument(newDocument);
   }
 
-  addDocument(document: DocumentDTO) {
+  private addDocument(document: DocumentDTO) {
     this.documents.push(document);
     this.documents = this.documents.sort((a, b) => a.title!.localeCompare(b.title!));
     this.documents$.next([...this.documents]);
+  }
+  private removeDocument(documentId: string) {
+    this.documents = this.documents.filter(document => document.id! != documentId);
+    this.documents$.next([...this.documents]);
+  }
+  private removeFolder(folderId: string) {
+    this.folders = this.folders.filter(folder => folder.id! != folderId);
+    this.folders$.next([...this.folders]);
   }
   addFolder(folder: FolderDTO) {
     this.folders.push(folder);
     this.folders = this.folders.sort((a, b) => a.name!.localeCompare(b.name!));
     this.folders$.next([...this.folders]);
   }
-}
+  onDocumentRemoved(documentId: string): void {
+    this.removeDocument(documentId);
+  }
+  onContainerRemoved(containerId: string) {
+    this.removeFolder(containerId);
+  }
+  onRemoved() {
+    this.containerRemoved.emit(this.containerId!);
+  }
+} 
