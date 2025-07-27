@@ -44,7 +44,7 @@
 				]
 			},
 			{
-				"label": "Debug: Frontend",
+				"label": "Run: Frontend",
 				"command": "npm run start",
 				"args": [],
 				"type": "shell",
@@ -52,7 +52,7 @@
 					"cwd": "${workspaceFolder}/OpenDMSFrontend"
 				},
 				"aliases": [
-					"df"
+					"rf"
 				]
 			},
 			{
