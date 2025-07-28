@@ -32,16 +32,6 @@ tasks:
       - baseexamplestop
       - bed
 
-  DebugFrontend:
-    desc: "Debug: Frontend"
-    silent: true
-    dir: "./OpenDMSFrontend"
-    cmds:
-      - npm run start
-    aliases:
-      - debugfrontend
-      - df
-
   LocaltestserviceDatabaseStart:
     desc: "LocalTestService: Database start"
     silent: true
@@ -81,3 +71,13 @@ tasks:
     aliases:
       - localtestservicereverseproxystop
       - lrd
+
+  RunFrontend:
+    desc: "Run: Frontend"
+    silent: true
+    dir: "./OpenDMSFrontend"
+    cmds:
+      - npm run start
+    aliases:
+      - runfrontend
+      - rf
