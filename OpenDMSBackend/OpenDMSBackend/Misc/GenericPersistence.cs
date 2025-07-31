@@ -537,7 +537,7 @@ namespace OpenDMSBackend.Core.Services.Misc
             throw new NotImplementedException();
         }
 
-        public virtual void Delete(string containerOrContaineeId)
+        public virtual void HardDelete(string containerOrContaineeId)
         {
             throw new NotImplementedException();
         }
@@ -897,6 +897,21 @@ namespace OpenDMSBackend.Core.Services.Misc
         }
 
         public virtual Role GetRoleByName(string roleName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool DeleteIsAllowed(string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SoftDelete(string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
             throw new NotImplementedException();
         }

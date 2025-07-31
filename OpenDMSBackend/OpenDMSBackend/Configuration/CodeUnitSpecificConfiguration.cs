@@ -9,6 +9,8 @@ using GRYLibrary.Core.APIServer.MidT.Exception;
 using GRYLibrary.Core.APIServer.MidT.RLog;
 using GRYLibrary.Core.APIServer.Services.CredH;
 using GRYLibrary.Core.Logging.GRYLogger;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Configuration
 {
@@ -30,5 +32,6 @@ namespace OpenDMSBackend.Core.Configuration
         public IExceptionManagerConfiguration ConfigurationForExceptionManagerMiddleware { get; set; }
         public IHeaderServiceConfiguration HeaderServiceConfiguration { get; set; }
         public IGRYLogConfiguration AuditLogConfiguration { get; set; }
+        public IList<ImportDefinition> ImportDefinitions { get; set; }
     }
 }

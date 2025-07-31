@@ -205,8 +205,9 @@ namespace OpenDMSBackend.Core.Services
 
         public void Update(string requesterUserId, Document updatedDocument)
         {
-            //TODO check permission
             Document existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
+            //TODO check permission (remember: a user can change the name, the content, etc. dependent on his permissions, but only if the user is in GroupOfBusinessOwner he is allowed to do a hard-delete or to change the DeleteIsNotAllowedBefore- or MustBeHardDeletedAfter-value.)
+            //TODO check validity, for example: content must not be null, DeleteIsNotAllowedBefore must be lower or equal to MustBeHardDeletedAfter, version is greater than the old version, etc.
             if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content))
             {
                 this.AnalyseDocument(updatedDocument);
@@ -303,7 +304,7 @@ namespace OpenDMSBackend.Core.Services
             //remove content
             Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => this.RemoveEntireContent(requesterUserId, folderId), null);
 
-            this._Persistence.Delete(containerOrContaineeId);
+            this._Persistence.HardDelete(containerOrContaineeId);
         }
 
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)

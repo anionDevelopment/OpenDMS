@@ -21,8 +21,16 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public byte[] Content { get; set; }
         public byte[] Preview { get; set; }
         public string OCRContent { get; set; }
-        //TODO add a concept to be able to apply a can-not-be-deleted-before-timestamp
-        //TODO add a concept to be able to apply a must-be-deleted-after-timestamp
+        public bool IsSoftDeleted { get; set; }
+        public DateTime DeleteIsNotAllowedBefore { get; set; }
+        public DateTime MustBeHardDeletedAfter { get; set; }
+        /// <summary>
+        /// The persons in this usergroup are allowed to do hard-delete and to set the <see cref="DeleteIsNotAllowedBefore"/>- and <see cref="MustBeHardDeletedAfter"/>-value.
+        /// This permission setting does not specify whether the user is allowed to edit the document (regarding the permission to <see cref="Content"/>- or <see cref="Title"/>-property for example.).
+        /// </summary>
+        public string GroupOfBusinessOwner { get; set; }
+        public Version3 Version { get; set; } 
+        //TODO add list of old versions
         public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentPreview, string oCRContent, byte[] documentContent)
         {
             this.Id = id;

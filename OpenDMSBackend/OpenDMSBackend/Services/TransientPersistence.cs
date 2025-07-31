@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
@@ -18,9 +20,10 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*containee-id*/, string/*container-id*/> _ContaineeContainerAssignments;
         private readonly IDictionary<string/*storagelocation-id*/, string/*user-id*/> _StorageLocationOwnerAssignments;
         private readonly IIdGenerator<ulong> _IdGenerator;
+        private readonly ITimeService _TimeService;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
 
-        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence, IIdGenerator<ulong> idGenerator)
+        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence, IIdGenerator<ulong> idGenerator,ITimeService timeService)
         {
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
             this._StorageLocations = new Dictionary<string, StorageLocation>();
@@ -30,6 +33,7 @@ namespace OpenDMSBackend.Core.Services
             this._StorageLocationOwnerAssignments = new Dictionary<string, string>();
             this._Tags = new Dictionary<string, Tag>();
             this._IdGenerator = idGenerator;
+            this._TimeService = timeService;
             this.Initialize();
         }
 
@@ -197,7 +201,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
-        public void Delete(string containerOrContaineeId)
+        public void HardDelete(string containerOrContaineeId)
         {
             Core.Misc.Utilities.DoForContentObject(this, containerOrContaineeId,
                 (storageId) =>
@@ -483,6 +487,24 @@ namespace OpenDMSBackend.Core.Services
         public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleByName(string roleName)
         {
             throw new NotImplementedException();
+        }
+
+        public bool DeleteIsAllowed(string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SoftDelete(string documentId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
+        {
+         return this._Documents
+                .Where(doc => _TimeService.GetCurrentTime() < doc.Value.MustBeHardDeletedAfter)
+                .Select(doc => doc.Value.Id)
+                .ToList();
         }
     }
 }

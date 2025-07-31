@@ -17,7 +17,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
             ITimeService timeService = new TimeService();
             IIdGenerator<ulong> idGenerator = new IdGenerator();
             TransientAuthenticationServicePersistence<User> transientAuthenticationServicePersistence = new TransientAuthenticationServicePersistence(timeService);
-            TransientPersistence persistence = new TransientPersistence(transientAuthenticationServicePersistence, idGenerator);
+            TransientPersistence persistence = new TransientPersistence(transientAuthenticationServicePersistence, idGenerator, timeService);
             return persistence;
         }
 

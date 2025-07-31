@@ -37,6 +37,11 @@ CREATE TABLE "Documents" (
     "DocumentContent" bytea not null,
     "OCRContent" text not null,
     "DocumentPreview" bytea not null,
+    "IsSoftDeleted" boolean not null,
+    "DeleteIsNotAllowedBefore" timestamp with time zone null,
+    "MustBeHardDeletedAfter" timestamp with time zone null,
+    "GroupOfBusinessOwner" varchar(255) null,
+    "Version" varchar(255) not null,
     CONSTRAINT "PK_Documents" PRIMARY KEY ("Id")
 ) ;
 
