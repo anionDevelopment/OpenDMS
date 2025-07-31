@@ -6,9 +6,11 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Services;
 using System;
+using Microsoft.ClearScript;
+using Microsoft.ClearScript.JavaScript;
+using Microsoft.ClearScript.V8;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
-using NLua;
 
 namespace OpenDMSBackend.Core.BackgroundServices
 {
@@ -92,6 +94,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         public void RunAdaptScript(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition, Model.BusinessTypes.Document document)
         {
+            /*
             using var lua = new Lua();
             lua.DoString(GetX1(importDefinition.AdaptDocumentScriptBody) + GetX2(document.Title.Value, document.ImportDate.ToDateTime()));
 
@@ -100,37 +103,58 @@ namespace OpenDMSBackend.Core.BackgroundServices
             string newName = result["name"];
             var newImportDate = result["import_date"];
             string newBusinessOwner = result["businessowner"];
+            */
+            using (var engine = new V8ScriptEngine())
+            {
+                // expose a host object
+                engine.AddHostObject("random", new Random());
+                engine.Execute("Console.WriteLine(random.NextDouble())");
+                // JavaScript-Funktion definieren
+                string script = @"
+                function process(inputString, inputNumber) {
+//just an example. call adapt-script here instead.
+                    var outputString = inputString.toUpperCase();
+                    var outputNumber = inputNumber * 2;
+                    return {
+                        resultString: outputString,
+                        resultNumber: outputNumber
+                    };
+                }
+            ";
+                engine.Execute(script);
+                dynamic result = engine.Script.process("hello", 21);
+                Console.WriteLine($"String: {result.resultString}");  // "HELLO"
+                Console.WriteLine($"Number: {result.resultNumber}");  // 42
+            }
 
         }
         public static string GetX1(string customAdaptFunction)
         {
             var luaScript = $@"
-            Document = {{}}
-            Document.__index = Document
+type Document = {{
+  importDate: Date;
+  title: string;
+}};
 
-            function Document:new(name, import_date, businessowner)
-                local doc = setmetatable({{}}, self)
-                doc.name = name
-                doc.import_date = import_date
-                doc.businessowner = businessowner
-                return doc
-            end
+function adapt(input: {{ importDate: string; title: string }}): Document {{
+  return {{
+    importDate: new Date(input.importDate),
+    title: input.title,
+  }};
+}}
 
-            function f(document)
-                ${customAdaptFunction}
-            end
 ";
             return luaScript;
         }
         public static string GetX2(string title, DateTime importdate)
         {
             var luaScript = $@"
-            function s()
-                local d = Document:new('{title}', '{importdate}', 'Marketing')
-                f(d)
-                return d
-            end
-        ";
+function start(doc: Document): {{ importDate: string; title: string }} {{
+  return {{
+    importDate: doc.importDate.toISOString(),
+    title: doc.title,
+  }};
+}}        ";
             return luaScript;
         }
 
