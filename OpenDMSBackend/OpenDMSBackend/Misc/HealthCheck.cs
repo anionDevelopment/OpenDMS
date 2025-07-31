@@ -1,7 +1,6 @@
 ﻿using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using OpenDMSBackend.Core.Services;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

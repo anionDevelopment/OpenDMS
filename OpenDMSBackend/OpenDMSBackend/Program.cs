@@ -15,7 +15,6 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.APIServer.Mid.AuthS;
 using GRYLibrary.Core.APIServer.MidT.Exception;
-using OpenDMSBackend.Core.Misc;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
 using GRYLibrary.Core.APIServer.Services.Init;
@@ -170,6 +169,7 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
                     }
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementScheduler, ManagementScheduler>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRService, OCRService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
@@ -194,6 +194,7 @@ namespace OpenDMSBackend.Core
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
+                    IManagementScheduler managementScheduler= GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
                     IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
                     functionalInformationForWebApplication.PreRun = () =>
                     {
@@ -202,10 +203,12 @@ namespace OpenDMSBackend.Core
 
                         //start background-services
                         metricsService.StartAsync();
+                        managementScheduler.StartAsync();
                     };
                     functionalInformationForWebApplication.PostRun = () =>
                     {
                         metricsService.Stop().Wait();
+                        managementScheduler.Stop().Wait();
                     };
                 };
             });
