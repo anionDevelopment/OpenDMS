@@ -11,6 +11,8 @@ def build():
     platforms = ["win-x64", "linux-x64"]
     t.standardized_tasks_build_for_dotnet_project(file, "QualityCheck", t.get_default_target_environmenttype_mapping(), platforms, verbosity, cmd_args)
     t.generate_openapi_file(file, "win-x64", verbosity, cmd_args)
+    for platform in platforms:
+        pass  # TODO copy codeunit-resource "TypeScript" to output-directory
 
 
 if __name__ == "__main__":

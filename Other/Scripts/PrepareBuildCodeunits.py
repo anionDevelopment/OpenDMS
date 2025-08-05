@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 from ScriptCollection.GeneralUtilities import GeneralUtilities
 from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjectStructure
 
@@ -12,6 +13,7 @@ def prepare_build_codeunits():
     t.generate_tasksfile_from_workspace_file(repository_folder)
     t.generate_codeunits_overview_diagram(repository_folder)
     t.generate_svg_files_from_plantuml_files_for_repository(repository_folder)
+    t.do_npm_install(os.path.join(repository_folder, "Other", "Resources", "TypeScript"), True, 1)
 
 
 if __name__ == "__main__":

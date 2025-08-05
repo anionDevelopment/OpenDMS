@@ -21,16 +21,15 @@ TODO add minimal service-description here.
 
 | Responsibility  | Name and contact-information |
 | --------------- | ---------------------------- |
-| Pdocut-owner    | TODO                         |
-| Product-manager | TODO                         |
-| Support         | TODO                         |
+| Pdocut-owner    | Marius Göcke                         |
+| Product-manager | Marius Göcke                 |
+| Support         | Bugs and feature-requests: Use GitHub-issues<br>Support for issues which are not in the responsibility of the developer: Support-contracts on demand |
 
 ## License & Pricing
 
-TODO
+See [License.txt](https://github.com/anionDev/OpenDMS/License.txt).
+(For pricing of support-contracts please contact the product-owner.)
 
 ## External resources
 
-- [Repository](TODO)
-- [Productive-System](TODO)
-- [QualityCheck-system](TODO)
+- [Repository](https://github.com/anionDev/OpenDMS)

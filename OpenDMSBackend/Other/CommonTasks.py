@@ -18,6 +18,7 @@ def common_tasks():
     codeunit_version = sc.get_semver_version_from_gitversion(GeneralUtilities.resolve_relative_path("../..", os.path.dirname(file)))  # Should always be the same as the project-version
     folder_of_current_file = os.path.dirname(file)
     t.generate_certificate_for_development_purposes_for_codeunit(codeunit_folder)
+    t.copy_resources_from_global_project_resources(codeunit_folder, "TypeScript")
     sc.replace_version_in_csproj_file(GeneralUtilities.resolve_relative_path(f"../{codeunit_name}/{codeunit_name}.csproj", folder_of_current_file), codeunit_version)
     sc.replace_version_in_csproj_file(GeneralUtilities.resolve_relative_path(f"../{codeunit_name}Tests/{codeunit_name}Tests.csproj", folder_of_current_file), codeunit_version)
     additional_arguments_file = t.get_additionalargumentsfile_from_commandline_arguments(cmd_args, None)
