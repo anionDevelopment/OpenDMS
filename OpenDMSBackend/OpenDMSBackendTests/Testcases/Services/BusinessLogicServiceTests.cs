@@ -28,7 +28,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
             persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = registrationIsEnabled;
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
-            ISQLProvider sqlProvider = new SQLProviderPostgreSQL(logger);
             IIdGenerator<ulong> idGenerator = new OpenDMSBackend.Core.Services.IdGenerator();
             IPersistence databasePersistence = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTransientPersistence();
             persistence = databasePersistence;
@@ -38,7 +37,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<OCRService> ocrServiceMock = new Mock<OCRService>(MockBehavior.Strict);
             IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
             businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object, idGenerator, generalResourceLoader);
-            IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService);
+            IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService,authenticationService);
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, databasePersistence, idGenerator);
         }
 

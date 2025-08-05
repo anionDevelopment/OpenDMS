@@ -40,7 +40,7 @@ CREATE TABLE "Documents" (
     "IsSoftDeleted" boolean not null,
     "DeleteIsNotAllowedBefore" timestamp with time zone null,
     "MustBeHardDeletedAfter" timestamp with time zone null,
-    "GroupOfBusinessOwner" varchar(255) null,
+    "GroupOfBusinessOwner" varchar(255) not null,
     "Version" varchar(255) not null,
     CONSTRAINT "PK_Documents" PRIMARY KEY ("Id")
 ) ;

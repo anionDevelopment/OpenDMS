@@ -22,16 +22,16 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public byte[] Preview { get; set; }
         public string OCRContent { get; set; }
         public bool IsSoftDeleted { get; set; }
-        public DateTime DeleteIsNotAllowedBefore { get; set; }
-        public DateTime MustBeHardDeletedAfter { get; set; }
+        public GRYDateTime? DeleteIsNotAllowedBefore { get; set; }
+        public GRYDateTime? MustBeHardDeletedAfter { get; set; }
         /// <summary>
         /// The persons in this usergroup are allowed to do hard-delete and to set the <see cref="DeleteIsNotAllowedBefore"/>- and <see cref="MustBeHardDeletedAfter"/>-value.
         /// This permission setting does not specify whether the user is allowed to edit the document (regarding the permission to <see cref="Content"/>- or <see cref="Title"/>-property for example.).
         /// </summary>
         public string GroupOfBusinessOwner { get; set; }
-        public Version3 Version { get; set; } 
+        public Version3 Version { get; set; }
         //TODO add list of old versions
-        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentPreview, string oCRContent, byte[] documentContent)
+        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType,  byte[] documentContent,string oCRContent,byte[] documentPreview,  bool isSoftDeleted, GRYDateTime? deleteIsNotAllowedBefore, GRYDateTime? mustBeHardDeletedAfter, string GroupOfBusinessOwner, Version3 version)
         {
             this.Id = id;
             this.Title = title;
@@ -45,6 +45,11 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.Preview = documentPreview;
             this.Tags = tags;
             this.OCRContent = oCRContent;
+            this.IsSoftDeleted = isSoftDeleted;
+            this.GroupOfBusinessOwner=GroupOfBusinessOwner;
+            this.Version = version;
+            this.DeleteIsNotAllowedBefore = deleteIsNotAllowedBefore;
+            this.MustBeHardDeletedAfter = mustBeHardDeletedAfter;
         }
 
         public override bool Equals(object? obj)
@@ -82,12 +87,12 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentPreview GetPreview()
         {
-            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.ReadableId, this.Tags, this.MIMEType, this.Preview);
+            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.Tags, this.ReadableId, this.MIMEType, this.Preview,this.IsSoftDeleted,this.DeleteIsNotAllowedBefore,this.MustBeHardDeletedAfter,this.GroupOfBusinessOwner,this.Version);
         }
 
         public DocumentDTO ToDTO()
         {
-            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview));
+            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview),this.IsSoftDeleted, this.DeleteIsNotAllowedBefore.HasValue ? this.DeleteIsNotAllowedBefore.Value.ToDateTime():null, this.MustBeHardDeletedAfter.HasValue ? this.MustBeHardDeletedAfter.Value.ToDateTime():null, this.GroupOfBusinessOwner,this.Version);
         }
     }
 }

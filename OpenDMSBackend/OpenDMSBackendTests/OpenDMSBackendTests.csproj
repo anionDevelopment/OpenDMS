@@ -56,6 +56,7 @@
         <ErrorReport>none</ErrorReport>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
         <ProjectReference Include="..\OpenDMSBackend\OpenDMSBackend.csproj" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="coverlet.collector" Version="6.0.4">
@@ -67,7 +68,6 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.6" />
-        <PackageReference Include="GRYLibrary" Version="0.12.151" />
         <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
         <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.7" />

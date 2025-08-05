@@ -94,68 +94,64 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         public void RunAdaptScript(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition, Model.BusinessTypes.Document document)
         {
-            /*
-            using var lua = new Lua();
-            lua.DoString(GetX1(importDefinition.AdaptDocumentScriptBody) + GetX2(document.Title.Value, document.ImportDate.ToDateTime()));
-
-            dynamic result = lua.GetFunction("s").Call()[0];
-
-            string newName = result["name"];
-            var newImportDate = result["import_date"];
-            string newBusinessOwner = result["businessowner"];
-            */
-            using (var engine = new V8ScriptEngine())
+            if (importDefinition.AdaptDocumentScriptBody != null)
             {
-                // expose a host object
-                engine.AddHostObject("random", new Random());
-                engine.Execute("Console.WriteLine(random.NextDouble())");
-                // JavaScript-Funktion definieren
-                string script = @"
-                function process(inputString, inputNumber) {
-//just an example. call adapt-script here instead.
-                    var outputString = inputString.toUpperCase();
-                    var outputNumber = inputNumber * 2;
-                    return {
-                        resultString: outputString,
-                        resultNumber: outputNumber
-                    };
+                using (var engine = new V8ScriptEngine())
+                {
+                    var typeScript = GetSriptPart1() + importDefinition.AdaptDocumentScriptBody + GetSriptPart2()+GetScriptPaart3(document);
+                    string javaScript = null;
+                    engine.Execute(javaScript);
+                    dynamic result = engine.Script.result;
+                    document.Title = result.title;
+                    document.DeleteIsNotAllowedBefore = result.DeleteIsNotAllowedBefore;
+                    document.MustBeHardDeletedAfter = result.MustBeHardDeletedAfter;
+                    document.GroupOfBusinessOwner = result.GroupOfBusinessOwner;
+                    Console.WriteLine($"String: {result.title}");  // "HELLO"
+                    Console.WriteLine($"Number: {result.resultNumber}");  // 42
                 }
-            ";
-                engine.Execute(script);
-                dynamic result = engine.Script.process("hello", 21);
-                Console.WriteLine($"String: {result.resultString}");  // "HELLO"
-                Console.WriteLine($"Number: {result.resultNumber}");  // 42
             }
-
         }
-        public static string GetX1(string customAdaptFunction)
+        public static string GetSriptPart1()
         {
-            var luaScript = $@"
-type Document = {{
-  importDate: Date;
-  title: string;
-}};
+            return $@"
+class Document {{
+  readonly Id: string;
+  Title: string;
+  Filename: string;
+  readonly OriginalFilename: string;
+  readonly ImportDate: Date;
+  Tags: Set<Tags>;
+  readonly ReadableId: bigint;
+  readonly MIMEType: string;
+  readonly OCRContent: string;
+  DeleteIsNotAllowedBefore: string;
+  MustBeHardDeletedAfter: string;
+  GroupOfBusinessOwner: string;
 
-function adapt(input: {{ importDate: string; title: string }}): Document {{
-  return {{
-    importDate: new Date(input.importDate),
-    title: input.title,
-  }};
+  constructor(title: string, importDate: Date) {{
+    this.Title = title;
+    this.ImportDate = importDate;
+  }}
 }}
-
+class Runner {{
+  constructor() {{
+  }}
+  adapt(document:Document): Document {{
 ";
-            return luaScript;
         }
-        public static string GetX2(string title, DateTime importdate)
+        public static string GetSriptPart2()
         {
-            var luaScript = $@"
-function start(doc: Document): {{ importDate: string; title: string }} {{
-  return {{
-    importDate: doc.importDate.toISOString(),
-    title: doc.title,
-  }};
-}}        ";
-            return luaScript;
+            return $@"
+        return document;
+        }};
+    }}
+}}
+";
+        }
+        public static string GetScriptPaart3(Model.BusinessTypes.Document document)
+        {
+            var typeScript = $@"const result = new Runner().adapt(new Document(""{document.Title}"");";//TODO pass all variables
+            return typeScript;
         }
 
         private IEnumerable<ExternalFile> GetDocuments(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition)

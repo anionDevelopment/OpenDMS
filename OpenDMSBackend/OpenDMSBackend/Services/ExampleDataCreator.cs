@@ -1,4 +1,7 @@
-﻿using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.Misc;
+using Microsoft.AspNetCore.Authentication;
 using System;
 using System.IO;
 using System.Reflection;
@@ -8,10 +11,12 @@ namespace OpenDMSBackend.Core.Services
     public class ExampleDataCreator : IExampleDataCreator
     {
         private readonly IBusinessLogicService _BusinessLogicService;
+        private readonly IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> _AuthenticationService;
 
-        public ExampleDataCreator(IBusinessLogicService businessLogicService)
+        public ExampleDataCreator(IBusinessLogicService businessLogicService,IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> authenticationService)
         {
             this._BusinessLogicService = businessLogicService;
+            this._AuthenticationService = authenticationService;
         }
 
         public void AddExampleData()
@@ -19,7 +24,7 @@ namespace OpenDMSBackend.Core.Services
             DateTime now = DateTime.Now;
             DateTime initialDate = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0).AddHours(-1);
             (string userId, string storageLocationId) userDetails1 = this.AddUser(1);//minimal example
-            this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId, initialDate);
+            string userGroupe = _AuthenticationService.GetBaseRoleOfAllUser();
 
             (string userId, string storageLocationId) userDetails2 = this.AddUser(2);//example with some more documents
             string folder1Id = this.AddFolder(1, userDetails2.userId, userDetails2.storageLocationId);
@@ -27,15 +32,16 @@ namespace OpenDMSBackend.Core.Services
             string folder3Id = this.AddFolder(3, userDetails2.userId, userDetails2.storageLocationId);
             string folder4Id = this.AddFolder(4, userDetails2.userId, folder3Id);
             string folder5Id = this.AddFolder(5, userDetails2.userId, userDetails2.storageLocationId);
-            this.AddExampleDocument(2, userDetails2.userId, folder2Id, initialDate);
-            this.AddExampleDocument(3, userDetails2.userId, folder2Id, initialDate);
-            this.AddExampleDocument(4, userDetails2.userId, folder4Id, initialDate);
-            this.AddExampleDocument(5, userDetails2.userId, folder3Id, initialDate);
-            this.AddExampleDocument(6, userDetails2.userId, folder5Id, initialDate);
-            this.AddExampleDocument(7, userDetails2.userId, folder5Id, initialDate);
-            this.AddExampleDocument(8, userDetails2.userId, userDetails2.storageLocationId, initialDate);
-            this.AddExampleDocument(9, userDetails2.userId, userDetails2.storageLocationId, initialDate);
-            this.AddExampleDocument(10, userDetails2.userId, userDetails2.storageLocationId, initialDate);
+            this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId, initialDate, userGroupe);
+            this.AddExampleDocument(2, userDetails2.userId, folder2Id, initialDate, userGroupe);
+            this.AddExampleDocument(3, userDetails2.userId, folder2Id, initialDate, userGroupe);
+            this.AddExampleDocument(4, userDetails2.userId, folder4Id, initialDate, userGroupe);
+            this.AddExampleDocument(5, userDetails2.userId, folder3Id, initialDate, userGroupe);
+            this.AddExampleDocument(6, userDetails2.userId, folder5Id, initialDate, userGroupe);
+            this.AddExampleDocument(7, userDetails2.userId, folder5Id, initialDate, userGroupe);
+            this.AddExampleDocument(8, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroupe);
+            this.AddExampleDocument(9, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroupe);
+            this.AddExampleDocument(10, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroupe);
             /* Structure for user02:
                 MainStorage
                 ├─ folder01/
@@ -70,13 +76,13 @@ namespace OpenDMSBackend.Core.Services
             return (userId, storageLocationId);
         }
 
-        private void AddExampleDocument(int documentNumber, string ownerId, string locationId, DateTime initialDate)
+        private void AddExampleDocument(int documentNumber, string ownerId, string locationId, DateTime initialDate, string groupOfBusinessOwner)
         {
             string title = $"Document{documentNumber.ToString().PadLeft(2, '0')}";
             string filename = $"{title}.pdf";
             byte[] content = GetFileContentFromEmbeddedExampleDocuments(filename);
             DateTime creationDate = initialDate.AddMinutes(documentNumber);
-            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content, GRYDateTime.FromDateTime(creationDate));
+            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content, GRYDateTime.FromDateTime(creationDate), groupOfBusinessOwner);
         }
 
         public static byte[] GetFileContentFromEmbeddedExampleDocuments(string documentName)

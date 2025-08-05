@@ -18,7 +18,16 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public ulong ReadableId { get; set; }
         public OneLineString MIMEType { get; set; }
         public byte[] Preview { get; set; }
-        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] preview)
+        public bool IsSoftDeleted { get; set; }
+        public GRYDateTime? DeleteIsNotAllowedBefore { get; set; }
+        public GRYDateTime? MustBeHardDeletedAfter { get; set; }
+        /// <summary>
+        /// <see cref="Document.GroupOfBusinessOwner"/>
+        /// </summary>
+        public string GroupOfBusinessOwner { get; set; }
+        public Version3 Version { get; set; }
+
+        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ISet<Tag> tags, ulong readableId, OneLineString mIMEType, byte[] preview, bool isSoftDeleted, GRYDateTime? deleteIsNotAllowedBefore, GRYDateTime? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version)
         {
             this.Id = id;
             this.Title = title;
@@ -26,10 +35,15 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.OriginalFilename = originalFilename;
             this.ImportDate = importDate;
             this.LastEditDate = lastEditDate;
-            this.ReadableId = readableId;
-            this.MIMEType = mimeType;
             this.Tags = tags;
+            this.ReadableId = readableId;
+            this.MIMEType = mIMEType;
             this.Preview = preview;
+            this.IsSoftDeleted= isSoftDeleted;
+            this.DeleteIsNotAllowedBefore = deleteIsNotAllowedBefore;
+            this.MustBeHardDeletedAfter = mustBeHardDeletedAfter;
+            this.GroupOfBusinessOwner = groupOfBusinessOwner;
+            this.Version = version;
         }
 
         public override bool Equals(object? obj)
@@ -57,7 +71,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentPreviewDTO ToDTO()
         {
-            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview));
+            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview),this.IsSoftDeleted,this.DeleteIsNotAllowedBefore,this.MustBeHardDeletedAfter,this.GroupOfBusinessOwner,this.Version);
         }
 
         public GRYDateTime GetNewestDate(DocumentPreview document)

@@ -276,5 +276,10 @@ namespace OpenDMSBackend.Core.Services
         {
             return this._AuthentificationPersistence.GetUserByAccessToken(accessToken);
         }
+
+        public string GetBaseRoleOfAllUser()
+        {
+            return CodeUnitSpecificConstants.RolenameUsers;
+        }
     }
 }

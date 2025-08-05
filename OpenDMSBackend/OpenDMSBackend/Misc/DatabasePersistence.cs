@@ -20,7 +20,7 @@ using GRYLibrary.Core.APIServer.Services.Database;
 
 namespace OpenDMSBackend.Core.Services.Misc
 {
-    public abstract class GenericPersistence : IPersistence
+    public abstract class DatabasePersistence : IPersistence
     {
         private readonly ISQLProvider _SQLProvider;
         private readonly DatabaseContext _DatabaseContext;
@@ -28,7 +28,7 @@ namespace OpenDMSBackend.Core.Services.Misc
         private readonly Semaphore _Semaphore = new Semaphore();
         private readonly ITimeService _TimeService;
         private readonly IGRYLog _Log;
-        public GenericPersistence(DbContextOptions<DatabaseContext> options, IGeneralLogger logger, ITimeService timeService, IDatabaseManager databaseManager, IGRYLog log, ISQLProvider sqlProvider)
+        public DatabasePersistence(DbContextOptions<DatabaseContext> options, IGeneralLogger logger, ITimeService timeService, IDatabaseManager databaseManager, IGRYLog log, ISQLProvider sqlProvider)
         {
             this._TimeService = timeService;
             this._DatabaseContext = new DatabaseContext(options, logger, timeService, databaseManager);
@@ -142,6 +142,11 @@ namespace OpenDMSBackend.Core.Services.Misc
                 command.Parameters.Add(this.GetParameter("DocumentContent", document.Content));
                 command.Parameters.Add(this.GetParameter("OCRContent", document.OCRContent));
                 command.Parameters.Add(this.GetParameter("DocumentPreview", document.Preview));
+                command.Parameters.Add(this.GetParameter("IsSoftDeleted", document.IsSoftDeleted));
+                command.Parameters.Add(this.GetParameter("DeleteIsNotAllowedBefore", document.DeleteIsNotAllowedBefore.HasValue?document.DeleteIsNotAllowedBefore:default,typeof(DateTime)));
+                command.Parameters.Add(this.GetParameter("MustBeHardDeletedAfter", document.MustBeHardDeletedAfter.HasValue ? document.MustBeHardDeletedAfter : default, typeof(DateTime)));
+                command.Parameters.Add(this.GetParameter("GroupOfBusinessOwner", document.GroupOfBusinessOwner));
+                command.Parameters.Add(this.GetParameter("Version", document.Version.ToString()));
                 command.ExecuteNonQuery();
             });
         }
@@ -461,7 +466,9 @@ namespace OpenDMSBackend.Core.Services.Misc
                         reader.Read();
                         GRYDateTime importDate = DBUtilities.GetValue<GRYDateTime>(reader, 3, false);
                         GRYDateTime? lastEditDate = DBUtilities.GetValue<GRYDateTime>(reader, 4, true);
-                        Document document = new Document(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), importDate, lastEditDate, (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetString(8), (byte[])reader.GetValue(9));
+                        GRYDateTime? deleteIsNotAllowedBefore = DBUtilities.GetValue<GRYDateTime>(reader, 11, true);
+                        GRYDateTime? mustBeHardDeletedAfter = DBUtilities.GetValue<GRYDateTime>(reader, 12, true);
+                        Document document = new Document(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), importDate, lastEditDate, (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetString(8), (byte[])reader.GetValue(9),reader.GetBoolean(10),deleteIsNotAllowedBefore,mustBeHardDeletedAfter,reader.GetString(13),Version3.Parse(reader.GetString(14)));
                         //TODO load tags
                         return document;
                     }
@@ -642,7 +649,7 @@ namespace OpenDMSBackend.Core.Services.Misc
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), GRYDateTime.FromDateTime(reader.GetDateTime(3)), GRYDateTime.FromDateTime(DBUtilities.ConvertValue<DateTime>(reader.GetDateTime(4))), (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7));
+                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), GRYDateTime.FromDateTime(reader.GetDateTime(3)), GRYDateTime.FromDateTime(DBUtilities.ConvertValue<DateTime>(reader.GetDateTime(4))), new HashSet<Tag>(), (uint)reader.GetInt32(5), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetBoolean(8), reader.GetDateTime(9), reader.GetDateTime(9), reader.GetString(10), Version3.Parse(reader.GetString(11)));
                     //TODO load tags
                     return document;
                 }

@@ -1,4 +1,4 @@
 
 insert 
-	into Documents(`Id`, `Title`, `Filename`, `OriginalFilename`, `ImportDate`, `LastEditDate`, `ReadableId`, `MIMEType`, `DocumentContent`, `OCRContent`, `DocumentPreview`) 
-	values        (@Id , @Title , @Filename , @OriginalFilename , @ImportDate , @LastEditDate , @ReadableId , @MIMEType , @DocumentContent, @OCRContent  , @DocumentPreview );
+	into Documents(`Id`, `Title`, `Filename`, `OriginalFilename`, `ImportDate`, `LastEditDate`, `ReadableId`, `MIMEType`, `DocumentContent`, `OCRContent`, `DocumentPreview`,`IsSoftDeleted`,`DeleteIsNotAllowedBefore`,`MustBeHardDeletedAfter`,`GroupOfBusinessOwner`,`Version`) 
+	values        (@Id , @Title , @Filename , @OriginalFilename , @ImportDate , @LastEditDate , @ReadableId , @MIMEType , @DocumentContent, @OCRContent , @DocumentPreview , @IsSoftDeleted, @DeleteIsNotAllowedBefore, @MustBeHardDeletedAfter, @GroupOfBusinessOwner, @Version);

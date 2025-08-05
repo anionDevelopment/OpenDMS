@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using GRYLibrary.Core.Misc;
 using System;
+using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Model.DTOs
 {
@@ -16,8 +17,13 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public string MimeType { get; set; }
         public string DocumentContentAsBase64 { get; set; }
         public string DocumentPreviewAsBase64 { get; set; }
+        public bool IsSoftDeleted { get; set; }
+        public DateTime? DeleteIsNotAllowedBefore { get; set; }
+        public DateTime? MustBeHardDeletedAfter { get; set; }
+        public string GroupOfBusinessOwner { get; set; }
+        public Version3 Version { get; set; }
 
-        public DocumentDTO(string id, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ISet<TagDTO> tags, ulong readableId, string mimeType, string documentContentAsBase64, string documentPreviewAsBase64)
+        public DocumentDTO(string id, string title, string filename, string originalFilename, DateTime importDate, DateTime? lastEditDate, ISet<TagDTO> tags, ulong readableId, string mimeType, string documentContentAsBase64, string documentPreviewAsBase64, bool isSoftDeleted,DateTime? deleteIsNotAllowedBefore, DateTime? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version)
         {
             this.Id = id;
             this.Title = title;
@@ -30,6 +36,11 @@ namespace OpenDMSBackend.Core.Model.DTOs
             this.MimeType = mimeType;
             this.DocumentContentAsBase64 = documentContentAsBase64;
             this.DocumentPreviewAsBase64 = documentPreviewAsBase64;
+            this.IsSoftDeleted = isSoftDeleted;
+            this.DeleteIsNotAllowedBefore = deleteIsNotAllowedBefore;
+            this.MustBeHardDeletedAfter = mustBeHardDeletedAfter;
+            this.GroupOfBusinessOwner = groupOfBusinessOwner;
+            this.Version = version;
         }
     }
 }

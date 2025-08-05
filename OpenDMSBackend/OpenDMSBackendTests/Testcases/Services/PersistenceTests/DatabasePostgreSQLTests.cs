@@ -21,7 +21,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             return new DatabaseManagerPostgreSQL();
         }
 
-        public override GenericPersistence GetPersistenceObject(IDatabaseManager databaseManager, ITimeService timeService, DbContextOptionsBuilder<DatabaseContext> optionsBuilder, IGRYLog logger, ISQLProvider sqlProvider)
+        public override DatabasePersistence GetPersistenceObject(IDatabaseManager databaseManager, ITimeService timeService, DbContextOptionsBuilder<DatabaseContext> optionsBuilder, IGRYLog logger, ISQLProvider sqlProvider)
         {
             return new DatabasePostgreSQLPersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
         }

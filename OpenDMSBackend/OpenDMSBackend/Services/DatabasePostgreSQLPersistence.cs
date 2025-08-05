@@ -12,7 +12,7 @@ using OpenDMSBackend.Core.Services.Misc;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public sealed class DatabasePostgreSQLPersistence : GenericPersistence, IPersistence
+    public sealed class DatabasePostgreSQLPersistence : DatabasePersistence, IPersistence
     {
         public DatabasePostgreSQLPersistence(DbContextOptions<DatabaseContext> options, IGeneralLogger logger, ITimeService timeService, IDatabaseManager databaseManager, IGRYLog log, ISQLProvider sqlProvider) : base(options, logger, timeService, databaseManager, log, sqlProvider)
         {

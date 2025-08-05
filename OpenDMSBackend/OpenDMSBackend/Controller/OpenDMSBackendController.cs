@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
+using System;
 using System.Linq;
 
 namespace OpenDMSBackend.Core.Controller
@@ -33,8 +34,9 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult AddDocument([FromBody] byte[] content, [FromRoute] string containerId, [FromQuery] string filename, [FromQuery] string? title)
         {
-            return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._TimeService.GetCurrentTimeAsGRYDateTime()));
+            return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._TimeService.GetCurrentTimeAsGRYDateTime(),this._AuthenticationService.GetBaseRoleOfAllUser()));
         }
+
 
         [Authenticate]
         [HttpPost]

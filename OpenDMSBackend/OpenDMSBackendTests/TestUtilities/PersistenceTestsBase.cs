@@ -1,5 +1,7 @@
 ﻿using GRYLibrary.Core.Misc.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenDMSBackend.Core.Configuration;
+using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using System;
@@ -21,7 +23,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         {
             //arrange
             using IPersistence persistence = this.GetPersistence();
-            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new GRYLibrary.Core.Misc.GRYDateTime(2025, 07, 03, 21, 0, 6), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 });
+            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new GRYLibrary.Core.Misc.GRYDateTime(2025, 07, 03, 21, 0, 6), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0));
             Assert.IsFalse(persistence.IsDocument(testDocument.Id));
 
             //act
@@ -37,7 +39,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
             //arrange          
             IPersistence databasePersistence = this.GetPersistence();
 
-            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new GRYLibrary.Core.Misc.GRYDateTime(2025, 07, 03, 21, 0, 6), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 });
+            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new GRYLibrary.Core.Misc.GRYDateTime(2025, 07, 03, 21, 0, 6), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0));
 
             //act
             databasePersistence.CreateDocument(testDocument);
@@ -52,7 +54,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         {
             //arrange
             IPersistence databasePersistence = this.GetPersistence();
-            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new GRYLibrary.Core.Misc.GRYDateTime(2025, 07, 03, 21, 0, 6), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 });
+            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new GRYLibrary.Core.Misc.GRYDateTime(2025, 07, 03, 21, 0, 6), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0));
 
             uint expectedAmount1 = 0;
             uint expectedAmount2 = 1;
