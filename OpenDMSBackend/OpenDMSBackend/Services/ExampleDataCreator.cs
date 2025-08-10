@@ -1,7 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
-using GRYLibrary.Core.APIServer.Services.Interfaces;
-using GRYLibrary.Core.Misc;
-using Microsoft.AspNetCore.Authentication;
+﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -17,7 +17,6 @@ using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.Misc.Strings;
 using System.Data.Common;
 using GRYLibrary.Core.APIServer.Services.Database;
-using OpenDMSBackend.Core.Misc;
 
 namespace OpenDMSBackend.Core.Services.Misc
 {

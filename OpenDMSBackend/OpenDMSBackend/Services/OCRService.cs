@@ -1,21 +1,26 @@
-﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
+﻿using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.APIServer.Settings.Configuration;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.Other;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Reactive.Joins;
 using System.Text.RegularExpressions;
 
 namespace OpenDMSBackend.Core.Services
 {
     public class OCRService : IOCRService
     {
-        private readonly SimpleOCR.Library.Core.IOCRService _OCRService = new SimpleOCR.Library.Core.OCRService();
+        private readonly SimpleOCR.Library.Core.IOCRService _OCRService;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
-        public OCRService(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration)
+        private readonly IApplicationConstants _Costants;
+        public OCRService(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IApplicationConstants constants)
         {
             this._Configuration = configuration;
+            _Costants = constants;
+            _OCRService = new SimpleOCR.Library.Core.OCRService(Path.Combine(_Costants.BaseFolder, "OCRData"));
+            _OCRService.Initialize();
         }
         public string GetOCRContent(byte[] documentContentAsPicture, ISet<string> additionalLanguages)
         {

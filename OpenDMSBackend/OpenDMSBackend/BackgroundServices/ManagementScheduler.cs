@@ -6,11 +6,8 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Services;
 using System;
-using Microsoft.ClearScript;
-using Microsoft.ClearScript.JavaScript;
 using Microsoft.ClearScript.V8;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 
 namespace OpenDMSBackend.Core.BackgroundServices
 {

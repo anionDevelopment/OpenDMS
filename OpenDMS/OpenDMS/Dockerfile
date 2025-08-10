@@ -11,7 +11,8 @@ RUN mkdir /Workspace && \
     mkdir /Workspace/Other/Certificates && \
     mkdir /Workspace/Other/EntryPoint && \
     apt-get update && \
-    apt-get install -y wget iputils-ping curl procps nginx
+    apt-get install -y wget iputils-ping curl procps nginx git && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /Workspace/Other/EntryPoint
 
@@ -27,6 +28,7 @@ ADD Other/Resources/DependentCodeUnits/OpenDMSFrontend/BuildResult_WebApplicatio
 COPY Other/Resources/DevelopmentCertificate/OpenDMSDevelopmentCertificate.crt /Workspace/Other/Certificates
 COPY Other/Resources/DevelopmentCertificate/OpenDMSDevelopmentCertificate.key /Workspace/Other/Certificates
 COPY OpenDMS/nginx.conf /Workspace/Application/Frontend
+#TODO add data for OCR
 
 COPY OpenDMS/EntryPoint.sh /Workspace/Other/EntryPoint
 RUN chmod +x /Workspace/Other/EntryPoint/EntryPoint.sh

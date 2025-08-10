@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
+﻿using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.APIServer.Settings.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OpenDMSBackend.Core.Configuration;
@@ -8,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenDMSBackend.Tests.Testcases.Services
 {
@@ -25,7 +24,8 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
             configurationMock.SetupGet(mock => mock.ApplicationSpecificConfiguration).Returns(codeunitMock.Object);
-            OCRService ocrService = new OCRService(configurationMock.Object);
+            OCRService ocrService = new OCRService(configurationMock.Object, GetTessDataFolder());
+            ocrService.Initialize();
 
             // act
             var supportedLanguages = ocrService.SupportedLanguages;
@@ -45,13 +45,15 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Assert.IsTrue(supportedLanguages.Where(language => language.ISO639_1_Name == "vi").Any());
             Assert.IsTrue(supportedLanguages.Where(language => language.ISO639_1_Name == "th").Any());
         }
+
         [TestMethod]
         public void WriteSupportedLanguagesToFile()
         {
             Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>> configurationMock = new Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>>(MockBehavior.Strict);
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
-            OCRService ocrService = new OCRService(configurationMock.Object);
+            OCRService ocrService = new OCRService(configurationMock.Object, GetTessDataFolder());
+            ocrService.Initialize();
 
             var targetFolderResources = Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "SupportedLanguages");
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryDoesNotExist(targetFolderResources);
@@ -75,6 +77,12 @@ Name => ISO639-1";
 ";
             File.WriteAllText(targetFileTable, contentTable);
 
+        }
+        private IApplicationConstants GetTessDataFolder()
+        {
+            Mock<IApplicationConstants> configurationMock = new Mock<IApplicationConstants>(MockBehavior.Strict);
+            configurationMock.SetupGet(mock => mock.GetDataFolder()).Returns(Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "OCRData"));
+            return configurationMock.Object;
         }
     }
 }
