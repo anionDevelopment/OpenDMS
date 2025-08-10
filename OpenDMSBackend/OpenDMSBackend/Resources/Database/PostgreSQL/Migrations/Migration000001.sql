@@ -42,6 +42,7 @@ CREATE TABLE "Documents" (
     "MustBeHardDeletedAfter" timestamp with time zone null,
     "GroupOfBusinessOwner" varchar(255) not null,
     "Version" varchar(255) not null,
+    "AssignedLanguages" varchar(255) null,
     CONSTRAINT "PK_Documents" PRIMARY KEY ("Id")
 ) ;
 

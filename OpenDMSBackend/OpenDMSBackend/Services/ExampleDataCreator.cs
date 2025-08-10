@@ -3,6 +3,7 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.Misc;
 using Microsoft.AspNetCore.Authentication;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -24,7 +25,7 @@ namespace OpenDMSBackend.Core.Services
             DateTime now = DateTime.Now;
             DateTime initialDate = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0).AddHours(-1);
             (string userId, string storageLocationId) userDetails1 = this.AddUser(1);//minimal example
-            string userGroupe = _AuthenticationService.GetBaseRoleOfAllUser();
+            string userGroupe = this._AuthenticationService.GetBaseRoleOfAllUser();
 
             (string userId, string storageLocationId) userDetails2 = this.AddUser(2);//example with some more documents
             string folder1Id = this.AddFolder(1, userDetails2.userId, userDetails2.storageLocationId);
@@ -82,7 +83,7 @@ namespace OpenDMSBackend.Core.Services
             string filename = $"{title}.pdf";
             byte[] content = GetFileContentFromEmbeddedExampleDocuments(filename);
             DateTime creationDate = initialDate.AddMinutes(documentNumber);
-            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content, GRYDateTime.FromDateTime(creationDate), groupOfBusinessOwner);
+            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content,  groupOfBusinessOwner,new HashSet<string>());
         }
 
         public static byte[] GetFileContentFromEmbeddedExampleDocuments(string documentName)

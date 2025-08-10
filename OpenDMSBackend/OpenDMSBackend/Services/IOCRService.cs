@@ -1,7 +1,9 @@
-﻿namespace OpenDMSBackend.Core.Services
+﻿using System.Collections.Generic;
+
+namespace OpenDMSBackend.Core.Services
 {
     public interface IOCRService
     {
-        public string GetOCRContent(byte[] documentContent);
+        public string GetOCRContent(byte[] documentContentAsPicture, ISet<string> additionalLanguages);
     }
 }

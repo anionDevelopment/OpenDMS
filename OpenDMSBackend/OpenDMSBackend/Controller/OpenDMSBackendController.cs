@@ -7,6 +7,7 @@ using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OpenDMSBackend.Core.Controller
@@ -32,9 +33,9 @@ namespace OpenDMSBackend.Core.Controller
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [Route($"{nameof(AddDocument)}/{{{nameof(containerId)}}}")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public IActionResult AddDocument([FromBody] byte[] content, [FromRoute] string containerId, [FromQuery] string filename, [FromQuery] string? title)
+        public IActionResult AddDocument([FromBody] byte[] content, [FromRoute] string containerId, [FromQuery] string filename, [FromQuery] string? title, [FromQuery] IEnumerable<string> additionalOCRLanguages)
         {
-            return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._TimeService.GetCurrentTimeAsGRYDateTime(),this._AuthenticationService.GetBaseRoleOfAllUser()));
+            return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._AuthenticationService.GetBaseRoleOfAllUser(), new HashSet<string>(additionalOCRLanguages)));
         }
 
 
@@ -189,7 +190,7 @@ namespace OpenDMSBackend.Core.Controller
         [Route($"{nameof(Delete)}/{{{nameof(containerOrContaineeId)}}}")]
         public IActionResult Delete(string containerOrContaineeId)
         {
-            this._BusinessLogicService.Delete(this.GetUser().Id, containerOrContaineeId);
+            this._BusinessLogicService.HardDelete(this.GetUser().Id, containerOrContaineeId);
             return this.Ok();
         }
 

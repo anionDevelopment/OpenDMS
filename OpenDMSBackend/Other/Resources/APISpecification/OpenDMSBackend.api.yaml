@@ -16,6 +16,15 @@ components:
     DocumentDTO:
       additionalProperties: false
       properties:
+        assignedLanguages:
+          items:
+            type: string
+          nullable: true
+          type: array
+          uniqueItems: true
+        deleteIsNotAllowedBefore:
+          nullable: true
+          type: string
         documentContentAsBase64:
           nullable: true
           type: string
@@ -25,17 +34,24 @@ components:
         filename:
           nullable: true
           type: string
+        groupOfBusinessOwner:
+          nullable: true
+          type: string
         id:
           nullable: true
           type: string
         importDate:
-          format: date-time
+          nullable: true
           type: string
+        isSoftDeleted:
+          type: boolean
         lastEditDate:
-          format: date-time
           nullable: true
           type: string
         mimeType:
+          nullable: true
+          type: string
+        mustBeHardDeletedAfter:
           nullable: true
           type: string
         originalFilename:
@@ -53,24 +69,42 @@ components:
         title:
           nullable: true
           type: string
+        version:
+          $ref: '#/components/schemas/Version3'
       type: object
     DocumentPreviewDTO:
       additionalProperties: false
       properties:
+        assignedLanguages:
+          items:
+            type: string
+          nullable: true
+          type: array
+          uniqueItems: true
+        deleteIsNotAllowedBefore:
+          nullable: true
+          type: string
         filename:
+          nullable: true
+          type: string
+        groupOfBusinessOwner:
           nullable: true
           type: string
         id:
           nullable: true
           type: string
         importDate:
-          format: date-time
+          nullable: true
           type: string
+        isSoftDeleted:
+          type: boolean
         lastEditDate:
-          format: date-time
           nullable: true
           type: string
         mimeType:
+          nullable: true
+          type: string
+        mustBeHardDeletedAfter:
           nullable: true
           type: string
         originalFilename:
@@ -85,6 +119,8 @@ components:
         title:
           nullable: true
           type: string
+        version:
+          $ref: '#/components/schemas/Version3'
       type: object
     FolderDTO:
       additionalProperties: false
@@ -151,6 +187,19 @@ components:
           nullable: true
           type: string
       type: object
+    Version3:
+      additionalProperties: false
+      properties:
+        major:
+          format: int64
+          type: integer
+        minor:
+          format: int64
+          type: integer
+        patch:
+          format: int64
+          type: integer
+      type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
   title: OpenDMSBackend v1.1.1 API documentation
@@ -208,6 +257,12 @@ paths:
         name: title
         schema:
           type: string
+      - in: query
+        name: additionalOCRLanguages
+        schema:
+          items:
+            type: string
+          type: array
       - description: Access Token
         in: header
         name: X-AccessToken

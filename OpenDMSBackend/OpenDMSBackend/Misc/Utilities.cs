@@ -50,6 +50,25 @@ namespace OpenDMSBackend.Core.Misc
             }
             return "application/octet-stream";
         }
+        internal static string LanguagesListToString(ISet<string> languages)
+        {
+            return string.Join(",", languages);
+        }
+        internal static ISet<string> StringToLanguagesList(string languages)
+        {
+            if (languages == null || string.Empty == languages)
+            {
+                return new HashSet<string>();
+            }
+            else if (languages.Contains(","))
+            {
+                return new HashSet<string>(languages.Split(","));
+            }
+            else
+            {
+                return new HashSet<string>() { languages };
+            }
+        }
 
         internal static UserInformationDTO GetUserInformation(User user)
         {

@@ -147,5 +147,10 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("Search");
         }
+
+        public string GetScriptGetDocumentPreview()
+        {
+            return this.LoadSQLScript("GetDocumentPreview");
+        }
     }
 }

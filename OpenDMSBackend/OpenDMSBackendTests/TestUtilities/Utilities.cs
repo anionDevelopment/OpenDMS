@@ -6,7 +6,7 @@ using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
-using OpenDMSBackend.Tests.Constants;
+using OpenDMSBackend.Tests.TestUtilities.Constants;
 
 namespace OpenDMSBackend.Tests.TestUtilities
 {

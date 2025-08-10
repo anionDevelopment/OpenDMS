@@ -31,6 +31,7 @@ namespace OpenDMSBackend.Core.Configuration
         public IExceptionManagerConfiguration ConfigurationForExceptionManagerMiddleware { get; set; }
         public IHeaderServiceConfiguration HeaderServiceConfiguration { get; set; }
         public IGRYLogConfiguration AuditLogConfiguration { get; set; }
-        public IList<ImportDefinition> ImportDefinitions { get; set; }
+        public ISet<ImportDefinition> ImportDefinitions { get; set; }
+        public ISet<string> DefaultOCRLanguages{ get; set; }
     }
 }

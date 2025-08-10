@@ -3,7 +3,7 @@
 <#@ assembly name="System.IO" #>
 <#@ parameter type="System.String" name="repositoryFolder" #>
 <#@ parameter type="System.String" name="codeUnitName" #>
-namespace OpenDMSBackend.Tests.Constants
+namespace OpenDMSBackend.Tests.TestUtilities.Constants
 {
     internal static class GeneralConstants
     {

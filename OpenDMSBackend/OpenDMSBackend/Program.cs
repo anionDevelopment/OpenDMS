@@ -92,7 +92,8 @@ namespace OpenDMSBackend.Core
                         TermsOfServiceLink = $"https://information.{domain}/Products/{GeneralConstants.CodeUnitName}/TermsOfService"
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration = new AutSRConfiguration();
-                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ImportDefinitions= new List<ImportDefinition>();
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ImportDefinitions = new HashSet<ImportDefinition>();
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DefaultOCRLanguages = new HashSet<string>() { "en" };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
@@ -194,7 +195,7 @@ namespace OpenDMSBackend.Core
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
-                    IManagementScheduler managementScheduler= GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
+                    IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
                     IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
                     functionalInformationForWebApplication.PreRun = () =>
                     {

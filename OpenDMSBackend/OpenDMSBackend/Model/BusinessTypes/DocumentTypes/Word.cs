@@ -34,9 +34,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes
             return base.GetHashCode();
         }
 
-        public override string GetOCRContent(byte[] content, IOCRService ocrService)
+        public override string GetOCRContent(byte[] content, ISet<string> additionalLanguages, IOCRService ocrService)
         {
-            return Picture.Instance.GetOCRContent(this.ToPicture(content), ocrService);
+            return Picture.Instance.GetOCRContent(this.ToPicture(content), additionalLanguages, ocrService);
         }
         public byte[] ToPicture(byte[] content)
         {

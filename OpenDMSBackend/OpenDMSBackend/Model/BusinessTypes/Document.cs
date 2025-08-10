@@ -1,9 +1,11 @@
 ﻿using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Strings;
+using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Model.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GUtilities = GRYLibrary.Core.Misc.Utilities;
 
 namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
@@ -13,8 +15,8 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public OneLineString Title { get; set; }
         public OneLineString Filename { get; set; }
         public OneLineString OriginalFilename { get; set; }
-        public GRYDateTime ImportDate { get; set; }
-        public GRYDateTime? LastEditDate { get; set; }
+        public DateTimeOffset ImportDate { get; set; }
+        public DateTimeOffset? LastEditDate { get; set; }
         public ISet<Tag> Tags { get; set; }
         public ulong ReadableId { get; set; }
         public OneLineString MIMEType { get; set; }
@@ -22,16 +24,17 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public byte[] Preview { get; set; }
         public string OCRContent { get; set; }
         public bool IsSoftDeleted { get; set; }
-        public GRYDateTime? DeleteIsNotAllowedBefore { get; set; }
-        public GRYDateTime? MustBeHardDeletedAfter { get; set; }
+        public DateTimeOffset? DeleteIsNotAllowedBefore { get; set; }
+        public DateTimeOffset? MustBeHardDeletedAfter { get; set; }
         /// <summary>
         /// The persons in this usergroup are allowed to do hard-delete and to set the <see cref="DeleteIsNotAllowedBefore"/>- and <see cref="MustBeHardDeletedAfter"/>-value.
         /// This permission setting does not specify whether the user is allowed to edit the document (regarding the permission to <see cref="Content"/>- or <see cref="Title"/>-property for example.).
         /// </summary>
         public string GroupOfBusinessOwner { get; set; }
         public Version3 Version { get; set; }
+        public ISet<string> AssignedLanguages { get; set; }
         //TODO add list of old versions
-        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, GRYDateTime importDate, GRYDateTime? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType,  byte[] documentContent,string oCRContent,byte[] documentPreview,  bool isSoftDeleted, GRYDateTime? deleteIsNotAllowedBefore, GRYDateTime? mustBeHardDeletedAfter, string GroupOfBusinessOwner, Version3 version)
+        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentContent, string oCRContent, byte[] documentPreview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string GroupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages)
         {
             this.Id = id;
             this.Title = title;
@@ -46,10 +49,11 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.Tags = tags;
             this.OCRContent = oCRContent;
             this.IsSoftDeleted = isSoftDeleted;
-            this.GroupOfBusinessOwner=GroupOfBusinessOwner;
+            this.GroupOfBusinessOwner = GroupOfBusinessOwner;
             this.Version = version;
             this.DeleteIsNotAllowedBefore = deleteIsNotAllowedBefore;
             this.MustBeHardDeletedAfter = mustBeHardDeletedAfter;
+            this.AssignedLanguages = assignedLanguages;
         }
 
         public override bool Equals(object? obj)
@@ -87,12 +91,12 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentPreview GetPreview()
         {
-            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.Tags, this.ReadableId, this.MIMEType, this.Preview,this.IsSoftDeleted,this.DeleteIsNotAllowedBefore,this.MustBeHardDeletedAfter,this.GroupOfBusinessOwner,this.Version);
+            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.Tags, this.ReadableId, this.MIMEType, this.Preview, this.IsSoftDeleted, this.DeleteIsNotAllowedBefore, this.MustBeHardDeletedAfter, this.GroupOfBusinessOwner, this.Version,this.AssignedLanguages);
         }
 
         public DocumentDTO ToDTO()
         {
-            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, this.ImportDate.ToDateTime(), this.LastEditDate.HasValue ? this.LastEditDate.Value.ToDateTime() : null, this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview),this.IsSoftDeleted, this.DeleteIsNotAllowedBefore.HasValue ? this.DeleteIsNotAllowedBefore.Value.ToDateTime():null, this.MustBeHardDeletedAfter.HasValue ? this.MustBeHardDeletedAfter.Value.ToDateTime():null, this.GroupOfBusinessOwner,this.Version);
+            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value,GUtilities.FormatTimestamp( this.ImportDate,false), GUtilities.FormatTimestampNullable(this.LastEditDate,false), this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore,false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter,false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages);
         }
     }
 }

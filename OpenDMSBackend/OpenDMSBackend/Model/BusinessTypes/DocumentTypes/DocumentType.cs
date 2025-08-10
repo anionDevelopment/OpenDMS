@@ -14,7 +14,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes
         public abstract ISet<string> GetMimeTypes();
         /// <returns>Returns a picture of the first-site of the document.</returns>
         public abstract byte[] GetPreview(byte[] content);
-        public abstract string GetOCRContent(byte[] content, IOCRService ocrService);
+        public abstract string GetOCRContent(byte[] content, ISet<string> additionalLanguages, IOCRService ocrService);
         public override bool Equals(object? obj)
         {
             return obj != null && this.GetType().Equals(obj?.GetType());

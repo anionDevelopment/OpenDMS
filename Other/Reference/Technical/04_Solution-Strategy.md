@@ -8,6 +8,12 @@
 
 TODO
 
+### Business-owner
+
+In OpenDMS every document has a clearly defined usergroup which represents the business-owner.
+Only user which are business-owner of a document are allowed to hard-delete a document.
+Only user which are business-owner of a document are allowed to add/change/remove permissions to read/edit/soft-delete a document.
+
 ### Hard-delete and soft-delete
 
 In OpenDMS you can hard-delete and soft-delete documents.
@@ -21,8 +27,6 @@ If desired, a soft-deleted document can be marked as "not deleted" again.
 When hard-deleting a document it will be erased.
 The content of a document which is hard-deleted is finally deleted and can not be restored.
 However the audit-log will still contain certain meta-data as trace so you can always tell when which document was hard-deleted.
-In OpenDMS every document has a clearly defined usergroup which represents the business-owner.
-Only user which are business-owner of the document are allowed to hard-delete a document.
 The only second option for a hard-delete is by reaching the delete-deadline.
 
 ### Lock-up period

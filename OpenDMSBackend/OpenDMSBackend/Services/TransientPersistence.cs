@@ -501,7 +501,7 @@ namespace OpenDMSBackend.Core.Services
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
          return this._Documents
-                .Where(doc => _TimeService.GetCurrentTime() < doc.Value.MustBeHardDeletedAfter)
+                .Where(doc => this._TimeService.GetCurrentLocalTime() < doc.Value.MustBeHardDeletedAfter)
                 .Select(doc => doc.Value.Id)
                 .ToList();
         }

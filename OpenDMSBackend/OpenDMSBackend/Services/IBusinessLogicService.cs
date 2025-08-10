@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
+using System;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
@@ -18,13 +19,14 @@ namespace OpenDMSBackend.Core.Services
 
         #region BusinessLogic
 
-        public void Delete(string requesterUserId, string containerOrContaineeId);
+        public void SoftDelete(string requesterUserId, string containerOrContaineeId);
+        public void HardDelete(string requesterUserId, string containerOrContaineeId);
 
         public void RemoveEntireContent(string requesterUserId, string containerId);
 
         #region Document
         /// <returns>Returns the id of the created document.</returns>
-        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate, string groupOfBusinessOwner);
+        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content,  string groupOfBusinessOwner, ISet<string> additionalOCRLanguages);
         public void Update(string requesterUserId, Document updatedDocument);
         public Document GetDocument(string requesterUserId, string id);
         public IList<DocumentPreview> Search(string requesterUserId, string searchTerm);

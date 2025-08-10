@@ -1,21 +1,89 @@
-﻿namespace OpenDMSBackend.Core.Services
+﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
+using OpenDMSBackend.Core.Configuration;
+using OpenDMSBackend.Core.Constants;
+using OpenDMSBackend.Core.Model.Other;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Joins;
+using System.Text.RegularExpressions;
+
+namespace OpenDMSBackend.Core.Services
 {
     public class OCRService : IOCRService
     {
-        public string GetOCRContent(byte[] content)
+        private readonly SimpleOCR.Library.Core.IOCRService _OCRService = new SimpleOCR.Library.Core.OCRService();
+        private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
+        public OCRService(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration)
         {
-            string result = string.Empty;
-            //from https://github.com/charlesw/tesseract-samples/blob/master/src/Tesseract.ConsoleDemo/Program.cs
-            /*
-            using (TesseractEngine engine = new TesseractEngine(@"./OCRData", "eng+deu", EngineMode.Default))//TODO make the languages confgurable
+            this._Configuration = configuration;
+        }
+        public string GetOCRContent(byte[] documentContentAsPicture, ISet<string> additionalLanguages)
+        {
+            HashSet<string> fileTypes = this._Configuration.ApplicationSpecificConfiguration.DefaultOCRLanguages.ToHashSet().Union(additionalLanguages.ToList()).ToHashSet();
+            string result = this._OCRService.GetOCRContent(documentContentAsPicture, fileTypes, "jpg");
+            return result;
+        }
+
+        private ISet<Language>? _ValidLanguages = null;
+        private ISet<Language> ValidLanguages
+        {
+            get
             {
-                using Pix img = Pix.LoadFromMemory(content);
-                using Page page = engine.Process(img);
-                result = result + Environment.NewLine + page.GetText();
+                if (this._ValidLanguages == null)
+                {
+                    this._ValidLanguages = this.GetValidLanguages();
+                }
+                return this._ValidLanguages;
+            }
+        }
+        private ISet<Language> GetValidLanguages()
+        {
+            var result = new HashSet<Language>();
+            string regex = @"(.+) \(([a-z][a-z])\;\ ([a-z][a-z][a-z])\)"; //adaptedLine is like "Norwegian Bokmål (nb; nob)"
+            foreach (var line in GeneralConstants.AllLanguagesPlain.Split("\n"))
+            {
+                var adaptedLine = line.Replace("\r", string.Empty).Trim();
+                if (!string.IsNullOrEmpty(adaptedLine))
+                {
+                    var match = Regex.Match("ignored [john] John Johnson", regex);
+                    if (match.Success)
+                    {
+                        result.Add(new Language(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value));
+                    }
+                }
             }
             return result;
-            */
-            return "";//TODO
+        }
+
+        private ISet<Language>? _SupportedLanguages = null;
+        public ISet<Language> SupportedLanguages
+        {
+            get
+            {
+                if (this._SupportedLanguages == null)
+                {
+                    this._SupportedLanguages = this.GetSupportedLanguages();
+                }
+                return this._SupportedLanguages;
+            }
+        }
+        private ISet<Language> GetSupportedLanguages()
+        {
+            var result = new HashSet<Language>();
+            IEnumerable<string> supportedLanguages = this._OCRService.GetSupportedLanguages();
+
+            foreach (string supportedLanguageInISO639_1 in supportedLanguages)
+            {
+                foreach (Language validLanguage in this.ValidLanguages)
+                {
+                    if (validLanguage.ISO639_3_Name.Equals(supportedLanguageInISO639_1))
+                    {
+                        result.Add(validLanguage);
+                        continue;
+                    }
+                }
+            }
+            return result;
         }
     }
 }

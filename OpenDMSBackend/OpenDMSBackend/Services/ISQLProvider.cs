@@ -30,5 +30,6 @@
         string GetScriptGetFolder();
         string GetScriptGetIdFromReadableId();
         string GetScriptSearch();
+        string GetScriptGetDocumentPreview();
     }
 }

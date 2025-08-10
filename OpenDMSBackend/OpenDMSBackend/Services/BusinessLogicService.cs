@@ -44,17 +44,34 @@ namespace OpenDMSBackend.Core.Services
             this._GeneralResourceLoader = generalResourceLoader;
         }
 
-        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate, string groupOfBusinessOwner)
+        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
             lock (_LockObject)
             {
-                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Core.Misc.Utilities.GetMIMEType(originalFilename)), default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, content, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0));
+                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTime(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Core.Misc.Utilities.GetMIMEType(originalFilename)), default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, content, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages);
                 this.AnalyseDocument(document);
+                this.Validate(document);
                 this._Persistence.CreateDocument(document);
                 this._Persistence.SetParentOfContainee(document, containerId);
                 this._Logger.Log($"Document '{document.ReadableId}' added. (Technical-id: {document.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
                 return document.Id;
             }
+        }
+
+        private void Validate(Document document)
+        {
+            if (!this.IsValid(document, out IList<string> errorMessages))
+            {
+                string messagesAsString = string.Join(", ", errorMessages.Select(message => "\"" + message + "\""));
+                throw new BadRequestException($"Document is not valid due to the following reason(s): {messagesAsString}");
+            }
+        }
+
+        private bool IsValid(Document document, out IList<string> errorMessages)
+        {
+            errorMessages = new List<string>();
+            //TODO check if all assigned languages (if there are some) are valid iso-639-1-identifier
+            return errorMessages.Count == 0;
         }
 
         public string Register(string username, string password)
@@ -208,10 +225,11 @@ namespace OpenDMSBackend.Core.Services
             Document existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
             //TODO check permission (remember: a user can change the name, the content, etc. dependent on his permissions, but only if the user is in GroupOfBusinessOwner he is allowed to do a hard-delete or to change the DeleteIsNotAllowedBefore- or MustBeHardDeletedAfter-value.)
             //TODO check validity, for example: content must not be null, DeleteIsNotAllowedBefore must be lower or equal to MustBeHardDeletedAfter, version is greater than the old version, etc.
-            if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content))
+            if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content) || (!existingDocument.AssignedLanguages.SetEquals(updatedDocument.AssignedLanguages)))
             {
                 this.AnalyseDocument(updatedDocument);
             }
+            this.Validate(updatedDocument);
             this._Persistence.Update(requesterUserId, updatedDocument);
         }
 
@@ -246,7 +264,7 @@ namespace OpenDMSBackend.Core.Services
                 }
                 else
                 {
-                    document.OCRContent = docType.GetOCRContent(document.Content, this._OCRService).ToLower();
+                    document.OCRContent = docType.GetOCRContent(document.Content, document.AssignedLanguages, this._OCRService).ToLower();
                 }
             }
             catch
@@ -290,7 +308,7 @@ namespace OpenDMSBackend.Core.Services
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
-        public void Delete(string requesterUserId, string containerOrContaineeId)
+        public void HardDelete(string requesterUserId, string containerOrContaineeId)
         {
             //TODO check permission
 
@@ -305,6 +323,11 @@ namespace OpenDMSBackend.Core.Services
             Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => this.RemoveEntireContent(requesterUserId, folderId), null);
 
             this._Persistence.HardDelete(containerOrContaineeId);
+        }
+
+        public void SoftDelete(string requesterUserId, string containerOrContaineeId)
+        {
+            throw new NotImplementedException();
         }
 
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)
@@ -350,7 +373,7 @@ namespace OpenDMSBackend.Core.Services
             IContainer container = this._Persistence.GetContainerById(containerId);
             foreach (IContainee child in container.Content)
             {
-                this.Delete(requesterUserId, child.Id);
+                this.HardDelete(requesterUserId, child.Id);
             }
         }
 

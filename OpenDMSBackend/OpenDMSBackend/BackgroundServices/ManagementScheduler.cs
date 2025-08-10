@@ -29,8 +29,8 @@ namespace OpenDMSBackend.Core.BackgroundServices
         }
         protected override void Run()
         {
-            RunTask(DoScheduledHardDeletions, nameof(DoScheduledHardDeletions));
-            RunTask(ImportNewDocuments, nameof(ImportNewDocuments));
+            this.RunTask(this.DoScheduledHardDeletions, nameof(DoScheduledHardDeletions));
+            this.RunTask(this.ImportNewDocuments, nameof(ImportNewDocuments));
         }
 
         private void RunTask(Action action, string actionName)
@@ -47,11 +47,11 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         private void DoScheduledHardDeletions()
         {
-            foreach (var documentId in _Persistence.GetIdsOfDocumentsWhichMustBeHardDeletedNow())
+            foreach (string documentId in this._Persistence.GetIdsOfDocumentsWhichMustBeHardDeletedNow())
             {
                 try
                 {
-                    _Persistence.HardDelete(documentId);
+                    this._Persistence.HardDelete(documentId);
                 }
                 catch (Exception exception)
                 {
@@ -65,19 +65,19 @@ namespace OpenDMSBackend.Core.BackgroundServices
         }
         private void ImportNewDocuments()
         {
-            foreach (var importDefinition in _PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ImportDefinitions)
+            foreach (Configuration.ImportDefinition importDefinition in this._PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ImportDefinitions)
             {
                 try
                 {
-                    foreach (var externalFile in GetDocuments(importDefinition))
+                    foreach (ExternalFile externalFile in this.GetDocuments(importDefinition))
                     {
                         try
                         {
                             //TODO import document
                             //TODO delete document from import source
                             Model.BusinessTypes.Document document = null;//TODO create document from externalFile
-                            _Persistence.CreateDocument(document);
-                            RunAdaptScript(document);
+                            this._Persistence.CreateDocument(document);
+                            this.RunAdaptScript(document);
                         }
                         catch
                         {
@@ -96,9 +96,9 @@ namespace OpenDMSBackend.Core.BackgroundServices
         {
             if (importDefinition.AdaptDocumentScriptBody != null)
             {
-                using (var engine = new V8ScriptEngine())
+                using (V8ScriptEngine engine = new V8ScriptEngine())
                 {
-                    var typeScript = GetSriptPart1() + importDefinition.AdaptDocumentScriptBody + GetSriptPart2()+GetScriptPaart3(document);
+                    string typeScript = GetSriptPart1() + importDefinition.AdaptDocumentScriptBody + GetSriptPart2()+GetScriptPaart3(document);
                     string javaScript = null;
                     engine.Execute(javaScript);
                     dynamic result = engine.Script.result;
@@ -150,7 +150,7 @@ class Runner {{
         }
         public static string GetScriptPaart3(Model.BusinessTypes.Document document)
         {
-            var typeScript = $@"const result = new Runner().adapt(new Document(""{document.Title}"");";//TODO pass all variables
+            string typeScript = $@"const result = new Runner().adapt(new Document(""{document.Title}"");";//TODO pass all variables
             return typeScript;
         }
 
