@@ -4,6 +4,5 @@
     "prepare": "husky"
   },
   "version": "1.1.1",
-  "dependencies": {
-  }
+  "dependencies": {}
 }
