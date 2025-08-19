@@ -18,6 +18,7 @@ def common_tasks():
     repository_folder = GeneralUtilities.resolve_relative_path("..", codeunit_folder)
     codeunit_version = sc.get_semver_version_from_gitversion(repository_folder)  # Should always be the same as the project-version
     folder_of_current_file = os.path.dirname(file)
+    t.get_resource_from_global_resource(codeunit_folder, "OCRData")
     t.copy_product_resource_to_codeunit_resource_folder(codeunit_folder, "DevelopmentCertificate")
     sc.replace_version_in_dockerfile_file(GeneralUtilities.resolve_relative_path(f"../{codeunitname}/Dockerfile", folder_of_current_file), codeunit_version)
     additional_arguments_file = t.get_additionalargumentsfile_from_commandline_arguments(cmd_args, None)

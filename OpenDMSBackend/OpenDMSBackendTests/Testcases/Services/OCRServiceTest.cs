@@ -5,7 +5,6 @@ using Moq;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities.Constants;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,11 +23,11 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
             configurationMock.SetupGet(mock => mock.ApplicationSpecificConfiguration).Returns(codeunitMock.Object);
-            OCRService ocrService = new OCRService(configurationMock.Object, GetTessDataFolder());
-            ocrService.Initialize();
+            OCRService ocrService = new OCRService(configurationMock.Object, this.GetTessDataFolder());
+            //ocrService.Initialize();
 
             // act
-            var supportedLanguages = ocrService.SupportedLanguages;
+            ISet<Core.Model.Other.Language> supportedLanguages = ocrService.SupportedLanguages;
 
             // assert
             Assert.IsLessThan(supportedLanguages.Count, 10);
@@ -52,22 +51,21 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>> configurationMock = new Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>>(MockBehavior.Strict);
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
-            OCRService ocrService = new OCRService(configurationMock.Object, GetTessDataFolder());
-            ocrService.Initialize();
+            OCRService ocrService = new OCRService(configurationMock.Object, this.GetTessDataFolder());
 
-            var targetFolderResources = Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "SupportedLanguages");
+            string targetFolderResources = Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "SupportedLanguages");
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryDoesNotExist(targetFolderResources);
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(targetFolderResources);
-            var targetFileResourecs = Path.Combine(targetFolderResources, "SupportedLanguages.txt");
+            string targetFileResourecs = Path.Combine(targetFolderResources, "SupportedLanguages.txt");
             GRYLibrary.Core.Misc.Utilities.EnsureFileExists(targetFileResourecs);
             File.WriteAllText(targetFileResourecs, string.Join("\n", ocrService.SupportedLanguages.Select(language => $"{language.Name};{language.ISO639_1_Name};{language.ISO639_3_Name}")));
 
-            var targetFileTable = Path.Combine(targetFolderResources, "Other", "Reference", "ReferenceContent", "images", "SupportedLanguages.plantuml");
+            string targetFileTable = Path.Combine(targetFolderResources, "Other", "Reference", "ReferenceContent", "images", "SupportedLanguages.plantuml");
             GRYLibrary.Core.Misc.Utilities.EnsureFileExists(targetFileTable);
             string contentTable = @"@startuml
 map SupportedLanguages {
 Name => ISO639-1";
-            foreach (var language in ocrService.SupportedLanguages)
+            foreach (Core.Model.Other.Language language in ocrService.SupportedLanguages)
             {
                 contentTable = contentTable + $"\n  {language.Name} => {language.ISO639_1_Name}";
             }
@@ -81,7 +79,7 @@ Name => ISO639-1";
         private IApplicationConstants GetTessDataFolder()
         {
             Mock<IApplicationConstants> configurationMock = new Mock<IApplicationConstants>(MockBehavior.Strict);
-            configurationMock.SetupGet(mock => mock.GetDataFolder()).Returns(Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "OCRData"));
+            configurationMock.Setup(mock => mock.GetDataFolder()).Returns(Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "OCRData"));
             return configurationMock.Object;
         }
     }

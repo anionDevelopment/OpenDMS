@@ -33,29 +33,36 @@ namespace OpenDMSBackend.Core.Services
 
         public void Initialize(CommandlineParameter commandlineParameter)
         {
-            this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
-            string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
-            this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
-            if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
+            try
             {
-                this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);
-                Role usersRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
-
-                this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameAdmins);
-                Role adminsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameAdmins);
-                adminsRole.InheritedRoles = new HashSet<Role>() { usersRole };
-                this._AuthenticationService.UpdateRole(adminsRole);
-
-                string initialAdminPassword = string.IsNullOrWhiteSpace(commandlineParameter.InitialAdminPassword) ? CodeUnitSpecificConstants.UsernameAdmin : commandlineParameter.InitialAdminPassword;
-                string adminUserId = this._BusinessLogicService.Register(adminUsername, initialAdminPassword);
-                this._AuthenticationService.EnsureUserHasRole(adminUserId, adminsRole.Id);
-
-                if (this._Constants.Environment is Development)
+                this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
+                string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
+                this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
+                if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
                 {
-                    this._ExampleDataCreator.AddExampleData();
+                    this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);
+                    Role usersRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
+
+                    this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameAdmins);
+                    Role adminsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameAdmins);
+                    adminsRole.InheritedRoles = new HashSet<Role>() { usersRole };
+                    this._AuthenticationService.UpdateRole(adminsRole);
+
+                    string initialAdminPassword = string.IsNullOrWhiteSpace(commandlineParameter.InitialAdminPassword) ? CodeUnitSpecificConstants.UsernameAdmin : commandlineParameter.InitialAdminPassword;
+                    string adminUserId = this._BusinessLogicService.Register(adminUsername, initialAdminPassword);
+                    this._AuthenticationService.EnsureUserHasRole(adminUserId, adminsRole.Id);
+
+                    if (this._Constants.Environment is Development)
+                    {
+                        this._ExampleDataCreator.AddExampleData();
+                    }
                 }
+                this._GeneralLogger.Log("Service is initialized.", Microsoft.Extensions.Logging.LogLevel.Information);
             }
-            this._GeneralLogger.Log("Service is initialized.", Microsoft.Extensions.Logging.LogLevel.Information);
+            catch
+            {
+                throw;
+            }
         }
     }
 }

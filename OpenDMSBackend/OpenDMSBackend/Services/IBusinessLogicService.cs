@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
+using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using System.Collections.Generic;
@@ -9,9 +10,11 @@ namespace OpenDMSBackend.Core.Services
     {
         #region user
         /// <returns>Returns the id of the created user.</returns>
-        string Register(string username, string initialAdminPassword);
-        bool UserWithNameExists(string username);
-        bool UserIsAdministrator(string userId);
+        public string Register(string username, string initialAdminPassword);
+        public bool UserWithNameExists(string username);
+        public bool UserIsAdministrator(string userId);
+        public User GetUser(string userId);
+        public AccessToken Login(string username, string password);
         #endregion
 
         public void Housekeeping();//TODO call this function regulary

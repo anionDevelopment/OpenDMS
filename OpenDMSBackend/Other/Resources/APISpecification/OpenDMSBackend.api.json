@@ -133,6 +133,12 @@
                 "type": "string",
                 "format": "byte"
               }
+            },
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
             }
           }
         },

@@ -4,7 +4,6 @@ using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.Other;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -18,9 +17,9 @@ namespace OpenDMSBackend.Core.Services
         public OCRService(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IApplicationConstants constants)
         {
             this._Configuration = configuration;
-            _Costants = constants;
-            _OCRService = new SimpleOCR.Library.Core.OCRService(Path.Combine(_Costants.BaseFolder, "OCRData"));
-            _OCRService.Initialize();
+            this._Costants = constants;
+          // _OCRService = new SimpleOCR.Library.Core.OCRService(Path.Combine(_Costants.BaseFolder, "OCRData"));
+         //  _OCRService.Initialize();
         }
         public string GetOCRContent(byte[] documentContentAsPicture, ISet<string> additionalLanguages)
         {
@@ -43,14 +42,14 @@ namespace OpenDMSBackend.Core.Services
         }
         private ISet<Language> GetValidLanguages()
         {
-            var result = new HashSet<Language>();
+            HashSet<Language> result = new HashSet<Language>();
             string regex = @"(.+) \(([a-z][a-z])\;\ ([a-z][a-z][a-z])\)"; //adaptedLine is like "Norwegian Bokmål (nb; nob)"
-            foreach (var line in GeneralConstants.AllLanguagesPlain.Split("\n"))
+            foreach (string line in GeneralConstants.AllLanguagesPlain.Split("\n"))
             {
-                var adaptedLine = line.Replace("\r", string.Empty).Trim();
+                string adaptedLine = line.Replace("\r", string.Empty).Trim();
                 if (!string.IsNullOrEmpty(adaptedLine))
                 {
-                    var match = Regex.Match("ignored [john] John Johnson", regex);
+                    Match match = Regex.Match("ignored [john] John Johnson", regex);
                     if (match.Success)
                     {
                         result.Add(new Language(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value));
@@ -74,7 +73,7 @@ namespace OpenDMSBackend.Core.Services
         }
         private ISet<Language> GetSupportedLanguages()
         {
-            var result = new HashSet<Language>();
+            HashSet<Language> result = new HashSet<Language>();
             IEnumerable<string> supportedLanguages = this._OCRService.GetSupportedLanguages();
 
             foreach (string supportedLanguageInISO639_1 in supportedLanguages)

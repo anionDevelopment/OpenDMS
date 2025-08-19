@@ -279,6 +279,10 @@ paths:
             schema:
               format: byte
               type: string
+          application/octet-stream:
+            schema:
+              format: byte
+              type: string
           text/json:
             schema:
               format: byte

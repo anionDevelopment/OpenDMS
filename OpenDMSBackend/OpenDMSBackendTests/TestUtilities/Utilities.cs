@@ -12,6 +12,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
 {
     public static class Utilities
     {
+        internal static readonly object IntegrationTestLock=new object();
         public static TransientPersistence GetTransientPersistence()
         {
             ITimeService timeService = new TimeService();

@@ -1,5 +1,4 @@
 ﻿using GRYLibrary.Core.APIServer.BaseServices;
-using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Logging.GRYLogger;
@@ -8,6 +7,7 @@ using OpenDMSBackend.Core.Services;
 using System;
 using Microsoft.ClearScript.V8;
 using System.Collections.Generic;
+using GRYLibrary.Core.APIServer.Settings;
 
 namespace OpenDMSBackend.Core.BackgroundServices
 {
@@ -16,7 +16,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
         private readonly IAuditLog _AuditLog;
         private readonly IPersistence _Persistence;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _PersistedAPIServerConfiguration;
-        public ManagementScheduler(ExecutionMode executionMode, IGRYLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence) : base(executionMode, logger)
+        public ManagementScheduler(IGRYLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence,IApplicationConstants applicationConstants) : base(applicationConstants.ExecutionMode, logger)
         {
             this.Enabled = true;
             this._AuditLog = auditLog;

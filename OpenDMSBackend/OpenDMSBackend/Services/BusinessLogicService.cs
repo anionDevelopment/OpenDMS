@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
+using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Res;
@@ -380,6 +381,16 @@ namespace OpenDMSBackend.Core.Services
         public Document GetDocumentFromReadableId(string requesterUserId, uint readableId)
         {
             return this.GetDocument(requesterUserId, this._Persistence.GetIdFromReadableId(readableId));
+        }
+
+        public Model.BusinessTypes.User GetUser(string userId)
+        {
+            return this._AuthenticationService.GetUserTyped(userId);
+        }
+
+        public AccessToken Login(string username, string password)
+        {
+            return this._AuthenticationService.Login(username, password);
         }
     }
 }

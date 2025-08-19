@@ -1,46 +1,59 @@
-using OpenDMSBackend.Core.Constants;
-using GRYLibrary.Core.Misc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using OpenDMSBackend.Core.Configuration;
 using GRYLibrary.Core.APIServer.CommonRoutes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.ExecutionModes;
-using Microsoft.Extensions.Logging;
-using OpenDMSBackend.Core.Database;
-using GRYLibrary.Core.Logging.GeneralPurposeLogger;
-using GRYLibrary.Core.APIServer.Utilities;
-using System.Collections.Generic;
-using GRYLibrary.Core.APIServer.Services.Interfaces;
-using GRYLibrary.Core.APIServer.Services.Trans;
-using GRYLibrary.Core.APIServer.Mid.AuthS;
-using GRYLibrary.Core.APIServer.MidT.Exception;
-using GUtilities = GRYLibrary.Core.Misc.Utilities;
-using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
-using GRYLibrary.Core.APIServer.Services.Init;
-using GRYLibrary.Core.APIServer.Services.Auth.R;
-using GRYLibrary.Core.APIServer.Mid.M05DLog;
-using GRYLibrary.Core.APIServer.Mid.AutS;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using GRYLibrary.Core.APIServer.Mid.AuthS;
+using GRYLibrary.Core.APIServer.Mid.AutS;
 using GRYLibrary.Core.APIServer.Mid.Ex;
-using OpenDMSBackend.Core.Services;
+using GRYLibrary.Core.APIServer.Mid.M05DLog;
+using GRYLibrary.Core.APIServer.MidT.Exception;
+using GRYLibrary.Core.APIServer.Services.Auth.R;
 using GRYLibrary.Core.APIServer.Services.CredH;
-using GRYLibrary.Core.APIServer.Settings.Configuration;
-using OpenDMSBackend.Core.BackgroundServices;
+using GRYLibrary.Core.APIServer.Services.Database.DatabaseInterator;
+using GRYLibrary.Core.APIServer.Services.Init;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
+using GRYLibrary.Core.APIServer.Services.Trans;
+using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.FilePath;
-using System;
-using GRYLibrary.Core.APIServer.Services.Database.DatabaseInterator;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using OpenDMSBackend.Core.BackgroundServices;
+using OpenDMSBackend.Core.Configuration;
+using OpenDMSBackend.Core.Constants;
+using OpenDMSBackend.Core.Database;
+using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Core.Services.Misc;
+using System;
+using System.Collections.Generic;
+using GUtilities = GRYLibrary.Core.Misc.Utilities;
+using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
 
 namespace OpenDMSBackend.Core
 {
     internal class Program
     {
+        internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get;  set; }
+        internal bool ListenOnEveryIP { get;  set; }
+        internal bool RunAsync { get;  set; }
+        internal IBusinessLogicService BusinessLogicService { get; set; }
+
+        private IHostApplicationLifetime? _HostApplicationLifetime;
+
         internal static int Main(string[] commandlineArguments)
+        {
+            return new Program().MainImplementation(commandlineArguments);
+        }
+        internal int MainImplementation(string[] commandlineArguments)
         {
             bool runPersistent = false;
             return Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
@@ -53,6 +66,7 @@ namespace OpenDMSBackend.Core
                     {
                         ControllerType = typeof(MaintenanceRoutesController)
                     };
+                    initializationInformation.ApplicationConstants.ListenOnEveryIP = this.ListenOnEveryIP;
                     initializationInformation.ApplicationConstants.KnownTypes.Add(typeof(CodeUnitSpecificConfiguration));
                     initializationInformation.ApplicationConstants.AuthenticationMiddleware = typeof(AuthSMiddleware);
                     initializationInformation.ApplicationConstants.AuthorizationMiddleware = typeof(AutSRMiddleware);
@@ -97,7 +111,7 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP();
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP(initializationInformation.CommandlineParameter.TestRun ? CodeUnitSpecificConstants.PortForTestRun : HTTP.DefaultPort);
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
@@ -165,6 +179,10 @@ namespace OpenDMSBackend.Core
                     {
                         logger.Log($"Run transient.", LogLevel.Information);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, TransientPersistence>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServiceSettings>(new  AuthenticationServiceSettings()
+                        {
+                            BaseRoleOfAllUser = CodeUnitSpecificConstants.RolenameUsers
+                        });
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendTransientAuthenticationService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, TransientAuthenticationServicePersistence>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
@@ -192,11 +210,18 @@ namespace OpenDMSBackend.Core
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
+                    if (this.SetupMocks != null)
+                    {
+                        this.SetupMocks(functionalInformation);
+                    }
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
+                    this._HostApplicationLifetime = functionalInformationForWebApplication.WebApplication.Services.GetService<IHostApplicationLifetime>();
+                    this.BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
                     IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
                     IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
+                    functionalInformationForWebApplication.RunAsync = this.RunAsync;
                     functionalInformationForWebApplication.PreRun = () =>
                     {
                         //initialize
@@ -213,6 +238,11 @@ namespace OpenDMSBackend.Core
                     };
                 };
             });
+        }
+
+        internal void Stop()
+        {
+            this._HostApplicationLifetime.StopApplication();
         }
     }
 }

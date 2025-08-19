@@ -34,9 +34,15 @@ namespace OpenDMSBackend.Core.Controller
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public IActionResult AddDocument([FromBody] byte[] content, [FromRoute] string containerId, [FromQuery] string filename, [FromQuery] string? title, [FromQuery] IEnumerable<string> additionalOCRLanguages)
         {
-            return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._AuthenticationService.GetBaseRoleOfAllUser(), new HashSet<string>(additionalOCRLanguages)));
+            try
+            {
+                return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._AuthenticationService.GetBaseRoleOfAllUser(), new HashSet<string>(additionalOCRLanguages)));
+            }
+            catch
+            {
+                throw;
+            }
         }
-
 
         [Authenticate]
         [HttpPost]

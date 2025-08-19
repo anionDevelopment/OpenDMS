@@ -20,12 +20,12 @@ namespace OpenDMSBackend.Tests.TestUtilities
         protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFramework();
         protected abstract IDatabaseManager GetDatabaseManager();
         public abstract void Migration000001Test();
-        protected static readonly object LockObject = new object();
+        protected static readonly object DatabaseTestsLockObject = new object();
         public DatabaseTestsBase()
         {
 
         }
-        public void Migration000001()
+        public void Migration000001IsWorking()
         {
             //arrange
             using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework())
@@ -42,7 +42,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 Assert.IsTrue(GRYMigrator.GetAllTableNames(databaseTestFramework.Connection, databaseManager).Any());
                 Assert.AreEqual(1, migrator.GetExecutedMigrations().Count);
                 Assert.AreEqual("Migration000001", migrator.GetExecutedMigrations().First().MigrationName);
-                //TODO add the migration-specific assertions
+                //TODO add migration-specific assertions
             }
         }
 

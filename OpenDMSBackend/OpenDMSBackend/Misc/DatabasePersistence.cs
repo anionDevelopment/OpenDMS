@@ -135,21 +135,57 @@ namespace OpenDMSBackend.Core.Services.Misc
                 command.Parameters.Add(this.GetParameter("Title", document.Title.Value));
                 command.Parameters.Add(this.GetParameter("Filename", document.Filename.Value));
                 command.Parameters.Add(this.GetParameter("OriginalFilename", document.OriginalFilename.Value));
-                command.Parameters.Add(this.GetParameter("ImportDate", document.ImportDate));
-                command.Parameters.Add(this.GetParameter("LastEditDate", document.LastEditDate, typeof(DateTime)));
+                command.Parameters.Add(this.GetParameter("ImportDate", this.ToDateTime(document.ImportDate), typeof(DateTime)));
+                command.Parameters.Add(this.GetParameter("LastEditDate", this.ToDateTime(document.LastEditDate), typeof(DateTime)));
                 command.Parameters.Add(this.GetParameter("ReadableId", document.ReadableId));
                 command.Parameters.Add(this.GetParameter("MIMEType", document.MIMEType.Value));
                 command.Parameters.Add(this.GetParameter("DocumentContent", document.Content));
                 command.Parameters.Add(this.GetParameter("OCRContent", document.OCRContent));
                 command.Parameters.Add(this.GetParameter("DocumentPreview", document.Preview));
                 command.Parameters.Add(this.GetParameter("IsSoftDeleted", document.IsSoftDeleted));
-                command.Parameters.Add(this.GetParameter("DeleteIsNotAllowedBefore", document.DeleteIsNotAllowedBefore, typeof(DateTime)));
-                command.Parameters.Add(this.GetParameter("MustBeHardDeletedAfter", document.MustBeHardDeletedAfter, typeof(DateTime)));
+                command.Parameters.Add(this.GetParameter("DeleteIsNotAllowedBefore", this.ToDateTime(document.DeleteIsNotAllowedBefore), typeof(DateTime)));
+                command.Parameters.Add(this.GetParameter("MustBeHardDeletedAfter", this.ToDateTime(document.MustBeHardDeletedAfter), typeof(DateTime)));
                 command.Parameters.Add(this.GetParameter("GroupOfBusinessOwner", document.GroupOfBusinessOwner));
                 command.Parameters.Add(this.GetParameter("Version", document.Version.ToString()));
                 command.Parameters.Add(this.GetParameter(nameof(Document.AssignedLanguages), OpenDMSBackend.Core.Misc.Utilities.LanguagesListToString(document.AssignedLanguages)));
                 command.ExecuteNonQuery();
             });
+        }
+
+        private DateTime? ToDateTime(DateTimeOffset? value)
+        {
+            if (value.HasValue && !default(DateTimeOffset).Equals(value))
+            {
+                // return value.Value.UtcDateTime;//does not work due to "    System.ArgumentException: Cannot write DateTime with Kind=UTC to PostgreSQL type 'timestamp without time zone', consider using 'timestamp with time zone'. Note that it's not possible to mix DateTimes with different Kinds in an array, range, or multirange. (Parameter 'value')
+                var dt = value.Value.UtcDateTime;
+                return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        private DateTimeOffset ToDateTimeOffset(DateTime dateTime)
+        {
+            try
+            {
+                return new DateTimeOffset(dateTime);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        private DateTimeOffset? ToNullableDateTimeOffset(DateTime? dateTime)
+        {
+            if (dateTime.HasValue && !default(DateTime).Equals(dateTime))
+            {
+                return this.ToDateTimeOffset(dateTime.Value);
+            }
+            else
+            {
+                return default(DateTimeOffset);
+            }
         }
 
         public virtual IDictionary<string, User> GetAllUsers()
@@ -281,8 +317,8 @@ namespace OpenDMSBackend.Core.Services.Misc
                     User user = new User();
                     user.Id = userId;
                     user.Name = reader.GetString(1);
-                    user.PasswordHash = reader.GetString(2);
-                    user.EMailAddress = DBUtilities.ConvertValue<string>(reader["EMailAddress"]);
+                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
+                    user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
                     user.RegistrationMoment = reader.GetDateTime(6);
@@ -311,8 +347,8 @@ namespace OpenDMSBackend.Core.Services.Misc
                     User user = new User();
                     user.Id = reader.GetString(0);
                     user.Name = reader.GetString(1);
-                    user.PasswordHash = reader.GetString(2);
-                    user.EMailAddress = DBUtilities.ConvertValue<string>(reader["EMailAddress"]);
+                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
+                    user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
                     user.RegistrationMoment = reader.GetDateTime(6);
@@ -465,11 +501,25 @@ namespace OpenDMSBackend.Core.Services.Misc
                     if (reader.HasRows)
                     {
                         reader.Read();
-                        DateTimeOffset importDate = DBUtilities.GetValue<DateTimeOffset>(reader, 3, false);
-                        DateTimeOffset? lastEditDate = DBUtilities.GetValue<DateTimeOffset>(reader, 4, true);
-                        DateTimeOffset? deleteIsNotAllowedBefore = DBUtilities.GetValue<DateTimeOffset>(reader, 11, true);
-                        DateTimeOffset? mustBeHardDeletedAfter = DBUtilities.GetValue<DateTimeOffset>(reader, 12, true);
-                        Document document = new Document(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), importDate, lastEditDate, (uint)reader.GetInt32(5), new HashSet<Tag>(), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetString(8), (byte[])reader.GetValue(9), reader.GetBoolean(10), deleteIsNotAllowedBefore, mustBeHardDeletedAfter, reader.GetString(13), Version3.Parse(reader.GetString(14)), OpenDMSBackend.Core.Misc.Utilities.StringToLanguagesList(reader.GetString(15)));
+                        Document document = new Document(id,
+                            OneLineString.From(reader.GetString(0)),//title
+                            OneLineString.From(reader.GetString(1)),//filename
+                            OneLineString.From(reader.GetString(2)),//original filename
+                            this.ToDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 3)),//importdate
+                            this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)),//lasteditdate
+                            (uint)reader.GetInt32(5),//readableid
+                            new HashSet<Tag>(),//tags
+                            OneLineString.From(reader.GetString(6)),//mimetype
+                            (byte[])reader.GetValue(7),//content
+                            reader.GetString(8),//ocrcontent
+                            (byte[])reader.GetValue(9),//preview
+                            reader.GetBoolean(10),//is soft deleted
+                            this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 11)),//delete is not allowed before
+                             this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 12)),//must be deleted after
+                            reader.GetString(13),//businessowner
+                            Version3.Parse(reader.GetString(14)),//version
+                            OpenDMSBackend.Core.Misc.Utilities.StringToLanguagesList(reader.GetString(15))//languages
+                        );
                         //TODO load tags
                         return document;
                     }
@@ -484,6 +534,7 @@ namespace OpenDMSBackend.Core.Services.Misc
                 }
             })[0]);
         }
+
 
         public virtual void CreateTag(Tag tag)
         {
@@ -650,7 +701,7 @@ namespace OpenDMSBackend.Core.Services.Misc
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), this.Transform(reader.GetDateTime(3)), this.Transform(DBUtilities.ConvertValue<DateTime>(reader.GetDateTime(4))), new HashSet<Tag>(), (uint)reader.GetInt32(5), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetBoolean(8), this.Transform(DBUtilities.ConvertValue<DateTime>(reader.GetDateTime(9))), this.Transform(DBUtilities.ConvertValue<DateTime>(reader.GetDateTime(10))), reader.GetString(11), Version3.Parse(reader.GetString(12)), OpenDMSBackend.Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue<string>(DBUtilities.GetValue<string>(reader, 12, true))));
+                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), this.ToDateTimeOffset(reader.GetDateTime(3)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)), new HashSet<Tag>(), (uint)reader.GetInt32(5), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetBoolean(8), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)), reader.GetString(11), Version3.Parse(reader.GetString(12)), OpenDMSBackend.Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue<string>(DBUtilities.GetNullableValue<string>(reader, 12))));
                     //TODO load tags
                     return document;
                 }
@@ -659,11 +710,6 @@ namespace OpenDMSBackend.Core.Services.Misc
                     throw new KeyNotFoundException($"No document found with document '{id}'");
                 }
             })[0]);
-        }
-
-        private DateTimeOffset Transform(DateTime dateTime)
-        {
-            throw new NotImplementedException();
         }
 
         public virtual IEnumerable<string> GetAllStorageLocationIds()
