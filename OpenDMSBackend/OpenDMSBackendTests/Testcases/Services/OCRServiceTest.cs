@@ -24,7 +24,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
             configurationMock.SetupGet(mock => mock.ApplicationSpecificConfiguration).Returns(codeunitMock.Object);
-            OCRService ocrService = new OCRService(configurationMock.Object, this.GetTessDataFolder(),GeneralLogger.CreateUsingConsole(),new CommandlineParameter()
+            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, this.GetTessDataFolder(),GeneralLogger.CreateUsingConsole(),new CommandlineParameter()
             {
                 OCRDataFolder = TestUtilities.Utilities.GetOCRDataFolder(),
             });
@@ -55,7 +55,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>> configurationMock = new Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>>(MockBehavior.Strict);
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
-            OCRService ocrService = new OCRService(configurationMock.Object, this.GetTessDataFolder(),GeneralLogger.CreateUsingConsole(), new CommandlineParameter() {
+            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, this.GetTessDataFolder(),GeneralLogger.CreateUsingConsole(), new CommandlineParameter() {
                 OCRDataFolder=TestUtilities.Utilities.GetOCRDataFolder(),
             });
 

@@ -11,13 +11,13 @@ using System.Text.RegularExpressions;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class OCRService : IOCRService
+    public class OCRServiceWrapper : IOCRServiceWrapper
     {
         private readonly SimpleOCR.Library.Core.IOCRService _OCRService;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
         private readonly IApplicationConstants _Costants;
         private readonly CommandlineParameter _CMDParameter;
-        public OCRService(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IApplicationConstants constants, IGRYLog log, CommandlineParameter cmdParameter)
+        public OCRServiceWrapper(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IApplicationConstants constants, IGRYLog log, CommandlineParameter cmdParameter)
         {
             this._Configuration = configuration;
             this._Costants = constants;

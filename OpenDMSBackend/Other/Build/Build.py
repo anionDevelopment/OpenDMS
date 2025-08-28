@@ -20,15 +20,6 @@ def build():
         # TODO copy codeunit-resource "TypeScript" to output-directory
     # TODO add typescript to sbom
 
-    requirements_file: str = os.path.join(codeunit_folder, "Other", "requirements.txt")
-    pymupdf_version: str = [line for line in GeneralUtilities.read_lines_from_file(requirements_file) if line.startswith("pymupdf==")][0].split("==")[1]
-    pymupdf_resources_folder: str = os.path.join(codeunit_folder, "Other", "Artifacts", "PyMuPDFVersion")
-    GeneralUtilities.ensure_directory_exists(pymupdf_resources_folder)
-    pymupdf_resources_file: str = os.path.join(pymupdf_resources_folder, "PyMuPDFVersion.txt")
-    GeneralUtilities.ensure_file_exists(pymupdf_resources_file)
-    GeneralUtilities.write_text_to_file(pymupdf_resources_file, pymupdf_version)
-    # TODO add pymupdf to sbom
-
 
 if __name__ == "__main__":
     build()

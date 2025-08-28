@@ -191,7 +191,7 @@ namespace OpenDMSBackend.Core
                     }
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementScheduler, ManagementScheduler>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRService, OCRService>();
+                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceWrapper, OCRServiceWrapper>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();

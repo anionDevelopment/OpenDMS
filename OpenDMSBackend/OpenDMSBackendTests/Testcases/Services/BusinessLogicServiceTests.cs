@@ -34,7 +34,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             persistence.Reset();
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
             IAuthenticationService<User> authenticationService = new PersistentAuthenticationService(timeService, databasePersistence, logger, constants);
-            Mock<IOCRService> ocrServiceMock = new Mock<IOCRService>(MockBehavior.Strict);
+            Mock<IOCRServiceWrapper> ocrServiceMock = new Mock<IOCRServiceWrapper>(MockBehavior.Strict);
             IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
             businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object, idGenerator, generalResourceLoader);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService,authenticationService);

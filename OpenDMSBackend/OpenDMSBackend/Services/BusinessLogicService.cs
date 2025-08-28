@@ -12,11 +12,15 @@ using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
-using OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes;
 using OpenDMSBackend.Core.Model.DTOs;
+using SimpleOCR.Library.Core.FileTypes;
+using SimpleOCR.Library.Core.VIsitors;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -29,10 +33,10 @@ namespace OpenDMSBackend.Core.Services
         private readonly ITimeService _TimeService;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
-        private readonly IOCRService _OCRService;
+        private readonly IOCRServiceWrapper _OCRService;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceWrapper oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -49,7 +53,7 @@ namespace OpenDMSBackend.Core.Services
         {
             lock (_LockObject)
             {
-                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTime(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Core.Misc.Utilities.GetMIMEType(originalFilename)),  content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/,false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages);
+                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTime(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(SimpleOCR.Library.Core.Misc.Utilities.GetMIMEType(originalFilename)), content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages);
                 this.AnalyseDocument(document);
                 this.Validate(document);
                 this._Persistence.CreateDocument(document);
@@ -237,18 +241,28 @@ namespace OpenDMSBackend.Core.Services
         private void AnalyseDocument(Document document)
         {
             this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
-            DocumentType docType = Core.Misc.Utilities.GetDocumentType(document.MIMEType.Value);
-
-            byte[] noPreviewAvailablePicture = this._GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
+            FileType docType = SimpleOCR.Library.Core.Misc.Utilities.GetDocumentType(document.MIMEType.Value);
+            byte[]? documentAsPicture = null;
+            bool toPictureWasSuccessful;
+            var noPreviewAvailablePicture = this._GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
             try
             {
-                if (docType is Unknown)
+                documentAsPicture = docType.Accept(new ToPictureVisitor(document.Content, document.MIMEType.Value));
+                toPictureWasSuccessful = true;
+            }
+            catch
+            {
+                toPictureWasSuccessful = false;
+            }
+            try
+            {
+                if (toPictureWasSuccessful)
                 {
-                    document.Preview = noPreviewAvailablePicture;
+                    document.Preview = GetPreview(documentAsPicture!);
                 }
                 else
                 {
-                    document.Preview = docType.GetPreview(document.Content);
+                    document.Preview = noPreviewAvailablePicture;
                 }
             }
             catch
@@ -256,22 +270,73 @@ namespace OpenDMSBackend.Core.Services
                 document.Preview = noPreviewAvailablePicture;
             }
 
-            string noOCRContentAvailableResult = string.Empty;
+
             try
             {
-                if (docType is Unknown)
+                if (docType.IsBinaryFormat())
                 {
-                    document.OCRContent = noOCRContentAvailableResult;
+                    if (toPictureWasSuccessful)
+                    {
+                        document.OCRContent = _OCRService.GetOCRContent(documentAsPicture!, document.AssignedLanguages);
+                    }
+                    else
+                    {
+                        document.OCRContent = string.Empty;
+                    }
                 }
                 else
                 {
-                    document.OCRContent = docType.GetOCRContent(document.Content, document.AssignedLanguages, this._OCRService).ToLower();
+                    document.OCRContent = new UTF8Encoding(false).GetString(document.Content);
                 }
             }
             catch
             {
-                document.OCRContent = noOCRContentAvailableResult;
+                document.OCRContent = string.Empty;
             }
+        }
+
+        private byte[] GetPreview(byte[] documentAsPicture)
+        {
+            if (documentAsPicture == null || documentAsPicture.Length == 0)
+                throw new ArgumentException("Input image is empty.");
+
+            using var inputStream = new SKMemoryStream(documentAsPicture);
+            using var bitmap = SKBitmap.Decode(inputStream);
+
+            int width = bitmap.Width;
+            int height = bitmap.Height;
+
+            int size = Math.Min(width, height); // Größe des Quadrats
+
+            int cropX = 0;
+            int cropY = 0;
+
+            // Breiter als hoch → horizontal zentrieren
+            if (width > height)
+            {
+                cropX = (width - size) / 2;
+                cropY = 0;
+            }
+            // Höher als breit → oben behalten, unten abschneiden
+            else if (height > width)
+            {
+                cropX = 0;
+                cropY = 0; // oben bleibt
+            }
+
+            var cropRect = new SKRectI(cropX, cropY, cropX + size, cropY + size);
+
+            using var cropped = new SKBitmap(size, size);
+            using (var canvas = new SKCanvas(cropped))
+            {
+                canvas.Clear(SKColors.White);
+                canvas.DrawBitmap(bitmap, cropRect, new SKRect(0, 0, size, size));
+            }
+
+            using var image = SKImage.FromBitmap(cropped);
+            var skdata = image.Encode(SKEncodedImageFormat.Png, 100);
+            byte[] result = skdata.ToArray();
+            return result;
         }
 
         public string AddStorageLocation(string requesterUserId, string name)

@@ -8,11 +8,12 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using OpenDMSBackend.Core.Services;
-using OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes;
 using System.IO;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp;
+using TagLib;
+using SimpleOCR.Library.Core.FileTypes;
 
 namespace OpenDMSBackend.Core.Misc
 {
@@ -32,24 +33,6 @@ namespace OpenDMSBackend.Core.Misc
 #endif
         }
 
-        internal static string GetMIMEType(string fileName)
-        {
-            try
-            {
-                if (new FileExtensionContentTypeProvider().TryGetContentType(fileName, out string? contentType))
-                {
-                    if (!string.IsNullOrEmpty(contentType))
-                    {
-                        return contentType;
-                    }
-                }
-            }
-            catch
-            {
-                GRYLibrary.Core.Misc.Utilities.NoOperation();
-            }
-            return "application/octet-stream";
-        }
         internal static string LanguagesListToString(ISet<string> languages)
         {
             return string.Join(",", languages);
@@ -123,17 +106,6 @@ namespace OpenDMSBackend.Core.Misc
             }
         }
 
-        public static DocumentType GetDocumentType(string mimeType)
-        {
-            foreach (DocumentType documentType in DocumentType.AllDocumentTypes)
-            {
-                if (documentType.GetMimeTypes().Contains(mimeType))
-                {
-                    return documentType;
-                }
-            }
-            return Unknown.Instance;
-        }
         public static byte[] ResizeImage(byte[] originalImageBytes, int maxWidth, int maxHeight)
         {
             using MemoryStream inputStream = new MemoryStream(originalImageBytes);

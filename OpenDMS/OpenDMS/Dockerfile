@@ -1,5 +1,4 @@
 FROM debian:stable-slim
-ARG PYMUPDFVERSION
 
 RUN mkdir /Workspace && \
     mkdir /Workspace/Application && \
@@ -12,8 +11,7 @@ RUN mkdir /Workspace && \
     mkdir /Workspace/Other/Certificates && \
     mkdir /Workspace/Other/EntryPoint && \
     apt-get update && \
-    apt-get install -y wget iputils-ping curl procps nginx git python3 python3-pip && \
-    pip3 install --no-cache-dir pymupdf==${PYMUPDFVERSION} && \
+    apt-get install -y wget iputils-ping curl procps nginx git libreoffice-core libreoffice-writer libreoffice-calc && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /Workspace/Other/EntryPoint
