@@ -1,6 +1,8 @@
 ﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using OpenDMSBackend.Core;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
@@ -10,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 
 namespace OpenDMSBackend.Tests.TestUtilities
@@ -36,13 +39,24 @@ namespace OpenDMSBackend.Tests.TestUtilities
         {
             Action action = () =>
             {
+                try
+                {
+
                 this._Program = new Program();
                 this._Program.RunAsync = !this._IntegrationTestConfiguration.RunInOwnThread;
                 this._Program.ListenOnEveryIP = false;
                 this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
-                string[] args = new string[] { $"--{nameof(CommandlineParameter.TestRun)}" };
+                string[] args = new string[] { 
+                    @$"--{nameof(CommandlineParameter.TestRun)}",
+                    @$"--{nameof(CommandlineParameter.OCRDataFolder)}", Utilities.GetOCRDataFolder()
+                };
                 GRYLibrary.Core.Misc.Utilities.AssertCondition(this._Program.MainImplementation(args) == 0, "Exitode of main-method was non-zero.");
                 this.BusinessLogicService = this._Program.BusinessLogicService;
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             };
             if (this._IntegrationTestConfiguration.RunInOwnThread)
             {
@@ -59,7 +73,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
-            }, TimeSpan.FromSeconds(15)))
+            }, TimeSpan.FromSeconds(150)))
             {
                 throw new Exception("Could not start service.");
             }
@@ -71,9 +85,13 @@ namespace OpenDMSBackend.Tests.TestUtilities
             try
             {
                 using HttpClient client = this.GetClient();
-                string url = $"{this.GetServerURL()}{ServerConfiguration.APIRoutePrefix}/Other/Maintenance/AvailabilityCheck";
+                string url = $"{this.GetServerURL()}{ServerConfiguration.APIRoutePrefix}/Other/Maintenance/HealthCheck";
                 HttpResponseMessage response = client.GetAsync(url).WaitAndGetResult();
                 Assert.IsTrue(response.IsSuccessStatusCode);
+                var content = response.Content.ReadAsStringAsync().WaitAndGetResult();
+                dynamic obj = JsonConvert.DeserializeObject(content);
+                int status = (int)obj["status"];
+                return status == 2;//2 means healthy.
             }
             catch
             {

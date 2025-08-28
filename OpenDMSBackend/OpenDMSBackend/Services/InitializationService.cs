@@ -3,11 +3,14 @@ using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -20,6 +23,8 @@ namespace OpenDMSBackend.Core.Services
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IPersistence _Persistence;
         private readonly IIdGenerator<ulong> _IdGenerator;
+        private static readonly object _Lock = new object();
+        private InitializationState _InitializationState;
         public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator)
         {
             this._AuthenticationService = authenticationService;
@@ -29,12 +34,14 @@ namespace OpenDMSBackend.Core.Services
             this._ExampleDataCreator = exampleDataCreator;
             this._Persistence = persistence;
             this._IdGenerator = idGenerator;
+            SetInitializationState(new Uninitialized());
         }
 
         public void Initialize(CommandlineParameter commandlineParameter)
         {
             try
             {
+                SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
                 string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
                 this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
@@ -58,10 +65,27 @@ namespace OpenDMSBackend.Core.Services
                     }
                 }
                 this._GeneralLogger.Log("Service is initialized.", Microsoft.Extensions.Logging.LogLevel.Information);
+                SetInitializationState(new Initialized());
             }
             catch
             {
+                SetInitializationState(new InitializationFailed());
                 throw;
+            }
+        }
+
+        public InitializationState GetInitializationState()
+        {
+            lock (_Lock)
+            {
+                return _InitializationState;
+            }
+        }
+        public void SetInitializationState(InitializationState initializationState)
+        {
+            lock (_Lock)
+            {
+                 _InitializationState= initializationState;
             }
         }
     }

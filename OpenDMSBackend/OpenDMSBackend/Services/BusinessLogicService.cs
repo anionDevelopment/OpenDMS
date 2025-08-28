@@ -49,7 +49,7 @@ namespace OpenDMSBackend.Core.Services
         {
             lock (_LockObject)
             {
-                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTime(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Core.Misc.Utilities.GetMIMEType(originalFilename)), default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, content, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages);
+                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTime(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Core.Misc.Utilities.GetMIMEType(originalFilename)),  content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/,false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages);
                 this.AnalyseDocument(document);
                 this.Validate(document);
                 this._Persistence.CreateDocument(document);

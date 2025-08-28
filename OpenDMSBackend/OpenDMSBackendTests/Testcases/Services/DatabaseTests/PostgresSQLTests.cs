@@ -26,7 +26,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
         {
             lock (DatabaseTestsLockObject)
             {
-                this.Migration000001();
+                this.Migration000001IsWorking();
             }
         }
 

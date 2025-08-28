@@ -1,9 +1,11 @@
 ﻿using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.Other;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -14,17 +16,27 @@ namespace OpenDMSBackend.Core.Services
         private readonly SimpleOCR.Library.Core.IOCRService _OCRService;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
         private readonly IApplicationConstants _Costants;
-        public OCRService(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IApplicationConstants constants)
+        private readonly CommandlineParameter _CMDParameter;
+        public OCRService(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IApplicationConstants constants, IGRYLog log, CommandlineParameter cmdParameter)
         {
             this._Configuration = configuration;
             this._Costants = constants;
-          // _OCRService = new SimpleOCR.Library.Core.OCRService(Path.Combine(_Costants.BaseFolder, "OCRData"));
-         //  _OCRService.Initialize();
+            string ocrFolder;
+            if (string.IsNullOrEmpty(cmdParameter.OCRDataFolder))
+            {
+                ocrFolder = Path.Combine(_Costants.BaseFolder, "OCRData");
+            }
+            else
+            {
+                ocrFolder = cmdParameter.OCRDataFolder;
+            }
+            _OCRService = new SimpleOCR.Library.Core.OCRService(ocrFolder, log);
+            _OCRService.Initialize();
         }
         public string GetOCRContent(byte[] documentContentAsPicture, ISet<string> additionalLanguages)
         {
-            HashSet<string> fileTypes = this._Configuration.ApplicationSpecificConfiguration.DefaultOCRLanguages.ToHashSet().Union(additionalLanguages.ToList()).ToHashSet();
-            string result = this._OCRService.GetOCRContent(documentContentAsPicture, fileTypes, "jpg");
+            HashSet<string> languages = this._Configuration.ApplicationSpecificConfiguration.DefaultOCRLanguages.ToHashSet().Union(additionalLanguages.ToList()).ToHashSet();
+            string result = this._OCRService.GetOCRContent(documentContentAsPicture, languages);
             return result;
         }
 

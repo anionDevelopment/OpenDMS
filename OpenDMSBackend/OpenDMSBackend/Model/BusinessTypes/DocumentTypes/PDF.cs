@@ -1,6 +1,13 @@
-﻿using OpenDMSBackend.Core.Services;
+﻿using ExtendedXmlSerializer.ContentModel.Format;
+using Microsoft.SqlServer.Server;
+using Microsoft.VisualBasic;
+using OpenDMSBackend.Core.Services;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Runtime.Intrinsics.Arm;
+using Tesseract;
 
 namespace OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes
 {
@@ -43,6 +50,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes
         public byte[] ToPicture(byte[] content)
         {
             throw new NotImplementedException();
+            //TODO call pymupdf
         }
     }
 }

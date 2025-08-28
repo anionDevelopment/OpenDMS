@@ -2,11 +2,14 @@
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Misc;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
-using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
-using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using OpenDMSBackend.Tests.TestUtilities.Constants;
+using System;
+using System.Xml.Linq;
+using GUtilities = GRYLibrary.Core.Misc.Utilities;
+using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
 
 namespace OpenDMSBackend.Tests.TestUtilities
 {
@@ -34,6 +37,12 @@ namespace OpenDMSBackend.Tests.TestUtilities
         public static string GetTestDatabaseCreationScriptArtifactFolder(string databaseName)
         {
             return GUtilities.ResolveToFullPath(@$"{GeneralConstants.CodeUnitFolder}\Other\Artifacts\${databaseName}DatabaseCreationScript");
+        }
+
+        internal static string GetOCRDataFolder()
+        {
+            var result= @$"{OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder}\Other\Resources\OCRData";
+            return result;
         }
     }
 }

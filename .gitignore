@@ -3,4 +3,6 @@ Other/Resources/PlantUML
 Other/Resources/DevelopmentCertificate
 Other/Resources/CycloneDXCLI
 Other/Resources/OCRData
-Other/Resources/TypeScript
+Other/Resources/TypeScript/
+!Other/Resources/TypeScript/package.json
+!Other/Resources/TypeScript/package-lock.json

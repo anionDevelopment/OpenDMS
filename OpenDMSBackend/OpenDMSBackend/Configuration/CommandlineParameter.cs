@@ -14,5 +14,8 @@ namespace OpenDMSBackend.Core.Configuration
 
         [Option(nameof(InitialDatabaseConnectionString), Required = false)]
         public string? InitialDatabaseConnectionString { get; set; }
+
+        [Option(nameof(OCRDataFolder), Required = false)]
+        public string? OCRDataFolder { get; set; }
     }
 }

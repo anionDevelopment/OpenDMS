@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRYLibrary", "..\..\..\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj", "{92E4651C-8D97-A588-315D-A9978A1290A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOCRLibrary", "..\..\SimpleOCR\SimpleOCRLibrary\SimpleOCRLibrary\SimpleOCRLibrary.csproj", "{16B8DEEC-940E-9ADA-D0D4-D957944706CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Development|Any CPU = Development|Any CPU
@@ -36,6 +38,12 @@ Global
 		{92E4651C-8D97-A588-315D-A9978A1290A8}.Productive|Any CPU.Build.0 = Productive|Any CPU
 		{92E4651C-8D97-A588-315D-A9978A1290A8}.QualityCheck|Any CPU.ActiveCfg = QualityCheck|Any CPU
 		{92E4651C-8D97-A588-315D-A9978A1290A8}.QualityCheck|Any CPU.Build.0 = QualityCheck|Any CPU
+		{16B8DEEC-940E-9ADA-D0D4-D957944706CA}.Development|Any CPU.ActiveCfg = Development|Any CPU
+		{16B8DEEC-940E-9ADA-D0D4-D957944706CA}.Development|Any CPU.Build.0 = Development|Any CPU
+		{16B8DEEC-940E-9ADA-D0D4-D957944706CA}.Productive|Any CPU.ActiveCfg = Productive|Any CPU
+		{16B8DEEC-940E-9ADA-D0D4-D957944706CA}.Productive|Any CPU.Build.0 = Productive|Any CPU
+		{16B8DEEC-940E-9ADA-D0D4-D957944706CA}.QualityCheck|Any CPU.ActiveCfg = QualityCheck|Any CPU
+		{16B8DEEC-940E-9ADA-D0D4-D957944706CA}.QualityCheck|Any CPU.Build.0 = QualityCheck|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

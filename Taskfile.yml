@@ -7,7 +7,7 @@ tasks:
     silent: true
     dir: "."
     cmds:
-      - scbuildcodeunits
+      - "scbuildcodeunits"
     aliases:
       - basebuildallcodeunits
       - bb
@@ -17,7 +17,7 @@ tasks:
     silent: true
     dir: "./OpenDMS/Other/Reference/ReferenceContent/Examples/MinimalDockerComposeFile"
     cmds:
-      - python StartExample.py
+      - "python StartExample.py"
     aliases:
       - baseexamplestart
       - beu
@@ -27,7 +27,7 @@ tasks:
     silent: true
     dir: "./OpenDMS/Other/Reference/ReferenceContent/Examples/MinimalDockerComposeFile"
     cmds:
-      - python StopExample.py
+      - "python StopExample.py"
     aliases:
       - baseexamplestop
       - bed
@@ -37,7 +37,7 @@ tasks:
     silent: true
     dir: "./Other/Resources/LocalTestServices/Database"
     cmds:
-      - python Start.py
+      - "python Start.py"
     aliases:
       - localtestservicedatabasestart
       - ldu
@@ -47,7 +47,7 @@ tasks:
     silent: true
     dir: "./Other/Resources/LocalTestServices/Database"
     cmds:
-      - python Stop.py
+      - "python Stop.py"
     aliases:
       - localtestservicedatabasestop
       - ldd
@@ -57,7 +57,7 @@ tasks:
     silent: true
     dir: "./Other/Resources/LocalTestServices/ReverseProxy"
     cmds:
-      - python Start.py
+      - "python Start.py"
     aliases:
       - localtestservicereverseproxystart
       - lru
@@ -67,7 +67,7 @@ tasks:
     silent: true
     dir: "./Other/Resources/LocalTestServices/ReverseProxy"
     cmds:
-      - python Stop.py
+      - "python Stop.py"
     aliases:
       - localtestservicereverseproxystop
       - lrd
@@ -77,7 +77,7 @@ tasks:
     silent: true
     dir: "./OpenDMSFrontend"
     cmds:
-      - npm run start
+      - "npm run start"
     aliases:
       - runfrontend
       - rf

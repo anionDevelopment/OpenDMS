@@ -118,6 +118,8 @@ namespace OpenDMSBackend.Core
                 };
                 apiServerConfiguration.SetFunctionalInformationAction = (functionalInformation) =>
                 {
+                    try
+                    {
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForLoggingMiddleware);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
                     functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
@@ -213,10 +215,17 @@ namespace OpenDMSBackend.Core
                     if (this.SetupMocks != null)
                     {
                         this.SetupMocks(functionalInformation);
+                        }
+
+                    }
+                    catch
+                    {
+                        throw;
                     }
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
+                    try{ 
                     this._HostApplicationLifetime = functionalInformationForWebApplication.WebApplication.Services.GetService<IHostApplicationLifetime>();
                     this.BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
                     IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
@@ -236,6 +245,12 @@ namespace OpenDMSBackend.Core
                         metricsService.Stop().Wait();
                         managementScheduler.Stop().Wait();
                     };
+
+                    }
+                    catch
+                    {
+                        throw;
+                    }
                 };
             });
         }

@@ -39,7 +39,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
                             (_) => exampleDataCreatorMock.Object,
                             ServiceLifetime.Singleton);
                     functionalInformation.WebApplicationBuilder.Services.Replace(exampleDataCreatorMockDescriptor);
-                }, false));
+                }, true));
                 var user = testFramework.GetUser();
                 string containerId = testFramework.BusinessLogicService.AddStorageLocation(user.Id, "storageLocation");
 

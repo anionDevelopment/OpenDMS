@@ -71,9 +71,9 @@
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="Npgsql" Version="9.0.3" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
+        <PackageReference Include="PDFtoImage" Version="5.1.1" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
         <PackageReference Include="prometheus-net" Version="8.2.1" />
-        <PackageReference Include="SimpleOCRLibrary" Version="1.1.0" />
         <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
         <PackageReference Include="System.Collections.Immutable" Version="9.0.8" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
@@ -93,5 +93,6 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\Clouds\Google\Documents\Projects\LRPC\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
+      <ProjectReference Include="..\..\..\SimpleOCR\SimpleOCRLibrary\SimpleOCRLibrary\SimpleOCRLibrary.csproj" />
     </ItemGroup>
 </Project>

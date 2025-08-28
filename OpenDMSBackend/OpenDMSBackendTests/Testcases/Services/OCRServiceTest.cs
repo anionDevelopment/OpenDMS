@@ -1,5 +1,6 @@
 ﻿using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OpenDMSBackend.Core.Configuration;
@@ -23,7 +24,10 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
             configurationMock.SetupGet(mock => mock.ApplicationSpecificConfiguration).Returns(codeunitMock.Object);
-            OCRService ocrService = new OCRService(configurationMock.Object, this.GetTessDataFolder());
+            OCRService ocrService = new OCRService(configurationMock.Object, this.GetTessDataFolder(),GeneralLogger.CreateUsingConsole(),new CommandlineParameter()
+            {
+                OCRDataFolder = TestUtilities.Utilities.GetOCRDataFolder(),
+            });
             //ocrService.Initialize();
 
             // act
@@ -51,7 +55,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>> configurationMock = new Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>>(MockBehavior.Strict);
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
-            OCRService ocrService = new OCRService(configurationMock.Object, this.GetTessDataFolder());
+            OCRService ocrService = new OCRService(configurationMock.Object, this.GetTessDataFolder(),GeneralLogger.CreateUsingConsole(), new CommandlineParameter() {
+                OCRDataFolder=TestUtilities.Utilities.GetOCRDataFolder(),
+            });
 
             string targetFolderResources = Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "SupportedLanguages");
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryDoesNotExist(targetFolderResources);
