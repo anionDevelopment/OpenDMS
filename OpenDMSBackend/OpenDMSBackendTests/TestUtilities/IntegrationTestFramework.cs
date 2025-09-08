@@ -1,6 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Misc;
-using GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using OpenDMSBackend.Core;
@@ -10,9 +9,7 @@ using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 
 namespace OpenDMSBackend.Tests.TestUtilities

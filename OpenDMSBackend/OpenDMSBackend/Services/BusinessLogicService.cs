@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -232,6 +231,7 @@ namespace OpenDMSBackend.Core.Services
             //TODO check validity, for example: content must not be null, DeleteIsNotAllowedBefore must be lower or equal to MustBeHardDeletedAfter, version is greater than the old version, etc.
             if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content) || (!existingDocument.AssignedLanguages.SetEquals(updatedDocument.AssignedLanguages)))
             {
+                //TODO analyse is only necessary if assignedlanguage was added but not if it was removed
                 this.AnalyseDocument(updatedDocument);
             }
             this.Validate(updatedDocument);

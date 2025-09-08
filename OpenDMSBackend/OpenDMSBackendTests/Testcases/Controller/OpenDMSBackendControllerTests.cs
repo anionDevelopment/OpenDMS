@@ -1,5 +1,4 @@
-﻿using ExtendedXmlSerializer;
-using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.Misc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -7,7 +6,6 @@ using Moq;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 

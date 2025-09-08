@@ -9,7 +9,6 @@ using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Core.Services.Misc;
 using OpenDMSBackend.Tests.TestUtilities;
-using System;
 
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {

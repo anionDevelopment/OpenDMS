@@ -1,6 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
-using Microsoft.AspNetCore.StaticFiles;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
 using Sprache;
@@ -12,8 +11,6 @@ using System.IO;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp;
-using TagLib;
-using SimpleOCR.Library.Core.FileTypes;
 
 namespace OpenDMSBackend.Core.Misc
 {

@@ -2,12 +2,9 @@
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Misc;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities.Constants;
-using System;
-using System.Xml.Linq;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
 
