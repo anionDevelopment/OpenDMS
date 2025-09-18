@@ -2,6 +2,7 @@
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Logging.GRYLogger;
+using Microsoft.VisualBasic;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.Other;
@@ -63,12 +64,13 @@ namespace OpenDMSBackend.Core.Services
         {
             HashSet<Language> result = new HashSet<Language>();
             string regex = @"(.+) \(([a-z][a-z])\;\ ([a-z][a-z][a-z])\)"; //adaptedLine is like "Norwegian Bokmål (nb; nob)"
-            foreach (string line in GeneralConstants.AllLanguagesPlain.Split("\n"))
+            string[] lines = GeneralConstants.AllLanguagesPlain.Split("\n");
+            foreach (string line in lines)
             {
                 string adaptedLine = line.Replace("\r", string.Empty).Trim();
                 if (!string.IsNullOrEmpty(adaptedLine))
                 {
-                    Match match = Regex.Match("ignored [john] John Johnson", regex);
+                    Match match = Regex.Match(adaptedLine, regex);
                     if (match.Success)
                     {
                         result.Add(new Language(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value));
@@ -95,11 +97,11 @@ namespace OpenDMSBackend.Core.Services
             HashSet<Language> result = new HashSet<Language>();
             IEnumerable<string> supportedLanguages = this._OCRService.GetSupportedLanguages();
 
-            foreach (string supportedLanguageInISO639_1 in supportedLanguages)
+            foreach (string supportedLanguageInISO639_3 in supportedLanguages)
             {
                 foreach (Language validLanguage in this.ValidLanguages)
                 {
-                    if (validLanguage.ISO639_3_Name.Equals(supportedLanguageInISO639_1))
+                    if (validLanguage.ISO639_3_Name.Equals(supportedLanguageInISO639_3))
                     {
                         result.Add(validLanguage);
                         continue;

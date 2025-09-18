@@ -66,9 +66,12 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             GRYLibrary.Core.Misc.Utilities.EnsureFileExists(targetFileResourecs);
             File.WriteAllText(targetFileResourecs, string.Join("\n", ocrService.SupportedLanguages.Select(language => $"{language.Name};{language.ISO639_1_Name};{language.ISO639_3_Name}")));
 
-            string targetFileTable = Path.Combine(targetFolderResources, "Other", "Reference", "ReferenceContent", "images", "SupportedLanguages.plantuml");
+            string targetFolder = Path.Combine(targetFolderResources, "Other", "Reference", "ReferenceContent", "images");
+            GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(targetFolder);
+            string targetFileTable = Path.Combine(targetFolder, "SupportedLanguages.plantuml");
             GRYLibrary.Core.Misc.Utilities.EnsureFileExists(targetFileTable);
-            string contentTable = @"@startuml
+            string contentTable = @"@startuml Supported languages
+'This file is generated.
 map SupportedLanguages {
 Name => ISO639-1";
             foreach (Core.Model.Other.Language language in ocrService.SupportedLanguages)

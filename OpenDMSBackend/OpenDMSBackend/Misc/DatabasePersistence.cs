@@ -157,7 +157,7 @@ namespace OpenDMSBackend.Core.Services.Misc
             if (value.HasValue && !default(DateTimeOffset).Equals(value))
             {
                 // return value.Value.UtcDateTime;//does not work due to "    System.ArgumentException: Cannot write DateTime with Kind=UTC to PostgreSQL type 'timestamp without time zone', consider using 'timestamp with time zone'. Note that it's not possible to mix DateTimes with different Kinds in an array, range, or multirange. (Parameter 'value')
-                var dt = value.Value.UtcDateTime;
+                DateTime dt = value.Value.UtcDateTime;
                 return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
             }
             else

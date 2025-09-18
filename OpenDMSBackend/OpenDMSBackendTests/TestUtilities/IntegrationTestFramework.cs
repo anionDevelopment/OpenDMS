@@ -39,16 +39,15 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 try
                 {
 
-                this._Program = new Program();
-                this._Program.RunAsync = !this._IntegrationTestConfiguration.RunInOwnThread;
-                this._Program.ListenOnEveryIP = false;
-                this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
-                string[] args = new string[] { 
+                    this._Program = new Program();
+                    this._Program.RunAsync = !this._IntegrationTestConfiguration.RunInOwnThread;
+                    this._Program.ListenOnEveryIP = false;
+                    this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
+                    string[] args = new string[] {
                     @$"--{nameof(CommandlineParameter.TestRun)}",
                     @$"--{nameof(CommandlineParameter.OCRDataFolder)}", Utilities.GetOCRDataFolder()
                 };
-                GRYLibrary.Core.Misc.Utilities.AssertCondition(this._Program.MainImplementation(args) == 0, "Exitode of main-method was non-zero.");
-                this.BusinessLogicService = this._Program.BusinessLogicService;
+                    GRYLibrary.Core.Misc.Utilities.AssertCondition(this._Program.MainImplementation(args) == 0, "Exitode of main-method was non-zero.");
                 }
                 catch (Exception ex)
                 {
@@ -75,6 +74,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 throw new Exception("Could not start service.");
             }
             this.Started = true;
+            this.BusinessLogicService = this._Program.BusinessLogicService;
         }
 
         private bool IsReady()
@@ -85,7 +85,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 string url = $"{this.GetServerURL()}{ServerConfiguration.APIRoutePrefix}/Other/Maintenance/HealthCheck";
                 HttpResponseMessage response = client.GetAsync(url).WaitAndGetResult();
                 Assert.IsTrue(response.IsSuccessStatusCode);
-                var content = response.Content.ReadAsStringAsync().WaitAndGetResult();
+                string content = response.Content.ReadAsStringAsync().WaitAndGetResult();
                 dynamic obj = JsonConvert.DeserializeObject(content);
                 int status = (int)obj["status"];
                 return status == 2;//2 means healthy.

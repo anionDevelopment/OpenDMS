@@ -8,6 +8,7 @@ using OpenDMSBackend.Tests.TestUtilities;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 
 namespace OpenDMSBackend.Tests.Testcases.Controller
 {
@@ -38,7 +39,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
                             ServiceLifetime.Singleton);
                     functionalInformation.WebApplicationBuilder.Services.Replace(exampleDataCreatorMockDescriptor);
                 }, true));
-                var user = testFramework.GetUser();
+                Core.Model.BusinessTypes.User user = testFramework.GetUser();
                 string containerId = testFramework.BusinessLogicService.AddStorageLocation(user.Id, "storageLocation");
 
                 string addUrl = $"{testFramework.GetServerURL()}{OpenDMSBackend.Core.Controller.OpenDMSBackendController.ControllerRoute}/{nameof(OpenDMSBackend.Core.Controller.OpenDMSBackendController.AddDocument)}/{containerId}?filename={originalFilename}&title={title}&additionalOCRLanguages={ocrLanguages}";
@@ -50,8 +51,8 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
                 HttpResponseMessage response = client.PostAsync(addUrl, byteArrayContent).WaitAndGetResult();
 
                 // assert
-                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
                 string contentString = response.Content.ReadAsStringAsync().WaitAndGetResult();
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Got response-code \"{response.StatusCode}\". Response-body: \"{contentString}\"");
                 bool isValidGuid = Guid.TryParse(contentString, out Guid parsedGuid);
                 Assert.IsTrue(isValidGuid);
                 Assert.AreNotEqual(Guid.Empty, parsedGuid);
