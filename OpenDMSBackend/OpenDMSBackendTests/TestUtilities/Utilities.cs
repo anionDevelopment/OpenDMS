@@ -38,7 +38,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
 
         internal static string GetOCRDataFolder()
         {
-            var result= @$"{OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder}\Other\Resources\OCRData";
+            string result = @$"{OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder}\Other\Resources\OCRData";
             return result;
         }
     }

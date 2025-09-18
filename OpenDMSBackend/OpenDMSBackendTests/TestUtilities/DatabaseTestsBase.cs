@@ -33,13 +33,14 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 IDatabaseManager databaseManager = this.GetDatabaseManager();
                 IList<MigrationInstance> migrations = databaseManager.GetAllMigrations();
                 GRYMigrator migrator = new GRYMigrator(GeneralLogger.CreateUsingConsole(), new TimeService(), databaseTestFramework.Connection, migrations.Take(1).ToList(), databaseManager.GetGenericDatabaseInteractor());
-                Assert.IsFalse(GRYMigrator.GetAllTableNames(databaseTestFramework.Connection, databaseManager).Any());
+                List<string> tables = GRYMigrator.GetAllTableNames(databaseTestFramework.Connection, databaseManager).ToList();
+                Assert.IsEmpty(tables);
 
                 //act
                 migrator.InitializeDatabaseAndMigrateIfRequired();
 
                 //assert
-                Assert.IsTrue(GRYMigrator.GetAllTableNames(databaseTestFramework.Connection, databaseManager).Any());
+                Assert.IsTrue(1 < GRYMigrator.GetAllTableNames(databaseTestFramework.Connection, databaseManager).Count);
                 Assert.AreEqual(1, migrator.GetExecutedMigrations().Count);
                 Assert.AreEqual("Migration000001", migrator.GetExecutedMigrations().First().MigrationName);
                 //TODO add migration-specific assertions

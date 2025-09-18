@@ -241,10 +241,18 @@ namespace OpenDMSBackend.Core.Services
         private void AnalyseDocument(Document document)
         {
             this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
-            FileType docType = SimpleOCR.Library.Core.Misc.Utilities.GetDocumentType(document.MIMEType.Value);
+            FileType docType;
+            try
+            {
+                docType = SimpleOCR.Library.Core.Misc.Utilities.GetDocumentType(document.MIMEType.Value);
+            }
+            catch
+            {
+                docType = Other.Instance;
+            }
             byte[]? documentAsPicture = null;
             bool toPictureWasSuccessful;
-            var noPreviewAvailablePicture = this._GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
+            byte[] noPreviewAvailablePicture = this._GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
             try
             {
                 documentAsPicture = docType.Accept(new ToPictureVisitor(document.Content, document.MIMEType.Value));
@@ -300,8 +308,8 @@ namespace OpenDMSBackend.Core.Services
             if (documentAsPicture == null || documentAsPicture.Length == 0)
                 throw new ArgumentException("Input image is empty.");
 
-            using var inputStream = new SKMemoryStream(documentAsPicture);
-            using var bitmap = SKBitmap.Decode(inputStream);
+            using SKMemoryStream inputStream = new SKMemoryStream(documentAsPicture);
+            using SKBitmap bitmap = SKBitmap.Decode(inputStream);
 
             int width = bitmap.Width;
             int height = bitmap.Height;
@@ -324,17 +332,17 @@ namespace OpenDMSBackend.Core.Services
                 cropY = 0; // oben bleibt
             }
 
-            var cropRect = new SKRectI(cropX, cropY, cropX + size, cropY + size);
+            SKRectI cropRect = new SKRectI(cropX, cropY, cropX + size, cropY + size);
 
-            using var cropped = new SKBitmap(size, size);
-            using (var canvas = new SKCanvas(cropped))
+            using SKBitmap cropped = new SKBitmap(size, size);
+            using (SKCanvas canvas = new SKCanvas(cropped))
             {
                 canvas.Clear(SKColors.White);
                 canvas.DrawBitmap(bitmap, cropRect, new SKRect(0, 0, size, size));
             }
 
-            using var image = SKImage.FromBitmap(cropped);
-            var skdata = image.Encode(SKEncodedImageFormat.Png, 100);
+            using SKImage image = SKImage.FromBitmap(cropped);
+            SKData skdata = image.Encode(SKEncodedImageFormat.Png, 100);
             byte[] result = skdata.ToArray();
             return result;
         }
