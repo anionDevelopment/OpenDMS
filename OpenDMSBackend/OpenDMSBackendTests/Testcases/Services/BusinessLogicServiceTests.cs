@@ -38,7 +38,8 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
             businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object, idGenerator, generalResourceLoader);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService,authenticationService);
-            initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, databasePersistence, idGenerator);
+            initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, databasePersistence, idGenerator,
+                           ocrServiceMock.Object);
         }
 
         [TestMethod(nameof(DatabaseInitializationTest))]

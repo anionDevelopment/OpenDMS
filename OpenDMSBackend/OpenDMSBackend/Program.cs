@@ -80,6 +80,7 @@ namespace OpenDMSBackend.Core
                         {
                             @$"^/favicon\.ico$",
                             @$"^/API/Other/Resources/APISpecification/*",
+                            @$"^/API/Other/Maintenance/Metrics$",
                         },
                         MaximalLengthOfResponseBodies = 50,
                     };
@@ -88,8 +89,9 @@ namespace OpenDMSBackend.Core
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthenticationConfiguration = new AuthSConfiguration()
                     {
                         RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>() {
-                            @$"^/API/Other/Resources/APISpecification/*",
-                            @$"^/API/Other/Maintenance/HealthCheck$",
+                          //  @$"^/API/Other/Resources/APISpecification/*",
+                          //  @$"^/API/Other/Maintenance/HealthCheck$",
+                         //   @$"^/API/Other/Maintenance/Metrics$",
                         },
                     };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;

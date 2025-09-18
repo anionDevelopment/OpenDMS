@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.APIServer.Settings;
+﻿using GRYLibrary.Core.APIServer.ConcreteEnvironments;
+using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Configuration;
@@ -22,16 +23,22 @@ namespace OpenDMSBackend.Core.Services
             this._Configuration = configuration;
             this._Costants = constants;
             string ocrFolder;
-            if (string.IsNullOrEmpty(cmdParameter.OCRDataFolder))
+            if (OpenDMSBackend.Core.Misc.Utilities.GetEnvironmentTargetType() is Productive)
             {
-                ocrFolder = Path.Combine(_Costants.BaseFolder, "OCRData");
+                if (string.IsNullOrEmpty(cmdParameter.OCRDataFolder))
+                {
+                    ocrFolder = Path.Combine(_Costants.BaseFolder, "OCRData");
+                }
+                else
+                {
+                    ocrFolder = cmdParameter.OCRDataFolder;
+                }
             }
             else
             {
-                ocrFolder = cmdParameter.OCRDataFolder;
+                ocrFolder = GRYLibrary.Core.Misc.Utilities.ResolveToFullPath(@"..\Resources\OCRData", _Costants.BaseFolder);
             }
             _OCRService = new SimpleOCR.Library.Core.OCRService(ocrFolder, log);
-            _OCRService.Initialize();
         }
         public string GetOCRContent(byte[] documentContentAsPicture, ISet<string> additionalLanguages)
         {
@@ -100,6 +107,11 @@ namespace OpenDMSBackend.Core.Services
                 }
             }
             return result;
+        }
+
+        public void Initialize()
+        {
+            _OCRService.Initialize();
         }
     }
 }
