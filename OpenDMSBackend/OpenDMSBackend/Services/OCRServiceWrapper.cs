@@ -1,48 +1,43 @@
-﻿using GRYLibrary.Core.APIServer.ConcreteEnvironments;
+﻿using GRYLibrary.Core.APIServer.Services;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
-using Microsoft.VisualBasic;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.Other;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class OCRServiceWrapper : IOCRServiceWrapper
+    public class OCRServiceWrapper : IOCRServiceWrapper, IExternalService
     {
+        private bool _IsAvailable = false;
         private readonly SimpleOCR.Library.Core.IOCRService _OCRService;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
         private readonly IApplicationConstants _Costants;
         private readonly CommandlineParameter _CMDParameter;
+        private readonly string OCRDataFolder;
         public OCRServiceWrapper(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IApplicationConstants constants, IGRYLog log, CommandlineParameter cmdParameter)
         {
             this._Configuration = configuration;
             this._Costants = constants;
-            string ocrFolder;
-            if (OpenDMSBackend.Core.Misc.Utilities.GetEnvironmentTargetType() is Productive)
+           string ocrDataFolder = cmdParameter.OCRDataFolder;
+            if (!GRYLibrary.Core.Misc.Utilities.IsAbsoluteLocalFilePath(ocrDataFolder))
             {
-                if (string.IsNullOrEmpty(cmdParameter.OCRDataFolder))
-                {
-                    ocrFolder = Path.Combine(_Costants.BaseFolder, "OCRData");
-                }
-                else
-                {
-                    ocrFolder = cmdParameter.OCRDataFolder;
-                }
+                ocrDataFolder = GRYLibrary.Core.Misc.Utilities.ResolveToFullPath(ocrDataFolder);
             }
-            else
-            {
-                ocrFolder = GRYLibrary.Core.Misc.Utilities.ResolveToFullPath(@"..\Resources\OCRData", _Costants.BaseFolder);
-            }
-            _OCRService = new SimpleOCR.Library.Core.OCRService(ocrFolder, log);
+            OCRDataFolder = ocrDataFolder;
+            _OCRService = new SimpleOCR.Library.Core.OCRService(OCRDataFolder, log);
         }
         public string GetOCRContent(byte[] documentContentAsPicture, ISet<string> additionalLanguages)
         {
+            if (!IsAvailable())
+            {
+                throw new ServiceNotAvailableException();
+            }
             HashSet<string> languages = this._Configuration.ApplicationSpecificConfiguration.DefaultOCRLanguages.ToHashSet().Union(additionalLanguages.ToList()).ToHashSet();
             string result = this._OCRService.GetOCRContent(documentContentAsPicture, languages);
             return result;
@@ -85,6 +80,10 @@ namespace OpenDMSBackend.Core.Services
         {
             get
             {
+                if (!IsAvailable())
+                {
+                    throw new ServiceNotAvailableException();
+                }
                 if (this._SupportedLanguages == null)
                 {
                     this._SupportedLanguages = this.GetSupportedLanguages();
@@ -113,7 +112,29 @@ namespace OpenDMSBackend.Core.Services
 
         public void Initialize()
         {
-            _OCRService.Initialize();
+            try
+            {
+                if (OCRDataFolder != null)
+                {
+                    GRYLibrary.Core.Misc.Utilities.AssertNotNull(OCRDataFolder, nameof(OCRDataFolder));
+                    _OCRService.Initialize();
+                    _IsAvailable = true;
+                }
+            }
+            catch
+            {
+                GRYLibrary.Core.Misc.Utilities.NoOperation();
+            }
+        }
+
+        public bool IsAvailable()
+        {
+            return _IsAvailable;
+        }
+
+        public void Dispose()
+        {
+            GRYLibrary.Core.Misc.Utilities.NoOperation();
         }
     }
 }

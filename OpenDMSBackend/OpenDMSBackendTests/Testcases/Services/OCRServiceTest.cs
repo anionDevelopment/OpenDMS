@@ -24,11 +24,11 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
             configurationMock.SetupGet(mock => mock.ApplicationSpecificConfiguration).Returns(codeunitMock.Object);
-            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, this.GetTessDataFolder(),GeneralLogger.CreateUsingConsole(),new CommandlineParameter()
+            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, this.GetTessDataFolder(), GeneralLogger.CreateUsingConsole(), new CommandlineParameter()
             {
-                OCRDataFolder = TestUtilities.Utilities.GetOCRDataFolder(),
+                OCRDataFolder = Path.Combine(OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder, "Other", "Resources", "OCRData"),
             });
-            //ocrService.Initialize();
+            ocrService.Initialize();
 
             // act
             ISet<Core.Model.Other.Language> supportedLanguages = ocrService.SupportedLanguages;
@@ -55,16 +55,19 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>> configurationMock = new Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>>(MockBehavior.Strict);
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
-            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, this.GetTessDataFolder(),GeneralLogger.CreateUsingConsole(), new CommandlineParameter() {
-                OCRDataFolder=TestUtilities.Utilities.GetOCRDataFolder(),
+            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, this.GetTessDataFolder(), GeneralLogger.CreateUsingConsole(), new CommandlineParameter()
+            {
+                OCRDataFolder = TestUtilities.Utilities.GetOCRDataFolder(),
             });
+            ocrService.Initialize();
 
             string targetFolderResources = Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "SupportedLanguages");
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryDoesNotExist(targetFolderResources);
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(targetFolderResources);
             string targetFileResourecs = Path.Combine(targetFolderResources, "SupportedLanguages.txt");
             GRYLibrary.Core.Misc.Utilities.EnsureFileExists(targetFileResourecs);
-            File.WriteAllText(targetFileResourecs, string.Join("\n", ocrService.SupportedLanguages.Select(language => $"{language.Name};{language.ISO639_1_Name};{language.ISO639_3_Name}")));
+            var supportedLanguagesOrdered = ocrService.SupportedLanguages.OrderBy(language => language.Name);
+            File.WriteAllText(targetFileResourecs, string.Join("\n", supportedLanguagesOrdered.Select(language => $"{language.Name};{language.ISO639_1_Name};{language.ISO639_3_Name}")));
 
             string targetFolder = Path.Combine(targetFolderResources, "Other", "Reference", "ReferenceContent", "images");
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(targetFolder);
@@ -74,7 +77,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
 'This file is generated.
 map SupportedLanguages {
 Name => ISO639-1";
-            foreach (Core.Model.Other.Language language in ocrService.SupportedLanguages)
+            foreach (Core.Model.Other.Language language in supportedLanguagesOrdered)
             {
                 contentTable = contentTable + $"\n  {language.Name} => {language.ISO639_1_Name}";
             }
