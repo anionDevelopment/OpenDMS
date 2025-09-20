@@ -19,6 +19,8 @@ services:
   opendmsbackend_database_administration:
     image: adminer:4.8.1
     container_name: "opendmsbackend_database_administration"
+    ports:
+      - 8080:8080
     networks:
       - opendms_net
 
