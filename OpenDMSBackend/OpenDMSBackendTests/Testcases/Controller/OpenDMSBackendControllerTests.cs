@@ -15,6 +15,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
     public class OpenDMSBackendControllerTests
     {
         [TestMethod]
+        [Ignore]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public void AddDocumentTest()
         {

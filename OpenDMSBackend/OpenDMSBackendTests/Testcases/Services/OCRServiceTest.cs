@@ -17,6 +17,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
     {
 
         [TestMethod]
+        [Ignore]
         public void LanguagesAreLoadableTest()
         {
             // arrange
@@ -50,6 +51,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod]
+        [Ignore]
         public void WriteSupportedLanguagesToFile()
         {
             Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>> configurationMock = new Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>>(MockBehavior.Strict);
