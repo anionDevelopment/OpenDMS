@@ -19,6 +19,7 @@ model/models.ts
 model/storageLocationDTO.ts
 model/tagDTO.ts
 model/userInformationDTO.ts
+model/version3.ts
 param.ts
 provide-api.ts
 variables.ts

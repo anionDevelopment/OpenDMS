@@ -1,5 +1,5 @@
 /**
- * OpenDMSBackend v1.1.0 API documentation
+ * OpenDMSBackend v1.1.1 API documentation
  *
  * 
  *
@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Version3 } from './version3';
 import { TagDTO } from './tagDTO';
 
 
@@ -15,12 +16,18 @@ export interface DocumentDTO {
     title?: string | null;
     filename?: string | null;
     originalFilename?: string | null;
-    importDate?: string;
+    importDate?: string | null;
     lastEditDate?: string | null;
     tags?: Set<TagDTO> | null;
     readableId?: number;
     mimeType?: string | null;
     documentContentAsBase64?: string | null;
     documentPreviewAsBase64?: string | null;
+    isSoftDeleted?: boolean;
+    deleteIsNotAllowedBefore?: string | null;
+    mustBeHardDeletedAfter?: string | null;
+    groupOfBusinessOwner?: string | null;
+    version?: Version3;
+    assignedLanguages?: Set<string> | null;
 }
 

@@ -9,10 +9,9 @@
  */
 
 
-export interface StorageLocationDTO { 
-    id?: string | null;
-    name?: string | null;
-    containedFolderIds?: Array<string> | null;
-    containedDocumentIds?: Array<string> | null;
+export interface Version3 { 
+    major?: number;
+    minor?: number;
+    patch?: number;
 }
 
