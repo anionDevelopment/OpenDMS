@@ -1,20 +1,18 @@
-from pathlib import Path
 import os
+from pathlib import Path
 from ScriptCollection.GeneralUtilities import GeneralUtilities
-from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjectStructure
-
-
+from ScriptCollection.TFCPS.TFCPS_Generic import TFCPS_Generic_Functions, TFCPS_Generic_CLI
+    
 def prepare_build_codeunits():
-    t = TasksForCommonProjectStructure()
-    current_file = str(Path(__file__).absolute())
-    repository_folder = GeneralUtilities.resolve_relative_path("../../..", current_file)
-    t.clone_repository_as_resource(repository_folder, "https://github.com/tesseract-ocr/tessdata", "OCRData", "tessdata")
-    t.ensure_certificate_authority_for_development_purposes_is_generated(repository_folder)
-    t.generate_certificate_for_development_purposes_for_product(repository_folder)
-    t.generate_tasksfile_from_workspace_file(repository_folder)
-    t.generate_codeunits_overview_diagram(repository_folder)
-    t.generate_svg_files_from_plantuml_files_for_repository(repository_folder)
-    t.do_npm_install(os.path.join(repository_folder, "Other", "Resources", "TypeScript"), True, 1)
+    t :TFCPS_Generic_Functions= TFCPS_Generic_CLI().parse(__file__)
+    repository_folder = GeneralUtilities.resolve_relative_path( "../../..", str(Path(__file__).absolute()))
+    t.tfcps_Tools_General.clone_repository_as_resource(repository_folder, "https://github.com/tesseract-ocr/tessdata", "OCRData", "tessdata")
+    t.tfcps_Tools_General.ensure_certificate_authority_for_development_purposes_is_generated(repository_folder)
+    t.tfcps_Tools_General.generate_certificate_for_development_purposes_for_product(repository_folder)
+    t.tfcps_Tools_General.generate_tasksfile_from_workspace_file(repository_folder)
+    t.tfcps_Tools_General.generate_codeunits_overview_diagram(repository_folder)
+    t.tfcps_Tools_General.generate_svg_files_from_plantuml_files_for_repository(repository_folder)
+    t.tfcps_Tools_General.do_npm_install(os.path.join(repository_folder, "Other", "Resources", "TypeScript"))
 
 
 if __name__ == "__main__":
