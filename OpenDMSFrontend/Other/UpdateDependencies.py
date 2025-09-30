@@ -1,14 +1,14 @@
-import sys
 from pathlib import Path
-from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjectStructure
+from ScriptCollection.TFCPS.NodeJS.TFCPS_CodeUnitSpecific_NodeJS import TFCPS_CodeUnitSpecific_NodeJS_Functions,TFCPS_CodeUnitSpecific_NodeJS_CLI
 
 
 def update_dependencies():
-    t: TasksForCommonProjectStructure = TasksForCommonProjectStructure()
+    tf:TFCPS_CodeUnitSpecific_NodeJS_Functions=TFCPS_CodeUnitSpecific_NodeJS_CLI.parse(__file__)    
     update_dependencies_script_file = str(Path(__file__).absolute())
-    t.update_dependencies_of_typical_node_codeunit(update_dependencies_script_file, 1, sys.argv)
-    t.set_version_of_openapigenerator_by_update_dependencies_file(update_dependencies_script_file)
+    tf.update_dependencies()
+    tf.tfcps_Tools_General.set_version_of_openapigenerator(tf.get_codeunit_folder(),tf.tfcps_Tools_General.get_latest_version_of_openapigenerator())
 
 
 if __name__ == "__main__":
     update_dependencies()
+ 
