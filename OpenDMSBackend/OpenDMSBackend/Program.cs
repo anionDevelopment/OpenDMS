@@ -81,8 +81,10 @@ namespace OpenDMSBackend.Core
                             @$"^/favicon\.ico$",
                             @$"^/API/Other/Resources/APISpecification/*",
                             @$"^/API/Other/Maintenance/Metrics$",
+                            @$"^/API/Other/Maintenance/HealthCheck$",
                         },
-                        MaximalLengthOfResponseBodies = 50,
+                        MaximalLengthofRequestBodies = 500,
+                        MaximalLengthOfResponseBodies = 500,
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ConfigurationForExceptionManagerMiddleware = new ExceptionManagerConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation();

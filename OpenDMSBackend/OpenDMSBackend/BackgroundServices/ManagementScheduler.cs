@@ -19,10 +19,10 @@ namespace OpenDMSBackend.Core.BackgroundServices
         public ManagementScheduler(IGRYLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence,IApplicationConstants applicationConstants) : base(applicationConstants.ExecutionMode, logger)
         {
             this.Enabled = true;
+            this.AdditionalDelay = TimeSpan.FromSeconds(2);
             this._AuditLog = auditLog;
             this._PersistedAPIServerConfiguration = persistedAPIServerConfiguration;
             this._Persistence = persistence;
-            this.AdditionalDelay = TimeSpan.FromSeconds(2);
         }
         protected override void Run()
         {

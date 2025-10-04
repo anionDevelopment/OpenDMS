@@ -3,6 +3,7 @@ Resources/TestCoverageBadges/**
 !Resources/TestCoverageBadges/badge_shieldsio_linecoverage_blue.svg
 Reference/ReferenceContent/API/**
 !Reference/ReferenceContent/API/index.md
+Reference/obj
 Resources/DependentCodeUnits
 Resources/Constants/CodeUnitDescription.*
 Resources/Constants/CodeUnitName.*
