@@ -32,9 +32,9 @@ namespace OpenDMSBackend.Tests.TestUtilities
             {
                 IDatabaseManager databaseManager = this.GetDatabaseManager();
                 IList<MigrationInstance> migrations = databaseManager.GetAllMigrations();
-                GRYMigrator migrator = new GRYMigrator(GeneralLogger.CreateUsingConsole(), new TimeService(), databaseTestFramework.Connection, migrations.Take(1).ToList(), databaseManager.GetGenericDatabaseInteractor());
                 List<string> tables = GRYMigrator.GetAllTableNames(databaseTestFramework.Connection, databaseManager).ToList();
                 Assert.IsEmpty(tables);
+                GRYMigrator migrator = new GRYMigrator(GeneralLogger.CreateUsingConsole(), new TimeService(), databaseTestFramework.Connection, migrations.Take(1).ToList(), databaseManager.GetGenericDatabaseInteractor());
 
                 //act
                 migrator.InitializeDatabaseAndMigrateIfRequired();

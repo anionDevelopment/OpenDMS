@@ -11,8 +11,8 @@ services:
       MARIADB_PASSWORD: pa55w0rd
       MARIADB_ROOT_PASSWORD: R00tpa55w0rd
       MARIADB_DATABASE: OpenDMSDatabase
-    volumes:
-      - ./Volumes/Data:/var/lib/mysql
+#    volumes:
+#      - ./Volumes/Data:/var/lib/mysql
     networks:
       - opendms_net
 

@@ -5,6 +5,8 @@ using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities.Constants;
+using System.IO;
+using System.Text;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using IdGenerator = OpenDMSBackend.Core.Services.IdGenerator;
 
@@ -12,7 +14,13 @@ namespace OpenDMSBackend.Tests.TestUtilities
 {
     public static class Utilities
     {
-        internal static readonly object IntegrationTestLock=new object();
+        internal static readonly object IntegrationTestLock = new object();
+        public static string GetResetDatabaseScript(string databaseName)
+        {
+            string file = Path.Combine(OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder, "OpenDMSBackend", "Resources", "Database", databaseName, "Statements", "ResetDatabase.sql");
+            string result = File.ReadAllText(file, new UTF8Encoding(false));
+            return result;
+        }
         public static TransientPersistence GetTransientPersistence()
         {
             ITimeService timeService = new TimeService();

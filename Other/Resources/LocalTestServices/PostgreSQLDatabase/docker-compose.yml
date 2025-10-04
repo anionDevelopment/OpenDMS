@@ -8,11 +8,11 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pa55w0rd
       POSTGRES_DB: OpenDMSDatabase
-      PGDATA: /var/lib/postgresql/data
+#      PGDATA: /var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - ./Volumes/Data:/var/lib/postgresql/data
+#    volumes:
+#      - OpenDMSPostgreSQLData:/var/lib/postgresql/data
     networks:
       - opendms_net
     command: >

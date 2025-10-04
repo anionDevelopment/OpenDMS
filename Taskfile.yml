@@ -32,25 +32,45 @@ tasks:
       - baseexamplestop
       - bed
 
-  LocaltestserviceDatabaseStart:
-    desc: "LocalTestService: Database start"
+  LocaltestserviceMariadbStart:
+    desc: "LocalTestService: MariaDB start"
     silent: true
-    dir: "./Other/Resources/LocalTestServices/Database"
+    dir: "./Other/Resources/LocalTestServices/MariaDBDatabase"
     cmds:
       - "python Start.py"
     aliases:
-      - localtestservicedatabasestart
-      - ldu
+      - localtestservicemariadbstart
+      - ldmu
 
-  LocaltestserviceDatabaseStop:
-    desc: "LocalTestService: Database stop"
+  LocaltestserviceMariadbStop:
+    desc: "LocalTestService: MariaDB stop"
     silent: true
-    dir: "./Other/Resources/LocalTestServices/Database"
+    dir: "./Other/Resources/LocalTestServices/MariaDBDatabase"
     cmds:
       - "python Stop.py"
     aliases:
-      - localtestservicedatabasestop
-      - ldd
+      - localtestservicemariadbstop
+      - ldmd
+
+  LocaltestservicePostgresqlStart:
+    desc: "LocalTestService: PostgreSQL start"
+    silent: true
+    dir: "./Other/Resources/LocalTestServices/PostgreSQLDatabase"
+    cmds:
+      - "python Start.py"
+    aliases:
+      - localtestservicepostgresqlstart
+      - ldpu
+
+  LocaltestservicePostgresqlStop:
+    desc: "LocalTestService: PostgreSQL stop"
+    silent: true
+    dir: "./Other/Resources/LocalTestServices/PostgreSQLDatabase"
+    cmds:
+      - "python Stop.py"
+    aliases:
+      - localtestservicepostgresqlstop
+      - ldpd
 
   LocaltestserviceReverseProxyStart:
     desc: "LocalTestService: Reverse-proxy start"
