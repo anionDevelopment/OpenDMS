@@ -17,8 +17,8 @@ namespace OpenDMSBackend.Core.BackgroundServices
         public MetricsService(IApplicationConstants<CodeUnitSpecificConstants> constants, IGRYLog logger, IPersistence persistence) : base(constants.ExecutionMode, logger)
         {
             this.Enabled = true;
-            this._Persistence = persistence;
             this.AdditionalDelay = TimeSpan.FromMinutes(1);
+            this._Persistence = persistence;
             this.MetricAmountOfDocuments = Metrics.CreateGauge(CodeUnitSpecificConstants.MetricsNameAmountOfDocuments, "Amount of existing documents");
         }
 
