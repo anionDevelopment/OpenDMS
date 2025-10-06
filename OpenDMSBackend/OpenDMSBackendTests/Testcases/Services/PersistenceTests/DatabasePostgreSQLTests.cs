@@ -5,9 +5,9 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Services;
-using OpenDMSBackend.Core.Services.Misc;
 using OpenDMSBackend.Tests.TestUtilities;
 
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
@@ -21,9 +21,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             return new DatabaseManagerPostgreSQL();
         }
 
-        public override DatabasePersistence GetPersistenceObject(IDatabaseManager databaseManager, ITimeService timeService, DbContextOptionsBuilder<DatabaseContext> optionsBuilder, IGRYLog logger, ISQLProvider sqlProvider)
+        public override DatabasePersistence GetPersistenceObject(IDatabaseManager databaseManager, ITimeService timeService, IDatabasePersistenceConfiguration configuration, IGRYLog logger, ISQLProvider sqlProvider)
         {
-            return new DatabasePostgreSQLPersistence(optionsBuilder.Options, logger, timeService, databaseManager, logger, sqlProvider);
+            return new DatabasePostgreSQLPersistence(configuration, logger, timeService, databaseManager, logger, sqlProvider);
         }
 
         public override ISQLProvider GetSQLProvider(IGRYLog log)

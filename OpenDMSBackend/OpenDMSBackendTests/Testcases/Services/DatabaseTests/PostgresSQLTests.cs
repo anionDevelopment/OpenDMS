@@ -1,8 +1,10 @@
-﻿using GRYLibrary.Core.APIServer.Services.Trans;
+﻿using GRYLibrary.Core.APIServer.Services.Database;
+using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDMSBackend.Core.Database;
+using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities;
 
 namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
@@ -10,15 +12,18 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
     [TestClass]
     public class PostgresSQLTests : DatabaseTestsBase
     {
-        protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
+        public PostgresSQLTests() : base(new DatabaseInteractorPostgreSQL(new DatabasePersistenceConfiguration() {
+            DatabaseType = "PostgreSQL",
+            DatabaseConnectionString = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTestPostgreSQLConnectionString()
+        }))
         {
-            return new DatabaseTestFrameworkForPostgreSQL();
         }
 
-        protected override IDatabaseManager GetDatabaseManager()
+        protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
         {
-            return new DatabaseManagerPostgreSQL();
+            return new DatabaseTestFrameworkForMariaDB(this.DatabaseManager.Log);
         }
+
 
         [TestMethod(nameof(Migration000001Test))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]

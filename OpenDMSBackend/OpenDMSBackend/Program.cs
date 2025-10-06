@@ -30,7 +30,6 @@ using Microsoft.Extensions.Logging;
 using OpenDMSBackend.Core.BackgroundServices;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Core.Services.Misc;
 using System;
@@ -90,10 +89,11 @@ namespace OpenDMSBackend.Core
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation();
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthenticationConfiguration = new AuthSConfiguration()
                     {
-                        RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>() {
-                          //  @$"^/API/Other/Resources/APISpecification/*",
-                          //  @$"^/API/Other/Maintenance/HealthCheck$",
-                         //   @$"^/API/Other/Maintenance/Metrics$",
+                        RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>()
+                        {
+                            //  @$"^/API/Other/Resources/APISpecification/*",
+                            //  @$"^/API/Other/Maintenance/HealthCheck$",
+                            //   @$"^/API/Other/Maintenance/Metrics$",
                         },
                     };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
@@ -143,37 +143,45 @@ namespace OpenDMSBackend.Core
                             {
                                 genericDatabaseInteractor = new PostgreSQLDatabaseInteractor();
                                 functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePostgreSQLPersistence>();
-                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerPostgreSQL>();
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseInteractorPostgreSQL>();
                                 functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderPostgreSQL>();
-                                functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
+                                bool enabled = false;
+                                if (enabled)
                                 {
-                                    string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                                    Tools.ConnectToDatabaseWrapper(() =>
+                                    functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
                                     {
-                                        options.UseNpgsql(connectionString, sqlOptions =>
+                                        string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
+                                        Tools.ConnectToDatabaseWrapper(() =>
                                         {
-                                            sqlOptions.CommandTimeout(120);
-                                        });
-                                    }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
-                                }, ServiceLifetime.Singleton);
+                                            options.UseNpgsql(connectionString, sqlOptions =>
+                                            {
+                                                sqlOptions.CommandTimeout(120);
+                                            });
+                                        }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
+                                    }, ServiceLifetime.Singleton);
+                                }
                             }
                             else if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "MariaDB")
                             {
                                 genericDatabaseInteractor = new MariaDBDatabaseInteractor();
                                 functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabaseMariaDBPersistence>();
-                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerMariaDB>();
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseInteractorMariaDB>();
                                 functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderMariaDB>();
-                                functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
+                                bool enabled = false;
+                                if (enabled)
                                 {
-                                    string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                                    Tools.ConnectToDatabaseWrapper(() =>
+                                    functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
                                     {
-                                        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions =>
+                                        string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
+                                        Tools.ConnectToDatabaseWrapper(() =>
                                         {
-                                            sqlOptions.CommandTimeout(120);
-                                        });
-                                    }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
-                                }, ServiceLifetime.Singleton);
+                                            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions =>
+                                            {
+                                                sqlOptions.CommandTimeout(120);
+                                            });
+                                        }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
+                                    }, ServiceLifetime.Singleton);
+                                }
                             }
                             else
                             {

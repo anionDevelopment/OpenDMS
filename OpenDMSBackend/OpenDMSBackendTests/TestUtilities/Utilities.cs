@@ -34,9 +34,19 @@ namespace OpenDMSBackend.Tests.TestUtilities
         {
             return GUtilities.ResolveToFullPath(@$"{GeneralConstants.RepositoryFolder}\Other\Resources\LocalTestServices\MariaDBDatabase");
         }
+
+        public static string GetTestMariaDBConnectionString()
+        {
+            return GUtilities.ResolveToFullPath(@$"Host=localhost; Port=5432; Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;");
+        }
         public static string GetTestPostgreSQLDatabaseFolder()
         {
             return GUtilities.ResolveToFullPath(@$"{GeneralConstants.RepositoryFolder}\Other\Resources\LocalTestServices\PostgreSQLDatabase");
+        }
+
+        public static string GetTestPostgreSQLConnectionString()
+        {
+            return GUtilities.ResolveToFullPath(@$"Host=localhost; Port=5432; Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;");
         }
 
         public static string GetTestDatabaseCreationScriptArtifactFolder(string databaseName)

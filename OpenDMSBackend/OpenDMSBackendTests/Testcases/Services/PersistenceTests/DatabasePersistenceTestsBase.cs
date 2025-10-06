@@ -12,11 +12,11 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
-using OpenDMSBackend.Core.Database;
 using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Tests.TestUtilities;
 using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
 
-namespace OpenDMSBackend.Tests.TestUtilities
+namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     public abstract class DatabasePersistenceTestsBase : PersistenceTestsBase
     {
@@ -24,7 +24,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
 
         public abstract IDatabaseManager GetDatabaseManager();
 
-        public abstract IPersistence GetPersistenceObject(IDatabaseManager databaseManager, ITimeService timeService, DbContextOptionsBuilder<DatabaseContext> optionsBuilder, IGRYLog logger, ISQLProvider sqlProvider);
+        public abstract IPersistence GetPersistenceObject(IDatabaseManager databaseManager, ITimeService timeService, IDatabasePersistenceConfiguration configuration, IGRYLog logger, ISQLProvider sqlProvider);
 
         public abstract DatabaseTestFrameworkTemplate GetTestFramework();
         public override IPersistence GetPersistence()

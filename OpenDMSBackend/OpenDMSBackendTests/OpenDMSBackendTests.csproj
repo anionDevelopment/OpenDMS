@@ -56,6 +56,7 @@
         <ErrorReport>none</ErrorReport>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Projects\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
         <ProjectReference Include="..\OpenDMSBackend\OpenDMSBackend.csproj" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="coverlet.collector" Version="6.0.4">
@@ -91,6 +92,5 @@
         <PackageReference Include="System.Collections.Immutable" Version="9.0.9" />
         <PackageReference Include="System.Drawing.Common" Version="9.0.9" />
         <PackageReference Include="System.Reactive" Version="6.1.0" />
-        <PackageReference Include="GRYLIbrary" Version="0.12.167" />
     </ItemGroup>
 </Project>
