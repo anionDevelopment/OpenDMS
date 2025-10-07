@@ -12,7 +12,6 @@ namespace OpenDMSBackend.Core.Services
         public IContainer GetContainerById(string containerId);
         public void CreateDocument(Document document);
         public uint GetAmountOfDocuments();
-        public void Reset();
         public Document GetDocument(string id);
         public void CreateTag(Tag tag);
         public void AssignTag(string documentId, string tagId);

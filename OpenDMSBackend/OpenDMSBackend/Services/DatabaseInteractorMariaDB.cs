@@ -1,7 +1,4 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Database;
-using GRYLibrary.Core.APIServer.Services.Trans;
-using GRYLibrary.Core.Logging.GeneralPurposeLogger;
-using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.Migration;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,13 +7,11 @@ namespace OpenDMSBackend.Core.Services
 {
     public class DatabaseInteractorMariaDB : IOpenDMSDatabaseInteractor
     {
-        public IGRYLog Log { get; private set; }
         private readonly MariaDBDatabaseInteractor _DatabaseInteractor;
         private readonly IList<MigrationInstance> _Migrations = GRYMigrator.LoadMigrationsFromResources(Assembly.GetExecutingAssembly(), "OpenDMSBackend.Core.Resources.Database.MariaDB.Migrations.");
-        public DatabaseInteractorMariaDB(IDatabasePersistenceConfiguration configuration)
+        public DatabaseInteractorMariaDB(IGenericDatabaseInteractor interactor)
         {
-            Log = GeneralLogger.CreateUsingConsole();
-            _DatabaseInteractor = new MariaDBDatabaseInteractor(configuration, Log);
+            this._DatabaseInteractor = (MariaDBDatabaseInteractor)interactor;
         }
         public IList<MigrationInstance> GetAllMigrations()
         {
@@ -26,6 +21,11 @@ namespace OpenDMSBackend.Core.Services
         public IGenericDatabaseInteractor GetGenericDatabaseInteractor()
         {
             return this._DatabaseInteractor;
+        }
+
+        public ISQLProvider GetSQLProvider()
+        {
+            return new SQLProviderMariaDB();
         }
     }
 }

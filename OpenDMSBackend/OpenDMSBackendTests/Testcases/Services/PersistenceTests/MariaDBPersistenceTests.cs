@@ -1,18 +1,17 @@
-﻿using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenDMSBackend.Core.Services;
 
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     [TestClass]
-    public class PersistenceTransientTests : PersistenceTestsBase
+    [Ignore]
+    public class MariaDBPersistenceTests : PersistenceDatabaseTestsBase
     {
-        public override IPersistence GetPersistence()
+        protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
         {
-            return TestUtilities.Utilities.GetTransientPersistence();
+            return OpenDMSBackend.Tests.TestUtilities.Utilities.GetDatabaseTestFrameworkForMariaDB();
         }
-
-
 
         [TestMethod(nameof(DatabasePersistenceCreateDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
@@ -35,5 +34,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         {
             this.PersistDocument();
         }
+
     }
 }

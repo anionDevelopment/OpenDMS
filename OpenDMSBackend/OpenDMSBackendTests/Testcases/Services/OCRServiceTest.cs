@@ -68,7 +68,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(targetFolderResources);
             string targetFileResourecs = Path.Combine(targetFolderResources, "SupportedLanguages.txt");
             GRYLibrary.Core.Misc.Utilities.EnsureFileExists(targetFileResourecs);
-            var supportedLanguagesOrdered = ocrService.SupportedLanguages.OrderBy(language => language.Name);
+            IOrderedEnumerable<Core.Model.Other.Language> supportedLanguagesOrdered = ocrService.SupportedLanguages.OrderBy(language => language.Name);
             File.WriteAllText(targetFileResourecs, string.Join("\n", supportedLanguagesOrdered.Select(language => $"{language.Name};{language.ISO639_1_Name};{language.ISO639_3_Name}")));
 
             string targetFolder = Path.Combine(targetFolderResources, "Other", "Reference", "ReferenceContent", "images");

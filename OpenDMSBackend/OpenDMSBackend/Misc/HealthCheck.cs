@@ -18,7 +18,7 @@ namespace OpenDMSBackend.Core.Services.Misc
         {
             this._Logger = logger;
             this._Persistence = persistence;
-            _InitializationService  =initializationService;
+            this._InitializationService  =initializationService;
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
@@ -33,7 +33,7 @@ namespace OpenDMSBackend.Core.Services.Misc
                 this._Logger.Log($"{nameof(this._Persistence)} checked. Current result: {result}", Microsoft.Extensions.Logging.LogLevel.Debug);
 
                 return (result, messages);
-            }, context, cancellationToken, _InitializationService);
+            }, context, cancellationToken, this._InitializationService);
         }
     }
 }

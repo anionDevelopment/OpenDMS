@@ -266,7 +266,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 if (toPictureWasSuccessful)
                 {
-                    document.Preview = GetPreview(documentAsPicture!);
+                    document.Preview = this.GetPreview(documentAsPicture!);
                 }
                 else
                 {
@@ -285,7 +285,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     if (toPictureWasSuccessful)
                     {
-                        document.OCRContent = _OCRService.GetOCRContent(documentAsPicture!, document.AssignedLanguages);
+                        document.OCRContent = this._OCRService.GetOCRContent(documentAsPicture!, document.AssignedLanguages);
                     }
                     else
                     {

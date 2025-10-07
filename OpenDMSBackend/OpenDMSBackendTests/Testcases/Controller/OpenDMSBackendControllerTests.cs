@@ -15,11 +15,10 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
     public class OpenDMSBackendControllerTests
     {
         [TestMethod]
-        [Ignore]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public void AddDocumentTest()
         {
-            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.IntegrationTestLock)
+            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
                 // arrange
                 string documentId = "documentId";
@@ -40,7 +39,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
                     functionalInformation.WebApplicationBuilder.Services.Replace(exampleDataCreatorMockDescriptor);
                 }, true));
                 Core.Model.BusinessTypes.User user = testFramework.GetUser();
-                string containerId = testFramework.BusinessLogicService.AddStorageLocation(user.Id, "storageLocation");
+                string containerId = testFramework._BusinessLogicService.AddStorageLocation(user.Id, "storageLocation");
 
                 string addUrl = $"{testFramework.GetServerURL()}{OpenDMSBackend.Core.Controller.OpenDMSBackendController.ControllerRoute}/{nameof(OpenDMSBackend.Core.Controller.OpenDMSBackendController.AddDocument)}/{containerId}?filename={originalFilename}&title={title}&additionalOCRLanguages={ocrLanguages}";
                 using HttpClient client = testFramework.GetClient(user);

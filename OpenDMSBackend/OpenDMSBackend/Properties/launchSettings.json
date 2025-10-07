@@ -2,7 +2,7 @@
   "profiles": {
     "OpenDMSBackend": {
       "commandName": "Project",
-      "commandLineArgs": "--OCRDataFolder ../../Resources/OCRData"
+      "commandLineArgs": "--OCRDataFolder ../../Resources/OCRData",
     }
   }
 }

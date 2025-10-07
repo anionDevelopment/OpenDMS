@@ -9,7 +9,7 @@ using GRYLibrary.Core.APIServer.Mid.M05DLog;
 using GRYLibrary.Core.APIServer.MidT.Exception;
 using GRYLibrary.Core.APIServer.Services.Auth.R;
 using GRYLibrary.Core.APIServer.Services.CredH;
-using GRYLibrary.Core.APIServer.Services.Database.DatabaseInterator;
+using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
@@ -22,7 +22,6 @@ using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.FilePath;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -34,6 +33,8 @@ using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Core.Services.Misc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
 
@@ -42,15 +43,20 @@ namespace OpenDMSBackend.Core
     internal class Program
     {
         internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get; set; }
-        internal bool ListenOnEveryIP { get; set; }
-        internal bool RunAsync { get; set; }
-        internal IBusinessLogicService BusinessLogicService { get; set; }
+        internal bool ListenOnEveryIP { get; set; } = false;
+        internal bool RunAsync { get; set; } = false;
+        internal IBusinessLogicService? _BusinessLogicService;
+        internal IGRYLog? _Log;
 
-        private IHostApplicationLifetime? _HostApplicationLifetime;
+        internal IHostApplicationLifetime? _HostApplicationLifetime;
 
         internal static int Main(string[] commandlineArguments)
         {
             return new Program().MainImplementation(commandlineArguments);
+        }
+        internal async Task<int> MainImplementationAsync(string[] commandlineArguments)
+        {
+            return await Task.Run(() => MainImplementation(commandlineArguments));
         }
         internal int MainImplementation(string[] commandlineArguments)
         {
@@ -91,15 +97,16 @@ namespace OpenDMSBackend.Core
                     {
                         RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>()
                         {
-                            //  @$"^/API/Other/Resources/APISpecification/*",
-                            //  @$"^/API/Other/Maintenance/HealthCheck$",
-                            //   @$"^/API/Other/Maintenance/Metrics$",
+                            @$"^/favicon\.ico$",
+                            @$"^/API/Other/Resources/APISpecification/*",
+                            @$"^/API/Other/Maintenance/Metrics$",
+                            @$"^/API/Other/Maintenance/HealthCheck$",
                         },
                     };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
-                        DatabaseType = initializationInformation.CommandlineParameter.InitialDatabaseType,
+                        DatabaseType = "PostgreSQL",
                         DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseType ?? "[insert database-connectionstring here and set InitialDatabaseType accordingly]",
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
@@ -115,7 +122,7 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP(initializationInformation.CommandlineParameter.TestRun ? CodeUnitSpecificConstants.PortForTestRun : HTTP.DefaultPort);
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP((initializationInformation.CommandlineParameter.RealRun)? HTTP.DefaultPort : CodeUnitSpecificConstants.PortForIntegrationTestRun);
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
@@ -132,62 +139,30 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
-                        bool useDatabase = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != null;
+                        bool useDatabase = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != null && functionalInformation.InitializationInformation.CommandlineParameter.RealRun;
                         if (useDatabase)
                         {
                             logger.Log($"Run persistent using database \"{functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType}\".", LogLevel.Information);
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, PersistentAuthenticationService>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<IPersistence>());
-                            IGenericDatabaseInteractor genericDatabaseInteractor;
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePersistence>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabasePersistenceConfiguration>(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
                             if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "PostgreSQL")
                             {
-                                genericDatabaseInteractor = new PostgreSQLDatabaseInteractor();
-                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePostgreSQLPersistence>();
-                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseInteractorPostgreSQL>();
                                 functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderPostgreSQL>();
-                                bool enabled = false;
-                                if (enabled)
-                                {
-                                    functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
-                                    {
-                                        string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                                        Tools.ConnectToDatabaseWrapper(() =>
-                                        {
-                                            options.UseNpgsql(connectionString, sqlOptions =>
-                                            {
-                                                sqlOptions.CommandTimeout(120);
-                                            });
-                                        }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
-                                    }, ServiceLifetime.Singleton);
-                                }
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGenericDatabaseInteractor, PostgreSQLDatabaseInteractor>();
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOpenDMSDatabaseInteractor, DatabaseInteractorPostgreSQL>();
                             }
                             else if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "MariaDB")
                             {
-                                genericDatabaseInteractor = new MariaDBDatabaseInteractor();
-                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabaseMariaDBPersistence>();
-                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseInteractorMariaDB>();
                                 functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderMariaDB>();
-                                bool enabled = false;
-                                if (enabled)
-                                {
-                                    functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
-                                    {
-                                        string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                                        Tools.ConnectToDatabaseWrapper(() =>
-                                        {
-                                            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions =>
-                                            {
-                                                sqlOptions.CommandTimeout(120);
-                                            });
-                                        }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
-                                    }, ServiceLifetime.Singleton);
-                                }
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGenericDatabaseInteractor, MariaDBDatabaseInteractor>();
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOpenDMSDatabaseInteractor, DatabaseInteractorMariaDB>();
                             }
                             else
                             {
                                 throw new NotSupportedException("Database not supported. For a list of supported databases see the documentation.");
                             }
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGenericDatabaseInteractor>(genericDatabaseInteractor);
                         }
                         else
                         {
@@ -224,10 +199,7 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
-                        if (this.SetupMocks != null)
-                        {
-                            this.SetupMocks(functionalInformation);
-                        }
+                        this.SetupMocks?.Invoke(functionalInformation);
 
                     }
                     catch
@@ -239,24 +211,31 @@ namespace OpenDMSBackend.Core
                 {
                     try
                     {
+                        this._BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
+                        this._Log = functionalInformationForWebApplication.WebApplication.Services.GetService<IGRYLog>();
                         this._HostApplicationLifetime = functionalInformationForWebApplication.WebApplication.Services.GetService<IHostApplicationLifetime>();
-                        this.BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
                         IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
                         IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
                         functionalInformationForWebApplication.RunAsync = this.RunAsync;
+                        bool runServices = functionalInformationForWebApplication.InitializationInformation.CommandlineParameter.RealRun;
                         functionalInformationForWebApplication.PreRun = () =>
                         {
                             //initialize
                             GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>()).Initialize(apiServerConfiguration.CommandlineParameter);
-
-                            //start background-services
-                            metricsService.StartAsync();
-                            managementScheduler.StartAsync();
+                            if (runServices)
+                            {
+                                //start background-services
+                                metricsService.StartAsync();
+                                managementScheduler.StartAsync();
+                            }
                         };
                         functionalInformationForWebApplication.PostRun = () =>
                         {
-                            metricsService.Stop().Wait();
-                            managementScheduler.Stop().Wait();
+                            if (runServices)
+                            {
+                                metricsService.Stop().Wait();
+                                managementScheduler.Stop().Wait();
+                            }
                         };
 
                     }
@@ -270,7 +249,7 @@ namespace OpenDMSBackend.Core
 
         internal void Stop()
         {
-            this._HostApplicationLifetime.StopApplication();
+            GUtilities.AssertNotNull(this._HostApplicationLifetime, nameof(_HostApplicationLifetime)).StopApplication();
         }
     }
 }

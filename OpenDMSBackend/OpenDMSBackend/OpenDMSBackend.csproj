@@ -58,6 +58,7 @@
         <ErrorReport>none</ErrorReport>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Projects\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.6" />
         <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
@@ -69,7 +70,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.9" />
         <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.9" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-        <PackageReference Include="Npgsql" Version="9.0.3" />
+        <PackageReference Include="Npgsql" Version="9.0.4" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
         <PackageReference Include="prometheus-net" Version="8.2.1" />
@@ -91,8 +92,5 @@
         <EmbeddedResource Include="Resources\**">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\..\Projects\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
     </ItemGroup>
 </Project>

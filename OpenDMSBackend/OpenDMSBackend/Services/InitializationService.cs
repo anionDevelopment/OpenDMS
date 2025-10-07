@@ -34,17 +34,17 @@ namespace OpenDMSBackend.Core.Services
             this._ExampleDataCreator = exampleDataCreator;
             this._Persistence = persistence;
             this._IdGenerator = idGenerator;
-             _OCRServiceWrapper = ocrRServiceWrapper;
-            SetInitializationState(new Uninitialized());
+            this._OCRServiceWrapper = ocrRServiceWrapper;
+            this.SetInitializationState(new Uninitialized());
         }
 
         public void Initialize(CommandlineParameter commandlineParameter)
         {
             try
             {
-                SetInitializationState(new Initializing());
+                this.SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
-                _OCRServiceWrapper.Initialize();
+                this._OCRServiceWrapper.Initialize();
                 string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
                 this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
                 if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
@@ -67,11 +67,11 @@ namespace OpenDMSBackend.Core.Services
                     }
                 }
                 this._GeneralLogger.Log("Service is initialized.", Microsoft.Extensions.Logging.LogLevel.Information);
-                SetInitializationState(new Initialized());
+                this.SetInitializationState(new Initialized());
             }
             catch
             {
-                SetInitializationState(new InitializationFailed());
+                this.SetInitializationState(new InitializationFailed());
                 throw;
             }
         }
@@ -80,14 +80,14 @@ namespace OpenDMSBackend.Core.Services
         {
             lock (_Lock)
             {
-                return _InitializationState;
+                return this._InitializationState;
             }
         }
         public void SetInitializationState(InitializationState initializationState)
         {
             lock (_Lock)
             {
-                 _InitializationState= initializationState;
+                this._InitializationState = initializationState;
             }
         }
     }

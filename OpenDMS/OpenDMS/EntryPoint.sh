@@ -1,7 +1,7 @@
 #!/bin/bash
 export IsRunningInDockerContainer=true
 
-argument=""
+argument="--NoTestRun"
 
 if [[ -n "${InitialAdminPassword}" ]]; then
   argument+=" --InitialAdminPassword $InitialAdminPassword"

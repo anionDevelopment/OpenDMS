@@ -1,14 +1,13 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Database;
-using GRYLibrary.Core.Logging.GRYLogger;
-using System;
+using GRYLibrary.Core.Misc.Migration;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public interface IOpenDMSDatabaseInteractor: IGenericDatabaseInteractor
+    public interface IOpenDMSDatabaseInteractor 
     {
+        public IGenericDatabaseInteractor GetGenericDatabaseInteractor();
+        public IList<MigrationInstance> GetAllMigrations();
+        public ISQLProvider GetSQLProvider();
     }
 }

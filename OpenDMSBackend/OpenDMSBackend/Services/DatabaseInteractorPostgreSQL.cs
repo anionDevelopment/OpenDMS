@@ -1,6 +1,4 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Database;
-using GRYLibrary.Core.APIServer.Services.Trans;
-using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.Migration;
 using System.Collections.Generic;
@@ -10,13 +8,18 @@ namespace OpenDMSBackend.Core.Services
 {
     public class DatabaseInteractorPostgreSQL : IOpenDMSDatabaseInteractor
     {
-        public IGRYLog Log { get; private set; }
+        public IGRYLog Log
+        {
+            get
+            {
+                return this._DatabaseInteractor.Log;
+            }
+        }
         private readonly PostgreSQLDatabaseInteractor _DatabaseInteractor;
         private readonly IList<MigrationInstance> _Migrations = GRYMigrator.LoadMigrationsFromResources(Assembly.GetExecutingAssembly(), "OpenDMSBackend.Core.Resources.Database.PostgreSQL.Migrations.");
-        public DatabaseInteractorPostgreSQL(IDatabasePersistenceConfiguration configuration)
+        public DatabaseInteractorPostgreSQL(IGenericDatabaseInteractor interactor)
         {
-            Log = GeneralLogger.CreateUsingConsole();
-            _DatabaseInteractor = new PostgreSQLDatabaseInteractor(configuration, Log);
+            this._DatabaseInteractor = (PostgreSQLDatabaseInteractor)interactor;
         }
         public IList<MigrationInstance> GetAllMigrations()
         {
@@ -26,6 +29,11 @@ namespace OpenDMSBackend.Core.Services
         public IGenericDatabaseInteractor GetGenericDatabaseInteractor()
         {
             return this._DatabaseInteractor;
+        }
+
+        public ISQLProvider GetSQLProvider()
+        {
+            return new SQLProviderPostgreSQL();
         }
     }
 }

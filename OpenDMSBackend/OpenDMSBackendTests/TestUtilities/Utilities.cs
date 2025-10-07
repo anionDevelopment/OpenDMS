@@ -1,6 +1,8 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+﻿using GRYLibrary.Core.APIServer.Services.Database;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Trans;
+using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
@@ -14,7 +16,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
 {
     public static class Utilities
     {
-        internal static readonly object IntegrationTestLock = new object();
+        internal static readonly object LockForTests = new object();
         public static string GetResetDatabaseScript(string databaseName)
         {
             string file = Path.Combine(OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder, "OpenDMSBackend", "Resources", "Database", databaseName, "Statements", "ResetDatabase.sql");
@@ -37,7 +39,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
 
         public static string GetTestMariaDBConnectionString()
         {
-            return GUtilities.ResolveToFullPath(@$"Host=localhost; Port=5432; Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;");
+            return @$"Host=localhost;Port=3306;User ID=user;Password=pa55w0rd;Database=OpenDMSDatabase;";
         }
         public static string GetTestPostgreSQLDatabaseFolder()
         {
@@ -46,7 +48,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
 
         public static string GetTestPostgreSQLConnectionString()
         {
-            return GUtilities.ResolveToFullPath(@$"Host=localhost; Port=5432; Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;");
+            return @$"Host=localhost; Port=5432; Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;";
         }
 
         public static string GetTestDatabaseCreationScriptArtifactFolder(string databaseName)
@@ -58,6 +60,41 @@ namespace OpenDMSBackend.Tests.TestUtilities
         {
             string result = @$"{OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder}\Other\Resources\OCRData";
             return result;
+        }
+        public static DatabaseTestFrameworkForMariaDB GetDatabaseTestFrameworkForMariaDB()
+        {
+            return new DatabaseTestFrameworkForMariaDB(GeneralLogger.CreateUsingConsole());
+        }
+        public static DatabaseTestFrameworkForPostgreSQL GetDatabaseTestFrameworkForPostgreSQL()
+        {
+            return new DatabaseTestFrameworkForPostgreSQL(GeneralLogger.CreateUsingConsole());
+        }
+
+        public static DatabaseInteractorMariaDB GetMariaDBTestDatabase()
+        {
+            return new DatabaseInteractorMariaDB(DBUtilities.ToGenericDatabaseInteractor(GetDatabaseConfigurationMariaDB(), GeneralLogger.CreateUsingConsole()));
+        }
+
+        public static DatabaseInteractorPostgreSQL GetPostgreSQLTestDatabase()
+        {
+            return new DatabaseInteractorPostgreSQL(DBUtilities.ToGenericDatabaseInteractor(GetDatabaseConfigurationPostgreSQL(), GeneralLogger.CreateUsingConsole()));
+        }
+        public static IDatabasePersistenceConfiguration GetDatabaseConfigurationMariaDB()
+        {
+            return new DatabasePersistenceConfiguration()
+            {
+                DatabaseType = "MariaDB",
+                DatabaseConnectionString = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTestMariaDBConnectionString()
+            };
+        }
+
+        public static IDatabasePersistenceConfiguration GetDatabaseConfigurationPostgreSQL()
+        {
+            return new DatabasePersistenceConfiguration()
+            {
+                DatabaseType = "PostgreSQL",
+                DatabaseConnectionString = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTestPostgreSQLConnectionString()
+            };
         }
     }
 }
