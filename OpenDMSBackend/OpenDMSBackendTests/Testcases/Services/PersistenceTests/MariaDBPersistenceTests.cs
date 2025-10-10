@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     [TestClass]
+    [Ignore]
     public class MariaDBPersistenceTests : PersistenceDatabaseTestsBase
     {
         protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()

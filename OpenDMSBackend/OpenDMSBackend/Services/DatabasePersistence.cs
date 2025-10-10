@@ -32,8 +32,6 @@ namespace OpenDMSBackend.Core.Services
             this._SQLProvider = database.GetSQLProvider();
         }
 
-
-
         #region AccessDatabase
         protected void AccessDatabase(Action<IOpenDMSDatabaseInteractor> action)
         {

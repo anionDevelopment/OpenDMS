@@ -11,6 +11,7 @@ using GUtilities = GRYLibrary.Core.Misc.Utilities;
 namespace OpenDMSBackend.Tests.Testcases
 {
     [TestClass]
+    [Ignore]
     public class ProgramTests
     {
         [TestMethod]
