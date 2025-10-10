@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
 {
     [TestClass]
-    [Ignore]
     public class MariaDBDatabaseTests : DatabaseTestsBase
     {
         protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()

@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
+﻿using GRYLibrary.Core.APIServer;
+using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -46,6 +47,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     this._Program.RunAsync = !this._IntegrationTestConfiguration.RunInOwnThread;
                     this._Program.ListenOnEveryIP = false;
                     this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
+
                     string[] args = new string[] {
                         @$"--{nameof(CommandlineParameter.OCRDataFolder)}", Utilities.GetOCRDataFolder()
                     };//TODO add option to pass more configuration-values for the test-run like port etc. so that this can not go wrong due to a different configuration from a previous (manual) run.
@@ -54,7 +56,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     GRYLibrary.Core.Misc.Utilities.AssertCondition(exitCode == 0, () =>
                     {
                         string message = $"Exitode of main-method was {exitCode}.";
-                        if (_Program._Log != null)
+                        if (_Program._Log != null)//TODO this condition should not be required. but for unknown reasons the _log-property is null and this causes problems whille retrieving the logs here which would be useful.
                         {
                             IGRYLog log = GRYLibrary.Core.Misc.Utilities.AssertNotNull(_Program._Log, nameof(Program._Log));
                             LogItem[] logMessages = log.LastLogEntries.GetEntries();
@@ -65,7 +67,6 @@ namespace OpenDMSBackend.Tests.TestUtilities
                                     item.Format(_Program._Log.Configuration, out string result, out int _, out int _, out ConsoleColor _, GRYLogLogFormat.GRYLogFormat, null);
                                     return result;
                                 }));
-
                             }
                         }
                         return message;
@@ -100,6 +101,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
             this._BusinessLogicService = this._Program._BusinessLogicService;
             this._Log = this._Program._Log;
         }
+
 
         private bool IsReady()
         {

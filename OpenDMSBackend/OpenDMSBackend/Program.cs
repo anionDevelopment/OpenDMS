@@ -122,10 +122,15 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP((initializationInformation.CommandlineParameter.RealRun)? HTTP.DefaultPort : CodeUnitSpecificConstants.PortForIntegrationTestRun);
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP((initializationInformation.CommandlineParameter.RealRun) ? HTTP.DefaultPort : CodeUnitSpecificConstants.PortForIntegrationTestRun);
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
+                    if (!initializationInformation.CommandlineParameter.RealRun)
+                    {
+                        GRYLibrary.Core.Misc.Utilities.EnsureDirectoryDoesNotExist(initializationInformation.ApplicationConstants.BaseFolder);
+                        GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(initializationInformation.ApplicationConstants.BaseFolder);
+                    }
                 };
                 apiServerConfiguration.SetFunctionalInformationAction = (functionalInformation) =>
                 {
@@ -139,6 +144,7 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<CommandlineParameter>(functionalInformation.InitializationInformation.CommandlineParameter);
                         bool useDatabase = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != null && functionalInformation.InitializationInformation.CommandlineParameter.RealRun;
                         if (useDatabase)
                         {

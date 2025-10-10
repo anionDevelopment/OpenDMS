@@ -56,7 +56,7 @@
         <ErrorReport>none</ErrorReport>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\..\..\Projects\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
+        <ProjectReference Include="..\..\..\..\..\GRYLibraryBuild\Submodules\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
         <ProjectReference Include="..\OpenDMSBackend\OpenDMSBackend.csproj" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="coverlet.collector" Version="6.0.4">
@@ -81,8 +81,8 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="Moq" Version="4.20.72" />
-        <PackageReference Include="MSTest.TestAdapter" Version="3.11.0" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.11.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="4.0.0" />
+        <PackageReference Include="MSTest.TestFramework" Version="4.0.0" />
         <PackageReference Include="NJsonSchema" Version="11.5.1" />
         <PackageReference Include="Npgsql" Version="9.0.4" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />

@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     [TestClass]
-    [Ignore]
     public class PostgreSQLPersistenceTests : PersistenceDatabaseTestsBase
     {
         protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
