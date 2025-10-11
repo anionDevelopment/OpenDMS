@@ -10,7 +10,7 @@
 		"tasks": [
 			{
 				"label": "Base: Build all codeunits",
-				"command": "scbuildcodeunits",
+				"command": "scbuildcodeunits {{.CLI_ARGS}}",
 				"type": "shell",
 				"options": {
 					"cwd": "${workspaceFolder}"
@@ -44,7 +44,7 @@
 				]
 			},
 			{
-				"label": "Debug: Frontend",
+				"label": "Run: Frontend",
 				"command": "npm run start",
 				"args": [],
 				"type": "shell",
@@ -52,31 +52,55 @@
 					"cwd": "${workspaceFolder}/OpenDMSFrontend"
 				},
 				"aliases": [
-					"df"
+					"rf"
 				]
 			},
 			{
-				"label": "LocalTestService: Database start",
+				"label": "LocalTestService: MariaDB start",
 				"command": "python Start.py",
 				"args": [],
 				"type": "shell",
 				"options": {
-					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/Database"
+					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/MariaDBDatabase"
 				},
 				"aliases": [
-					"ldu"
+					"ldmu"
 				]
 			},
 			{
-				"label": "LocalTestService: Database stop",
+				"label": "LocalTestService: MariaDB stop",
 				"command": "python Stop.py",
 				"args": [],
 				"type": "shell",
 				"options": {
-					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/Database"
+					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/MariaDBDatabase"
 				},
 				"aliases": [
-					"ldd"
+					"ldmd"
+				]
+			},
+			{
+				"label": "LocalTestService: PostgreSQL start",
+				"command": "python Start.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/PostgreSQLDatabase"
+				},
+				"aliases": [
+					"ldpu"
+				]
+			},
+			{
+				"label": "LocalTestService: PostgreSQL stop",
+				"command": "python Stop.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/Other/Resources/LocalTestServices/PostgreSQLDatabase"
+				},
+				"aliases": [
+					"ldpd"
 				]
 			},
 			{

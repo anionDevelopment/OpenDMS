@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
+using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Res;
@@ -11,11 +12,14 @@ using GRYLibrary.Core.Misc.Strings;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
-using OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes;
 using OpenDMSBackend.Core.Model.DTOs;
+using SimpleOCR.Library.Core.FileTypes;
+using SimpleOCR.Library.Core.VIsitors;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace OpenDMSBackend.Core.Services
 {
@@ -28,10 +32,10 @@ namespace OpenDMSBackend.Core.Services
         private readonly ITimeService _TimeService;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
-        private readonly IOCRService _OCRService;
+        private readonly IOCRServiceWrapper _OCRService;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRService oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceWrapper oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -44,17 +48,34 @@ namespace OpenDMSBackend.Core.Services
             this._GeneralResourceLoader = generalResourceLoader;
         }
 
-        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, GRYDateTime creationDate)
+        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
             lock (_LockObject)
             {
-                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), creationDate, null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(Core.Misc.Utilities.GetMIMEType(originalFilename)), default, default, content);
+                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTime(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(SimpleOCR.Library.Core.Misc.Utilities.GetMIMEType(originalFilename)), content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages);
                 this.AnalyseDocument(document);
+                this.Validate(document);
                 this._Persistence.CreateDocument(document);
                 this._Persistence.SetParentOfContainee(document, containerId);
                 this._Logger.Log($"Document '{document.ReadableId}' added. (Technical-id: {document.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
                 return document.Id;
             }
+        }
+
+        private void Validate(Document document)
+        {
+            if (!this.IsValid(document, out IList<string> errorMessages))
+            {
+                string messagesAsString = string.Join(", ", errorMessages.Select(message => "\"" + message + "\""));
+                throw new BadRequestException($"Document is not valid due to the following reason(s): {messagesAsString}");
+            }
+        }
+
+        private bool IsValid(Document document, out IList<string> errorMessages)
+        {
+            errorMessages = new List<string>();
+            //TODO check if all assigned languages (if there are some) are valid iso-639-1-identifier
+            return errorMessages.Count == 0;
         }
 
         public string Register(string username, string password)
@@ -205,30 +226,51 @@ namespace OpenDMSBackend.Core.Services
 
         public void Update(string requesterUserId, Document updatedDocument)
         {
-            //TODO check permission
             Document existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
-            if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content))
+            //TODO check permission (remember: a user can change the name, the content, etc. dependent on his permissions, but only if the user is in GroupOfBusinessOwner he is allowed to do a hard-delete or to change the DeleteIsNotAllowedBefore- or MustBeHardDeletedAfter-value.)
+            //TODO check validity, for example: content must not be null, DeleteIsNotAllowedBefore must be lower or equal to MustBeHardDeletedAfter, version is greater than the old version, etc.
+            if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content) || (!existingDocument.AssignedLanguages.SetEquals(updatedDocument.AssignedLanguages)))
             {
+                //TODO analyse is only necessary if assignedlanguage was added but not if it was removed
                 this.AnalyseDocument(updatedDocument);
             }
+            this.Validate(updatedDocument);
             this._Persistence.Update(requesterUserId, updatedDocument);
         }
 
         private void AnalyseDocument(Document document)
         {
             this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);
-            DocumentType docType = Core.Misc.Utilities.GetDocumentType(document.MIMEType.Value);
-
+            FileType docType;
+            try
+            {
+                docType = SimpleOCR.Library.Core.Misc.Utilities.GetDocumentType(document.MIMEType.Value);
+            }
+            catch
+            {
+                docType = Other.Instance;
+            }
+            byte[]? documentAsPicture = null;
+            bool toPictureWasSuccessful;
             byte[] noPreviewAvailablePicture = this._GeneralResourceLoader.GetResource("NoPreviewAvailablePicture.jpg");
             try
             {
-                if (docType is Unknown)
+                documentAsPicture = docType.Accept(new ToPictureVisitor(document.Content, document.MIMEType.Value));
+                toPictureWasSuccessful = true;
+            }
+            catch
+            {
+                toPictureWasSuccessful = false;
+            }
+            try
+            {
+                if (toPictureWasSuccessful)
                 {
-                    document.Preview = noPreviewAvailablePicture;
+                    document.Preview = this.GetPreview(documentAsPicture!);
                 }
                 else
                 {
-                    document.Preview = docType.GetPreview(document.Content);
+                    document.Preview = noPreviewAvailablePicture;
                 }
             }
             catch
@@ -236,22 +278,73 @@ namespace OpenDMSBackend.Core.Services
                 document.Preview = noPreviewAvailablePicture;
             }
 
-            string noOCRContentAvailableResult = string.Empty;
+
             try
             {
-                if (docType is Unknown)
+                if (docType.IsBinaryFormat())
                 {
-                    document.OCRContent = noOCRContentAvailableResult;
+                    if (toPictureWasSuccessful)
+                    {
+                        document.OCRContent = this._OCRService.GetOCRContent(documentAsPicture!, document.AssignedLanguages);
+                    }
+                    else
+                    {
+                        document.OCRContent = string.Empty;
+                    }
                 }
                 else
                 {
-                    document.OCRContent = docType.GetOCRContent(document.Content, this._OCRService).ToLower();
+                    document.OCRContent = new UTF8Encoding(false).GetString(document.Content);
                 }
             }
             catch
             {
-                document.OCRContent = noOCRContentAvailableResult;
+                document.OCRContent = string.Empty;
             }
+        }
+
+        private byte[] GetPreview(byte[] documentAsPicture)
+        {
+            if (documentAsPicture == null || documentAsPicture.Length == 0)
+                throw new ArgumentException("Input image is empty.");
+
+            using SKMemoryStream inputStream = new SKMemoryStream(documentAsPicture);
+            using SKBitmap bitmap = SKBitmap.Decode(inputStream);
+
+            int width = bitmap.Width;
+            int height = bitmap.Height;
+
+            int size = Math.Min(width, height); // Größe des Quadrats
+
+            int cropX = 0;
+            int cropY = 0;
+
+            // Breiter als hoch → horizontal zentrieren
+            if (width > height)
+            {
+                cropX = (width - size) / 2;
+                cropY = 0;
+            }
+            // Höher als breit → oben behalten, unten abschneiden
+            else if (height > width)
+            {
+                cropX = 0;
+                cropY = 0; // oben bleibt
+            }
+
+            SKRectI cropRect = new SKRectI(cropX, cropY, cropX + size, cropY + size);
+
+            using SKBitmap cropped = new SKBitmap(size, size);
+            using (SKCanvas canvas = new SKCanvas(cropped))
+            {
+                canvas.Clear(SKColors.White);
+                canvas.DrawBitmap(bitmap, cropRect, new SKRect(0, 0, size, size));
+            }
+
+            using SKImage image = SKImage.FromBitmap(cropped);
+            SKData skdata = image.Encode(SKEncodedImageFormat.Png, 100);
+            byte[] result = skdata.ToArray();
+            return result;
         }
 
         public string AddStorageLocation(string requesterUserId, string name)
@@ -289,7 +382,7 @@ namespace OpenDMSBackend.Core.Services
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
-        public void Delete(string requesterUserId, string containerOrContaineeId)
+        public void HardDelete(string requesterUserId, string containerOrContaineeId)
         {
             //TODO check permission
 
@@ -303,7 +396,12 @@ namespace OpenDMSBackend.Core.Services
             //remove content
             Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => this.RemoveEntireContent(requesterUserId, folderId), null);
 
-            this._Persistence.Delete(containerOrContaineeId);
+            this._Persistence.HardDelete(containerOrContaineeId);
+        }
+
+        public void SoftDelete(string requesterUserId, string containerOrContaineeId)
+        {
+            throw new NotImplementedException();
         }
 
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)
@@ -349,13 +447,23 @@ namespace OpenDMSBackend.Core.Services
             IContainer container = this._Persistence.GetContainerById(containerId);
             foreach (IContainee child in container.Content)
             {
-                this.Delete(requesterUserId, child.Id);
+                this.HardDelete(requesterUserId, child.Id);
             }
         }
 
         public Document GetDocumentFromReadableId(string requesterUserId, uint readableId)
         {
             return this.GetDocument(requesterUserId, this._Persistence.GetIdFromReadableId(readableId));
+        }
+
+        public Model.BusinessTypes.User GetUser(string userId)
+        {
+            return this._AuthenticationService.GetUserTyped(userId);
+        }
+
+        public AccessToken Login(string username, string password)
+        {
+            return this._AuthenticationService.Login(username, password);
         }
     }
 }

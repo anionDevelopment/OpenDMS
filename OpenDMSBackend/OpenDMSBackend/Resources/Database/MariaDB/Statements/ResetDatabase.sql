@@ -11,3 +11,4 @@ delete from `StorageLocations`;
 delete from `Tags`;
 delete from `Roles`;
 delete from `Users`;
+delete from `GRYMigrationInformation`;

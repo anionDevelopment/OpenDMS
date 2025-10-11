@@ -1,7 +1,8 @@
-﻿using GRYLibrary.Core.APIServer.Utilities;
+﻿using GRYLibrary.Core.APIServer.Services.Init;
+using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Core.Configuration;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,10 +13,12 @@ namespace OpenDMSBackend.Core.Services.Misc
     {
         private readonly IGeneralLogger _Logger;
         private readonly IPersistence _Persistence;
-        public HealthCheck(IGeneralLogger logger, IPersistence persistence)
+        private readonly IInitializationService<CommandlineParameter> _InitializationService;
+        public HealthCheck(IGeneralLogger logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService)
         {
             this._Logger = logger;
             this._Persistence = persistence;
+            this._InitializationService  =initializationService;
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
@@ -30,7 +33,7 @@ namespace OpenDMSBackend.Core.Services.Misc
                 this._Logger.Log($"{nameof(this._Persistence)} checked. Current result: {result}", Microsoft.Extensions.Logging.LogLevel.Debug);
 
                 return (result, messages);
-            }, context, cancellationToken);
+            }, context, cancellationToken, this._InitializationService);
         }
     }
 }

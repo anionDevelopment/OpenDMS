@@ -152,7 +152,7 @@ namespace OpenDMSBackend.Core.Services
 
             AccessToken accessToken = new AccessToken();
             accessToken.Value = Guid.NewGuid().ToString();
-            accessToken.ExpiredMoment = this._TimeService.GetCurrentTime().AddDays(1.0);
+            accessToken.ExpiredMoment = this._TimeService.GetCurrentLocalTime().AddDays(1.0);
             userByNameTyped.AccessToken.Add(accessToken);
             this._AuthentificationPersistence.AddAccessToken(userByNameTyped.Id, accessToken);
             return accessToken;
@@ -275,6 +275,11 @@ namespace OpenDMSBackend.Core.Services
         public User GetUserByAccessToken(string accessToken)
         {
             return this._AuthentificationPersistence.GetUserByAccessToken(accessToken);
+        }
+
+        public string GetBaseRoleOfAllUser()
+        {
+            return CodeUnitSpecificConstants.RolenameUsers;
         }
     }
 }

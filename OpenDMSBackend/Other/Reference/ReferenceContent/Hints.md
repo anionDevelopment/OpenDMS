@@ -15,6 +15,8 @@ The following tools from the [tools-list](https://github.com/anionDev/ScriptColl
 - `scriptcollection`
 - `swagger`
 
+When working with office-documents when running locally then it is required that `soffice` is available as commandline-command.
+
 ## IDE
 
 The recommended IDE for this codeunit is [Visual Studio](https://visualstudio.com/).

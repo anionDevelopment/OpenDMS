@@ -1,14 +1,11 @@
-import sys
-from pathlib import Path
-from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjectStructure
+from ScriptCollection.TFCPS.Docker.TFCPS_CodeUnitSpecific_Docker import TFCPS_CodeUnitSpecific_Docker_Functions,TFCPS_CodeUnitSpecific_Docker_CLI
 
-
+ 
 def build():
-    t = TasksForCommonProjectStructure()
-    build_script_file = str(Path(__file__).absolute())
-    t.standardized_tasks_build_for_docker_project(build_script_file, "QualityCheck", 1, sys.argv)
-    t.merge_sbom_file_from_dependent_codeunit_into_this(build_script_file, "OpenDMSBackend")
-    t.merge_sbom_file_from_dependent_codeunit_into_this(build_script_file, "OpenDMSFrontend")
+    tf:TFCPS_CodeUnitSpecific_Docker_Functions=TFCPS_CodeUnitSpecific_Docker_CLI.parse(__file__)
+    tf.build()
+    tf.tfcps_Tools_General.merge_sbom_file_from_dependent_codeunit_into_this(tf.get_codeunit_folder(),tf.get_codeunit_name(),"OpenDMSBackend",tf.use_cache())
+    tf.tfcps_Tools_General.merge_sbom_file_from_dependent_codeunit_into_this(tf.get_codeunit_folder(),tf.get_codeunit_name(),"OpenDMSFrontend",tf.use_cache())
 
 
 if __name__ == "__main__":

@@ -9,8 +9,10 @@ StorageLocation -up-|> IContainer
 IFolder -up-|> IContainer
 IFolder -up-|> IContainee
 Document -up-|> IContainee
+Document --> Group : Business-owner-group
 Folder -up-|> IFolder
 
-User -right-> "*" StorageLocation : Store
+User -right-> "*" StorageLocation : Viewable
+User --> "*" Group
 
 @enduml

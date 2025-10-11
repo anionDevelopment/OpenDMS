@@ -2,9 +2,9 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Authors>Marius Göcke</Authors>
-        <Version>1.1.0</Version>
-        <AssemblyVersion>1.1.0</AssemblyVersion>
-        <FileVersion>1.1.0</FileVersion>
+        <Version>1.1.1</Version>
+        <AssemblyVersion>1.1.1</AssemblyVersion>
+        <FileVersion>1.1.1</FileVersion>
         <SelfContained>false</SelfContained>
         <IsPackable>false</IsPackable>
         <PreserveCompilationContext>false</PreserveCompilationContext>
@@ -26,9 +26,9 @@
         <PlatformTarget>AnyCPU</PlatformTarget>
         <WarningLevel>4</WarningLevel>
         <Prefer32Bit>false</Prefer32Bit>
-        <SignAssembly>True</SignAssembly>
+        <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\Other\Resources\PublicKeys\StronglyNamedKey\OpenDMSPublicKey.snk</AssemblyOriginatorKeyFile>
-        <DelaySign>True</DelaySign>
+        <DelaySign>true</DelaySign>
         <NoWarn>1701;1702;CA1822;CS1591;CS1573;IDE0045;IDE0046;IDE0054;IDE0058;IDE0074;IDE0090;IDE0017;IDE0063;CA1859</NoWarn>
         <WarningsAsErrors>NU1605</WarningsAsErrors>
         <ErrorLog>..\Other\Resources\CodeAnalysisResult\OpenDMSBackendTests.sarif</ErrorLog>
@@ -49,9 +49,9 @@
         <ErrorReport>none</ErrorReport>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Productive'">
-        <DebugType>none</DebugType>
-        <DebugSymbols>false</DebugSymbols>
-        <Optimize>true</Optimize>
+        <DebugType>portable</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <Optimize>false</Optimize>
         <DefineConstants>Productive</DefineConstants>
         <ErrorReport>none</ErrorReport>
     </PropertyGroup>
@@ -67,29 +67,30 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.6" />
-        <PackageReference Include="GRYLibrary" Version="0.12.151" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.7" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
+        <PackageReference Include="GRYLibrary" Version="0.12.170" />
+        <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
+        <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.9" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
-        <PackageReference Include="Microsoft.CodeCoverage" Version="17.14.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.7" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.7" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="Microsoft.CodeCoverage" Version="18.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.9" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.9" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.9" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="Moq" Version="4.20.72" />
-        <PackageReference Include="MSTest.TestAdapter" Version="3.9.3" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.9.3" />
-        <PackageReference Include="NJsonSchema" Version="11.3.2" />
-        <PackageReference Include="Npgsql" Version="9.0.3" />
+        <PackageReference Include="MSTest.TestAdapter" Version="4.0.0" />
+        <PackageReference Include="MSTest.TestFramework" Version="4.0.0" />
+        <PackageReference Include="NJsonSchema" Version="11.5.1" />
+        <PackageReference Include="Npgsql" Version="9.0.4" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.4.0" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
-        <PackageReference Include="prometheus-net" Version="8.2.1" />
-        <PackageReference Include="System.Collections.Immutable" Version="9.0.7" />
-        <PackageReference Include="System.Drawing.Common" Version="9.0.7" />
-        <PackageReference Include="System.Reactive" Version="6.0.1" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.6.1" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+        <PackageReference Include="SimpleOCRLibrary" Version="1.3.0" />
+        <PackageReference Include="System.Collections.Immutable" Version="9.0.9" />
+        <PackageReference Include="System.Drawing.Common" Version="9.0.9" />
+        <PackageReference Include="System.Reactive" Version="6.1.0" />
     </ItemGroup>
 </Project>

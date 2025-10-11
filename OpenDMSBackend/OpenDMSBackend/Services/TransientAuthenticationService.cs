@@ -12,7 +12,7 @@ namespace OpenDMSBackend.Core.Services
     /// </summary>
     public class OpenDMSBackendTransientAuthenticationService : TransientAuthenticationService<User>
     {
-        public OpenDMSBackendTransientAuthenticationService(ITimeService timeService, ITransientAuthenticationServicePersistence<User> transientAuthenticationServicePersistence, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants) : base(timeService, transientAuthenticationServicePersistence)
+        public OpenDMSBackendTransientAuthenticationService(ITimeService timeService, ITransientAuthenticationServicePersistence<User> transientAuthenticationServicePersistence, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants, IAuthenticationServiceSettings authenticationServiceSettings) : base(timeService, transientAuthenticationServicePersistence, authenticationServiceSettings)
         {
         }
     }

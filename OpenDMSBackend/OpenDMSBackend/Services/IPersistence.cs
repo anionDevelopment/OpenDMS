@@ -12,7 +12,6 @@ namespace OpenDMSBackend.Core.Services
         public IContainer GetContainerById(string containerId);
         public void CreateDocument(Document document);
         public uint GetAmountOfDocuments();
-        public void Reset();
         public Document GetDocument(string id);
         public void CreateTag(Tag tag);
         public void AssignTag(string documentId, string tagId);
@@ -29,7 +28,9 @@ namespace OpenDMSBackend.Core.Services
         public bool IsContaineeId(string id);
         public bool IsStorageLocationId(string id);
         public void SetParentOfContainee(IContainee containee, string parentContainerId);
-        public void Delete(string containerOrContaineeId);
+        public bool DeleteIsAllowed(string documentId);
+        public void SoftDelete(string documentId);
+        public void HardDelete(string containerOrContaineeId);
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId);
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId);
         public void Rename(string containerId, string newName);
@@ -55,5 +56,6 @@ namespace OpenDMSBackend.Core.Services
         /// The order is descending regarding to relevance.
         /// </returns>
         public IList<string> Search(string searchTerm);
+        IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow();
     }
 }

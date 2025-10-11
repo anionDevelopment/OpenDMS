@@ -1,6 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
-using Microsoft.AspNetCore.StaticFiles;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
 using Sprache;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using OpenDMSBackend.Core.Services;
-using OpenDMSBackend.Core.Model.BusinessTypes.DocumentTypes;
 using System.IO;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -32,23 +30,24 @@ namespace OpenDMSBackend.Core.Misc
 #endif
         }
 
-        internal static string GetMIMEType(string fileName)
+        internal static string LanguagesListToString(ISet<string> languages)
         {
-            try
+            return string.Join(",", languages);
+        }
+        internal static ISet<string> StringToLanguagesList(string languages)
+        {
+            if (languages == null || string.Empty == languages)
             {
-                if (new FileExtensionContentTypeProvider().TryGetContentType(fileName, out string? contentType))
-                {
-                    if (!string.IsNullOrEmpty(contentType))
-                    {
-                        return contentType;
-                    }
-                }
+                return new HashSet<string>();
             }
-            catch
+            else if (languages.Contains(","))
             {
-                GRYLibrary.Core.Misc.Utilities.NoOperation();
+                return new HashSet<string>(languages.Split(","));
             }
-            return "application/octet-stream";
+            else
+            {
+                return new HashSet<string>() { languages };
+            }
         }
 
         internal static UserInformationDTO GetUserInformation(User user)
@@ -104,17 +103,6 @@ namespace OpenDMSBackend.Core.Misc
             }
         }
 
-        public static DocumentType GetDocumentType(string mimeType)
-        {
-            foreach (DocumentType documentType in DocumentType.AllDocumentTypes)
-            {
-                if (documentType.GetMimeTypes().Contains(mimeType))
-                {
-                    return documentType;
-                }
-            }
-            return Unknown.Instance;
-        }
         public static byte[] ResizeImage(byte[] originalImageBytes, int maxWidth, int maxHeight)
         {
             using MemoryStream inputStream = new MemoryStream(originalImageBytes);

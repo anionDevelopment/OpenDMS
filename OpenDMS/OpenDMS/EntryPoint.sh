@@ -1,7 +1,7 @@
 #!/bin/bash
 export IsRunningInDockerContainer=true
 
-argument=""
+argument="--NoTestRun"
 
 if [[ -n "${InitialAdminPassword}" ]]; then
   argument+=" --InitialAdminPassword $InitialAdminPassword"
@@ -13,6 +13,10 @@ fi
 
 if [[ -n "${InitialDatabaseConnectionString}" ]]; then
   argument+=" --InitialDatabaseConnectionString $InitialDatabaseConnectionString"
+fi
+
+if [[ -n "${OCRDataFolder}" ]]; then
+  argument+=" --OCRDataFolder $OCRDataFolder"
 fi
 
 { cd /Workspace/Application/Backend && dotnet ./OpenDMSBackend.dll $argument; } &

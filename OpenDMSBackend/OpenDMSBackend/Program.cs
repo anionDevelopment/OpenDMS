@@ -1,47 +1,64 @@
-using OpenDMSBackend.Core.Constants;
-using GRYLibrary.Core.Misc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using OpenDMSBackend.Core.Configuration;
 using GRYLibrary.Core.APIServer.CommonRoutes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.ExecutionModes;
-using Microsoft.Extensions.Logging;
-using OpenDMSBackend.Core.Database;
-using GRYLibrary.Core.Logging.GeneralPurposeLogger;
-using GRYLibrary.Core.APIServer.Utilities;
-using System.Collections.Generic;
-using GRYLibrary.Core.APIServer.Services.Interfaces;
-using GRYLibrary.Core.APIServer.Services.Trans;
-using GRYLibrary.Core.APIServer.Mid.AuthS;
-using GRYLibrary.Core.APIServer.MidT.Exception;
-using OpenDMSBackend.Core.Misc;
-using GUtilities = GRYLibrary.Core.Misc.Utilities;
-using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
-using GRYLibrary.Core.APIServer.Services.Init;
-using GRYLibrary.Core.APIServer.Services.Auth.R;
-using GRYLibrary.Core.APIServer.Mid.M05DLog;
-using GRYLibrary.Core.APIServer.Mid.AutS;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using GRYLibrary.Core.APIServer.Mid.AuthS;
+using GRYLibrary.Core.APIServer.Mid.AutS;
 using GRYLibrary.Core.APIServer.Mid.Ex;
-using OpenDMSBackend.Core.Services;
+using GRYLibrary.Core.APIServer.Mid.M05DLog;
+using GRYLibrary.Core.APIServer.MidT.Exception;
+using GRYLibrary.Core.APIServer.Services.Auth.R;
 using GRYLibrary.Core.APIServer.Services.CredH;
-using GRYLibrary.Core.APIServer.Settings.Configuration;
-using OpenDMSBackend.Core.BackgroundServices;
+using GRYLibrary.Core.APIServer.Services.Database;
+using GRYLibrary.Core.APIServer.Services.Init;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
+using GRYLibrary.Core.APIServer.Services.Trans;
+using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.FilePath;
-using System;
-using GRYLibrary.Core.APIServer.Services.Database.DatabaseInterator;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using OpenDMSBackend.Core.BackgroundServices;
+using OpenDMSBackend.Core.Configuration;
+using OpenDMSBackend.Core.Constants;
+using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Core.Services.Misc;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using GUtilities = GRYLibrary.Core.Misc.Utilities;
+using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
 
 namespace OpenDMSBackend.Core
 {
     internal class Program
     {
+        internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get; set; }
+        internal bool ListenOnEveryIP { get; set; } = false;
+        internal bool RunAsync { get; set; } = false;
+        internal IBusinessLogicService? _BusinessLogicService;
+        internal IGRYLog? _Log;
+
+        internal IHostApplicationLifetime? _HostApplicationLifetime;
+
         internal static int Main(string[] commandlineArguments)
+        {
+            return new Program().MainImplementation(commandlineArguments);
+        }
+        internal async Task<int> MainImplementationAsync(string[] commandlineArguments)
+        {
+            return await Task.Run(() => MainImplementation(commandlineArguments));
+        }
+        internal int MainImplementation(string[] commandlineArguments)
         {
             bool runPersistent = false;
             return Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
@@ -54,6 +71,7 @@ namespace OpenDMSBackend.Core
                     {
                         ControllerType = typeof(MaintenanceRoutesController)
                     };
+                    initializationInformation.ApplicationConstants.ListenOnEveryIP = this.ListenOnEveryIP;
                     initializationInformation.ApplicationConstants.KnownTypes.Add(typeof(CodeUnitSpecificConfiguration));
                     initializationInformation.ApplicationConstants.AuthenticationMiddleware = typeof(AuthSMiddleware);
                     initializationInformation.ApplicationConstants.AuthorizationMiddleware = typeof(AutSRMiddleware);
@@ -67,22 +85,28 @@ namespace OpenDMSBackend.Core
                         {
                             @$"^/favicon\.ico$",
                             @$"^/API/Other/Resources/APISpecification/*",
+                            @$"^/API/Other/Maintenance/Metrics$",
+                            @$"^/API/Other/Maintenance/HealthCheck$",
                         },
-                        MaximalLengthOfResponseBodies = 50,
+                        MaximalLengthofRequestBodies = 500,
+                        MaximalLengthOfResponseBodies = 500,
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ConfigurationForExceptionManagerMiddleware = new ExceptionManagerConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation();
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthenticationConfiguration = new AuthSConfiguration()
                     {
-                        RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>() {
+                        RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>()
+                        {
+                            @$"^/favicon\.ico$",
                             @$"^/API/Other/Resources/APISpecification/*",
+                            @$"^/API/Other/Maintenance/Metrics$",
                             @$"^/API/Other/Maintenance/HealthCheck$",
                         },
                     };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
-                        DatabaseType = initializationInformation.CommandlineParameter.InitialDatabaseType,
+                        DatabaseType = "PostgreSQL",
                         DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseType ?? "[insert database-connectionstring here and set InitialDatabaseType accordingly]",
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
@@ -93,121 +117,145 @@ namespace OpenDMSBackend.Core
                         TermsOfServiceLink = $"https://information.{domain}/Products/{GeneralConstants.CodeUnitName}/TermsOfService"
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration = new AutSRConfiguration();
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ImportDefinitions = new HashSet<ImportDefinition>();
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DefaultOCRLanguages = new HashSet<string>() { "en" };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP();
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP((initializationInformation.CommandlineParameter.RealRun) ? HTTP.DefaultPort : CodeUnitSpecificConstants.PortForIntegrationTestRun);
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
+                    if (!initializationInformation.CommandlineParameter.RealRun)
+                    {
+                        GRYLibrary.Core.Misc.Utilities.EnsureDirectoryDoesNotExist(initializationInformation.ApplicationConstants.BaseFolder);
+                        GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(initializationInformation.ApplicationConstants.BaseFolder);
+                    }
                 };
                 apiServerConfiguration.SetFunctionalInformationAction = (functionalInformation) =>
                 {
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForLoggingMiddleware);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
-                    IGeneralLogger logger = functionalInformation.Logger;
-                    IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog")));
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
-                    bool useDatabase = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != null;
-                    if (useDatabase)
+                    try
                     {
-                        logger.Log($"Run persistent using database \"{functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType}\".", LogLevel.Information);
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, PersistentAuthenticationService>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<IPersistence>());
-                        IGenericDatabaseInteractor genericDatabaseInteractor;
-                        if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "PostgreSQL")
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForLoggingMiddleware);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
+                        IGeneralLogger logger = functionalInformation.Logger;
+                        IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog")));
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<CommandlineParameter>(functionalInformation.InitializationInformation.CommandlineParameter);
+                        bool useDatabase = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != null && functionalInformation.InitializationInformation.CommandlineParameter.RealRun;
+                        if (useDatabase)
                         {
-                            genericDatabaseInteractor = new PostgreSQLDatabaseInteractor();
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePostgreSQLPersistence>();
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerPostgreSQL>();
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderPostgreSQL>();
-                            functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
+                            logger.Log($"Run persistent using database \"{functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType}\".", LogLevel.Information);
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, PersistentAuthenticationService>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<IPersistence>());
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabasePersistence>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabasePersistenceConfiguration>(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
+                            if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "PostgreSQL")
                             {
-                                string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                                Tools.ConnectToDatabaseWrapper(() =>
-                                {
-                                    options.UseNpgsql(connectionString, sqlOptions =>
-                                    {
-                                        sqlOptions.CommandTimeout(120);
-                                    });
-                                }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
-                            }, ServiceLifetime.Singleton);
-                        }
-                        else if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "MariaDB")
-                        {
-                            genericDatabaseInteractor = new MariaDBDatabaseInteractor();
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, DatabaseMariaDBPersistence>();
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IDatabaseManager, DatabaseManagerMariaDB>();
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderMariaDB>();
-                            functionalInformation.WebApplicationBuilder.Services.AddDbContext<DatabaseContext>(options =>
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderPostgreSQL>();
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGenericDatabaseInteractor, PostgreSQLDatabaseInteractor>();
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOpenDMSDatabaseInteractor, DatabaseInteractorPostgreSQL>();
+                            }
+                            else if (functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType == "MariaDB")
                             {
-                                string connectionString = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseConnectionString;
-                                Tools.ConnectToDatabaseWrapper(() =>
-                                {
-                                    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), sqlOptions =>
-                                    {
-                                        sqlOptions.CommandTimeout(120);
-                                    });
-                                }, GeneralLogger.NoLog(), genericDatabaseInteractor.AdaptConnectionString(connectionString));
-                            }, ServiceLifetime.Singleton);
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<ISQLProvider, SQLProviderMariaDB>();
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGenericDatabaseInteractor, MariaDBDatabaseInteractor>();
+                                functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOpenDMSDatabaseInteractor, DatabaseInteractorMariaDB>();
+                            }
+                            else
+                            {
+                                throw new NotSupportedException("Database not supported. For a list of supported databases see the documentation.");
+                            }
                         }
                         else
                         {
-                            throw new NotSupportedException("Database not supported. For a list of supported databases see the documentation.");
+                            logger.Log($"Run transient.", LogLevel.Information);
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, TransientPersistence>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServiceSettings>(new AuthenticationServiceSettings()
+                            {
+                                BaseRoleOfAllUser = CodeUnitSpecificConstants.RolenameUsers
+                            });
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendTransientAuthenticationService>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, TransientAuthenticationServicePersistence>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
                         }
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGenericDatabaseInteractor>(genericDatabaseInteractor);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementScheduler, ManagementScheduler>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceWrapper, OCRServiceWrapper>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IUserAuthorizationService>(sp => sp.GetRequiredService<IRoleBasedAuthorizationService>());
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthorizationService>(sp => sp.GetRequiredService<IUserAuthorizationService>());
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<ICredentialsProvider, HeaderService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForLoggingMiddleware);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthenticationConfiguration);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthenticationMiddleware);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthorizationMiddleware);
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CommandlineParameter>, InitializationService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
+                        this.SetupMocks?.Invoke(functionalInformation);
+
                     }
-                    else
+                    catch
                     {
-                        logger.Log($"Run transient.", LogLevel.Information);
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IPersistence, TransientPersistence>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendTransientAuthenticationService>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, TransientAuthenticationServicePersistence>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
+                        throw;
                     }
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRService, OCRService>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IUserAuthorizationService>(sp => sp.GetRequiredService<IRoleBasedAuthorizationService>());
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthorizationService>(sp => sp.GetRequiredService<IUserAuthorizationService>());
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<ICredentialsProvider, HeaderService>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForLoggingMiddleware);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthenticationConfiguration);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthenticationMiddleware);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthorizationMiddleware);
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CommandlineParameter>, InitializationService>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
-                    functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
-                    IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
-                    functionalInformationForWebApplication.PreRun = () =>
+                    try
                     {
-                        //initialize
-                        GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>()).Initialize(apiServerConfiguration.CommandlineParameter);
+                        this._BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
+                        this._Log = functionalInformationForWebApplication.WebApplication.Services.GetService<IGRYLog>();
+                        this._HostApplicationLifetime = functionalInformationForWebApplication.WebApplication.Services.GetService<IHostApplicationLifetime>();
+                        IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
+                        IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
+                        functionalInformationForWebApplication.RunAsync = this.RunAsync;
+                        bool runServices = functionalInformationForWebApplication.InitializationInformation.CommandlineParameter.RealRun;
+                        functionalInformationForWebApplication.PreRun = () =>
+                        {
+                            //initialize
+                            GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>()).Initialize(apiServerConfiguration.CommandlineParameter);
+                            if (runServices)
+                            {
+                                //start background-services
+                                metricsService.StartAsync();
+                                managementScheduler.StartAsync();
+                            }
+                        };
+                        functionalInformationForWebApplication.PostRun = () =>
+                        {
+                            if (runServices)
+                            {
+                                metricsService.Stop().Wait();
+                                managementScheduler.Stop().Wait();
+                            }
+                        };
 
-                        //start background-services
-                        metricsService.StartAsync();
-                    };
-                    functionalInformationForWebApplication.PostRun = () =>
+                    }
+                    catch
                     {
-                        metricsService.Stop().Wait();
-                    };
+                        throw;
+                    }
                 };
             });
+        }
+
+        internal void Stop()
+        {
+            GUtilities.AssertNotNull(this._HostApplicationLifetime, nameof(_HostApplicationLifetime)).StopApplication();
         }
     }
 }

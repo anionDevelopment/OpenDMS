@@ -38,6 +38,12 @@ CREATE TABLE `Documents` (
     `DocumentPreview` longblob not null,
     `OCRContent` longtext not null,
     `DocumentContent` longblob not null,
+    `IsSoftDeleted` tinyint(1) not null,
+    `DeleteIsNotAllowedBefore` datetime(6) null,
+    `MustBeHardDeletedAfter` datetime(6) null,
+    `GroupOfBusinessOwner` varchar(255) not null,
+    `Version` varchar(255) not null,
+    `AssignedLanguages` varchar(255) null,
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 

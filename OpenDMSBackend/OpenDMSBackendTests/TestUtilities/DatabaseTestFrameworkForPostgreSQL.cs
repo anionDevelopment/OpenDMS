@@ -1,25 +1,13 @@
-﻿using GRYLibrary.Core.APIServer.Utilities;
-using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
+﻿using GRYLibrary.Core.APIServer.Services.Database;
+using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.Logging.GRYLogger;
 
 namespace OpenDMSBackend.Tests.TestUtilities
 {
     public sealed class DatabaseTestFrameworkForPostgreSQL : DatabaseTestFrameworkTemplate
     {
-        public DatabaseTestFrameworkForPostgreSQL() : base("opendmsbackend_database", "Host=localhost; Port=5432; Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;", Utilities.GetTestPostgreSQLDatabaseFolder())
+        public DatabaseTestFrameworkForPostgreSQL(IGRYLog log) : base("opendmsbackend_database_postgresql", new DatabasePersistenceConfiguration() { DatabaseType = "PostgreSQL", DatabaseConnectionString = Utilities.GetTestPostgreSQLConnectionString() }, Utilities.GetTestPostgreSQLDatabaseFolder(), OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.RepositoryFolder, "LocaltestservicePostgresqlStart", "LocaltestservicePostgresqlStop", OpenDMSBackend.Tests.TestUtilities.Utilities.GetResetDatabaseScript("PostgreSQL"), log)
         {
-        }
-
-
-
-        public override void ConfigureDb<TDbContext>(DbContextOptionsBuilder<TDbContext> optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(this.ConnectionString);
-        }
-
-        public override DbConnection CreateConnection(string connectionString)
-        {
-            return new Npgsql.NpgsqlConnection(connectionString);
         }
 
         public override string GetDatabaseName()

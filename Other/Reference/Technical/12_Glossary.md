@@ -9,3 +9,4 @@
 
 | Abbreviation | Meaning |
 | ------------ | ------- |
+| DMS | document-management-system |

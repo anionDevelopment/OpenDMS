@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v1.1.0 API documentation",
+    "title": "OpenDMSBackend v1.1.1 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v1.1.0"
+    "version": "v1.1.1"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
@@ -95,6 +95,16 @@
             }
           },
           {
+            "name": "additionalOCRLanguages",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "X-AccessToken",
             "in": "header",
             "description": "Access Token",
@@ -119,6 +129,12 @@
               }
             },
             "application/*+json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "application/octet-stream": {
               "schema": {
                 "type": "string",
                 "format": "byte"
@@ -1108,11 +1124,10 @@
           },
           "importDate": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "lastEditDate": {
             "type": "string",
-            "format": "date-time",
             "nullable": true
           },
           "tags": {
@@ -1137,6 +1152,32 @@
           },
           "documentPreviewAsBase64": {
             "type": "string",
+            "nullable": true
+          },
+          "isSoftDeleted": {
+            "type": "boolean"
+          },
+          "deleteIsNotAllowedBefore": {
+            "type": "string",
+            "nullable": true
+          },
+          "mustBeHardDeletedAfter": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupOfBusinessOwner": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version3"
+          },
+          "assignedLanguages": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           }
         },
@@ -1163,11 +1204,10 @@
           },
           "importDate": {
             "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "lastEditDate": {
             "type": "string",
-            "format": "date-time",
             "nullable": true
           },
           "readableId": {
@@ -1180,6 +1220,32 @@
           },
           "previewAsBase64": {
             "type": "string",
+            "nullable": true
+          },
+          "isSoftDeleted": {
+            "type": "boolean"
+          },
+          "deleteIsNotAllowedBefore": {
+            "type": "string",
+            "nullable": true
+          },
+          "mustBeHardDeletedAfter": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupOfBusinessOwner": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "$ref": "#/components/schemas/Version3"
+          },
+          "assignedLanguages": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           }
         },
@@ -1272,6 +1338,24 @@
           },
           "isAdmin": {
             "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Version3": {
+        "type": "object",
+        "properties": {
+          "major": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "minor": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "patch": {
+            "type": "integer",
+            "format": "int64"
           }
         },
         "additionalProperties": false

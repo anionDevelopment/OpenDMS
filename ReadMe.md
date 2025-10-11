@@ -22,6 +22,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 
 ## Not implemented features
 
+- Allows self-hosting.
 - Allow uploading and deleting documents.
 - Allow setting retention-date-metadata.
 - Allow setting contact-metadata.

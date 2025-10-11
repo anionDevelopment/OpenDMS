@@ -1,3 +1,9 @@
 # 5. Building Block View
 
-TODO
+## Code-units
+
+![CodeUnits-Overview.svg](./Diagrams/CodeUnits-Overview.svg)
+
+## Model
+
+![Model.svg](./Diagrams/Model.svg)

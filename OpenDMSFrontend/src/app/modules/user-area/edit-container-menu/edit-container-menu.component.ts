@@ -39,7 +39,7 @@ export class EditContainerMenuComponent {
     const reader = new FileReader()
     reader.onload = (e) => {
       const blobAsBaseString = (reader.result! as string).split(',')[1];
-      this.openDMSBackendService.aPIV1OpenDMSBackendAddDocumentContainerIdPost(this.containerId!, this.storageService.getAccessToken(), blob.name, blob.name, '"' + blobAsBaseString + '"').subscribe((newDocumentId) => {
+      this.openDMSBackendService.aPIV1OpenDMSBackendAddDocumentContainerIdPost(this.containerId!, this.storageService.getAccessToken(), blob.name, blob.name, [], '"' + blobAsBaseString + '"').subscribe((newDocumentId) => {
         this.openDMSBackendService.aPIV1OpenDMSBackendGetDocumentPreviewGet(this.storageService.getAccessToken(), newDocumentId).subscribe(newDocument => {
           this.documentAdded.next(newDocument);
         });
