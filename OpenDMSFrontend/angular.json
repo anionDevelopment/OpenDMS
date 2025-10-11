@@ -37,7 +37,7 @@
             "scripts": []
           },
           "configurations": {
-            "Production": {
+            "Productive": {
               "budgets": [
                 {
                   "type": "initial",
@@ -54,7 +54,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.Production.ts"
+                  "with": "src/environments/environment.Productive.ts"
                 }
               ]
             },
@@ -86,8 +86,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "Production": {
-              "buildTarget": "OpenDMSFrontend:build:Production"
+            "Productive": {
+              "buildTarget": "OpenDMSFrontend:build:Productive"
             },
             "QualityCheck": {
               "buildTarget": "OpenDMSFrontend:build:QualityCheck"
@@ -105,7 +105,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "configurations": {
-            "Production": {},
+            "Productive": {},
             "QualityCheck": {},
             "Development": {}
           },
