@@ -2,7 +2,7 @@ services:
   opendms:
     container_name: opendms
     env_file: Variables.env
-    image: opendms:1.1.2
+    image: opendms:1.1.3
     ports:
     - 443:443
     volumes:
