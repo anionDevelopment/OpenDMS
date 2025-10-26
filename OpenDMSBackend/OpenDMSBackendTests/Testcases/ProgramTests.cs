@@ -2,9 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 
@@ -20,7 +17,7 @@ namespace OpenDMSBackend.Tests.Testcases
         {
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
-                var result = ProgramExitWithZeroAfterCallingStopAsync().WaitAndGetResult();
+                var result = this.ProgramExitWithZeroAfterCallingStopAsync().WaitAndGetResult();
                 Assert.IsTrue(result.Item1, result.Item2);
             }
         }

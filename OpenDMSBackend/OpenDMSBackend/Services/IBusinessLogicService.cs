@@ -61,6 +61,7 @@ namespace OpenDMSBackend.Core.Services
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId);
         public Folder GetFolder(string requesterUserId, string folderId);
         public Document GetDocumentFromReadableId(string requesterUserId, uint readableDocumentId);
+        public StorageLocation GetStorageLocation(string requesterUserId, string storageLocationId);
 
         #endregion
 

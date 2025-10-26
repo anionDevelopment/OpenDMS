@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
+using Keycloak.Net.Models.Root;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenDMSBackend.Core.Constants;
@@ -106,6 +107,16 @@ namespace OpenDMSBackend.Core.Controller
         public IActionResult AddStorageLocation([FromRoute] string name)
         {
             return this.Ok(this._BusinessLogicService.AddStorageLocation(this.GetUser().Id, name));
+        }
+
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetStorageLocation)}/{{{nameof(id)}}}")]
+        [ProducesResponseType(typeof(StorageLocationDTO), StatusCodes.Status200OK)]
+        public IActionResult GetStorageLocation(string id)
+        {
+            return this.Ok(this._BusinessLogicService.GetStorageLocation(this.GetUser().Id, id).ToDTO());
         }
 
         [Authenticate]

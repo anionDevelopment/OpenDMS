@@ -26,4 +26,10 @@ export class ContentTreeComponent implements OnInit {
     var storageLocations = this.storageLocations.filter(storageLocation => storageLocation.id != containerId);
     this.storageLocations = [...storageLocations];
   }
+  
+  onStorageLocationAdded(storageLocation: StorageLocationDTO){
+    var storageLocations = this.storageLocations
+    storageLocations.push(storageLocation);
+    this.storageLocations = [...storageLocations];
+  }
 }

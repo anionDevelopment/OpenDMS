@@ -36,6 +36,7 @@ import { LinkToDocumentComponent } from './link-to-document/link-to-document.com
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 import { EditDocumentMenuComponent } from './edit-document-menu/edit-document-menu.component';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { EditStorageLocationMenuComponent } from './edit-storage-location-menu/edit-storage-location-menu.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
     EditDocumentDialogComponent,
     EditContainerMenuComponent,
     EditContainerDialogComponent,
+    EditStorageLocationMenuComponent,
     LinkToDocumentComponent,
     UserIconComponent,
     UserAreaContainerComponent,

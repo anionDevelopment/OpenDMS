@@ -427,8 +427,14 @@ namespace OpenDMSBackend.Core.Services
 
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId)
         {
-            List<StorageLocation> result = this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(storageLocationId => this._Persistence.GetStorageLocation(storageLocationId)).ToList();
+            List<StorageLocation> result = this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(this._Persistence.GetStorageLocation).ToList();
             return result;
+        }
+
+        public StorageLocation GetStorageLocation(string requesterUserId, string storageLocationId)
+        {
+            this.EnsureUserIsAllowedToViewContent(requesterUserId, storageLocationId);
+            return  this._Persistence.GetStorageLocation(storageLocationId);
         }
 
         public Folder GetFolder(string requesterUserId, string folderId)

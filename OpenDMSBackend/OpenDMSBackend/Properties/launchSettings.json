@@ -2,7 +2,7 @@
   "profiles": {
     "OpenDMSBackend": {
       "commandName": "Project",
-      "commandLineArgs": "--RealRun --OCRDataFolder ../../Resources/OCRData",
+      "commandLineArgs": "Run --RealRun --InitialAdminPassword admin --OCRDataFolder ../../Resources/OCRData",
     }
   }
 }

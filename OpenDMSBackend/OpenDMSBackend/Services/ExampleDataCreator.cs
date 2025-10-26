@@ -25,7 +25,9 @@ namespace OpenDMSBackend.Core.Services
             string userGroupe = this._AuthenticationService.GetBaseRoleOfAllUser();
 
             (string userId, string storageLocationId) userDetails2 = this.AddUser(2);//example with some more documents
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             string folder1Id = this.AddFolder(1, userDetails2.userId, userDetails2.storageLocationId);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             string folder2Id = this.AddFolder(2, userDetails2.userId, userDetails2.storageLocationId);
             string folder3Id = this.AddFolder(3, userDetails2.userId, userDetails2.storageLocationId);
             string folder4Id = this.AddFolder(4, userDetails2.userId, folder3Id);
@@ -79,7 +81,9 @@ namespace OpenDMSBackend.Core.Services
             string title = $"Document{documentNumber.ToString().PadLeft(2, '0')}";
             string filename = $"{title}.pdf";
             byte[] content = GetFileContentFromEmbeddedExampleDocuments(filename);
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             DateTime creationDate = initialDate.AddMinutes(documentNumber);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content,  groupOfBusinessOwner,new HashSet<string>());
         }
 
