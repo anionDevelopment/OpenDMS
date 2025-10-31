@@ -32,6 +32,7 @@ import { DocumentTableComponent } from '../document-table/document-table.compone
 import { ContentTreeComponent } from '../content-tree/content-tree.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SearchComponent } from '../search/search.component';
+import { EditStorageLocationMenuComponent } from '../edit-storage-location-menu/edit-storage-location-menu.component';
 
 @Component({
   selector: 'app-user-area-container',
@@ -72,6 +73,7 @@ describe('DocumentsListComponent', () => {
       declarations: [
         ContentTreeComponent,
         DocumentTableComponent,
+        EditStorageLocationMenuComponent,
         UserAreaContainerComponentMock,
         DocumentsListComponent,
         SearchComponent,

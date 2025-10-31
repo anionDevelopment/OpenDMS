@@ -22,6 +22,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { of } from 'rxjs';
+import { EditStorageLocationMenuComponent } from '../edit-storage-location-menu/edit-storage-location-menu.component';
 
 describe('ContentTreeComponent', () => {
   let component: ContentTreeComponent;
@@ -53,6 +54,7 @@ describe('ContentTreeComponent', () => {
       ],
       declarations: [
         ContentTreeComponent,
+        EditStorageLocationMenuComponent,
       ],
       providers: [
         {

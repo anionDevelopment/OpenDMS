@@ -62,7 +62,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                             {
                                 message = $"{message} Last log entries:\n" + string.Join("\n", logMessages.Select(item =>
                                 {
-                                    item.Format(this._Program._Log.Configuration, out string result, out int _, out int _, out ConsoleColor _, GRYLogLogFormat.GRYLogFormat, null);
+                                    item.Format(this._Program._Log.Configuration, out string result, out int _, out int _, out ConsoleColor _, GRYLogLogFormat.GRYLogFormat);
                                     return result;
                                 }));
                             }

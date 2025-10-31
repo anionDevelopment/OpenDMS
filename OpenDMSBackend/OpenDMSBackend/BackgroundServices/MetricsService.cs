@@ -1,6 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.BaseServices;
 using GRYLibrary.Core.APIServer.Settings;
-using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Prometheus;
 using OpenDMSBackend.Core.Constants;
@@ -30,7 +29,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
             }
             catch (Exception exception)
             {
-                this._Logger.LogException(exception, "Error while calculating metrics");
+                this._Logger.Log("Error while calculating metrics", exception);
             }
         }
 

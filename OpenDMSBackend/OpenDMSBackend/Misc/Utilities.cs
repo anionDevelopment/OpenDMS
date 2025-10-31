@@ -118,9 +118,5 @@ namespace OpenDMSBackend.Core.Misc
             image.Save(outputStream, GRYLibrary.Core.Misc.Utilities.GetValue(image.Metadata.DecodedImageFormat));
             return outputStream.ToArray();
         }
-        internal static bool IsRunningInContainer()
-        {
-            return "true".Equals(Environment.GetEnvironmentVariable("IsRunningInDockerContainer"));
-        }
     }
 }

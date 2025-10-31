@@ -2,7 +2,6 @@
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Exceptions;
-using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
@@ -14,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class OCRServiceWrapper : IOCRServiceWrapper, IExternalService
+    public sealed class OCRServiceWrapper : IOCRServiceWrapper, IExternalService
     {
         private bool _IsAvailable = false;
         private readonly SimpleOCR.Library.Core.IOCRService _OCRService;
@@ -39,7 +38,7 @@ namespace OpenDMSBackend.Core.Services
             }
             catch (Exception e)
             {
-                log.LogException(e, "OCR-service not available.", Microsoft.Extensions.Logging.LogLevel.Warning);
+                log.Log("OCR-service not available.", e, Microsoft.Extensions.Logging.LogLevel.Warning);
             }
         }
         public string GetOCRContent(byte[] documentContentAsPicture, ISet<string> additionalLanguages)
