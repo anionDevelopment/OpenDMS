@@ -111,6 +111,16 @@ namespace OpenDMSBackend.Core.Controller
         [Authenticate]
         [HttpGet]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetStorageLocation)}/{{{nameof(id)}}}")]
+        [ProducesResponseType(typeof(StorageLocationDTO), StatusCodes.Status200OK)]
+        public IActionResult GetStorageLocation(string id)
+        {
+            return this.Ok(this._BusinessLogicService.GetStorageLocation(this.GetUser().Id, id).ToDTO());
+        }
+
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [Route($"{nameof(GetAllViewableStorageLocations)}")]
         [ProducesResponseType(typeof(StorageLocationDTO[]), StatusCodes.Status200OK)]
         public IActionResult GetAllViewableStorageLocations()

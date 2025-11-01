@@ -1,12 +1,10 @@
-﻿using GRYLibrary.Core.APIServer;
-using GRYLibrary.Core.APIServer.Settings.Configuration;
+﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using OpenDMSBackend.Core;
 using OpenDMSBackend.Core.Configuration;
-using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using System;
@@ -17,7 +15,7 @@ using System.Threading;
 
 namespace OpenDMSBackend.Tests.TestUtilities
 {
-    public class IntegrationTestFramework : IDisposable
+    public sealed class IntegrationTestFramework : IDisposable
     {
         private bool _Running = false;
         private readonly IDictionary<User, string> _UserPasswords = new Dictionary<User, string>();
@@ -56,15 +54,15 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     GRYLibrary.Core.Misc.Utilities.AssertCondition(exitCode == 0, () =>
                     {
                         string message = $"Exitode of main-method was {exitCode}.";
-                        if (_Program._Log != null)//TODO this condition should not be required. but for unknown reasons the _log-property is null and this causes problems whille retrieving the logs here which would be useful.
+                        if (this._Program._Log != null)//TODO this condition should not be required. but for unknown reasons the _log-property is null and this causes problems whille retrieving the logs here which would be useful.
                         {
-                            IGRYLog log = GRYLibrary.Core.Misc.Utilities.AssertNotNull(_Program._Log, nameof(Program._Log));
+                            IGRYLog log = GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._Program._Log, nameof(Program._Log));
                             LogItem[] logMessages = log.LastLogEntries.GetEntries();
                             if (logMessages.Any())
                             {
                                 message = $"{message} Last log entries:\n" + string.Join("\n", logMessages.Select(item =>
                                 {
-                                    item.Format(_Program._Log.Configuration, out string result, out int _, out int _, out ConsoleColor _, GRYLogLogFormat.GRYLogFormat, null);
+                                    item.Format(this._Program._Log.Configuration, out string result, out int _, out int _, out ConsoleColor _, GRYLogLogFormat.GRYLogFormat);
                                     return result;
                                 }));
                             }
@@ -142,7 +140,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         }
         public string GetServerURL()
         {
-            return $"http://127.0.0.1:{CodeUnitSpecificConstants.PortForIntegrationTestRun}";
+            return $"http://127.0.0.1:{HTTP.DefaultPort}";
         }
         public void Dispose()
         {

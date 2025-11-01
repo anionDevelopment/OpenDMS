@@ -52,7 +52,7 @@ namespace OpenDMSBackend.Core.Services
         {
             lock (_LockObject)
             {
-                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTime(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(SimpleOCR.Library.Core.Misc.Utilities.GetMIMEType(originalFilename)), content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages);
+                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(SimpleOCR.Library.Core.Misc.Utilities.GetMIMEType(originalFilename)), content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages);
                 this.AnalyseDocument(document);
                 this.Validate(document);
                 this._Persistence.CreateDocument(document);
@@ -427,8 +427,14 @@ namespace OpenDMSBackend.Core.Services
 
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId)
         {
-            List<StorageLocation> result = this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(storageLocationId => this._Persistence.GetStorageLocation(storageLocationId)).ToList();
+            List<StorageLocation> result = this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(this._Persistence.GetStorageLocation).ToList();
             return result;
+        }
+
+        public StorageLocation GetStorageLocation(string requesterUserId, string storageLocationId)
+        {
+            this.EnsureUserIsAllowedToViewContent(requesterUserId, storageLocationId);
+            return  this._Persistence.GetStorageLocation(storageLocationId);
         }
 
         public Folder GetFolder(string requesterUserId, string folderId)

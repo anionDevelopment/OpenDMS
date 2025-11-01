@@ -56,7 +56,7 @@ namespace OpenDMSBackend.Core
         }
         internal async Task<int> MainImplementationAsync(string[] commandlineArguments)
         {
-            return await Task.Run(() => MainImplementation(commandlineArguments));
+            return await Task.Run(() => this.MainImplementation(commandlineArguments));
         }
         internal int MainImplementation(string[] commandlineArguments)
         {
@@ -106,8 +106,8 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
-                        DatabaseType = "PostgreSQL",
-                        DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseType ?? "[insert database-connectionstring here and set InitialDatabaseType accordingly]",
+                        DatabaseConnectionString = "Server=opendms_database;Port=5432;Database=OpenDMSDatabase;UID=user;PWD=pa55w0rd;Search Path=public;",
+                        DatabaseType = Debugger.IsAttached ? "Transient" : "PostgreSQL",
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
@@ -122,7 +122,7 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP((initializationInformation.CommandlineParameter.RealRun) ? HTTP.DefaultPort : CodeUnitSpecificConstants.PortForIntegrationTestRun);
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP( HTTP.DefaultPort);
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
@@ -145,7 +145,7 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<CommandlineParameter>(functionalInformation.InitializationInformation.CommandlineParameter);
-                        bool useDatabase = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != null && functionalInformation.InitializationInformation.CommandlineParameter.RealRun;
+                        bool useDatabase = functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != null && functionalInformation.InitializationInformation.CommandlineParameter.RealRun && functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType != "Transient";
                         if (useDatabase)
                         {
                             logger.Log($"Run persistent using database \"{functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration.DatabaseType}\".", LogLevel.Information);
@@ -255,7 +255,7 @@ namespace OpenDMSBackend.Core
 
         internal void Stop()
         {
-            GUtilities.AssertNotNull(this._HostApplicationLifetime, nameof(_HostApplicationLifetime)).StopApplication();
+            GUtilities.AssertNotNull(this._HostApplicationLifetime, nameof(this._HostApplicationLifetime)).StopApplication();
         }
     }
 }

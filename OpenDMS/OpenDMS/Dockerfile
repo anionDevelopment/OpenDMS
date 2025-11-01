@@ -1,4 +1,5 @@
 FROM debian:stable-slim
+ENV ISRUNNINGINCONTAINER="true"
 
 RUN mkdir /Workspace && \
     mkdir /Workspace/Application && \
