@@ -104,6 +104,8 @@ namespace OpenDMSBackend.Core
                         },
                     };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
+                    //TODO use CommandlineParameter.InitialDatabaseType. for initialization
+                    //TODO use CommandlineParameter.InitialDatabaseConnectionString. for initialization
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
                         DatabaseConnectionString = "Server=opendms_database;Port=5432;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;Search Path=public;",

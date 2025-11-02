@@ -5,6 +5,7 @@ Currently the following commandline-parameter:
 - `InitialAdminPassword`
 - `InitialDatabaseType`
 - `InitialDatabaseConnectionString`
+- `OCRDataFolder`
 
 This arguments will be used when there is no persisted configuration-file where the values can be loaded from.
 This is typically the case on first run when the configuration is generated.
