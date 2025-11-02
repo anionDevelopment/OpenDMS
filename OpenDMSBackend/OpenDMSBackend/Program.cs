@@ -106,7 +106,7 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
-                        DatabaseConnectionString = "Server=opendms_database;Port=5432;Database=OpenDMSDatabase;UID=user;PWD=pa55w0rd;Search Path=public;",
+                        DatabaseConnectionString = "Server=opendms_database;Port=5432;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;Search Path=public;",
                         DatabaseType = Debugger.IsAttached ? "Transient" : "PostgreSQL",
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
