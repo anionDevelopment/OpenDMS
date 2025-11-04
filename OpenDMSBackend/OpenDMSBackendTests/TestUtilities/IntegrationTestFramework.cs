@@ -40,14 +40,13 @@ namespace OpenDMSBackend.Tests.TestUtilities
             {
                 try
                 {
-
                     this._Program = new Program();
                     this._Program.RunAsync = !this._IntegrationTestConfiguration.RunInOwnThread;
                     this._Program.ListenOnEveryIP = false;
                     this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
 
                     string[] args = new string[] {
-                        @$"--{nameof(CommandlineParameter.OCRDataFolder)}", Utilities.GetOCRDataFolder()
+                        @$"--{nameof(CommandlineParameter.InitialOCRDataFolder)}", Utilities.GetOCRDataFolder()
                     };//TODO add option to pass more configuration-values for the test-run like port etc. so that this can not go wrong due to a different configuration from a previous (manual) run.
                     var exitCode = this._Program.MainImplementation(args);
                     Thread.Sleep(TimeSpan.FromSeconds(5));

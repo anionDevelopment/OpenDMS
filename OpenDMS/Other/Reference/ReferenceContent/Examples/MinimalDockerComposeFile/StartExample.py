@@ -14,7 +14,7 @@ def start_dockerfile_example():
         'InitialDatabaseType': 'PostgreSQL',
         'InitialDatabaseConnectionString': 'postgresql://root:R00tpa55w0rd@opendms_database:5432/OpenDMSDatabase',
     }))
-    t.start_dockerfile_example(current_file, 3, True, False, sys.argv, env_file_name)
+    t.start_dockerfile_example(current_file, True, True, env_file_name)
 
 
 if __name__ == "__main__":

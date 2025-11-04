@@ -29,8 +29,8 @@ using Microsoft.Extensions.Logging;
 using OpenDMSBackend.Core.BackgroundServices;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
+using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Services;
-using OpenDMSBackend.Core.Services.Misc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -104,12 +104,14 @@ namespace OpenDMSBackend.Core
                         },
                     };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
-                    //TODO use CommandlineParameter.InitialDatabaseType. for initialization
-                    //TODO use CommandlineParameter.InitialDatabaseConnectionString. for initialization
+                    if (initializationInformation.CommandlineParameter.InitialOCRDataFolder != null)
+                    {
+                        initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataFolder = initializationInformation.CommandlineParameter.InitialOCRDataFolder;
+                    }
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
-                        DatabaseConnectionString = "Server=opendms_database;Port=5432;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;Search Path=public;",
-                        DatabaseType = Debugger.IsAttached ? "Transient" : "PostgreSQL",
+                        DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseConnectionString ?? "Server=opendms_database;Port=5432;Database=OpenDMSDatabase;UID=root;PWD=R00tpa55w0rd;Search Path=public;",
+                        DatabaseType = Debugger.IsAttached ? "Transient" : (initializationInformation.CommandlineParameter.InitialDatabaseType ?? "PostgreSQL"),
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
@@ -124,7 +126,7 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP( HTTP.DefaultPort);
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP(HTTP.DefaultPort);
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;

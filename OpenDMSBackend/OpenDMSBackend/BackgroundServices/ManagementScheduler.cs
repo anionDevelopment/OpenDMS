@@ -1,13 +1,15 @@
 ﻿using GRYLibrary.Core.APIServer.BaseServices;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Res;
+using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Logging.GRYLogger;
+using Microsoft.ClearScript.V8;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Services;
 using System;
-using Microsoft.ClearScript.V8;
 using System.Collections.Generic;
-using GRYLibrary.Core.APIServer.Settings;
+using System.Linq;
 
 namespace OpenDMSBackend.Core.BackgroundServices
 {
@@ -16,9 +18,11 @@ namespace OpenDMSBackend.Core.BackgroundServices
         private readonly IAuditLog _AuditLog;
         private readonly IPersistence _Persistence;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _PersistedAPIServerConfiguration;
-        public ManagementScheduler(IGRYLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence,IApplicationConstants applicationConstants) : base(applicationConstants.ExecutionMode, logger)
+        private readonly IGeneralResourceLoader _GeneralResourceLoader;
+        public ManagementScheduler(IGRYLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence, IApplicationConstants applicationConstants, IGeneralResourceLoader generalResourceLoader) : base(applicationConstants.ExecutionMode, logger)
         {
             this.Enabled = true;
+            this._GeneralResourceLoader = generalResourceLoader;
             this.AdditionalDelay = TimeSpan.FromSeconds(2);
             this._AuditLog = auditLog;
             this._PersistedAPIServerConfiguration = persistedAPIServerConfiguration;
@@ -93,9 +97,15 @@ namespace OpenDMSBackend.Core.BackgroundServices
         {
             if (importDefinition.AdaptDocumentScriptBody != null)
             {
+                var scriptTemplateLines = "\n".Split(_GeneralResourceLoader.GetResourceAsString("Typescript/document.ts"));
+                var entireScriptLines = new List<string>();
+                //TODO add initialization-stuff to entireScriptLines
+                entireScriptLines.AddRange(GetScriptPart1(scriptTemplateLines));
+                entireScriptLines.AddRange(importDefinition.AdaptDocumentScriptBody.Split("\n"));
+                entireScriptLines.AddRange(GetScriptPart2(scriptTemplateLines));
                 using (V8ScriptEngine engine = new V8ScriptEngine())
                 {
-                    string typeScript = GetSriptPart1() + importDefinition.AdaptDocumentScriptBody + GetSriptPart2()+GetScriptPaart3(document);
+                    string typeScript = string.Join("\n", entireScriptLines);
                     string javaScript = null;
                     engine.Execute(javaScript);
                     dynamic result = engine.Script.result;
@@ -108,43 +118,16 @@ namespace OpenDMSBackend.Core.BackgroundServices
                 }
             }
         }
-        public static string GetSriptPart1()
-        {
-            return $@"
-class Document {{
-  readonly Id: string;
-  Title: string;
-  Filename: string;
-  readonly OriginalFilename: string;
-  readonly ImportDate: Date;
-  Tags: Set<Tags>;
-  readonly ReadableId: bigint;
-  readonly MIMEType: string;
-  readonly OCRContent: string;
-  DeleteIsNotAllowedBefore: string;
-  MustBeHardDeletedAfter: string;
-  GroupOfBusinessOwner: string;
 
-  constructor(title: string, importDate: Date) {{
-    this.Title = title;
-    this.ImportDate = importDate;
-  }}
-}}
-class Runner {{
-  constructor() {{
-  }}
-  adapt(document:Document): Document {{
-";
-        }
-        public static string GetSriptPart2()
+        private IList<string> GetScriptPart1(string[] scriptTemplateLines)
         {
-            return $@"
-        return document;
-        }};
-    }}
-}}
-";
+            throw new NotImplementedException();
         }
+        private IList<string> GetScriptPart2(string[] scriptTemplateLines)
+        {
+            throw new NotImplementedException();
+        }
+
         public static string GetScriptPaart3(Model.BusinessTypes.Document document)
         {
             string typeScript = $@"const result = new Runner().adapt(new Document(""{document.Title}"");";//TODO pass all variables
@@ -156,7 +139,7 @@ class Runner {{
             return new List<ExternalFile>();
         }
 
-        private class ExternalFile
+        internal class ExternalFile
         {
             public string Name { get; set; }
             public byte[] Content { get; set; }

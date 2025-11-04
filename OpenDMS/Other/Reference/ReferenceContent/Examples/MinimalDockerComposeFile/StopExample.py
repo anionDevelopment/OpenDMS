@@ -1,10 +1,13 @@
 import sys
 from pathlib import Path
-from ScriptCollection.TasksForCommonProjectStructure import TasksForCommonProjectStructure
+from ScriptCollection.ScriptCollectionCore import ScriptCollectionCore
+from ScriptCollection.TFCPS.TFCPS_Tools_General import TFCPS_Tools_General
 
 
 def stop_dockerfile_example():
-    TasksForCommonProjectStructure().stop_dockerfile_example(str(Path(__file__).absolute()), 3, True, True, sys.argv)
+    sc=ScriptCollectionCore()
+    t: TFCPS_Tools_General = TFCPS_Tools_General(sc)
+    t.stop_dockerfile_example(str(Path(__file__).absolute()),  True, True)
 
 
 if __name__ == "__main__":

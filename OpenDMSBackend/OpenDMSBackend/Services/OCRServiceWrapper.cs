@@ -1,5 +1,4 @@
 ﻿using GRYLibrary.Core.APIServer.Services;
-using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
@@ -16,25 +15,24 @@ namespace OpenDMSBackend.Core.Services
     public sealed class OCRServiceWrapper : IOCRServiceWrapper, IExternalService
     {
         private bool _IsAvailable = false;
-        private readonly SimpleOCR.Library.Core.IOCRService _OCRService;
+        private SimpleOCR.Library.Core.IOCRService _OCRService;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
-        private readonly IApplicationConstants _Costants;
-        private readonly CommandlineParameter _CMDParameter;
-        private readonly string OCRDataFolder;
-        public OCRServiceWrapper(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IApplicationConstants constants, IGRYLog log, CommandlineParameter cmdParameter)
+        private readonly string? _OCRDataFolder;
+        private readonly IGRYLog _Log;
+        public OCRServiceWrapper(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IGRYLog log, CommandlineParameter cmdParameter)
         {
             try
             {
-                this._Configuration = configuration;
-                this._Costants = constants;
-                string ocrDataFolder = GRYLibrary.Core.Misc.Utilities.AssertNotNull<string>(cmdParameter.OCRDataFolder, nameof(cmdParameter.OCRDataFolder));
-                ;
-                if (!GRYLibrary.Core.Misc.Utilities.IsAbsoluteLocalFilePath(ocrDataFolder))
+                this._Log = log;
+                string? ocrDataFolder = configuration.ApplicationSpecificConfiguration.OCRDataFolder;
+                if (ocrDataFolder != null)
                 {
-                    ocrDataFolder = GRYLibrary.Core.Misc.Utilities.ResolveToFullPath(ocrDataFolder);
+                    if (!GRYLibrary.Core.Misc.Utilities.IsAbsoluteLocalFilePath(ocrDataFolder))
+                    {
+                        ocrDataFolder = GRYLibrary.Core.Misc.Utilities.ResolveToFullPath(ocrDataFolder);
+                    }
                 }
-                this.OCRDataFolder = ocrDataFolder;
-                this._OCRService = new SimpleOCR.Library.Core.OCRService(this.OCRDataFolder, log);
+                this._OCRDataFolder = ocrDataFolder;
             }
             catch (Exception e)
             {
@@ -123,16 +121,22 @@ namespace OpenDMSBackend.Core.Services
         {
             try
             {
-                if (this.OCRDataFolder != null)
+                if (this._OCRDataFolder == null)
                 {
-                    GRYLibrary.Core.Misc.Utilities.AssertNotNull(this.OCRDataFolder, nameof(this.OCRDataFolder));
+                    this._Log.Log("No OCR-data-folder given", Microsoft.Extensions.Logging.LogLevel.Warning);
+                }
+                else
+                {
+                    this._Log.Log("Initialize OCR-service", Microsoft.Extensions.Logging.LogLevel.Information);
+                    GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._OCRDataFolder, nameof(this._OCRDataFolder));
+                    this._OCRService = new SimpleOCR.Library.Core.OCRService(this._OCRDataFolder, this._Log);
                     this._OCRService.Initialize();
                     this._IsAvailable = true;
                 }
             }
-            catch
+            catch (Exception e)
             {
-                GRYLibrary.Core.Misc.Utilities.NoOperation();
+                this._Log.Log("Error while initializing OCR-service", e, Microsoft.Extensions.Logging.LogLevel.Error);
             }
         }
 

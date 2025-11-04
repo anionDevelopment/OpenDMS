@@ -15,9 +15,7 @@ if [[ -n "${InitialDatabaseConnectionString}" ]]; then
   argument+=" --InitialDatabaseConnectionString $InitialDatabaseConnectionString"
 fi
 
-if [[ -n "${OCRDataFolder}" ]]; then
-  argument+=" --OCRDataFolder $OCRDataFolder"
-fi
+argument+=" --InitialOCRDataFolder /Workspace/OCRData"
 
 { cd /Workspace/Application/Backend && dotnet ./OpenDMSBackend.dll $argument; } &
 { cd /Workspace/Application/Frontend && nginx -c /Workspace/Application/Frontend/nginx.conf -g "daemon off;"; } &

@@ -1,5 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Settings;
-using GRYLibrary.Core.APIServer.Settings.Configuration;
+﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -25,9 +24,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
             configurationMock.SetupGet(mock => mock.ApplicationSpecificConfiguration).Returns(codeunitMock.Object);
-            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, this.GetTessDataFolder(), GeneralLogger.CreateUsingConsole(), new CommandlineParameter()
+            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, GeneralLogger.CreateUsingConsole(), new CommandlineParameter()
             {
-                OCRDataFolder = Path.Combine(OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder, "Other", "Resources", "OCRData"),
+                InitialOCRDataFolder = this.GetTessDataFolder(),
             });
             ocrService.Initialize();
 
@@ -57,9 +56,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>> configurationMock = new Mock<IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>>(MockBehavior.Strict);
             Mock<CodeUnitSpecificConfiguration> codeunitMock = new Mock<CodeUnitSpecificConfiguration>();
             codeunitMock.SetupGet(mock => mock.DefaultOCRLanguages).Returns(new HashSet<string>());
-            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, this.GetTessDataFolder(), GeneralLogger.CreateUsingConsole(), new CommandlineParameter()
+            OCRServiceWrapper ocrService = new OCRServiceWrapper(configurationMock.Object, GeneralLogger.CreateUsingConsole(), new CommandlineParameter()
             {
-                OCRDataFolder = TestUtilities.Utilities.GetOCRDataFolder(),
+                InitialOCRDataFolder = this.GetTessDataFolder(),
             });
             ocrService.Initialize();
 
@@ -90,11 +89,9 @@ Name => ISO639-1";
             File.WriteAllText(targetFileTable, contentTable);
 
         }
-        private IApplicationConstants GetTessDataFolder()
+        private string GetTessDataFolder()
         {
-            Mock<IApplicationConstants> configurationMock = new Mock<IApplicationConstants>(MockBehavior.Strict);
-            configurationMock.Setup(mock => mock.GetDataFolder()).Returns(Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "OCRData"));
-            return configurationMock.Object;
+            return Path.Combine(GeneralConstants.CodeUnitFolder, "Other", "Resources", "OCRData");
         }
     }
 }

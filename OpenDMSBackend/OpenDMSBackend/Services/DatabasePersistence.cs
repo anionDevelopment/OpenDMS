@@ -264,8 +264,8 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserIsActivated", user.UserIsActivated));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserIsLocked", user.UserIsLocked));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RegistrationMoment", user.RegistrationMoment));
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TOTPActivated", user.TOTP == null ? null : user.TOTP.IsActicated, typeof(bool)));
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TOTPSecretKey", user.TOTP == null ? null : user.TOTP.SecretKey, typeof(string)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TOTPActivated", user.TOTP?.IsActicated, typeof(bool)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TOTPSecretKey", user.TOTP?.SecretKey, typeof(string)));
 
                 command.ExecuteNonQuery();
             });
@@ -456,7 +456,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool IsAvailable()
         {
-            return true;//TODO implement correctly
+            return this._Database.GetGenericDatabaseInteractor().TryGetConnection(out _);
         }
 
         public virtual Document GetDocument(string id)

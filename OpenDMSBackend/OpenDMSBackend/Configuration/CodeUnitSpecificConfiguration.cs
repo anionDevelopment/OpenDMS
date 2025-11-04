@@ -34,5 +34,6 @@ namespace OpenDMSBackend.Core.Configuration
         public virtual IGRYLogConfiguration AuditLogConfiguration { get; set; }
         public virtual ISet<ImportDefinition> ImportDefinitions { get; set; }
         public virtual ISet<string> DefaultOCRLanguages { get; set; }
+        public virtual string OCRDataFolder { get; set; }
     }
 }

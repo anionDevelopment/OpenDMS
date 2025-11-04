@@ -45,6 +45,7 @@ namespace OpenDMSBackend.Core.Services
                 this.SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
                 this._OCRServiceWrapper.Initialize();
+                Tools.WaitUntilDatabaseIsAvailable(this._Persistence.IsAvailable, this._GeneralLogger);
                 string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
                 this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
                 if (!this._BusinessLogicService.UserWithNameExists(adminUsername))

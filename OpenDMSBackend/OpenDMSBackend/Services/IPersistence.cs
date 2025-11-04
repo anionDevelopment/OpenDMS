@@ -56,6 +56,7 @@ namespace OpenDMSBackend.Core.Services
         /// The order is descending regarding to relevance.
         /// </returns>
         public IList<string> Search(string searchTerm);
-        IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow();
+        public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow();
+ 
     }
 }

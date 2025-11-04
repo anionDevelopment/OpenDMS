@@ -3,22 +3,26 @@ using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OpenDMSBackend.Core.Configuration;
+using OpenDMSBackend.Core.Services;
+using SimpleOCR.Library.Core;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OpenDMSBackend.Core.Services.Misc
+namespace OpenDMSBackend.Core.Misc
 {
     public class HealthCheck : IHealthCheck
     {
         private readonly IGeneralLogger _Logger;
         private readonly IPersistence _Persistence;
         private readonly IInitializationService<CommandlineParameter> _InitializationService;
-        public HealthCheck(IGeneralLogger logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService)
+        private readonly IOCRService _OCRService;
+        public HealthCheck(IGeneralLogger logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRService ocrService)
         {
             this._Logger = logger;
             this._Persistence = persistence;
             this._InitializationService  =initializationService;
+            this._OCRService = ocrService;
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
@@ -31,6 +35,9 @@ namespace OpenDMSBackend.Core.Services.Misc
 
                 Tools.CheckService(this._Logger, nameof(this._Persistence), this._Persistence, ref result, messages, true, true);
                 this._Logger.Log($"{nameof(this._Persistence)} checked. Current result: {result}", Microsoft.Extensions.Logging.LogLevel.Debug);
+
+                //Tools.CheckService(this._Logger, nameof(this._OCRService), this._OCRService, ref result, messages, true, true);
+                //this._Logger.Log($"{nameof(this._OCRService)} checked. Current result: {result}", Microsoft.Extensions.Logging.LogLevel.Debug);
 
                 return (result, messages);
             }, context, cancellationToken, this._InitializationService);
