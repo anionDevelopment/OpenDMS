@@ -70,10 +70,10 @@ namespace OpenDMSBackend.Core.Services
                 this._GeneralLogger.Log("Service is initialized.", Microsoft.Extensions.Logging.LogLevel.Information);
                 this.SetInitializationState(new Initialized());
             }
-            catch
+            catch (System.Exception e)
             {
                 this.SetInitializationState(new InitializationFailed());
-                throw;
+                this._GeneralLogger.Log("Error while service-initialization", e);
             }
         }
 

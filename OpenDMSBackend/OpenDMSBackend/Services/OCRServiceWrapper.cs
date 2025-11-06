@@ -123,12 +123,11 @@ namespace OpenDMSBackend.Core.Services
             {
                 if (this._OCRDataFolder == null)
                 {
-                    this._Log.Log("No OCR-data-folder given", Microsoft.Extensions.Logging.LogLevel.Warning);
+                    this._Log.Log("No OCR-data-folder given.", Microsoft.Extensions.Logging.LogLevel.Warning);
                 }
                 else
                 {
-                    this._Log.Log("Initialize OCR-service", Microsoft.Extensions.Logging.LogLevel.Information);
-                    GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._OCRDataFolder, nameof(this._OCRDataFolder));
+                    this._Log.Log($"Initialize OCR-service in \"{this._OCRDataFolder}\"...", Microsoft.Extensions.Logging.LogLevel.Information);
                     this._OCRService = new SimpleOCR.Library.Core.OCRService(this._OCRDataFolder, this._Log);
                     this._OCRService.Initialize();
                     this._IsAvailable = true;
