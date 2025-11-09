@@ -488,7 +488,8 @@ namespace OpenDMSBackend.Core.Services
                              this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 12)),//must be deleted after
                             reader.GetString(13),//businessowner
                             Version3.Parse(reader.GetString(14)),//version
-                            Core.Misc.Utilities.StringToLanguagesList(reader.GetString(15))//languages
+                            Core.Misc.Utilities.StringToLanguagesList(reader.GetString(15)),//languages
+                            reader.GetString(7)//userid
                         );
                         //TODO load tags
                         return document;
@@ -671,7 +672,7 @@ namespace OpenDMSBackend.Core.Services
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), this.ToDateTimeOffset(reader.GetDateTime(3)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)), new HashSet<Tag>(), (uint)reader.GetInt32(5), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetBoolean(8), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)), reader.GetString(11), Version3.Parse(reader.GetString(12)), Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))));
+                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), this.ToDateTimeOffset(reader.GetDateTime(3)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)), new HashSet<Tag>(), (uint)reader.GetInt32(5), OneLineString.From(reader.GetString(6)), (byte[])reader.GetValue(7), reader.GetBoolean(8), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)), reader.GetString(11), Version3.Parse(reader.GetString(12)), Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), reader.GetString(13));
                     //TODO load tags
                     return document;
                 }

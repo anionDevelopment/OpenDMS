@@ -28,8 +28,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public string GroupOfBusinessOwner { get; set; }
         public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
+        public string AddedByUserId { get; set; }
 
-        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ISet<Tag> tags, ulong readableId, OneLineString mIMEType, byte[] preview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages)
+        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ISet<Tag> tags, ulong readableId, OneLineString mIMEType, byte[] preview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string addedByUserId)
         {
             this.Id = id;
             this.Title = title;
@@ -47,6 +48,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.GroupOfBusinessOwner = groupOfBusinessOwner;
             this.Version = version;
             this.AssignedLanguages = assignedLanguages;
+            this.AddedByUserId = addedByUserId;
         }
 
         public override bool Equals(object? obj)
@@ -74,7 +76,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentPreviewDTO ToDTO()
         {
-            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, GUtilities.FormatTimestamp(this.ImportDate, false), GUtilities.FormatTimestampNullable(this.LastEditDate, false), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore, false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter, false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages);
+            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, GUtilities.FormatTimestamp(this.ImportDate, false), GUtilities.FormatTimestampNullable(this.LastEditDate, false), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore, false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter, false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages,this.AddedByUserId);
         }
 
         public DateTimeOffset GetNewestDate(DocumentPreview document)

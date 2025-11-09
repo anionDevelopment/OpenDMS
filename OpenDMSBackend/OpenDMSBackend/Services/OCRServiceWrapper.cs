@@ -128,7 +128,7 @@ namespace OpenDMSBackend.Core.Services
                 else
                 {
                     this._Log.Log($"Initialize OCR-service in \"{this._OCRDataFolder}\"...", Microsoft.Extensions.Logging.LogLevel.Information);
-                    this._OCRService = new SimpleOCR.Library.Core.OCRService(this._OCRDataFolder, this._Log);
+                    this._OCRService = new SimpleOCR.Library.Core.OCRService(new SimpleOCR.Library.Core.OCRServiceConfiguration() { DataFolder = this._OCRDataFolder }, this._Log);
                     this._OCRService.Initialize();
                     this._IsAvailable = true;
                 }

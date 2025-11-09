@@ -16,6 +16,9 @@ components:
     DocumentDTO:
       additionalProperties: false
       properties:
+        addedByUserId:
+          nullable: true
+          type: string
         assignedLanguages:
           items:
             type: string
@@ -75,6 +78,9 @@ components:
     DocumentPreviewDTO:
       additionalProperties: false
       properties:
+        addedByUserId:
+          nullable: true
+          type: string
         assignedLanguages:
           items:
             type: string
@@ -202,8 +208,8 @@ components:
       type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
-  title: OpenDMSBackend v1.1.5 API documentation
-  version: v1.1.5
+  title: OpenDMSBackend v2.0.0 API documentation
+  version: v2.0.0
 openapi: 3.0.4
 paths:
   /API/Other/Maintenance/AvailabilityCheck:
@@ -241,7 +247,7 @@ paths:
           description: OK
       tags:
       - MaintenanceRoutes
-  /API/v1/OpenDMSBackend/AddDocument/{containerId}:
+  /API/v2/OpenDMSBackend/AddDocument/{containerId}:
     post:
       parameters:
       - in: path
@@ -302,7 +308,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/AddFolder/{parentFolderId}/{name}:
+  /API/v2/OpenDMSBackend/AddFolder/{parentFolderId}/{name}:
     post:
       parameters:
       - in: path
@@ -336,7 +342,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/AddStorageLocation/{name}:
+  /API/v2/OpenDMSBackend/AddStorageLocation/{name}:
     post:
       parameters:
       - in: path
@@ -365,7 +371,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
+  /API/v2/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
     post:
       parameters:
       - in: path
@@ -389,7 +395,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/Delete/{containerOrContaineeId}:
+  /API/v2/OpenDMSBackend/Delete/{containerOrContaineeId}:
     delete:
       parameters:
       - in: path
@@ -408,7 +414,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/GetAllTags:
+  /API/v2/OpenDMSBackend/GetAllTags:
     put:
       parameters:
       - description: Access Token
@@ -438,7 +444,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/GetAllViewableStorageLocations:
+  /API/v2/OpenDMSBackend/GetAllViewableStorageLocations:
     get:
       parameters:
       - description: Access Token
@@ -468,7 +474,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/GetDocument:
+  /API/v2/OpenDMSBackend/GetDocument:
     get:
       parameters:
       - in: query
@@ -496,7 +502,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/GetDocumentFromReadableId:
+  /API/v2/OpenDMSBackend/GetDocumentFromReadableId:
     get:
       parameters:
       - in: query
@@ -525,7 +531,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/GetDocumentPreview:
+  /API/v2/OpenDMSBackend/GetDocumentPreview:
     get:
       parameters:
       - in: query
@@ -553,7 +559,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/GetFolder/{id}:
+  /API/v2/OpenDMSBackend/GetFolder/{id}:
     get:
       parameters:
       - in: path
@@ -582,7 +588,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/GetLatestDocuments:
+  /API/v2/OpenDMSBackend/GetLatestDocuments:
     get:
       parameters:
       - description: Access Token
@@ -612,7 +618,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/GetStorageLocation/{id}:
+  /API/v2/OpenDMSBackend/GetStorageLocation/{id}:
     get:
       parameters:
       - in: path
@@ -641,7 +647,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}:
+  /API/v2/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}:
     post:
       parameters:
       - in: path
@@ -665,7 +671,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/Rename/{containerId}/{newName}:
+  /API/v2/OpenDMSBackend/Rename/{containerId}/{newName}:
     post:
       parameters:
       - in: path
@@ -689,7 +695,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/Search:
+  /API/v2/OpenDMSBackend/Search:
     get:
       parameters:
       - in: query
@@ -723,7 +729,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
+  /API/v2/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
     post:
       parameters:
       - in: path
@@ -747,7 +753,7 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v1/UserController/CreateUser:
+  /API/v2/UserController/CreateUser:
     put:
       parameters:
       - in: header
@@ -769,7 +775,7 @@ paths:
           description: OK
       tags:
       - User
-  /API/v1/UserController/GetRoles:
+  /API/v2/UserController/GetRoles:
     put:
       parameters:
       - description: Access Token
@@ -799,7 +805,7 @@ paths:
           description: OK
       tags:
       - User
-  /API/v1/UserController/GetUserInformation:
+  /API/v2/UserController/GetUserInformation:
     get:
       parameters:
       - description: Access Token
@@ -823,7 +829,7 @@ paths:
           description: OK
       tags:
       - User
-  /API/v1/UserController/Login:
+  /API/v2/UserController/Login:
     put:
       parameters:
       - in: header
@@ -849,7 +855,7 @@ paths:
           description: OK
       tags:
       - User
-  /API/v1/UserController/Logout:
+  /API/v2/UserController/Logout:
     put:
       parameters:
       - description: Access Token
@@ -863,7 +869,7 @@ paths:
           description: OK
       tags:
       - User
-  /API/v1/UserController/TokenIsValid:
+  /API/v2/UserController/TokenIsValid:
     get:
       parameters:
       - in: header

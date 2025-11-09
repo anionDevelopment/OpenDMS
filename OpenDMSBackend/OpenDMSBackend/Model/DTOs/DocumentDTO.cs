@@ -23,7 +23,8 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
 
-        public DocumentDTO(string id, string title, string filename, string originalFilename, string importDate, string? lastEditDate, ISet<TagDTO> tags, ulong readableId, string mimeType, string documentContentAsBase64, string documentPreviewAsBase64, bool isSoftDeleted, string? deleteIsNotAllowedBefore, string? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages)
+        public string AddedByUserId { get; set; }
+        public DocumentDTO(string id, string title, string filename, string originalFilename, string importDate, string? lastEditDate, ISet<TagDTO> tags, ulong readableId, string mimeType, string documentContentAsBase64, string documentPreviewAsBase64, bool isSoftDeleted, string? deleteIsNotAllowedBefore, string? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string addedByUserId)
         {
             this.Id = id;
             this.Title = title;
@@ -42,6 +43,7 @@ namespace OpenDMSBackend.Core.Model.DTOs
             this.GroupOfBusinessOwner = groupOfBusinessOwner;
             this.Version = version;
             this.AssignedLanguages = assignedLanguages;
+            this.AddedByUserId = addedByUserId;
         }
     }
 }

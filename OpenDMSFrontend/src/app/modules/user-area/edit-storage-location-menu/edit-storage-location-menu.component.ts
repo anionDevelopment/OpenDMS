@@ -23,8 +23,8 @@ export class EditStorageLocationMenuComponent {
     }
 
   addStorageLocation() : void {
-    this.openDMSBackendService.aPIV1OpenDMSBackendAddStorageLocationNamePost("New storage-location", this.storageService.getAccessToken()).subscribe(newStorageLocationId => {
-      this.openDMSBackendService.aPIV1OpenDMSBackendGetStorageLocationIdGet(newStorageLocationId, this.storageService.getAccessToken()).subscribe((newStorageLocation) => {
+    this.openDMSBackendService.aPIV2OpenDMSBackendAddStorageLocationNamePost("New storage-location", this.storageService.getAccessToken()).subscribe(newStorageLocationId => {
+      this.openDMSBackendService.aPIV2OpenDMSBackendGetStorageLocationIdGet(newStorageLocationId, this.storageService.getAccessToken()).subscribe((newStorageLocation) => {
         this.storageLocationAdded.next(newStorageLocation);
       });
     });

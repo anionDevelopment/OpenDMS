@@ -1,5 +1,5 @@
 /**
- * OpenDMSBackend v1.1.5 API documentation
+ * OpenDMSBackend v2.0.0 API documentation
  *
  * 
  *
@@ -29,5 +29,6 @@ export interface DocumentDTO {
     groupOfBusinessOwner?: string | null;
     version?: Version3;
     assignedLanguages?: Set<string> | null;
+    addedByUserId?: string | null;
 }
 

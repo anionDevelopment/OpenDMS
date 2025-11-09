@@ -39,8 +39,8 @@ export class EditContainerMenuComponent {
     const reader = new FileReader()
     reader.onload = (e) => {
       const blobAsBaseString = (reader.result! as string).split(',')[1];
-      this.openDMSBackendService.aPIV1OpenDMSBackendAddDocumentContainerIdPost(this.containerId!, this.storageService.getAccessToken(), blob.name, blob.name, [], '"' + blobAsBaseString + '"').subscribe((newDocumentId) => {
-        this.openDMSBackendService.aPIV1OpenDMSBackendGetDocumentPreviewGet(this.storageService.getAccessToken(), newDocumentId).subscribe(newDocument => {
+      this.openDMSBackendService.aPIV2OpenDMSBackendAddDocumentContainerIdPost(this.containerId!, this.storageService.getAccessToken(), blob.name, blob.name, [], '"' + blobAsBaseString + '"').subscribe((newDocumentId) => {
+        this.openDMSBackendService.aPIV2OpenDMSBackendGetDocumentPreviewGet(this.storageService.getAccessToken(), newDocumentId).subscribe(newDocument => {
           this.documentAdded.next(newDocument);
         });
       });
@@ -52,8 +52,8 @@ export class EditContainerMenuComponent {
   }
 
   addFolder(): void {
-    this.openDMSBackendService.aPIV1OpenDMSBackendAddFolderParentFolderIdNamePost(this.containerId!, "New folder", this.storageService.getAccessToken()).subscribe(newFolderId => {
-      this.openDMSBackendService.aPIV1OpenDMSBackendGetFolderIdGet(newFolderId, this.storageService.getAccessToken()).subscribe((newFolder) => {
+    this.openDMSBackendService.aPIV2OpenDMSBackendAddFolderParentFolderIdNamePost(this.containerId!, "New folder", this.storageService.getAccessToken()).subscribe(newFolderId => {
+      this.openDMSBackendService.aPIV2OpenDMSBackendGetFolderIdGet(newFolderId, this.storageService.getAccessToken()).subscribe((newFolder) => {
         this.folderAdded.next(newFolder);
       });
     });
@@ -71,7 +71,7 @@ export class EditContainerMenuComponent {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
     dialogRef.afterClosed().subscribe(userConfirmedAction => {
       if (userConfirmedAction) {
-        this.openDMSBackendService.aPIV1OpenDMSBackendDeleteContainerOrContaineeIdDelete(this.containerId!, this.storageService.getAccessToken())
+        this.openDMSBackendService.aPIV2OpenDMSBackendDeleteContainerOrContaineeIdDelete(this.containerId!, this.storageService.getAccessToken())
           .subscribe(() => {
             this.containerRemoved.emit();
           });

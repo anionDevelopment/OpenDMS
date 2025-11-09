@@ -5,7 +5,6 @@ using Prometheus;
 using OpenDMSBackend.Core.Constants;
 using System;
 using OpenDMSBackend.Core.Services;
-using GRYLibrary.Core.APIServer.Services.Res;
 
 namespace OpenDMSBackend.Core.BackgroundServices
 {
