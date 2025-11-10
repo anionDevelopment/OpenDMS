@@ -29,7 +29,6 @@ ADD Other/Resources/DependentCodeUnits/OpenDMSFrontend/BuildResult_WebApplicatio
 COPY Other/Resources/DevelopmentCertificate/OpenDMSDevelopmentCertificate.crt /Workspace/Other/Certificates
 COPY Other/Resources/DevelopmentCertificate/OpenDMSDevelopmentCertificate.key /Workspace/Other/Certificates
 COPY OpenDMS/nginx.conf /Workspace/Application/Frontend
-ADD ./Other/Resources/OCRData /Workspace/OCRData
 
 COPY OpenDMS/EntryPoint.sh /Workspace/Other/EntryPoint
 RUN chmod +x /Workspace/Other/EntryPoint/EntryPoint.sh

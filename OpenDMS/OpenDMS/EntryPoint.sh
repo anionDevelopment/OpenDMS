@@ -15,7 +15,13 @@ if [[ -n "${InitialDatabaseConnectionString}" ]]; then
   argument+=" --InitialDatabaseConnectionString $InitialDatabaseConnectionString"
 fi
 
-argument+=" --InitialOCRDataFolder /Workspace/OCRData"
+if [[ -n "${InitialOCRDataServiceAddress}" ]]; then
+  argument+=" --InitialOCRDataServiceAddress $InitialOCRDataServiceAddress"
+fi
+
+if [[ -n "${InitialOCRDataServiceAPIKey}" ]]; then
+  argument+=" --InitialOCRDataServiceAPIKey $InitialOCRDataServiceAPIKey"
+fi
 
 { cd /Workspace/Application/Backend && dotnet ./OpenDMSBackend.dll $argument; } &
 { cd /Workspace/Application/Frontend && nginx -c /Workspace/Application/Frontend/nginx.conf -g "daemon off;"; } &

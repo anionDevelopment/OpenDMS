@@ -13,6 +13,8 @@ def start_dockerfile_example():
         'InitialAdminPassword': 'admin',
         'InitialDatabaseType': 'PostgreSQL',
         'InitialDatabaseConnectionString': 'postgresql://root:R00tpa55w0rd@opendms_database:5432/OpenDMSDatabase',
+        'InitialOCRDataServiceAddress': 'https://localhost:448',
+#        'InitialOCRDataServiceAPIKey': '',
     }))
     t.start_dockerfile_example(current_file, True, True, env_file_name)
 

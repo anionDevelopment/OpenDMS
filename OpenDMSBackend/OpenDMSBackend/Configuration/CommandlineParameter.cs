@@ -15,7 +15,10 @@ namespace OpenDMSBackend.Core.Configuration
         [Option(nameof(InitialDatabaseConnectionString), Required = false)]
         public string? InitialDatabaseConnectionString { get; set; }
 
-        [Option(nameof(InitialOCRDataFolder), Required = false)]
-        public string? InitialOCRDataFolder { get; set; }
+        [Option(nameof(InitialOCRDataServiceAddress), Required = false)]
+        public string? InitialOCRDataServiceAddress { get; set; }
+
+        [Option(nameof(InitialOCRDataServiceAPIKey), Required = false)]
+        public string? InitialOCRDataServiceAPIKey { get; set; }
     }
 }

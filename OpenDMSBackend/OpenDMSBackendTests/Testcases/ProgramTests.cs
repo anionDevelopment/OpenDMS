@@ -17,7 +17,7 @@ namespace OpenDMSBackend.Tests.Testcases
         {
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
-                var result = this.ProgramExitWithZeroAfterCallingStopAsync().WaitAndGetResult();
+                (bool, string) result = this.ProgramExitWithZeroAfterCallingStopAsync().WaitAndGetResult();
                 Assert.IsTrue(result.Item1, result.Item2);
             }
         }
@@ -30,7 +30,7 @@ namespace OpenDMSBackend.Tests.Testcases
                 Task<int> exitCodeTask = host.MainImplementationAsync(new string[] { });
                 await Task.Delay(TimeSpan.FromSeconds(5));
                 host._HostApplicationLifetime!.StopApplication();
-                var exitcode = await exitCodeTask;
+                int exitcode = await exitCodeTask;
                 Assert.AreEqual(0, exitcode);
                 return (true, "Success");
             }

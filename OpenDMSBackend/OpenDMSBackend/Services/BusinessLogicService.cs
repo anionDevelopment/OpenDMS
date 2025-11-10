@@ -14,7 +14,7 @@ using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using SimpleOCR.Library.Core.FileTypes;
-using SimpleOCR.Library.Core.VIsitors;
+using SimpleOCR.Library.Core.Visitors;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -32,10 +32,10 @@ namespace OpenDMSBackend.Core.Services
         private readonly ITimeService _TimeService;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
-        private readonly IOCRServiceWrapper _OCRService;
+        private readonly IOCRServiceClient _OCRService;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceWrapper oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -285,7 +285,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     if (toPictureWasSuccessful)
                     {
-                        document.OCRContent = this._OCRService.GetOCRContent(documentAsPicture!, document.AssignedLanguages);
+                        document.OCRContent = this._OCRService.GetOCRContent(documentAsPicture!,PDF.Instance, document.AssignedLanguages);//TODO calculate filetype
                     }
                     else
                     {

@@ -1,3 +1,3 @@
 # OCR
 
-OpenDMSBackend uses [tessdata](https://github.com/tesseract-ocr/tessdata) as OCR-engine.
+OpenDMSBackend uses [SimpleOCR](https://github.com/anionDev/SimpleOCR) as OCR-engine.

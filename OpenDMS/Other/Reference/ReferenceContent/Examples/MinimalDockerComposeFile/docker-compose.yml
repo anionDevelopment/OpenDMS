@@ -6,9 +6,9 @@ services:
     ports:
     - 443:443
     volumes:
-    - ./Volumes/Data:/Workspace/Data
-    - ./Volumes/Configuration:/Workspace/Configuration
-    - ./Volumes/Logs:/Workspace/Logs
+    - ./Volumes/opendms/Data:/Workspace/Data
+    - ./Volumes/opendms/Configuration:/Workspace/Configuration
+    - ./Volumes/opendms/Logs:/Workspace/Logs
   opendms_database:
     container_name: opendms_database
     image: postgres:17.5
@@ -18,7 +18,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./Volumes/Data:/var/lib/postgresql/data
+      - ./Volumes/opendms_database/Data:/var/lib/postgresql/data
   opendms_database_administration:
     container_name: opendms_database_administration
     depends_on:
@@ -26,3 +26,11 @@ services:
     image: adminer:4.17.1
     ports:
     - 8080:8080
+  simpleocr:
+    container_name: simpleocr
+    image: simpleocr:1.4.0
+    ports:
+    - 448:443
+    volumes:
+    - ./Volumes/simpleocr/Configuration:/Workspace/Configuration
+    - ./Volumes/simpleocr/Logs:/Workspace/Logs

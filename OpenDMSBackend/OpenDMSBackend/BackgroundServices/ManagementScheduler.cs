@@ -80,11 +80,10 @@ namespace OpenDMSBackend.Core.BackgroundServices
                     {
                         try
                         {
-                            //TODO import document
-                            //TODO delete document from import source
                             Model.BusinessTypes.Document document = null;//TODO create document from externalFile
-                            this._Persistence.CreateDocument(document);
                             this.RunAdaptScript(document);
+                            this._Persistence.CreateDocument(document);
+                            //TODO delete document from import source
                         }
                         catch
                         {
@@ -103,9 +102,9 @@ namespace OpenDMSBackend.Core.BackgroundServices
         {
             if (importDefinition.AdaptDocumentScriptBody != null)
             {
-                var scriptTemplateLines = "\n".Split(this._GeneralResourceLoader.GetResourceAsString("Typescript/AdaptDocument.ts"));
-                var entireScriptLines = new List<string>();
-                foreach (var line in scriptTemplateLines)
+                string[] scriptTemplateLines = "\n".Split(this._GeneralResourceLoader.GetResourceAsString("Typescript/AdaptDocument.ts"));
+                List<string> entireScriptLines = new List<string>();
+                foreach (string line in scriptTemplateLines)
                 {
                     if (line.Contains("<custom-script>"))
                     {
@@ -113,7 +112,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
                     }
                     else if (line.Contains("<tag-definitions>"))
                     {
-                        foreach (var tag in this._Persistence.GetAllTags())
+                        foreach (Model.DTOs.TagDTO tag in this._Persistence.GetAllTags())
                         {
                             entireScriptLines.Add($"if(name==\"{tag}\"){{return new Tag(\"{tag.Id}\", \"{tag.Name}\");}}");//TODO escape literals
                         }
@@ -124,17 +123,15 @@ namespace OpenDMSBackend.Core.BackgroundServices
                     }
                 }
                 entireScriptLines.AddRange(this.GetScriptPart4(document));
-                using (V8ScriptEngine engine = new V8ScriptEngine())
-                {
-                    string typeScript = string.Join("\n", entireScriptLines);
-                    string javaScript = ConvertTypeScriptToJavaScript(typeScript);
-                    engine.Execute(javaScript);
-                    dynamic result = engine.Script.document;
-                    document.Title = result.title;
-                    document.DeleteIsNotAllowedBefore = result.DeleteIsNotAllowedBefore;
-                    document.MustBeHardDeletedAfter = result.MustBeHardDeletedAfter;
-                    document.GroupOfBusinessOwner = result.GroupOfBusinessOwner;
-                }
+                string typeScript = string.Join("\n", entireScriptLines);
+                string javaScript = this.ConvertTypeScriptToJavaScript(typeScript);
+                using V8ScriptEngine engine = new V8ScriptEngine();
+                engine.Execute(javaScript);
+                dynamic result = engine.Script.document;
+                document.Title = result.title;
+                document.DeleteIsNotAllowedBefore = result.DeleteIsNotAllowedBefore;
+                document.MustBeHardDeletedAfter = result.MustBeHardDeletedAfter;
+                document.GroupOfBusinessOwner = result.GroupOfBusinessOwner;
             }
         }
 
@@ -149,7 +146,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
                 GRYLibrary.Core.Misc.Utilities.EnsureFileExists(tsScriptFile);
                 File.WriteAllText(tsScriptFile, typeScript);
 
-                RunTSC($"\"{tsScriptFile}\" --outFile \"{jsScriptFile}\"");
+                this.RunTSC($"\"{tsScriptFile}\" --outFile \"{jsScriptFile}\"");
 
                 return File.ReadAllText(jsScriptFile);
             }
@@ -177,7 +174,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
                 fileName = "/bin/bash";
                 arguments = $"-c \"tsc {args}\"";
             }
-            var e = new ExternalProgramExecutor(new ExternalProgramExecutorConfiguration()
+            ExternalProgramExecutor e = new ExternalProgramExecutor(new ExternalProgramExecutorConfiguration()
             {
                 Program = fileName,
                 Argument = arguments,
@@ -192,15 +189,15 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         private List<string> GetScriptPart4(Document document)
         {
-            var result = new List<string>();
+            List<string> result = new List<string>();
 
-            result.Add($@"const document = new Document({ToTSStringLiteral(document.Id)},{ToTSStringLiteral(document.Title.Value)},{ToTSStringLiteral(document.Filename.Value)},{ToTSStringLiteral(document.OriginalFilename.Value)},{ToTSDateTimeLiteral(document.ImportDate)},{ToTSTagList(document.Tags)},{ToTSIntLiteral(document.ReadableId)},{this.ToTSStringLiteral(document.MIMEType.Value)},{ToTSStringLiteral(document.OCRContent)},{ToTSDateTimeLiteral(document.DeleteIsNotAllowedBefore)},{ToTSDateTimeLiteral(document.MustBeHardDeletedAfter)},{ToTSStringLiteral(document.GroupOfBusinessOwner)},{ToTSStringLiteral(document.AddedByUserId)});new Runner(new Tools(document)).adapt();");
+            result.Add($@"const document = new Document({this.ToTSStringLiteral(document.Id)}, {this.ToTSStringLiteral(document.Title.Value)}, {this.ToTSStringLiteral(document.Filename.Value)}, {this.ToTSStringLiteral(document.OriginalFilename.Value)}, {this.ToTSDateTimeLiteral(document.ImportDate)},{this.ToTSTagList(document.Tags)}, {this.ToTSIntLiteral(document.ReadableId)}, {this.ToTSStringLiteral(document.MIMEType.Value)}, {this.ToTSStringLiteral(document.OCRContent)}, {this.ToTSDateTimeLiteral(document.DeleteIsNotAllowedBefore)}, {this.ToTSDateTimeLiteral(document.MustBeHardDeletedAfter)}, {this.ToTSStringLiteral(document.GroupOfBusinessOwner)}, {this.ToTSStringLiteral(document.AddedByUserId)});new Runner(new Tools(document)).adapt();");
             return result;
         }
 
         private string ToTSTagList(ISet<Tag> tags)
         {
-            return "[" + string.Join(", ", tags.Select(tag => $"new Tag({ToTSStringLiteral(tag.Id)},{ToTSStringLiteral(tag.Name)})")) + "]";
+            return "[" + string.Join(", ", tags.Select(tag => $"new Tag({this.ToTSStringLiteral(tag.Id)}, {this.ToTSStringLiteral(tag.Name)})")) + "]";
         }
 
         private string ToTSIntLiteral(ulong value)
@@ -222,7 +219,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         private string ToTSStringLiteral(string value)
         {
-            var escaped = value.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n");
+            string escaped = value.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n");
             return $"\"{escaped}\"";
         }
 

@@ -4,7 +4,6 @@ using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Services;
-using SimpleOCR.Library.Core;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,8 +15,8 @@ namespace OpenDMSBackend.Core.Misc
         private readonly IGeneralLogger _Logger;
         private readonly IPersistence _Persistence;
         private readonly IInitializationService<CommandlineParameter> _InitializationService;
-        private readonly IOCRService _OCRService;
-        public HealthCheck(IGeneralLogger logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRService ocrService)
+        private readonly IOCRServiceClient _OCRService;
+        public HealthCheck(IGeneralLogger logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRServiceClient ocrService)
         {
             this._Logger = logger;
             this._Persistence = persistence;

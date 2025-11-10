@@ -21,11 +21,10 @@ namespace OpenDMSBackend.Core.Services
         private readonly IExampleDataCreator _ExampleDataCreator;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IPersistence _Persistence;
-        private readonly IOCRServiceWrapper _OCRServiceWrapper;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private static readonly object _Lock = new object();
         private InitializationState _InitializationState;
-        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator, IOCRServiceWrapper ocrRServiceWrapper)
+        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator)
         {
             this._AuthenticationService = authenticationService;
             this._BusinessLogicService = businessLogicService;
@@ -34,7 +33,6 @@ namespace OpenDMSBackend.Core.Services
             this._ExampleDataCreator = exampleDataCreator;
             this._Persistence = persistence;
             this._IdGenerator = idGenerator;
-            this._OCRServiceWrapper = ocrRServiceWrapper;
             this.SetInitializationState(new Uninitialized());
         }
 
@@ -44,7 +42,6 @@ namespace OpenDMSBackend.Core.Services
             {
                 this.SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
-                this._OCRServiceWrapper.Initialize();
                 Tools.WaitUntilDatabaseIsAvailable(this._Persistence.IsAvailable, this._GeneralLogger);
                 string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
                 this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());

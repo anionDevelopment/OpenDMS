@@ -104,9 +104,13 @@ namespace OpenDMSBackend.Core
                         },
                     };
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
-                    if (initializationInformation.CommandlineParameter.InitialOCRDataFolder != null)
+                    if (initializationInformation.CommandlineParameter.InitialOCRDataServiceAddress != null)
                     {
-                        initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataFolder = initializationInformation.CommandlineParameter.InitialOCRDataFolder;
+                        initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataServiceAddress = initializationInformation.CommandlineParameter.InitialOCRDataServiceAddress;
+                    }
+                    if (initializationInformation.CommandlineParameter.InitialOCRDataServiceAPIKey != null)
+                    {
+                        initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataServiceAPIKey = initializationInformation.CommandlineParameter.InitialOCRDataServiceAPIKey;
                     }
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
@@ -188,7 +192,7 @@ namespace OpenDMSBackend.Core
                         }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementScheduler, ManagementScheduler>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceWrapper, OCRServiceWrapper>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClient>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();

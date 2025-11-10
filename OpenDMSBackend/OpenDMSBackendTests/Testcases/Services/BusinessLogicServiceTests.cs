@@ -31,16 +31,14 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             IIdGenerator<ulong> idGenerator = new OpenDMSBackend.Core.Services.IdGenerator();
             IPersistence databasePersistence = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTransientPersistence();
             persistence = databasePersistence;
-           // persistence.Reset();
+            // persistence.Reset();
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
             IAuthenticationService<User> authenticationService = new PersistentAuthenticationService(timeService, databasePersistence, logger, constants);
-            Mock<IOCRServiceWrapper> ocrServiceMock = new Mock<IOCRServiceWrapper>(MockBehavior.Strict);
-            ocrServiceMock.Setup(ocrServiceMock => ocrServiceMock.Initialize());
             IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
-            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceMock.Object, idGenerator, generalResourceLoader);
-            IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService,authenticationService);
-            initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, databasePersistence, idGenerator,
-                           ocrServiceMock.Object);
+            Mock<IOCRServiceClient> ocrServiceClientMock = new Mock<IOCRServiceClient>(MockBehavior.Strict);
+            businessLogicService = new BusinessLogicService(databasePersistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceClientMock.Object, idGenerator, generalResourceLoader);
+            IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService, authenticationService);
+            initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, databasePersistence, idGenerator);
         }
 
         [TestMethod(nameof(DatabaseInitializationTest))]

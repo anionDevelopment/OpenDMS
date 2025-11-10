@@ -4,7 +4,6 @@ using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using OpenDMSBackend.Core;
-using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using System;
@@ -45,10 +44,8 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     this._Program.ListenOnEveryIP = false;
                     this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
 
-                    string[] args = new string[] {
-                        @$"--{nameof(CommandlineParameter.InitialOCRDataFolder)}", Utilities.GetOCRDataFolder()
-                    };//TODO add option to pass more configuration-values for the test-run like port etc. so that this can not go wrong due to a different configuration from a previous (manual) run.
-                    var exitCode = this._Program.MainImplementation(args);
+                    string[] args = new string[] { };
+                    int exitCode = this._Program.MainImplementation(args);
                     Thread.Sleep(TimeSpan.FromSeconds(5));
                     GRYLibrary.Core.Misc.Utilities.AssertCondition(exitCode == 0, () =>
                     {
