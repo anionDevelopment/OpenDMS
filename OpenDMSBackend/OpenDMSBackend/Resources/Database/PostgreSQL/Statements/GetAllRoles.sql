@@ -1,2 +1,3 @@
 
-select "Id", "Name" from "Roles";
+select "Id", "Name"
+	from "Roles";

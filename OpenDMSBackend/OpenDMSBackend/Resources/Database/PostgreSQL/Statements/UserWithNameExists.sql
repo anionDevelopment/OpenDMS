@@ -1,2 +1,4 @@
 
-select 1 from "Users" where "Name"=$1;
+select 1 
+    from "Users" 
+    where "Name"=@UserName;

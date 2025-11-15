@@ -56,7 +56,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
             return GUtilities.ResolveToFullPath(@$"{GeneralConstants.CodeUnitFolder}\Other\Artifacts\${databaseName}DatabaseCreationScript");
         }
 
-        public static DatabaseTestFrameworkForMariaDB GetDatabaseTestFrameworkForMariaDB()
+        public static DatabaseTestFrameworkForMariaDB GetDatabaseTestFrameworkForMariaDB( )
         {
             return new DatabaseTestFrameworkForMariaDB(GeneralLogger.CreateUsingConsole());
         }

@@ -1,2 +1,2 @@
 
-delete from "AccessToken" where "Value"=$1;
+delete from "AccessToken" where "Value"=@Value;

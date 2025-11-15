@@ -1,2 +1,2 @@
 
-select "Id" from "Folders" where "Id"=$1;
+select "Id" from "Folders" where "Id"=@Id;

@@ -11,7 +11,7 @@ FROM (
         FROM Document_Tag dt
         JOIN Tags t ON t.Id = dt.TagId
         WHERE dt.DocumentId = d.Id
-          AND t.NameLower LIKE CONCAT('%', @SearchTerm, '%')
+          AND t.Name LIKE CONCAT('%', @SearchTerm, '%')
       ) * 3 +
       CASE WHEN d.OriginalFilename LIKE CONCAT('%', @SearchTerm, '%') THEN 2 ELSE 0 END +
       CASE WHEN d.OCRContent LIKE CONCAT('%', @SearchTerm, '%') THEN 1 ELSE 0 END

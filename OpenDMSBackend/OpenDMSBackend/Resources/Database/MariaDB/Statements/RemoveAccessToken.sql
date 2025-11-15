@@ -1,2 +1,4 @@
 
-delete from AccessToken where `Value`=@Value;
+delete 
+	from AccessToken 
+	where `Value`=@Value;

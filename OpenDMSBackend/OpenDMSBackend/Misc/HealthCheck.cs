@@ -32,11 +32,8 @@ namespace OpenDMSBackend.Core.Misc
                 IList<string> messages = new List<string>();
                 HealthStatus result = HealthStatus.Healthy;
 
-                Tools.CheckService(this._Logger, nameof(this._Persistence), this._Persistence, ref result, messages, true, true);
-                this._Logger.Log($"{nameof(this._Persistence)} checked. Current result: {result}", Microsoft.Extensions.Logging.LogLevel.Debug);
-
-                //Tools.CheckService(this._Logger, nameof(this._OCRService), this._OCRService, ref result, messages, true, true);
-                //this._Logger.Log($"{nameof(this._OCRService)} checked. Current result: {result}", Microsoft.Extensions.Logging.LogLevel.Debug);
+                Tools.CheckSingleExternalService(this._Logger, this._Persistence.GetType().Name, this._Persistence, ref result, messages, true, true);
+                //Tools.CheckSingleExternalService(this._Logger, this._OCRService.GetType().Name, this._OCRService, ref result, messages, true, false);
 
                 return (result, messages);
             }, context, cancellationToken, this._InitializationService);

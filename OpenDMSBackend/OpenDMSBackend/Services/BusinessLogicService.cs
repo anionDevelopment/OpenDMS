@@ -285,7 +285,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     if (toPictureWasSuccessful)
                     {
-                        document.OCRContent = this._OCRService.GetOCRContent(documentAsPicture!,PDF.Instance, document.AssignedLanguages);//TODO calculate filetype
+                        document.OCRContent = this._OCRService.GetOCRContent(documentAsPicture!,document.MIMEType.Value, document.AssignedLanguages);
                     }
                     else
                     {

@@ -18,6 +18,18 @@
         }
       }
     },
+    "/API/Other/Maintenance/InitializationState": {
+      "get": {
+        "tags": [
+          "MaintenanceRoutes"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/API/Other/Maintenance/CurrentVersion": {
       "get": {
         "tags": [

@@ -1,12 +1,12 @@
-﻿using GRYLibrary.Core.APIServer.Services;
-using GRYLibrary.Core.APIServer.Services.Trans;
+﻿using GRYLibrary.Core.APIServer.Services.Trans;
+using GRYLibrary.Core.APIServer.Utilities;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public interface IPersistence : IExternalService, IAuthenticationServicePersistence<Model.BusinessTypes.User>
+    public interface IPersistence :  IAuthenticationServicePersistence<Model.BusinessTypes.User>, IReconnectableDatabase
     {
         public IContainee GetContaineeById(string containeeId);
         public IContainer GetContainerById(string containerId);

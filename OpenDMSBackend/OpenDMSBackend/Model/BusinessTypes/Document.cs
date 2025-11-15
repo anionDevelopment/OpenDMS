@@ -32,9 +32,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public string GroupOfBusinessOwner { get; set; }
         public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
-        public string AddedByUserId { get; set; }
+        public string? AddedByUserId { get; set; }
         //TODO add list of old versions
-        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentContent, string oCRContent, byte[] documentPreview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string GroupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string addedByUserId)
+        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentContent, string oCRContent, byte[] documentPreview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string GroupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string? addedByUserId)
         {
             this.Id = id;
             this.Title = title;

@@ -8,13 +8,11 @@
 System.Reflection.Assembly gryLibraryAssembly = System.Reflection.Assembly.LoadFrom(gryLibraryDLLFile);
 Type functionsForCommonProjectStructureType = gryLibraryAssembly.GetType("GRYLibrary.Core.Misc.TextTransformUtilities.FunctionsForCommonProjectStructure");
 string generatedConstants = (string) functionsForCommonProjectStructureType.GetMethod("GenerateConstants").Invoke(null, new object[]{repositoryFolder, codeUnitName, false});
-string allLanguages= (string) functionsForCommonProjectStructureType.GetMethod("RunProgramAndGetOutput").Invoke(null, new object[]{repositoryFolder, codeUnitName, "python", "Other", "PrintLanguages.py"});
 #>
 namespace <#=codeUnitName#>.Core.Constants
 {
     internal static class GeneralConstants
     {
     <#= generatedConstants #>
-    internal const string AllLanguagesPlain = @"<#= allLanguages #>";
     }
 }

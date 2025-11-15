@@ -1,6 +1,8 @@
 ﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Strings;
@@ -16,7 +18,7 @@ using Role = GRYLibrary.Core.APIServer.CommonDBTypes.Role;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class DatabasePersistence : IPersistence
+    public class DatabasePersistence : IInitializable, IPersistence
     {
         private readonly ISQLProvider _SQLProvider;
         private static readonly object _Lock = new object();
@@ -24,12 +26,16 @@ namespace OpenDMSBackend.Core.Services
         private readonly ITimeService _TimeService;
         private readonly IGRYLog _Log;
         private readonly IOpenDMSDatabaseInteractor _Database;
+
+        public InitializationState InitializationState { get; private set; }
+
         public DatabasePersistence(IOpenDMSDatabaseInteractor database, ITimeService timeService, IGRYLog log)
         {
             this._TimeService = timeService;
             this._Database = database;
             this._Log = log;
             this._SQLProvider = database.GetSQLProvider();
+            this.InitializationState = new Uninitialized();
         }
 
         #region AccessDatabase
@@ -57,9 +63,9 @@ namespace OpenDMSBackend.Core.Services
                 }
             }
         }
-        protected void RunTransaction(params Action<DbCommand>[] actions)
+        protected void RunTransaction(string nameOfAction, params Action<DbCommand>[] actions)
         {
-            this.RunTransaction(actions.Select<Action<DbCommand>, Func<DbCommand, object?>>(action => (command) =>
+            this.RunTransaction(nameOfAction, actions.Select<Action<DbCommand>, Func<DbCommand, object?>>(action => (command) =>
             {
                 action(command);
                 return null;
@@ -67,56 +73,59 @@ namespace OpenDMSBackend.Core.Services
             ).ToArray());
         }
 
-        protected T?[] RunTransaction<T>(params Func<DbCommand, T?>[] functions)
+        protected T?[] RunTransaction<T>(string nameOfAction, params Func<DbCommand, T?>[] functions)
         {
             List<T?> results = new List<T?>();
-            this.AccessDatabase(context =>
-           {
-               DbConnection connection = context.GetGenericDatabaseInteractor().GetConnection();
-               using DbTransaction transaction = connection.BeginTransaction();
-               bool commit = true;
-               try
-               {
-                   foreach (Func<DbCommand, T?> function in functions)
-                   {
-                       using (DbCommand cmd = connection.CreateCommand())
-                       {
-                           cmd.CommandType = CommandType.Text;
-                           cmd.CommandTimeout = 300;
-                           cmd.Transaction = transaction;
-                           try
-                           {
-                               T? result = function(cmd);
-                               results.Add(result);
-                           }
-                           catch
-                           {
-                               commit = false;
-                               throw;
-                           }
-                       }
-                       ;
-                   }
-               }
-               finally
-               {
-                   if (commit)
-                   {
-                       transaction.Commit();
-                   }
-                   else
-                   {
-                       transaction.Rollback();
-                   }
-               }
-           });
+            this.AccessDatabase(interactor =>
+            {
+                this._Log.Log("Run DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                DbConnection connection = interactor.GetGenericDatabaseInteractor().GetConnection();
+                using DbTransaction transaction = connection.BeginTransaction();
+                bool commit = true;
+                try
+                {
+                    foreach (Func<DbCommand, T?> function in functions)
+                    {
+                        using (DbCommand cmd = connection.CreateCommand())
+                        {
+                            cmd.CommandType = CommandType.Text;
+                            cmd.CommandTimeout = 300;
+                            cmd.Transaction = transaction;
+                            try
+                            {
+                                T? result = function(cmd);
+                                results.Add(result);
+                            }
+                            catch
+                            {
+                                commit = false;
+                                throw;
+                            }
+                        }
+                        ;
+                    }
+                }
+                finally
+                {
+                    if (commit)
+                    {
+                        this._Log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                        transaction.Commit();
+                    }
+                    else
+                    {
+                        this._Log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                        transaction.Rollback();
+                    }
+                }
+            });
             return results.ToArray();
         }
 
         #endregion
         public virtual void CreateDocument(Document document)
         {
-            this.RunTransaction((command) =>
+            this.RunTransaction(nameof(CreateDocument), (command) =>
             {
                 command.CommandText = this._SQLProvider.GetScriptAddDocument();
 
@@ -184,7 +193,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual ISet<Role> GetAllRoles()
         {
-            ISet<Role> roles = GUtilities.GetValue(this.RunTransaction((command) =>
+            ISet<Role> roles = GUtilities.GetValue(this.RunTransaction(nameof(GetAllRoles), (command) =>
             {
                 ISet<Role> rolesInternal = new HashSet<Role>();
                 command.CommandText = this._SQLProvider.GetScriptGetAllRoles();
@@ -210,14 +219,44 @@ namespace OpenDMSBackend.Core.Services
 
         private void EnrichWithInheritedRoles(Role role)
         {
-            //TODO load inherited roles transitively
+
+            foreach (string directlyInheritedRoleId in this.GetDirectlyInheritedRoleIds(role.Id))
+            {
+                Role inheritedRole = this.GetRoleById(role.Id);
+                role.InheritedRoles.Add(inheritedRole);
+            }
+        }
+
+
+
+        private ISet<string> GetDirectlyInheritedRoleIds(string id)
+        {
+            ISet<string> r = this.RunTransaction<ISet<string>>(nameof(EnrichWithInheritedRoles) + "_" + id, (cmd) =>
+              {
+                  ISet<string> directlyInheritedRoleIds = new HashSet<string>();
+                  cmd.CommandText = this._SQLProvider.GetScriptGetInheritedRoles();
+                  cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", id));
+                  using (DbDataReader reader = cmd.ExecuteReader())
+                  {
+
+                      if (reader.HasRows)
+                      {
+                          while (reader.Read())
+                          {
+                              directlyInheritedRoleIds.Add(reader.GetString(0));
+                          }
+                      }
+                  }
+                  return directlyInheritedRoleIds;
+              })[0]!;//TODO check why esclamation-mark-operator is required here.
+            return r;
         }
 
         public virtual void AddRole(Role role)
         {
-            this.RunTransaction((command) =>
+            this.RunTransaction(nameof(AddRole), (command) =>
             {
-                command.CommandText = this._SQLProvider.GetScriptInsertRole();
+                command.CommandText = this._SQLProvider.GetScriptAddRole();
 
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", role.Id));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", role.Name));
@@ -230,16 +269,31 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual void UpdateRole(Role role)
         {
-            this.RunTransaction((cmd) =>
+            List<Action<DbCommand>> actions = new List<Action<DbCommand>>();
+            actions.Add((cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUpdateRole();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", role.Id));
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", role.Name));
-                using DbDataReader reader = cmd.ExecuteReader();
-            }, (cmd) =>
-            {
-                //TODO update inherited roles
+                cmd.ExecuteNonQuery();
             });
+            actions.Add((cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptDeleteInheritedRoles();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", role.Id));
+                cmd.ExecuteNonQuery();
+            });
+            foreach (Role inheritedRole in role.InheritedRoles)
+            {
+                actions.Add((cmd) =>
+                {
+                    cmd.CommandText = this._SQLProvider.GetScriptAddInheritedRole();
+                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", role.Id));
+                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("InheritedRoleId", inheritedRole.Id));
+                    cmd.ExecuteNonQuery();
+                });
+            }
+            this.RunTransaction(nameof(UpdateRole) + "_" + role.Id, actions.ToArray());
         }
 
         public virtual void DeleteRoleByName(string roleName)
@@ -254,7 +308,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual void AddUser(User user)
         {
-            this.RunTransaction((command) =>
+            this.RunTransaction(nameof(AddUser) + "_" + user.Id, (command) =>
             {
                 command.CommandText = this._SQLProvider.GetScriptAddUser();
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", user.Id));
@@ -273,7 +327,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool UserWithNameExists(string userName)
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(UserWithNameExists), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUserWithNameExists();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserName", userName));
@@ -284,7 +338,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool UserWithIdExists(string userId)
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(UserWithIdExists), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUserWithIdExists();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter(nameof(userId), userId));
@@ -295,7 +349,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual User GetUserById(string userId)
         {
-            User result = GUtilities.GetValue(this.RunTransaction((cmd) =>
+            User result = GUtilities.GetValue(this.RunTransaction(nameof(GetUserById) + "_" + userId, (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetUserById();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", userId));
@@ -325,7 +379,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual User GetUserByName(string userName)
         {
-            User result = GUtilities.GetValue(this.RunTransaction((cmd) =>
+            User result = GUtilities.GetValue(this.RunTransaction(nameof(GetUserByName) + "_" + userName, (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetUserByName();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", userName));
@@ -360,7 +414,7 @@ namespace OpenDMSBackend.Core.Services
 
         private void EnrichWhichAccessToken(User user)
         {
-            this.RunTransaction((cmd) =>
+            this.RunTransaction(nameof(EnrichWhichAccessToken), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetAllAccessTokenForUser();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", user.Id));
@@ -387,7 +441,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool RoleExists(string roleName)
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(RoleExists), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptRoleExists();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleName", roleName));
@@ -398,10 +452,9 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual void AddRoleToUser(string userId, string roleId)
         {
-            this.RunTransaction((command) =>
+            this.RunTransaction(nameof(AddRoleToUser), (command) =>
             {
                 command.CommandText = this._SQLProvider.GetScriptAddRoleToUser();
-
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", roleId));
                 command.ExecuteNonQuery();
@@ -415,7 +468,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool UserHasRole(string userId, string roleId)
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(UserHasRole), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUserHasRole();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
@@ -437,7 +490,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual uint GetAmountOfDocuments()
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(GetAmountOfDocuments), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetAmountOfDocuments();
                 using DbDataReader reader = cmd.ExecuteReader();
@@ -454,14 +507,15 @@ namespace OpenDMSBackend.Core.Services
         }
 
 
-        public virtual bool IsAvailable()
+        public virtual (bool, Exception?) IsAvailable()
         {
-            return this._Database.GetGenericDatabaseInteractor().TryGetConnection(out _);
+            bool result = this._Database.GetGenericDatabaseInteractor().TryGetConnection(out _, out Exception? e);
+            return (result, e);
         }
 
         public virtual Document GetDocument(string id)
         {
-            return GUtilities.GetValue(this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetDocument), (cmd) =>
             {
                 try
                 {
@@ -620,7 +674,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual string GetParentIdOfContainee(string containeeId)
         {
-            return GUtilities.GetValue(this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetParentIdOfContainee), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetParentIdOfContainee();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", containeeId));
@@ -645,7 +699,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool IsStorageLocationId(string id)
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(IsStorageLocationId), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsStorageLocation();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", id));
@@ -664,7 +718,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual DocumentPreview GetDocumentPreview(string id)
         {
-            return GUtilities.GetValue(this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetDocumentPreview), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetDocumentPreview();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", id));
@@ -685,7 +739,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual IEnumerable<string> GetAllStorageLocationIds()
         {
-            ISet<string> result = GUtilities.GetValue(this.RunTransaction((command) =>
+            ISet<string> result = GUtilities.GetValue(this.RunTransaction(nameof(GetAllStorageLocationIds), (command) =>
             {
                 ISet<string> resultInternal = new HashSet<string>();
                 command.CommandText = this._SQLProvider.GetScriptGetAllStorageLocations();
@@ -706,7 +760,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual StorageLocation GetStorageLocation(string storageLocationId)
         {
-            return GUtilities.GetValue(this.RunTransaction((command) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetStorageLocation), (command) =>
             {
                 StorageLocation? result = null;
                 command.CommandText = this._SQLProvider.GetScriptGetStorageLocation();
@@ -734,7 +788,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual Folder GetFolder(string folderId)
         {
-            return GUtilities.GetValue(this.RunTransaction((command) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetFolder), (command) =>
             {
                 Folder? result = null;
                 command.CommandText = this._SQLProvider.GetScriptGetFolder();
@@ -762,7 +816,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool IsStorageLocation(string contentId)
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(IsStorageLocation), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsStorageLocation();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", contentId));
@@ -781,7 +835,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool IsFolder(string contentId)
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(IsFolder), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsFolder();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", contentId));
@@ -800,7 +854,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual bool IsDocument(string contentId)
         {
-            return this.RunTransaction((cmd) =>
+            return this.RunTransaction(nameof(IsDocument), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsDocument();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", contentId));
@@ -819,7 +873,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual AccessToken GetAccessToken(string accessToken)
         {
-            return GUtilities.GetValue(this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetAccessToken), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetAccessToken();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", accessToken));
@@ -829,8 +883,8 @@ namespace OpenDMSBackend.Core.Services
                     reader.Read();
                     AccessToken result = new AccessToken();
                     result.Value = accessToken;
-                    result.ExpiredMoment = reader.GetDateTime(1);
-                    result.OwnerUserId = reader.GetString(2);
+                    result.ExpiredMoment = reader.GetFieldValue<DateTimeOffset>(0);
+                    result.OwnerUserId = reader.GetString(1);
                     return result;
                 }
                 else
@@ -842,10 +896,9 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual void AddAccessToken(string userId, AccessToken newAccessToken)
         {
-            this.RunTransaction((cmd) =>
+            this.RunTransaction(nameof(AddAccessToken), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptAddAccessToken();
-                cmd.Prepare();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", newAccessToken.Value));
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ExpiredMoment", newAccessToken.ExpiredMoment));
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
@@ -855,7 +908,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual void RemoveAccessToken(string accessToken)
         {
-            this.RunTransaction((cmd) =>
+            this.RunTransaction(nameof(RemoveAccessToken), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptRemoveAccessToken();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", accessToken));
@@ -885,7 +938,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual string GetIdFromReadableId(uint readableId)
         {
-            return GUtilities.GetValue(this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetIdFromReadableId), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetIdFromReadableId();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ReadableId", readableId));
@@ -905,7 +958,7 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual IList<string> Search(string searchTerm)
         {
-            return GUtilities.GetValue(this.RunTransaction((cmd) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(Search), (cmd) =>
             {
                 IDictionary<string, uint> result = new Dictionary<string, uint>();
                 cmd.CommandText = this._SQLProvider.GetScriptSearch();
@@ -928,7 +981,51 @@ namespace OpenDMSBackend.Core.Services
 
         public virtual Role GetRoleByName(string roleName)
         {
-            throw new NotImplementedException();
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetRoleByName) + "_" + roleName, (cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetRoleByName();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", roleName));
+                using DbDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    Role result = new Role();
+                    reader.Read();
+                    result.Id = reader.GetString(0);
+                    result.Name = roleName;
+                    this.EnrichWithInheritedRoles(result);
+                    return result;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No role found with name '{roleName}'.");
+                }
+            })[0]);
+        }
+
+        public virtual Role GetRoleById(string roleId)
+        {
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetRoleById) + "_" + roleId, (cmd) =>
+            {
+                Role result = new Role();
+                cmd.CommandText = this._SQLProvider.GetScriptGetRoleById();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", roleId));
+                using (DbDataReader reader = cmd.ExecuteReader())
+                {
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        result.Id = roleId;
+                        result.Name = reader.GetString(0);
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"No role found with id '{roleId}'.");
+                    }
+                }
+                this.EnrichWithInheritedRoles(result);
+                return result;
+            })[0]);
         }
 
         public bool DeleteIsAllowed(string documentId)
@@ -948,7 +1045,27 @@ namespace OpenDMSBackend.Core.Services
 
         public void Dispose()
         {
-           //TODO
+            //TODO
+        }
+
+        public void SetLogConnectionAttemptErrors(bool enabled)
+        {
+            this._Database.SetLogConnectionAttemptErrors(enabled);
+        }
+
+        public void Initialize()
+        {
+            try
+            {
+                this.InitializationState = new Initializing();
+                this._Database.GetGenericDatabaseInteractor().DoAllMigrations(this._Database.GetAllMigrations(), this._TimeService);
+                this.InitializationState = new Initialized();
+            }
+            catch (Exception ex)
+            {
+                this.InitializationState = new InitializationFailed();
+                this._Log.Log("Initialization failed", ex);
+            }
         }
     }
 }

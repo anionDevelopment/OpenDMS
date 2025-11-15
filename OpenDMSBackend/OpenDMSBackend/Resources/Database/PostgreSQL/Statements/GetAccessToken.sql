@@ -1,2 +1,4 @@
 
-select "Value", "ExpiredMoment", "UserId" from "AccessToken" where "Value"=$1;
+select "ExpiredMoment", "UserId"
+	from "AccessToken"
+	where "Value"=@Value;

@@ -43,14 +43,13 @@ CREATE TABLE "Documents" (
     "GroupOfBusinessOwner" varchar(255) not null,
     "Version" varchar(255) not null,
     "AssignedLanguages" varchar(255) null,
-    "AddedByUserId" varchar(255) not null,
+    "AddedByUserId" varchar(255) null,
     CONSTRAINT "PK_Documents" PRIMARY KEY ("Id")
 ) ;
 
 CREATE TABLE "Tags" (
     "Id" varchar(255) not null,
     "Name" varchar(255) not null,
-    "NameLower" varchar(255) not null,
     "Color" varchar(8) not null,
     CONSTRAINT "PK_Tags" PRIMARY KEY ("Id")
 ) ;

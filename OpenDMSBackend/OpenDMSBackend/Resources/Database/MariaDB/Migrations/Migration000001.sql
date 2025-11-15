@@ -1,4 +1,4 @@
-ALTER DATABASE CHARACTER SET utf8mb4;
+ALTER DATABASE CHARACTER SET utf8mb4_unicode_ci;
 
 CREATE TABLE `Users` (
     `Id` varchar(255) not null,
@@ -51,7 +51,6 @@ CREATE TABLE `Documents` (
 CREATE TABLE `Tags` (
     `Id` varchar(255) not null,
     `Name` varchar(255) not null,
-    `NameLower` varchar(255) not null,
     `Color` varchar(8) not null,
     CONSTRAINT `PK_Tags` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;

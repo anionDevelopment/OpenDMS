@@ -233,6 +233,13 @@ paths:
           description: OK
       tags:
       - MaintenanceRoutes
+  /API/Other/Maintenance/InitializationState:
+    get:
+      responses:
+        '200':
+          description: OK
+      tags:
+      - MaintenanceRoutes
   /API/Other/Maintenance/Metrics:
     get:
       responses:

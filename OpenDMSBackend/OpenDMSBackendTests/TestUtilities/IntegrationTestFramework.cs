@@ -44,7 +44,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     this._Program.ListenOnEveryIP = false;
                     this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
 
-                    string[] args = new string[] { };
+                    string[] args = Array.Empty<string>();
                     int exitCode = this._Program.MainImplementation(args);
                     Thread.Sleep(TimeSpan.FromSeconds(5));
                     GRYLibrary.Core.Misc.Utilities.AssertCondition(exitCode == 0, () =>

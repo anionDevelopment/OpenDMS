@@ -1,23 +1,15 @@
 ﻿using GRYLibrary.Core.APIServer.Services;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic.FileIO;
-using Namotion.Reflection;
 using OpenDMSBackend.Core.Configuration;
-using SimpleOCR.Library.Core.FileTypes;
 using SimpleOCR.Library.Core.Other;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 
 namespace OpenDMSBackend.Core.Services
@@ -27,23 +19,23 @@ namespace OpenDMSBackend.Core.Services
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _Configuration;
         private readonly IGRYLog _Log;
 
-        public bool IsInitialized => throw new NotImplementedException();
+        public InitializationState InitializationState { get; private set; } = new Initialized();
 
         public OCRServiceClient(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IGRYLog log, CommandlineParameter cmdParameter)
         {
             this._Configuration = configuration;
             this._Log = log;
         }
-        public bool IsAvailable()
+        public (bool, Exception?) IsAvailable()
         {
             try
             {
                 this.GetSupportedLanguages();
-                return true;
+                return (true,null);
             }
-            catch
+            catch(Exception e) 
             {
-                return false;
+                return (false,e);
             }
         }
 
@@ -53,7 +45,7 @@ namespace OpenDMSBackend.Core.Services
         }
         private HttpClient GetHttpClient()
         {
-            var client = new HttpClient();
+            HttpClient client = new HttpClient();
             if (!String.IsNullOrWhiteSpace(this._Configuration.ApplicationSpecificConfiguration.OCRDataServiceAPIKey))
             {
                 client.DefaultRequestHeaders.Add("X-ApiKey", this._Configuration.ApplicationSpecificConfiguration.OCRDataServiceAPIKey);
@@ -61,7 +53,7 @@ namespace OpenDMSBackend.Core.Services
             return client;
         }
 
-        public string GetOCRContent(byte[] fileContent, FileType fileType, ISet<string> languages)
+        public string GetOCRContent(byte[] fileContent, string mimeType, ISet<string> languages)
         {
             using HttpClient httpClient = this.GetHttpClient();
             using MultipartFormDataContent content = new MultipartFormDataContent();
@@ -69,12 +61,12 @@ namespace OpenDMSBackend.Core.Services
             ByteArrayContent fileContent2 = new ByteArrayContent(fileContent);
             fileContent2.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             content.Add(fileContent2, "name", "fileName");
-            HttpResponseMessage response = httpClient.PutAsync(this.GetAPIBasePath() + $"/GetOCRContent?fileType={Uri.EscapeDataString(FileType.Serialize(fileType))}&mimeType={languages}", content).WaitAndGetResult();
+            HttpResponseMessage response = httpClient.PutAsync(this.GetAPIBasePath() + $"/GetOCRContent?mimeType={languages}", content).WaitAndGetResult();
             response.EnsureSuccessStatusCode();
             return response.Content.ReadAsStringAsync().WaitAndGetResult();
         }
 
-        public byte[] ToPicture(byte[] fileContent, FileType fileType, string mimeType)
+        public byte[] ToPicture(byte[] fileContent, string mimeType)
         {
             using HttpClient httpClient = this.GetHttpClient();
             using MultipartFormDataContent content = new MultipartFormDataContent();
@@ -82,7 +74,7 @@ namespace OpenDMSBackend.Core.Services
             ByteArrayContent fileContent2 = new ByteArrayContent(fileContent);
             fileContent2.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             content.Add(fileContent2, "name", "fileName");
-            HttpResponseMessage response = httpClient.PutAsync(this.GetAPIBasePath() + $"/ToPicture?fileType={Uri.EscapeDataString(FileType.Serialize(fileType))}&mimeType={mimeType}", content).WaitAndGetResult();
+            HttpResponseMessage response = httpClient.PutAsync(this.GetAPIBasePath() + $"/ToPicture?mimeType={mimeType}", content).WaitAndGetResult();
             response.EnsureSuccessStatusCode();
             return response.Content.ReadAsByteArrayAsync().WaitAndGetResult();
         }

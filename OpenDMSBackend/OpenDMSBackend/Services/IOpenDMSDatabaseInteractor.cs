@@ -7,7 +7,8 @@ namespace OpenDMSBackend.Core.Services
     public interface IOpenDMSDatabaseInteractor 
     {
         public IGenericDatabaseInteractor GetGenericDatabaseInteractor();
-        public IList<MigrationInstance> GetAllMigrations();
         public ISQLProvider GetSQLProvider();
+        public IList<MigrationInstance> GetAllMigrations();
+        public void SetLogConnectionAttemptErrors(bool enabled);
     }
 }

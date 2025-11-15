@@ -28,9 +28,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public string GroupOfBusinessOwner { get; set; }
         public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
-        public string AddedByUserId { get; set; }
+        public string? AddedByUserId { get; set; }
 
-        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ISet<Tag> tags, ulong readableId, OneLineString mIMEType, byte[] preview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string addedByUserId)
+        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ISet<Tag> tags, ulong readableId, OneLineString mIMEType, byte[] preview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string? addedByUserId)
         {
             this.Id = id;
             this.Title = title;

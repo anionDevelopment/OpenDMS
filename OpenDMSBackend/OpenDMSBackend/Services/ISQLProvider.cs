@@ -4,9 +4,13 @@
     {
         string GetScriptAddRoleToUser();
         string GetScriptAddUser();
-        string GetScriptInsertRole();
+        string GetScriptAddRole();
         string GetScriptGetAllRoles();
         string GetScriptAddDocument();
+        string GetScriptDeleteInheritedRoles();
+        string GetScriptAddInheritedRole();
+        string GetScriptGetRoleByName();
+        string GetScriptGetRoleById();
         string GetScriptResetDatabase();
         string GetScriptRoleExists();
         string GetScriptUpdateRole();
@@ -31,5 +35,6 @@
         string GetScriptGetIdFromReadableId();
         string GetScriptSearch();
         string GetScriptGetDocumentPreview();
+        string GetScriptGetInheritedRoles();
     }
 }

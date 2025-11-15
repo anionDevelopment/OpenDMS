@@ -12,7 +12,7 @@ def start_dockerfile_example():
     t.ensure_env_file_is_generated(current_file, env_file_name, dict({
         'InitialAdminPassword': 'admin',
         'InitialDatabaseType': 'PostgreSQL',
-        'InitialDatabaseConnectionString': 'postgresql://root:R00tpa55w0rd@opendms_database:5432/OpenDMSDatabase',
+        'InitialDatabaseConnectionString': 'Host=opendms_database;Port=5432;Database=OpenDMSDatabase;Username=root;Password=R00tpa55w0rd;',
         'InitialOCRDataServiceAddress': 'https://localhost:448',
 #        'InitialOCRDataServiceAPIKey': '',
     }))

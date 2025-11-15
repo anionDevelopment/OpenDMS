@@ -22,9 +22,9 @@ namespace OpenDMSBackend.Core.Misc
             return this.LoadSQLScript("AddDocument");
         }
 
-        public string GetScriptInsertRole()
+        public string GetScriptAddRole()
         {
-            return this.LoadSQLScript("InsertRole");
+            return this.LoadSQLScript("AddRole");
         }
 
         public string GetScriptGetAllRoles()
@@ -150,6 +150,31 @@ namespace OpenDMSBackend.Core.Misc
         public string GetScriptGetDocumentPreview()
         {
             return this.LoadSQLScript("GetDocumentPreview");
+        }
+
+        public string GetScriptDeleteInheritedRoles()
+        {
+            return this.LoadSQLScript("DeleteInheritedRoles");
+        }
+
+        public string GetScriptAddInheritedRole()
+        {
+            return this.LoadSQLScript("AddInheritedRole");
+        }
+
+        public string GetScriptGetRoleByName()
+        {
+            return this.LoadSQLScript("GetRoleByName");
+        }
+
+        public string GetScriptGetRoleById()
+        {
+            return this.LoadSQLScript("GetRoleById");
+        }
+
+        public string GetScriptGetInheritedRoles()
+        {
+            return this.LoadSQLScript("GetInheritedRoles");
         }
     }
 }

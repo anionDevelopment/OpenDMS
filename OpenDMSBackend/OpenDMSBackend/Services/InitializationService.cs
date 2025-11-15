@@ -42,7 +42,11 @@ namespace OpenDMSBackend.Core.Services
             {
                 this.SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
-                Tools.WaitUntilDatabaseIsAvailable(this._Persistence.IsAvailable, this._GeneralLogger);
+                Tools.WaitUntilDatabaseIsAvailable(this._Persistence, this._GeneralLogger);
+                if (this._Persistence is IInitializable initializable)
+                {
+                    initializable.Initialize();
+                }
                 string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
                 this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
                 if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
@@ -70,7 +74,7 @@ namespace OpenDMSBackend.Core.Services
             catch (System.Exception e)
             {
                 this.SetInitializationState(new InitializationFailed());
-                this._GeneralLogger.Log("Error while service-initialization", e);
+                this._GeneralLogger.Log("Error while service-initialization.", e);
             }
         }
 

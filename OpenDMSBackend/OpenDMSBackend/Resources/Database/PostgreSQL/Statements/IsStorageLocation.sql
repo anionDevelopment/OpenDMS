@@ -1,2 +1,5 @@
 
-SELECT 1 FROM "StorageLocations" WHERE "Id"=$1 limit 1;
+SELECT 1 
+    FROM "StorageLocations"
+    WHERE "Id"=@Id
+    limit 1;

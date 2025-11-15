@@ -1,2 +1,4 @@
 
-select "Name" from "StorageLocations" where "Id"=$1;
+select "Name" 
+    from "StorageLocations" 
+    where "Id"=@Id;
