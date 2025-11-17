@@ -43,14 +43,17 @@ namespace OpenDMSBackend.Core.Services
                 this.SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
                 Tools.WaitUntilDatabaseIsAvailable(this._Persistence, this._GeneralLogger);
-                if (this._Persistence is IInitializable initializable)
+                this._Persistence.Reset();//TODO remove this line
+                if (this._Persistence is IInitializable initializablePersitence)
                 {
-                    initializable.Initialize();
+                    initializablePersitence.Initialize();//this part runs migrations. this is idempotent and can be done on every start.
+                    GRYLibrary.Core.Misc.Utilities.AssertCondition(initializablePersitence.InitializationState is Initialized);
                 }
-                string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
                 this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
+                string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
                 if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
                 {
+                    //this part runs business-logic initialization which is not idempotent and will be executed therefore only if it was never done before (which will simply be checked by existence of the admin-user)
                     this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);
                     Role usersRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
 

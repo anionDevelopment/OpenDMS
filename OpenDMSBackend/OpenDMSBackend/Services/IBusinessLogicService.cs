@@ -21,10 +21,10 @@ namespace OpenDMSBackend.Core.Services
 
         #region BusinessLogic
 
-        public void SoftDelete(string requesterUserId, string containerOrContaineeId);
-        public void HardDelete(string requesterUserId, string containerOrContaineeId);
+        public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason);
+        public void HardDelete(string? requesterUserId, string containerOrContaineeId, string reason);
 
-        public void RemoveEntireContent(string requesterUserId, string containerId);
+        public void RemoveEntireContent(string requesterUserId, string containerId,string reason);
 
         #region Document
         /// <returns>Returns the id of the created document.</returns>

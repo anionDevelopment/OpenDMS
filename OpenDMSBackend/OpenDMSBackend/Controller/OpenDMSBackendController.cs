@@ -202,10 +202,21 @@ namespace OpenDMSBackend.Core.Controller
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpDelete]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [Route($"{nameof(Delete)}/{{{nameof(containerOrContaineeId)}}}")]
-        public IActionResult Delete(string containerOrContaineeId)
+        [Route($"{nameof(HardDelete)}/{{{nameof(containerOrContaineeId)}}}")]
+        public IActionResult HardDelete(string containerOrContaineeId, [FromBody] string reason)
         {
-            this._BusinessLogicService.HardDelete(this.GetUser().Id, containerOrContaineeId);
+            this._BusinessLogicService.HardDelete(this.GetUser().Id, containerOrContaineeId, reason);
+            return this.Ok();
+        }
+
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpDelete]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(SoftDelete)}/{{{nameof(containerOrContaineeId)}}}")]
+        public IActionResult SoftDelete(string containerOrContaineeId, [FromBody] string reason)
+        {
+            this._BusinessLogicService.SoftDelete(this.GetUser().Id, containerOrContaineeId, reason);
             return this.Ok();
         }
 

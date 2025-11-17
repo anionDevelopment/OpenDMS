@@ -41,15 +41,15 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
                 //arrange          
-                IPersistence databasePersistence = this.GetPersistence();
+                IPersistence persistence = this.GetPersistence();
 
                 Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 02, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), "added-by-user-id");
 
                 //act
-                databasePersistence.CreateDocument(testDocument);
+                persistence.CreateDocument(testDocument);
 
                 // assert
-                Document reloadedDocument = databasePersistence.GetDocument(testDocument.Id);
+                Document reloadedDocument = persistence.GetDocument(testDocument.Id);
                 Assert.AreEqual(testDocument.OriginalFilename.Value, reloadedDocument.OriginalFilename.Value);
             }
         }
@@ -59,16 +59,16 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
                 //arrange
-                IPersistence databasePersistence = this.GetPersistence();
+                IPersistence persistence = this.GetPersistence();
                 Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 03, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), "added-by-user-id");
 
                 uint expectedAmount1 = 0;
                 uint expectedAmount2 = 1;
 
                 //act
-                uint actualAmount1 = databasePersistence.GetAmountOfDocuments();
-                databasePersistence.CreateDocument(testDocument);
-                uint actualAmount2 = databasePersistence.GetAmountOfDocuments();
+                uint actualAmount1 = persistence.GetAmountOfDocuments();
+                persistence.CreateDocument(testDocument);
+                uint actualAmount2 = persistence.GetAmountOfDocuments();
 
                 // assert
 
@@ -76,7 +76,5 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
                 Assert.AreEqual(expectedAmount2, actualAmount2);
             }
         }
-
-
     }
 }

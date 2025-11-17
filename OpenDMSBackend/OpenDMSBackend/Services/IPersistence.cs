@@ -17,7 +17,7 @@ namespace OpenDMSBackend.Core.Services
         public void AssignTag(string documentId, string tagId);
         public void UnassignTag(string documentId, string tagId);
         public TagDTO[] GetAllTags();
-        public IEnumerable<string> GetAllDocumentIds();
+        public ISet<string> GetAllDocumentIds();
         public string GetIdOfStorageLocationContainedIn(string containeeId);
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId);
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId);
@@ -57,6 +57,6 @@ namespace OpenDMSBackend.Core.Services
         /// </returns>
         public IList<string> Search(string searchTerm);
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow();
- 
+        void Reset();
     }
 }

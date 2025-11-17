@@ -35,7 +35,8 @@ namespace OpenDMSBackend.Core.Services
         private readonly IOCRServiceClient _OCRService;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader)
+        private readonly IAuditLog _AuditLog;
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader, IAuditLog auditLog)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -46,6 +47,7 @@ namespace OpenDMSBackend.Core.Services
             this._OCRService = oCRService;
             this._IdGenerator = idGenerator;
             this._GeneralResourceLoader = generalResourceLoader;
+            this._AuditLog = auditLog;
         }
 
         public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
@@ -92,7 +94,7 @@ namespace OpenDMSBackend.Core.Services
                 Role userRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
                 this._AuthenticationService.EnsureUserHasRole(newUser.Id, userRole.Id);
 
-                this._Logger.Log($"User '{newUser.Name}' registered. (Technical-id: {newUser.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
+                this._AuditLog.AuditLogger.Log($"User with id {newUser.Id} registered.", Microsoft.Extensions.Logging.LogLevel.Information);
                 return newUser.Id;
             }
         }
@@ -352,6 +354,7 @@ namespace OpenDMSBackend.Core.Services
             //TODO check permission
             string id = this._Persistence.AddStoragLocation(name);
             this._Persistence.SetOwnerOfStorageLocation(id, requesterUserId);
+            this._AuditLog.AuditLogger.Log($"Storage-location '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
             return id;
         }
 
@@ -360,7 +363,7 @@ namespace OpenDMSBackend.Core.Services
             //TODO check permission
             string id = this._Persistence.AddFolder(name);
             this._Persistence.SetParentOfContainee(this.GetContainee(id), parentContainerId);
-            this._Logger.Log($"Folder '{name}' added. (Technical-id: {id})", Microsoft.Extensions.Logging.LogLevel.Information);
+            this._AuditLog.AuditLogger.Log($"Folder '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
             return id;
         }
 
@@ -382,7 +385,7 @@ namespace OpenDMSBackend.Core.Services
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
-        public void HardDelete(string requesterUserId, string containerOrContaineeId)
+        public void HardDelete(string? requesterUserId, string containerOrContaineeId,string reason)
         {
             //TODO check permission
 
@@ -394,12 +397,13 @@ namespace OpenDMSBackend.Core.Services
             }
 
             //remove content
-            Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId), (folderId) => this.RemoveEntireContent(requesterUserId, folderId), null);
+            Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId, reason), (folderId) => this.RemoveEntireContent(requesterUserId, folderId, reason), null);
 
             this._Persistence.HardDelete(containerOrContaineeId);
+            this._AuditLog.AuditLogger.Log($"Hard-deleted {this._AuditLog.AuditLogger}. Reason: {reason}");
         }
 
-        public void SoftDelete(string requesterUserId, string containerOrContaineeId)
+        public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
             throw new NotImplementedException();
         }
@@ -448,12 +452,12 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();//TODO remove expired accesstoken
         }
 
-        public void RemoveEntireContent(string requesterUserId, string containerId)
+        public void RemoveEntireContent(string? requesterUserId, string containerId,string reason)
         {
             IContainer container = this._Persistence.GetContainerById(containerId);
             foreach (IContainee child in container.Content)
             {
-                this.HardDelete(requesterUserId, child.Id);
+                this.HardDelete(requesterUserId, child.Id, reason);
             }
         }
 

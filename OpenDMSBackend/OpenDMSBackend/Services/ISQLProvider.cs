@@ -36,5 +36,14 @@
         string GetScriptSearch();
         string GetScriptGetDocumentPreview();
         string GetScriptGetInheritedRoles();
+        string GetScriptAddStorageLocation();
+        string GetScriptAddFolder();
+        string GetScriptAddOrUpdateOwnerOfStorageLocation();
+        string GetScriptSetParentOfContainee();
+        string GetScriptGetTagsOfDocument();
+        string GetScriptGetTag();
+        string GetScriptGetAllDocumentIds();
+        string GetScriptGetAllTags();
+        string GetScriptAddTag();
     }
 }

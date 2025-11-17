@@ -1,3 +1,3 @@
 delete
 	from "Role_InheritedRoles"
-	where "RoleId" = "@RoleId"
+	where "RoleId" = @RoleId

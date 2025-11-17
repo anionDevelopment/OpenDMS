@@ -5,10 +5,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
 {
     [TestClass]
-    [Ignore]
     public class PostgresSQLDatabaseTests : DatabaseTestsBase
     {
-        protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
+        protected override DatabaseTestFrameworkTemplate GetDatabaseTestFrameworkImplementation()
         {
             return OpenDMSBackend.Tests.TestUtilities.Utilities.GetDatabaseTestFrameworkForPostgreSQL();
         }
@@ -18,14 +17,21 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public override void Migration000001Test()
         {
-                this.Migration000001();
+            this.Migration000001();
         }
 
         [TestMethod(nameof(AllMigrationsAreWorkingTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public override void AllMigrationsAreWorkingTest()
         {
-                this.AllMigrationsAreWorking();
+            this.AllMigrationsAreWorking();
+        }
+
+        [TestMethod(nameof(LoadDocumentTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public override void LoadDocumentTest()
+        {
+            this.LoadDocument();
         }
     }
 }

@@ -120,9 +120,9 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetAllDocumentIds()
+        public ISet<string> GetAllDocumentIds()
         {
-            return this._Documents.Keys;
+            return this._Documents.Keys.ToHashSet();
         }
 
         public string GetIdOfStorageLocationContainedIn(string id)
@@ -518,7 +518,7 @@ namespace OpenDMSBackend.Core.Services
 
         public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleById(string roleId)
         {
-            return _TransientAuthenticationServicePersistence.GetRoleById(roleId);
+            return this._TransientAuthenticationServicePersistence.GetRoleById(roleId);
         }
     }
 }

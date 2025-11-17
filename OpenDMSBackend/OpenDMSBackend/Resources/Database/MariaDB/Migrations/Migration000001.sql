@@ -51,7 +51,7 @@ CREATE TABLE `Documents` (
 CREATE TABLE `Tags` (
     `Id` varchar(255) not null,
     `Name` varchar(255) not null,
-    `Color` varchar(8) not null,
+    `Color` INT UNSIGNED not null,
     CONSTRAINT `PK_Tags` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 

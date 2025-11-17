@@ -5,10 +5,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
 {
     [TestClass]
-    [Ignore]
     public class MariaDBDatabaseTests : DatabaseTestsBase
     {
-        protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
+        protected override DatabaseTestFrameworkTemplate GetDatabaseTestFrameworkImplementation()
         {
             return OpenDMSBackend.Tests.TestUtilities.Utilities.GetDatabaseTestFrameworkForMariaDB();
         }
@@ -26,6 +25,13 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
         public override void AllMigrationsAreWorkingTest()
         {
             this.AllMigrationsAreWorking();
+        }
+
+        [TestMethod(nameof(LoadDocumentTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public override void LoadDocumentTest()
+        {
+            this.LoadDocument();
         }
     }
 }

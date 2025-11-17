@@ -18,11 +18,10 @@ using Role = GRYLibrary.Core.APIServer.CommonDBTypes.Role;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public class DatabasePersistence : IInitializable, IPersistence
+    public sealed class DatabasePersistence : IInitializable, IPersistence
     {
         private readonly ISQLProvider _SQLProvider;
         private static readonly object _Lock = new object();
-        private readonly Semaphore _Semaphore = new Semaphore();
         private readonly ITimeService _TimeService;
         private readonly IGRYLog _Log;
         private readonly IOpenDMSDatabaseInteractor _Database;
@@ -52,15 +51,7 @@ namespace OpenDMSBackend.Core.Services
         {
             lock (_Lock)
             {
-                this._Semaphore.Lock();
-                try
-                {
-                    return function(this._Database);
-                }
-                finally
-                {
-                    this._Semaphore.Unlock();
-                }
+                return function(this._Database);
             }
         }
         protected void RunTransaction(string nameOfAction, params Action<DbCommand>[] actions)
@@ -96,13 +87,13 @@ namespace OpenDMSBackend.Core.Services
                                 T? result = function(cmd);
                                 results.Add(result);
                             }
-                            catch
+                            catch (Exception e)
                             {
                                 commit = false;
+                                this._Log.Log($"Error in database occurred while doing DB-transaction {nameOfAction}.", e);
                                 throw;
                             }
                         }
-                        ;
                     }
                 }
                 finally
@@ -123,7 +114,7 @@ namespace OpenDMSBackend.Core.Services
         }
 
         #endregion
-        public virtual void CreateDocument(Document document)
+        public void CreateDocument(Document document)
         {
             this.RunTransaction(nameof(CreateDocument), (command) =>
             {
@@ -145,7 +136,8 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MustBeHardDeletedAfter", this.ToDateTime(document.MustBeHardDeletedAfter), typeof(DateTime)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("GroupOfBusinessOwner", document.GroupOfBusinessOwner));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Version", document.Version.ToString()));
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter(nameof(Document.AssignedLanguages), Core.Misc.Utilities.LanguagesListToString(document.AssignedLanguages)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AssignedLanguages", Core.Misc.Utilities.LanguagesListToString(document.AssignedLanguages)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AddedByUserId", document.AddedByUserId, typeof(string)));
                 command.ExecuteNonQuery();
             });
         }
@@ -186,56 +178,60 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
-        public virtual IDictionary<string, User> GetAllUsers()
+        public IDictionary<string, User> GetAllUsers()
         {
             throw new NotImplementedException();
         }
 
-        public virtual ISet<Role> GetAllRoles()
+        public ISet<Role> GetAllRoles()
         {
-            ISet<Role> roles = GUtilities.GetValue(this.RunTransaction(nameof(GetAllRoles), (command) =>
+            lock (_Lock)
             {
-                ISet<Role> rolesInternal = new HashSet<Role>();
-                command.CommandText = this._SQLProvider.GetScriptGetAllRoles();
-                using (DbDataReader reader = command.ExecuteReader())
+                ISet<Role> roles = GUtilities.GetValue(this.RunTransaction(nameof(GetAllRoles), (command) =>
                 {
-                    while (reader.Read())
+                    ISet<Role> rolesInternal = new HashSet<Role>();
+                    command.CommandText = this._SQLProvider.GetScriptGetAllRoles();
+                    using (DbDataReader reader = command.ExecuteReader())
                     {
-                        string id = reader.GetString(0);
-                        string name = reader.GetString(1);
-                        rolesInternal.Add(new Role() { Id = id, Name = name });
+                        while (reader.Read())
+                        {
+                            string id = reader.GetString(0);
+                            string name = reader.GetString(1);
+                            rolesInternal.Add(new Role() { Id = id, Name = name });
+                        }
+                        reader.Close();
+                        return rolesInternal;
                     }
-                    reader.Close();
-                    return rolesInternal;
+                    ;
+                })[0]);
+                foreach (Role role in roles)
+                {
+                    this.EnrichWithInheritedRoles(role);
                 }
-                ;
-            })[0]);
-            foreach (Role role in roles)
-            {
-                this.EnrichWithInheritedRoles(role);
+                return roles;
             }
-            return roles;
         }
 
         private void EnrichWithInheritedRoles(Role role)
         {
+            role.InheritedRoles = new HashSet<Role>();
 
             foreach (string directlyInheritedRoleId in this.GetDirectlyInheritedRoleIds(role.Id))
             {
-                Role inheritedRole = this.GetRoleById(role.Id);
+                Role inheritedRole = this.GetRoleById(directlyInheritedRoleId);
                 role.InheritedRoles.Add(inheritedRole);
             }
         }
 
 
 
-        private ISet<string> GetDirectlyInheritedRoleIds(string id)
+        private ISet<string> GetDirectlyInheritedRoleIds(string roleId)
         {
-            ISet<string> r = this.RunTransaction<ISet<string>>(nameof(EnrichWithInheritedRoles) + "_" + id, (cmd) =>
+            ISet<string> roles = this.RunTransaction<ISet<string>>(nameof(EnrichWithInheritedRoles) + "_" + roleId, (cmd) =>
               {
                   ISet<string> directlyInheritedRoleIds = new HashSet<string>();
                   cmd.CommandText = this._SQLProvider.GetScriptGetInheritedRoles();
-                  cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", id));
+                  cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", roleId));
                   using (DbDataReader reader = cmd.ExecuteReader())
                   {
 
@@ -249,10 +245,10 @@ namespace OpenDMSBackend.Core.Services
                   }
                   return directlyInheritedRoleIds;
               })[0]!;//TODO check why esclamation-mark-operator is required here.
-            return r;
+            return roles;
         }
 
-        public virtual void AddRole(Role role)
+        public void AddRole(Role role)
         {
             this.RunTransaction(nameof(AddRole), (command) =>
             {
@@ -267,7 +263,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
-        public virtual void UpdateRole(Role role)
+        public void UpdateRole(Role role)
         {
             List<Action<DbCommand>> actions = new List<Action<DbCommand>>();
             actions.Add((cmd) =>
@@ -296,17 +292,17 @@ namespace OpenDMSBackend.Core.Services
             this.RunTransaction(nameof(UpdateRole) + "_" + role.Id, actions.ToArray());
         }
 
-        public virtual void DeleteRoleByName(string roleName)
+        public void DeleteRoleByName(string roleName)
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool AccessTokenExists(string accessToken, out User user)
+        public bool AccessTokenExists(string accessToken, out User user)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void AddUser(User user)
+        public void AddUser(User user)
         {
             this.RunTransaction(nameof(AddUser) + "_" + user.Id, (command) =>
             {
@@ -325,7 +321,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
-        public virtual bool UserWithNameExists(string userName)
+        public bool UserWithNameExists(string userName)
         {
             return this.RunTransaction(nameof(UserWithNameExists), (cmd) =>
             {
@@ -336,7 +332,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
-        public virtual bool UserWithIdExists(string userId)
+        public bool UserWithIdExists(string userId)
         {
             return this.RunTransaction(nameof(UserWithIdExists), (cmd) =>
             {
@@ -347,7 +343,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
-        public virtual User GetUserById(string userId)
+        public User GetUserById(string userId)
         {
             User result = GUtilities.GetValue(this.RunTransaction(nameof(GetUserById) + "_" + userId, (cmd) =>
             {
@@ -377,7 +373,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
-        public virtual User GetUserByName(string userName)
+        public User GetUserByName(string userName)
         {
             User result = GUtilities.GetValue(this.RunTransaction(nameof(GetUserByName) + "_" + userName, (cmd) =>
             {
@@ -434,12 +430,12 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
-        public virtual void RemoveUser(string userId)
+        public void RemoveUser(string userId)
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool RoleExists(string roleName)
+        public bool RoleExists(string roleName)
         {
             return this.RunTransaction(nameof(RoleExists), (cmd) =>
             {
@@ -450,7 +446,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
-        public virtual void AddRoleToUser(string userId, string roleId)
+        public void AddRoleToUser(string userId, string roleId)
         {
             this.RunTransaction(nameof(AddRoleToUser), (command) =>
             {
@@ -461,12 +457,12 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
-        public virtual void RemoveRoleFromUser(string userId, string roleId)
+        public void RemoveRoleFromUser(string userId, string roleId)
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool UserHasRole(string userId, string roleId)
+        public bool UserHasRole(string userId, string roleId)
         {
             return this.RunTransaction(nameof(UserHasRole), (cmd) =>
             {
@@ -478,17 +474,17 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
-        public virtual User GetUserByAccessToken(string accessToken)
+        public User GetUserByAccessToken(string accessToken)
         {
             return this.GetUserById(this.GetAccessToken(accessToken).OwnerUserId);
         }
 
-        public virtual void UpdateUser(User user)
+        public void UpdateUser(User user)
         {
             throw new NotImplementedException();
         }
 
-        public virtual uint GetAmountOfDocuments()
+        public uint GetAmountOfDocuments()
         {
             return this.RunTransaction(nameof(GetAmountOfDocuments), (cmd) =>
             {
@@ -507,146 +503,274 @@ namespace OpenDMSBackend.Core.Services
         }
 
 
-        public virtual (bool, Exception?) IsAvailable()
+        public (bool, Exception?) IsAvailable()
         {
             bool result = this._Database.GetGenericDatabaseInteractor().TryGetConnection(out _, out Exception? e);
             return (result, e);
         }
 
-        public virtual Document GetDocument(string id)
+        public Document GetDocument(string id)
         {
-            return GUtilities.GetValue(this.RunTransaction(nameof(GetDocument), (cmd) =>
+            lock (_Lock)
             {
-                try
+                Document result = GUtilities.GetValue(this.RunTransaction(nameof(GetDocument), (cmd) =>
                 {
-                    cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
-                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", id));
-                    using DbDataReader reader = cmd.ExecuteReader();
-                    if (reader.HasRows)
+                    try
                     {
-                        reader.Read();
-                        Document document = new Document(id,
-                            OneLineString.From(reader.GetString(0)),//title
-                            OneLineString.From(reader.GetString(1)),//filename
-                            OneLineString.From(reader.GetString(2)),//original filename
-                            this.ToDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 3)),//importdate
-                            this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)),//lasteditdate
-                            (uint)reader.GetInt32(5),//readableid
-                            new HashSet<Tag>(),//tags
-                            OneLineString.From(reader.GetString(6)),//mimetype
-                            (byte[])reader.GetValue(7),//content
-                            reader.GetString(8),//ocrcontent
-                            (byte[])reader.GetValue(9),//preview
-                            reader.GetBoolean(10),//is soft deleted
-                            this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 11)),//delete is not allowed before
-                             this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 12)),//must be deleted after
-                            reader.GetString(13),//businessowner
-                            Version3.Parse(reader.GetString(14)),//version
-                            Core.Misc.Utilities.StringToLanguagesList(reader.GetString(15)),//languages
-                            reader.GetString(7)//userid
-                        );
-                        //TODO load tags
-                        return document;
+                        cmd.CommandText = this._SQLProvider.GetScriptGetDocument();
+                        cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", id));
+                        using DbDataReader reader = cmd.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            reader.Read();
+                            Document document = new Document(id,
+                                OneLineString.From(reader.GetString(0)),//title
+                                OneLineString.From(reader.GetString(1)),//filename
+                                OneLineString.From(reader.GetString(2)),//original filename
+                                this.ToDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 3)),//importdate
+                                this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)),//lasteditdate
+                                (uint)reader.GetInt32(5),//readableid
+                                new HashSet<Tag>(),//tags
+                                OneLineString.From(reader.GetString(6)),//mimetype
+                                (byte[])reader.GetValue(7),//content
+                                reader.GetString(8),//ocrcontent
+                                (byte[])reader.GetValue(9),//preview
+                                reader.GetBoolean(10),//is soft deleted
+                                this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 11)),//delete is not allowed before
+                                 this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 12)),//must be deleted after
+                                reader.GetString(13),//businessowner
+                                Version3.Parse(reader.GetString(14)),//version
+                                Core.Misc.Utilities.StringToLanguagesList(reader.GetString(15)),//languages
+                                reader.GetString(16)//userid
+                            );
+                            return document;
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"No document found with document '{id}'");
+                        }
                     }
-                    else
+                    catch
                     {
-                        throw new KeyNotFoundException($"No document found with document '{id}'");
+                        throw;
+                    }
+                })[0]);
+                this.EnrichWhichTags(result);
+                return result;
+            }
+        }
+
+        private void EnrichWhichTags(Document document)
+        {
+            ISet<string> tagIds = this.GetTagIdsOfDocument(document.Id);
+            foreach (string tagId in tagIds)
+            {
+                document.Tags.Add(this.GetTag(tagId));
+            }
+        }
+
+        public void CreateTag(Tag tag)
+        {
+            this.RunTransaction(nameof(CreateTag), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddTag();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", tag.Id));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", tag.Name));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Color", tag.Color.ColorCode));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        public void AssignTag(string documentId, string tagId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnassignTag(string documentId, string tagId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TagDTO[] GetAllTags()
+        {
+            HashSet<TagDTO> result = new HashSet<TagDTO>();
+            this.RunTransaction(nameof(GetAllTags), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptGetAllTags();
+                using (DbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Tag tag = new Tag(
+                            reader.GetString(0),
+                            reader.GetString(0),
+                            new ExtendedColor(reader.GetInt32(2))
+                        );
                     }
                 }
-                catch
+            });
+            return result.ToArray();
+        }
+        public Tag GetTag(string id)
+        {
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetTag), (command) =>
+              {
+                  command.CommandText = this._SQLProvider.GetScriptGetTag();
+                  command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", id));
+                  using DbDataReader reader = command.ExecuteReader();
+                  if (reader.HasRows)
+                  {
+                      reader.Read();
+                      return new Tag(
+                        reader.GetString(0),
+                        reader.GetString(0),
+                        new ExtendedColor(reader.GetInt32(2))
+                      );
+                  }
+                  else
+                  {
+                      throw new KeyNotFoundException($"No tag found with id '{id}'.");
+                  }
+              })[0]);
+        }
+        public ISet<string> GetTagIdsOfDocument(string documentId)
+        {
+            HashSet<string> result = new HashSet<string>();
+            this.RunTransaction(nameof(GetTagIdsOfDocument), (command) =>
+             {
+                 command.CommandText = this._SQLProvider.GetScriptGetTagsOfDocument();
+                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                 using (DbDataReader reader = command.ExecuteReader())
+                 {
+                     while (reader.Read())
+                     {
+                         result.Add(reader.GetString(0));
+                     }
+                 }
+             });
+            return result;
+        }
+
+        public ISet<string> GetAllDocumentIds()
+        {
+            HashSet<string> result = new HashSet<string>();
+            this.RunTransaction(nameof(GetAllDocumentIds), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptGetAllDocumentIds();
+                using (DbDataReader reader = command.ExecuteReader())
                 {
-                    throw;
+                    while (reader.Read())
+                    {
+                        result.Add(reader.GetString(0));
+                    }
+                }
+            });
+            return result;
+        }
+
+        public string GetIdOfStorageLocationContainedIn(string containeeId)
+        {
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetIdOfStorageLocationContainedIn), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptGetTag();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContaineeId", containeeId));
+                using DbDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return reader.GetString(0);
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No storage-location found for containee with id '{containeeId}'.");
                 }
             })[0]);
         }
 
-
-        public virtual void CreateTag(Tag tag)
+        public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void AssignTag(string documentId, string tagId)
+        public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void UnassignTag(string documentId, string tagId)
+        public string AddStoragLocation(string name)
+        {
+            string id = Guid.NewGuid().ToString();
+            this.RunTransaction(nameof(AddStoragLocation), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddStorageLocation();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", id));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", name));
+                command.ExecuteNonQuery();
+            });
+            return id;
+        }
+
+        public void SetOwnerOfStorageLocation(string storageLocationId, string userId)
+        {
+            this.RunTransaction(nameof(SetOwnerOfStorageLocation), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddOrUpdateOwnerOfStorageLocation();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        public string AddFolder(string name)
+        {
+            string id = Guid.NewGuid().ToString();
+            this.RunTransaction(nameof(AddFolder), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddFolder();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", id));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", name));
+                command.ExecuteNonQuery();
+            });
+            return id;
+        }
+
+        public void SetParentOfContainee(IContainee containee, string parentContainerId)
+        {
+            this.RunTransaction(nameof(SetParentOfContainee), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetParentOfContainee();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContainerId", parentContainerId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContaineeId", containee.Id));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        public void HardDelete(string containerOrContaineeId)
         {
             throw new NotImplementedException();
         }
 
-        public virtual TagDTO[] GetAllTags()
+        public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
             throw new NotImplementedException();
         }
 
-        public virtual IEnumerable<string> GetAllDocumentIds()
+        public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
             throw new NotImplementedException();
         }
 
-        public virtual string GetIdOfStorageLocationContainedIn(string containeeId)
+        public void Rename(string containerId, string newName)
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
+        public void Update(string requesterUserId, Document updatedDocument)
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual string AddStoragLocation(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void SetOwnerOfStorageLocation(string storageLocationId, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual string AddFolder(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void SetParentOfContainee(IContainee containee, string parentContainerId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void HardDelete(string containerOrContaineeId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void Rename(string containerId, string newName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void Update(string requesterUserId, Document updatedDocument)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual IContainer GetContainerById(string containerId)
+        public IContainer GetContainerById(string containerId)
         {
             if (this.IsStorageLocation(containerId))
             {
@@ -659,7 +783,7 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No {nameof(IContainer)} available with id \"{containerId}\".");
         }
 
-        public virtual IContainee GetContaineeById(string containeeId)
+        public IContainee GetContaineeById(string containeeId)
         {
             if (this.IsDocument(containeeId))
             {
@@ -672,7 +796,7 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No {nameof(IContainee)} available with id \"{containeeId}\".");
         }
 
-        public virtual string GetParentIdOfContainee(string containeeId)
+        public string GetParentIdOfContainee(string containeeId)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetParentIdOfContainee), (cmd) =>
             {
@@ -692,12 +816,12 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
-        public virtual bool IsContaineeId(string id)
+        public bool IsContaineeId(string id)
         {
             return this.IsDocument(id) || this.IsFolder(id);
         }
 
-        public virtual bool IsStorageLocationId(string id)
+        public bool IsStorageLocationId(string id)
         {
             return this.RunTransaction(nameof(IsStorageLocationId), (cmd) =>
             {
@@ -716,7 +840,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
-        public virtual DocumentPreview GetDocumentPreview(string id)
+        public DocumentPreview GetDocumentPreview(string id)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetDocumentPreview), (cmd) =>
             {
@@ -737,7 +861,7 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
-        public virtual IEnumerable<string> GetAllStorageLocationIds()
+        public IEnumerable<string> GetAllStorageLocationIds()
         {
             ISet<string> result = GUtilities.GetValue(this.RunTransaction(nameof(GetAllStorageLocationIds), (command) =>
             {
@@ -758,7 +882,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
-        public virtual StorageLocation GetStorageLocation(string storageLocationId)
+        public StorageLocation GetStorageLocation(string storageLocationId)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetStorageLocation), (command) =>
             {
@@ -786,7 +910,7 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
-        public virtual Folder GetFolder(string folderId)
+        public Folder GetFolder(string folderId)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetFolder), (command) =>
             {
@@ -814,64 +938,43 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
-        public virtual bool IsStorageLocation(string contentId)
+        public bool IsStorageLocation(string contentId)
         {
             return this.RunTransaction(nameof(IsStorageLocation), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsStorageLocation();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", contentId));
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", contentId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 reader.Read();
-                if (reader.HasRows)
-                {
-                    return reader.GetInt32(0) == 1;
-                }
-                else
-                {
-                    return false;
-                }
+                return reader.HasRows;
             })[0];
         }
 
-        public virtual bool IsFolder(string contentId)
+        public bool IsFolder(string contentId)
         {
             return this.RunTransaction(nameof(IsFolder), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsFolder();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", contentId));
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", contentId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 reader.Read();
-                if (reader.HasRows)
-                {
-                    return reader.GetInt32(0) == 1;
-                }
-                else
-                {
-                    return false;
-                }
+                return reader.HasRows;
             })[0];
         }
 
-        public virtual bool IsDocument(string contentId)
+        public bool IsDocument(string contentId)
         {
             return this.RunTransaction(nameof(IsDocument), (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptIsDocument();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", contentId));
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", contentId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 reader.Read();
-                if (reader.HasRows)
-                {
-                    return reader.GetInt32(0) == 1;
-                }
-                else
-                {
-                    return false;
-                }
+                return reader.HasRows;
             })[0];
         }
 
-        public virtual AccessToken GetAccessToken(string accessToken)
+        public AccessToken GetAccessToken(string accessToken)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetAccessToken), (cmd) =>
             {
@@ -894,7 +997,7 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
-        public virtual void AddAccessToken(string userId, AccessToken newAccessToken)
+        public void AddAccessToken(string userId, AccessToken newAccessToken)
         {
             this.RunTransaction(nameof(AddAccessToken), (cmd) =>
             {
@@ -906,7 +1009,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
-        public virtual void RemoveAccessToken(string accessToken)
+        public void RemoveAccessToken(string accessToken)
         {
             this.RunTransaction(nameof(RemoveAccessToken), (cmd) =>
             {
@@ -916,27 +1019,45 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
-        public virtual void Housekeeping()
+        public void Housekeeping()
         {
             //TODO 
         }
 
-        public virtual ulong GetLatestReadableId()
+        public ulong GetLatestReadableId()
         {
             return this.GetAmountOfDocuments();
         }
 
-        public virtual ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
+        public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
+        {
+            return GUtilities.GetValue(this.RunTransaction(nameof(Search), (cmd) =>
+            {
+                ISet<AccessToken> result = new HashSet<AccessToken>();
+                cmd.CommandText = this._SQLProvider.GetScriptGetAllAccessTokenForUser();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                using DbDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        AccessToken accessToken = new AccessToken();
+                        accessToken.OwnerUserId = userId;
+                        accessToken.Value = reader.GetString(0);
+                        accessToken.ExpiredMoment = reader.GetDateTime(1);
+                        result.Add(accessToken);
+                    }
+                }
+                return result;
+            })[0]);
+        }
+
+        public void RemoveChild(string parentId, string childId)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void RemoveChild(string parentId, string childId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual string GetIdFromReadableId(uint readableId)
+        public string GetIdFromReadableId(uint readableId)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetIdFromReadableId), (cmd) =>
             {
@@ -956,7 +1077,7 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
-        public virtual IList<string> Search(string searchTerm)
+        public IList<string> Search(string searchTerm)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(Search), (cmd) =>
             {
@@ -979,53 +1100,61 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
-        public virtual Role GetRoleByName(string roleName)
+        public Role GetRoleByName(string roleName)
         {
-            return GUtilities.GetValue(this.RunTransaction(nameof(GetRoleByName) + "_" + roleName, (cmd) =>
+            lock (_Lock)
             {
-                cmd.CommandText = this._SQLProvider.GetScriptGetRoleByName();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", roleName));
-                using DbDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                Role result = GUtilities.GetValue(this.RunTransaction(nameof(GetRoleByName) + "_" + roleName, (cmd) =>
                 {
-                    Role result = new Role();
-                    reader.Read();
-                    result.Id = reader.GetString(0);
-                    result.Name = roleName;
-                    this.EnrichWithInheritedRoles(result);
-                    return result;
-                }
-                else
-                {
-                    throw new KeyNotFoundException($"No role found with name '{roleName}'.");
-                }
-            })[0]);
-        }
-
-        public virtual Role GetRoleById(string roleId)
-        {
-            return GUtilities.GetValue(this.RunTransaction(nameof(GetRoleById) + "_" + roleId, (cmd) =>
-            {
-                Role result = new Role();
-                cmd.CommandText = this._SQLProvider.GetScriptGetRoleById();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", roleId));
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-
+                    cmd.CommandText = this._SQLProvider.GetScriptGetRoleByName();
+                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", roleName));
+                    using DbDataReader reader = cmd.ExecuteReader();
                     if (reader.HasRows)
                     {
+                        Role role = new Role();
                         reader.Read();
-                        result.Id = roleId;
-                        result.Name = reader.GetString(0);
+                        role.Id = reader.GetString(0);
+                        role.Name = roleName;
+                        return role;
                     }
                     else
                     {
-                        throw new KeyNotFoundException($"No role found with id '{roleId}'.");
+                        throw new KeyNotFoundException($"No role found with name '{roleName}'.");
                     }
-                }
+                })[0]);
                 this.EnrichWithInheritedRoles(result);
                 return result;
-            })[0]);
+            }
+        }
+
+        public Role GetRoleById(string roleId)
+        {
+            lock (_Lock)
+            {
+                Role result = GUtilities.GetValue(this.RunTransaction(nameof(GetRoleById) + "_" + roleId, (cmd) =>
+                {
+                    Role role = new Role();
+                    cmd.CommandText = this._SQLProvider.GetScriptGetRoleById();
+                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", roleId));
+                    using (DbDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        if (reader.HasRows)
+                        {
+                            reader.Read();
+                            role.Id = roleId;
+                            role.Name = reader.GetString(0);
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException($"No role found with id '{roleId}'.");
+                        }
+                    }
+                    return role;
+                })[0]);
+                this.EnrichWithInheritedRoles(result);
+                return result;
+            }
         }
 
         public bool DeleteIsAllowed(string documentId)
@@ -1055,17 +1184,29 @@ namespace OpenDMSBackend.Core.Services
 
         public void Initialize()
         {
-            try
+            lock (_Lock)
             {
-                this.InitializationState = new Initializing();
-                this._Database.GetGenericDatabaseInteractor().DoAllMigrations(this._Database.GetAllMigrations(), this._TimeService);
-                this.InitializationState = new Initialized();
+                try
+                {
+                    this.InitializationState = new Initializing();
+                    this._Database.GetGenericDatabaseInteractor().DoAllMigrations(this._Database.GetAllMigrations(), this._TimeService);
+                    this.InitializationState = new Initialized();
+                }
+                catch (Exception ex)
+                {
+                    this.InitializationState = new InitializationFailed();
+                    this._Log.Log("Initialization failed", ex);
+                }
             }
-            catch (Exception ex)
+        }
+
+        public void Reset()
+        {
+            this.RunTransaction(nameof(Reset), (cmd) =>
             {
-                this.InitializationState = new InitializationFailed();
-                this._Log.Log("Initialization failed", ex);
-            }
+                cmd.CommandText = this._SQLProvider.GetScriptResetDatabase();
+                cmd.ExecuteNonQuery();
+            });
         }
     }
 }

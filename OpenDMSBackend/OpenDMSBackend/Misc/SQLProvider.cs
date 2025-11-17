@@ -176,5 +176,50 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("GetInheritedRoles");
         }
+
+        public string GetScriptAddStorageLocation()
+        {
+            return this.LoadSQLScript("AddStorageLocation");
+        }
+
+        public string GetScriptAddFolder()
+        {
+            return this.LoadSQLScript("AddFolder");
+        }
+
+        public string GetScriptAddOrUpdateOwnerOfStorageLocation()
+        {
+            return this.LoadSQLScript("AddOrUpdateOwnerOfStorageLocation");
+        }
+
+        public string GetScriptSetParentOfContainee()
+        {
+            return this.LoadSQLScript("SetParentOfContainee");
+        }
+
+        public string GetScriptGetTagsOfDocument()
+        {
+            return this.LoadSQLScript("GetTagsOfDocument");
+        }
+
+        public string GetScriptGetTag()
+        {
+            return this.LoadSQLScript("GetTag");
+        }
+
+        public string GetScriptGetAllDocumentIds()
+        {
+            return this.LoadSQLScript("GetAllDocumentIds");
+        }
+
+        public string GetScriptGetAllTags()
+        {
+            return this.LoadSQLScript("GetAllTags");
+        }
+
+        public string GetScriptAddTag()
+        {
+            return this.LoadSQLScript("AddTag");
+        }
     }
 }

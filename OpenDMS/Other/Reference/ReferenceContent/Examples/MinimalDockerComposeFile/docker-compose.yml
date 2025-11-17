@@ -11,9 +11,10 @@ services:
     - ./Volumes/opendms/Logs:/Workspace/Logs
   opendms_database:
     container_name: opendms_database
-    image: postgres:17.5
+    image: postgres:17.6
     environment:
-      POSTGRES_PASSWORD: R00tpa55w0rd
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pa55w0rd
       POSTGRES_DB: OpenDMSDatabase
     ports:
       - "5432:5432"

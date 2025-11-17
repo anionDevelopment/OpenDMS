@@ -110,14 +110,7 @@ namespace OpenDMSBackend.Core.Services
 
         public Role GetRoleByName(string roleName)
         {
-            if (this._AuthentificationPersistence.GetAllRoles().Any())
-            {
-                return this._AuthentificationPersistence.GetAllRoles().Where(r => r.Name == roleName).First();
-            }
-            else
-            {
-                throw new KeyNotFoundException($"Role '{roleName}' does not exist.");
-            }
+          return this._AuthentificationPersistence.GetRoleByName(roleName);
         }
 
 

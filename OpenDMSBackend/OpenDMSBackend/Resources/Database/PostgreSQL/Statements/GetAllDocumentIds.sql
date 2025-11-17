@@ -1,0 +1,2 @@
+select "Id"
+	from "Documents";
