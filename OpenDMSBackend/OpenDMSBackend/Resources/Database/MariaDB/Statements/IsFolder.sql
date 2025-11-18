@@ -1,5 +1,5 @@
 
 SELECT 1 
 	FROM Folders 
-	WHERE Id=@ContentId 
+	WHERE Id=@Id 
 	limit 1;

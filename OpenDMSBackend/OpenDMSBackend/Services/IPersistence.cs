@@ -57,6 +57,6 @@ namespace OpenDMSBackend.Core.Services
         /// </returns>
         public IList<string> Search(string searchTerm);
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow();
-        void Reset();
+        public void Reset();
     }
 }

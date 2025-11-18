@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
 {
     [TestClass]
-    public class PostgresSQLDatabaseTests : DatabaseTestsBase
+    public class DatabaseTestsForPostgresSQL : DatabaseTestsBase
     {
         protected override DatabaseTestFrameworkTemplate GetDatabaseTestFrameworkImplementation()
         {

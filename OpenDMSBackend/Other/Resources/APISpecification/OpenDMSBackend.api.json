@@ -879,7 +879,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/Delete/{containerOrContaineeId}": {
+    "/API/v2/OpenDMSBackend/HardDelete/{containerOrContaineeId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -903,6 +903,75 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v2/OpenDMSBackend/SoftDelete/{containerOrContaineeId}": {
+      "delete": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "parameters": [
+          {
+            "name": "containerOrContaineeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1429,5 +1498,16 @@
         "additionalProperties": false
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "MaintenanceRoutes"
+    },
+    {
+      "name": "OpenDMSBackend"
+    },
+    {
+      "name": "User"
+    }
+  ]
 }

@@ -402,25 +402,6 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v2/OpenDMSBackend/Delete/{containerOrContaineeId}:
-    delete:
-      parameters:
-      - in: path
-        name: containerOrContaineeId
-        required: true
-        schema:
-          type: string
-      - description: Access Token
-        in: header
-        name: X-AccessToken
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: OK
-      tags:
-      - OpenDMSBackend
   /API/v2/OpenDMSBackend/GetAllTags:
     put:
       parameters:
@@ -654,6 +635,36 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
+  /API/v2/OpenDMSBackend/HardDelete/{containerOrContaineeId}:
+    delete:
+      parameters:
+      - in: path
+        name: containerOrContaineeId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              type: string
+          application/json:
+            schema:
+              type: string
+          text/json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - OpenDMSBackend
   /API/v2/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}:
     post:
       parameters:
@@ -733,6 +744,36 @@ paths:
                 items:
                   $ref: '#/components/schemas/DocumentPreviewDTO'
                 type: array
+          description: OK
+      tags:
+      - OpenDMSBackend
+  /API/v2/OpenDMSBackend/SoftDelete/{containerOrContaineeId}:
+    delete:
+      parameters:
+      - in: path
+        name: containerOrContaineeId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              type: string
+          application/json:
+            schema:
+              type: string
+          text/json:
+            schema:
+              type: string
+      responses:
+        '200':
           description: OK
       tags:
       - OpenDMSBackend
@@ -898,3 +939,7 @@ paths:
           description: OK
       tags:
       - User
+tags:
+- name: MaintenanceRoutes
+- name: OpenDMSBackend
+- name: User

@@ -12,7 +12,7 @@ RUN mkdir /Workspace && \
     mkdir /Workspace/Other/Certificates && \
     mkdir /Workspace/Other/EntryPoint && \
     apt-get update && \
-    apt-get install -y curl nginx git libreoffice-core libreoffice-writer libreoffice-calc
+    apt-get install -y curl nginx git libreoffice-core libreoffice-writer libreoffice-calc wget
 
 WORKDIR /Workspace/Other/EntryPoint
 

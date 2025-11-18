@@ -486,7 +486,7 @@ namespace OpenDMSBackend.Core.Services
 
         public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleByName(string roleName)
         {
-            throw new NotImplementedException();
+            return this._TransientAuthenticationServicePersistence.GetRoleByName(roleName);
         }
 
         public bool DeleteIsAllowed(string documentId)

@@ -71,7 +71,7 @@ export class EditContainerMenuComponent {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
     dialogRef.afterClosed().subscribe(userConfirmedAction => {
       if (userConfirmedAction) {
-        this.openDMSBackendService.aPIV2OpenDMSBackendDeleteContainerOrContaineeIdDelete(this.containerId!, this.storageService.getAccessToken())
+        this.openDMSBackendService.aPIV2OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.containerId!, this.storageService.getAccessToken())
           .subscribe(() => {
             this.containerRemoved.emit();
           });

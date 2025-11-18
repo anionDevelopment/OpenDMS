@@ -40,77 +40,33 @@ namespace OpenDMSBackend.Core.Services
         #region AccessDatabase
         protected void AccessDatabase(Action<IOpenDMSDatabaseInteractor> action)
         {
-            this.AccessDatabase<object?>((database) =>
+            lock (_Lock)
             {
-                action(database);
-                return null;
-            });
+                DBUtilities.AccessDatabase<IOpenDMSDatabaseInteractor>(this._Database, action);
+            }
         }
 
         protected T AccessDatabase<T>(Func<IOpenDMSDatabaseInteractor, T> function)
         {
             lock (_Lock)
             {
-                return function(this._Database);
+                return DBUtilities.AccessDatabase<T, IOpenDMSDatabaseInteractor>(this._Database, function);
             }
         }
         protected void RunTransaction(string nameOfAction, params Action<DbCommand>[] actions)
         {
-            this.RunTransaction(nameOfAction, actions.Select<Action<DbCommand>, Func<DbCommand, object?>>(action => (command) =>
+            lock (_Lock)
             {
-                action(command);
-                return null;
+                DBUtilities.RunTransaction<IOpenDMSDatabaseInteractor>(nameOfAction, this._Log, this._Database, actions);
             }
-            ).ToArray());
         }
 
         protected T?[] RunTransaction<T>(string nameOfAction, params Func<DbCommand, T?>[] functions)
         {
-            List<T?> results = new List<T?>();
-            this.AccessDatabase(interactor =>
+            lock (_Lock)
             {
-                this._Log.Log("Run DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                DbConnection connection = interactor.GetGenericDatabaseInteractor().GetConnection();
-                using DbTransaction transaction = connection.BeginTransaction();
-                bool commit = true;
-                try
-                {
-                    foreach (Func<DbCommand, T?> function in functions)
-                    {
-                        using (DbCommand cmd = connection.CreateCommand())
-                        {
-                            cmd.CommandType = CommandType.Text;
-                            cmd.CommandTimeout = 300;
-                            cmd.Transaction = transaction;
-                            try
-                            {
-                                T? result = function(cmd);
-                                results.Add(result);
-                            }
-                            catch (Exception e)
-                            {
-                                commit = false;
-                                this._Log.Log($"Error in database occurred while doing DB-transaction {nameOfAction}.", e);
-                                throw;
-                            }
-                        }
-                    }
-                }
-                finally
-                {
-                    if (commit)
-                    {
-                        this._Log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                        transaction.Commit();
-                    }
-                    else
-                    {
-                        this._Log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                        transaction.Rollback();
-                    }
-                }
-            });
-            return results.ToArray();
+                return DBUtilities.RunTransaction<T, IOpenDMSDatabaseInteractor>(nameOfAction, this._Log, this._Database, functions);
+            }
         }
 
         #endregion
@@ -202,7 +158,6 @@ namespace OpenDMSBackend.Core.Services
                         reader.Close();
                         return rolesInternal;
                     }
-                    ;
                 })[0]);
                 foreach (Role role in roles)
                 {

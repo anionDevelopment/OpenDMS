@@ -90,5 +90,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
                 return document.LastEditDate!.Value;
             }
         }
+        public override string ToString()
+        {
+            return $"{this.GetType().Name}[{nameof(this.ReadableId)})={this.ReadableId}, {nameof(this.Title)}=\"{this.Title.Value}\", {nameof(this.Id)}=\"{this.Id}\"]";
+        }
     }
 }

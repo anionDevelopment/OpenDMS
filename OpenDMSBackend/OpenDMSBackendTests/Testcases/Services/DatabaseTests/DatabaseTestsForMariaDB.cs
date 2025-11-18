@@ -5,13 +5,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
 {
     [TestClass]
-    public class MariaDBDatabaseTests : DatabaseTestsBase
+    public class DatabaseTestsForMariaDB : DatabaseTestsBase
     {
         protected override DatabaseTestFrameworkTemplate GetDatabaseTestFrameworkImplementation()
         {
             return OpenDMSBackend.Tests.TestUtilities.Utilities.GetDatabaseTestFrameworkForMariaDB();
         }
-
 
         [TestMethod(nameof(Migration000001Test))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]

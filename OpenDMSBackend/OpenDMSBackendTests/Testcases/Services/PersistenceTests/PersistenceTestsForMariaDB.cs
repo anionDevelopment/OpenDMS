@@ -5,8 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     [TestClass]
-    [Ignore]
-    public class MariaDBPersistenceTests : PersistenceDatabaseTestsBase
+    public class PersistenceTestsForMariaDB : PersistenceTestsBaseForDatabase
     {
         protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
         {
@@ -19,7 +18,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         {
             this.DatabasePersistenceCreateDocument();
         }
-
 
         [TestMethod(nameof(GetAmountOfDocumentsTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]

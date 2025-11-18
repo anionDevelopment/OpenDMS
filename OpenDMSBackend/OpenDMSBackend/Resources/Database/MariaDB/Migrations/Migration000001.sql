@@ -1,4 +1,3 @@
-ALTER DATABASE CHARACTER SET utf8mb4_unicode_ci;
 
 CREATE TABLE `Users` (
     `Id` varchar(255) not null,
@@ -36,7 +35,7 @@ CREATE TABLE `Documents` (
     `ReadableId` BIGINT unsigned not null,
     `MIMEType` varchar(255) not null,
     `DocumentPreview` longblob not null,
-    `OCRContent` longtext not null,
+    `OCRContent` longtext not null COLLATE utf8mb4_unicode_ci,
     `DocumentContent` longblob not null,
     `IsSoftDeleted` tinyint(1) not null,
     `DeleteIsNotAllowedBefore` datetime(6) null,

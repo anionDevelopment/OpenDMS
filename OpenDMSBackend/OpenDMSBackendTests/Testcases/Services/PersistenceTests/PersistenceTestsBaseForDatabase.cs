@@ -8,21 +8,22 @@ using GRYLibrary.Core.Misc.Migration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Tests.TestUtilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
-    public abstract class PersistenceDatabaseTestsBase : PersistenceTestsBase
+    public abstract class PersistenceTestsBaseForDatabase : PersistenceTestsBase
     {
         protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFramework();
-        public override IPersistence GetPersistence()
+        internal override PersistenceDisposable GetPersistence()
         {
             DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework();
             ITimeService timeService = new TimeService();
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
             IPersistence result = new DatabasePersistence(databaseTestFramework.GenericDatabaseInteractor().Accept(new GetOpenDMSDatabaseInteractorVisitor()), timeService, logger);
-
 
             databaseTestFramework.ResetDatabase();
             IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
@@ -36,7 +37,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 
             migrator.InitializeDatabaseAndMigrateIfRequired();
 
-            return result;
+            return new PersistenceDisposable(result, new HashSet<IDisposable>() { databaseTestFramework, databaseInteractor });
         }
     }
 }

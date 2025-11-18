@@ -1,5 +1,5 @@
 
 SELECT 1 
 	FROM StorageLocations 
-	WHERE Id=@ContentId 
+	WHERE Id=@Id 
 	limit 1;

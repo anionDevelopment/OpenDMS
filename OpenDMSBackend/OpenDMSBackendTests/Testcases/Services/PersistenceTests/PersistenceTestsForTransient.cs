@@ -1,16 +1,19 @@
-﻿using GRYLibrary.Core.APIServer.Utilities;
-using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Tests.TestUtilities;
+using System;
+using System.Collections.Generic;
 
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     [TestClass]
-    [Ignore]
-    public class PostgreSQLPersistenceTests : PersistenceDatabaseTestsBase
+    public class PersistenceTestsForTransient : PersistenceTestsBase
     {
-        protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
+        internal override PersistenceDisposable GetPersistence()
         {
-            return OpenDMSBackend.Tests.TestUtilities.Utilities.GetDatabaseTestFrameworkForPostgreSQL();
+            (TransientPersistence, ISet<IDisposable>) result = TestUtilities.Utilities.GetTransientPersistence();
+            return new PersistenceDisposable(result.Item1, result.Item2);
         }
 
         [TestMethod(nameof(DatabasePersistenceCreateDocumentTest))]
@@ -20,14 +23,12 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             this.DatabasePersistenceCreateDocument();
         }
 
-
         [TestMethod(nameof(GetAmountOfDocumentsTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void GetAmountOfDocumentsTest()
         {
             this.GetAmountOfDocuments();
         }
-
 
         [TestMethod(nameof(PersistDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]

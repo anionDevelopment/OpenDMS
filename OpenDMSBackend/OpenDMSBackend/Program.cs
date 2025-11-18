@@ -42,13 +42,16 @@ namespace OpenDMSBackend.Core
 {
     internal class Program
     {
-        internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get; set; }
         internal bool ListenOnEveryIP { get; set; } = false;
         internal bool RunAsync { get; set; } = false;
+        internal bool IsRunning { get; set; } = false;
         internal IBusinessLogicService? _BusinessLogicService;
+        internal IInitializationService<CommandlineParameter>? _InitializationService;
         internal IGRYLog _Log;
 
         internal IHostApplicationLifetime? _HostApplicationLifetime;
+        internal APIServerConfiguration<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter> _Constants;
+        internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get; set; }
         public Program()
         {
             this._Log = GRYLog.Create();
@@ -64,7 +67,8 @@ namespace OpenDMSBackend.Core
         internal int MainImplementation(string[] commandlineArguments)
         {
             bool runPersistent = false;
-            return Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
+            this.IsRunning = true;
+            int result = Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
             {
                 apiServerConfiguration.SetInitialzationInformationAction = (initializationInformation) =>
                 {
@@ -212,8 +216,8 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthenticationMiddleware);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthorizationMiddleware);
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService, InitializationService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CommandlineParameter>, InitializationService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService>(sp => sp.GetRequiredService<IInitializationService<CommandlineParameter>>());
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
@@ -238,7 +242,9 @@ namespace OpenDMSBackend.Core
                         functionalInformationForWebApplication.PreRun = () =>
                         {
                             //initialize
-                            GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>()).Initialize(apiServerConfiguration.CommandlineParameter);
+                            this._InitializationService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>());
+                            this._Constants = apiServerConfiguration;
+                            this._InitializationService.Initialize(apiServerConfiguration.CommandlineParameter);
                             if (runServices)
                             {
                                 //start background-services
@@ -262,11 +268,13 @@ namespace OpenDMSBackend.Core
                     }
                 };
             });
+            this.IsRunning = false;
+            return result;
         }
 
         internal void Stop()
         {
-            GUtilities.AssertNotNull(this._HostApplicationLifetime, nameof(this._HostApplicationLifetime)).StopApplication();
+            GUtilities.AssertNotNull(this._Constants, nameof(this._Constants)).CancellationTokenSource.Cancel();
         }
     }
 }

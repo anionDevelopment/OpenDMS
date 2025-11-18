@@ -65,23 +65,22 @@ namespace OpenDMSBackend.Core.Misc
         {
             return Convert.FromBase64String(content);
         }
-        public static void DoForContentObject(IPersistence persistence, string contentId, Action<string>? isStorageLocationAction, Action<string>? isFolderAction, Action<string>? isDocumentAction) =>
-#pragma warning disable CS8603 // Possible null reference return.
-    DoForContentObject<object>(persistence, contentId, (contentId) =>
-    {
-        isStorageLocationAction?.Invoke(contentId);
-        ;
-        return default;
-    }, (contentId) =>
-    {
-        isFolderAction?.Invoke(contentId);
-        return default;
-    }, (contentId) =>
-    {
-        isDocumentAction?.Invoke(contentId);
-        return default;
-    });
-#pragma warning restore CS8603 // Possible null reference return.
+        public static void DoForContentObject(IPersistence persistence, string contentId, Action<string>? isStorageLocationAction, Action<string>? isFolderAction, Action<string>? isDocumentAction)
+        {
+            DoForContentObject<object>(persistence, contentId, (contentId) =>
+            {
+                isStorageLocationAction?.Invoke(contentId);
+                return default;
+            }, (contentId) =>
+            {
+                isFolderAction?.Invoke(contentId);
+                return default;
+            }, (contentId) =>
+            {
+                isDocumentAction?.Invoke(contentId);
+                return default;
+            });
+        }
 
         public static T DoForContentObject<T>(IPersistence persistence, string contentId, Func<string, T> isStorageLocationAction, Func<string, T> isFolderAction, Func<string, T> isDocumentAction)
         {

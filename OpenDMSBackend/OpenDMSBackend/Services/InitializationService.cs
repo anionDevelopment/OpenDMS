@@ -43,7 +43,6 @@ namespace OpenDMSBackend.Core.Services
                 this.SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
                 Tools.WaitUntilDatabaseIsAvailable(this._Persistence, this._GeneralLogger);
-                this._Persistence.Reset();//TODO remove this line
                 if (this._Persistence is IInitializable initializablePersitence)
                 {
                     initializablePersitence.Initialize();//this part runs migrations. this is idempotent and can be done on every start.

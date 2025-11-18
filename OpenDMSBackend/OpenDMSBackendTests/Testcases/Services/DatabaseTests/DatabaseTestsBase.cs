@@ -18,14 +18,18 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
     public abstract class DatabaseTestsBase
     {
         protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFrameworkImplementation();
-        protected DatabaseTestFrameworkTemplate GetDatabaseTestFramework()
+        protected DatabaseTestFrameworkTemplate GetDatabaseTestFramework(bool runMigrations)
         {
             DatabaseTestFrameworkTemplate result = this.GetDatabaseTestFrameworkImplementation();
-            this.prepareDatabase(result);
+            this.PrepareDatabase(result, runMigrations);
             return result;
         }
 
-        private void prepareDatabase(DatabaseTestFrameworkTemplate databaseTestFramework)
+        /// <summary>
+        /// Resets database.
+        /// If desired, all available migrations will be done.
+        /// </summary>
+        private void PrepareDatabase(DatabaseTestFrameworkTemplate databaseTestFramework, bool runMigrations)
         {
             databaseTestFramework.ResetDatabase();
             IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
@@ -34,17 +38,19 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
             List<string> tables1 = databaseInteractor.GetAllTableNames().ToList();
             Assert.IsEmpty(tables1);
 
-            IList<MigrationInstance> migrations = openDMSDatabaseInteractor.GetAllMigrations();
-            GRYMigrator migrator = new GRYMigrator(new TimeService(), migrations.ToList(), databaseInteractor);
-
-            migrator.InitializeDatabaseAndMigrateIfRequired();
+            if (runMigrations)
+            {
+                IList<MigrationInstance> migrations = openDMSDatabaseInteractor.GetAllMigrations();
+                GRYMigrator migrator = new GRYMigrator(new TimeService(), migrations.ToList(), databaseInteractor);
+                migrator.InitializeDatabaseAndMigrateIfRequired();
+            }
         }
         public abstract void Migration000001Test();
         public void Migration000001()
         {
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
-                using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework())
+                using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework(false))
                 {
                     //arrange
                     IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
@@ -76,7 +82,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
         {
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
-                using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework())
+                using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework(false))
                 {
                     //arrange
                     IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
@@ -105,15 +111,15 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
         {
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
-                using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework())
+                using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework(true))
                 {
                     //arrange
-                    IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
+                    using IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
                     IOpenDMSDatabaseInteractor openDMSDatabaseInteractor = databaseInteractor.Accept(new GetOpenDMSDatabaseInteractorVisitor());
                     ITimeService timeService = new TimeService();
                     IGRYLog log = GRYLog.Create();
-                    DatabasePersistence databasePersistence = new DatabasePersistence(openDMSDatabaseInteractor, timeService, log);
-                    OpenDMSBackend.Core.Model.BusinessTypes.Document expectedDocument = new OpenDMSBackend.Core.Model.BusinessTypes.Document("id", OneLineString.From("title"), OneLineString.From("filename"), OneLineString.From("originalfilename"),new System.DateTimeOffset(2025,11,17,17,54,38,TimeSpan.FromHours(2)),default,2,new HashSet<Tag>(),OneLineString.From("mimetype"),new byte[] { 2,3,4},"ocrcontent", new byte[] { 5,6,7},false, new System.DateTimeOffset(2026, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), new System.DateTimeOffset(2027, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)),"ownergroup",new GRYLibrary.Core.Misc.Version3(2,3,4),new HashSet<string>() { "eng","deu","fra"},"creator-user-id");
+                    using DatabasePersistence databasePersistence = new DatabasePersistence(openDMSDatabaseInteractor, timeService, log);
+                    OpenDMSBackend.Core.Model.BusinessTypes.Document expectedDocument = new OpenDMSBackend.Core.Model.BusinessTypes.Document("id", OneLineString.From("title"), OneLineString.From("filename"), OneLineString.From("originalfilename"), new System.DateTimeOffset(2025, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), default, 2, new HashSet<Tag>(), OneLineString.From("mimetype"), new byte[] { 2, 3, 4 }, "ocrcontent", new byte[] { 5, 6, 7 }, false, new System.DateTimeOffset(2026, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), new System.DateTimeOffset(2027, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), "ownergroup", new GRYLibrary.Core.Misc.Version3(2, 3, 4), new HashSet<string>() { "eng", "deu", "fra" }, "creator-user-id");
                     databasePersistence.CreateDocument(expectedDocument);
 
                     //act

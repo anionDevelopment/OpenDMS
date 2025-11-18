@@ -7,6 +7,8 @@ using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities.Constants;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
@@ -23,13 +25,13 @@ namespace OpenDMSBackend.Tests.TestUtilities
             string result = File.ReadAllText(file, new UTF8Encoding(false));
             return result;
         }
-        public static TransientPersistence GetTransientPersistence()
+        public static (TransientPersistence, ISet<IDisposable>) GetTransientPersistence()
         {
             ITimeService timeService = new TimeService();
             IIdGenerator<ulong> idGenerator = new IdGenerator();
             TransientAuthenticationServicePersistence<User> transientAuthenticationServicePersistence = new TransientAuthenticationServicePersistence(timeService);
             TransientPersistence persistence = new TransientPersistence(transientAuthenticationServicePersistence, idGenerator, timeService);
-            return persistence;
+            return (persistence, new HashSet<IDisposable>());
         }
 
         public static string GetTestMariaDBDatabaseFolder()
@@ -56,7 +58,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
             return GUtilities.ResolveToFullPath(@$"{GeneralConstants.CodeUnitFolder}\Other\Artifacts\${databaseName}DatabaseCreationScript");
         }
 
-        public static DatabaseTestFrameworkForMariaDB GetDatabaseTestFrameworkForMariaDB( )
+        public static DatabaseTestFrameworkForMariaDB GetDatabaseTestFrameworkForMariaDB()
         {
             return new DatabaseTestFrameworkForMariaDB(GeneralLogger.CreateUsingConsole());
         }
