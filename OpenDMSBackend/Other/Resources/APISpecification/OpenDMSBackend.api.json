@@ -1024,7 +1024,7 @@
         }
       }
     },
-    "/API/v2/UserController/CreateUser": {
+    "/API/v2/UserController/Register": {
       "put": {
         "tags": [
           "User"

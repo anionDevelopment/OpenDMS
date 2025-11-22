@@ -11,5 +11,4 @@ WITH RECURSIVE hierarchy AS (
             ON cc."ContaineeId" = h."ContainerId"
 )
 SELECT "ContainerId"
-    FROM hierarchy
-    LIMIT 1;
+    FROM hierarchy;

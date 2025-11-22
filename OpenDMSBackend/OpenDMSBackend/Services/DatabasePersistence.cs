@@ -316,6 +316,7 @@ namespace OpenDMSBackend.Core.Services
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
                     user.RegistrationMoment = reader.GetDateTime(6);
+                    user.Roles = new HashSet<Role>();
                     return user;
                 }
                 else
@@ -323,6 +324,7 @@ namespace OpenDMSBackend.Core.Services
                     throw new KeyNotFoundException($"No user found with id '{userId}'");
                 }
             })[0]);
+            this.EnrichWithRoles(result);
             this.EnrichWhichAccessToken(result);
             this.EnrichWhichTOTPToken(result);
             return result;
@@ -330,32 +332,64 @@ namespace OpenDMSBackend.Core.Services
 
         public User GetUserByName(string userName)
         {
-            User result = GUtilities.GetValue(this.RunTransaction(nameof(GetUserByName) + "_" + userName, (cmd) =>
+            lock (_Lock)
             {
-                cmd.CommandText = this._SQLProvider.GetScriptGetUserByName();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", userName));
-                using DbDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                User result = GUtilities.GetValue(this.RunTransaction(nameof(GetUserByName) + "_" + userName, (cmd) =>
                 {
-                    reader.Read();
-                    User user = new User();
-                    user.Id = reader.GetString(0);
-                    user.Name = reader.GetString(1);
-                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
-                    user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
-                    user.UserIsActivated = reader.GetBoolean(4);
-                    user.UserIsLocked = reader.GetBoolean(5);
-                    user.RegistrationMoment = reader.GetDateTime(6);
-                    return user;
-                }
-                else
+                    cmd.CommandText = this._SQLProvider.GetScriptGetUserByName();
+                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", userName));
+                    using DbDataReader reader = cmd.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        User user = new User();
+                        user.Id = reader.GetString(0);
+                        user.Name = reader.GetString(1);
+                        user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
+                        user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
+                        user.UserIsActivated = reader.GetBoolean(4);
+                        user.UserIsLocked = reader.GetBoolean(5);
+                        user.RegistrationMoment = reader.GetDateTime(6);
+                        return user;
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"No user found with username '{userName}'");
+                    }
+                })[0]);
+                this.EnrichWithRoles(result);
+                this.EnrichWhichAccessToken(result);
+                this.EnrichWhichTOTPToken(result);
+                return result;
+            }
+        }
+
+        private void EnrichWithRoles(User user)
+        {
+            lock (_Lock)
+            {
+                HashSet<string> roleIds = GUtilities.GetValue(this.RunTransaction(nameof(EnrichWithRoles) + "_" + user.Id, (cmd) =>
                 {
-                    throw new KeyNotFoundException($"No user found with username '{userName}'");
+                    cmd.CommandText = this._SQLProvider.GetScriptGetRolesOfUser();
+                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", user.Id));
+                    HashSet<string> roleIds = new HashSet<string>();
+                    using DbDataReader reader = cmd.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            roleIds.Add(reader.GetString(0));
+                        }
+                    }
+                    return roleIds;
+                })[0]);
+                foreach (var roleId in roleIds)
+                {
+                    Role role = this.GetRoleById(roleId);
+                    this.EnrichWithInheritedRoles(role);
+                    user.Roles.Add(role);
                 }
-            })[0]);
-            this.EnrichWhichAccessToken(result);
-            this.EnrichWhichTOTPToken(result);
-            return result;
+            }
         }
 
         private void EnrichWhichTOTPToken(User result)
@@ -627,11 +661,12 @@ namespace OpenDMSBackend.Core.Services
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetIdOfStorageLocationContainedIn), (command) =>
             {
-                command.CommandText = this._SQLProvider.GetScriptGetTag();
+                command.CommandText = this._SQLProvider.GetScriptGetStorageLocationIdOfContainee();
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContaineeId", containeeId));
                 using DbDataReader reader = command.ExecuteReader();
                 if (reader.HasRows)
                 {
+                    //TODO assert that there is only one result-row in the reader
                     reader.Read();
                     return reader.GetString(0);
                 }
@@ -820,17 +855,17 @@ namespace OpenDMSBackend.Core.Services
         {
             ISet<string> result = GUtilities.GetValue(this.RunTransaction(nameof(GetAllStorageLocationIds), (command) =>
             {
-                ISet<string> resultInternal = new HashSet<string>();
-                command.CommandText = this._SQLProvider.GetScriptGetAllStorageLocations();
+                ISet<string> storageLocationIds = new HashSet<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetAllStorageLocationIds();
                 using (DbDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         string id = reader.GetString(0);
-                        resultInternal.Add(id);
+                        storageLocationIds.Add(id);
                     }
                     reader.Close();
-                    return resultInternal;
+                    return storageLocationIds;
                 }
                 ;
             })[0]);
@@ -861,7 +896,6 @@ namespace OpenDMSBackend.Core.Services
                     }
                     return result;
                 }
-                ;
             })[0]);
         }
 
@@ -889,7 +923,6 @@ namespace OpenDMSBackend.Core.Services
                     }
                     return result;
                 }
-                ;
             })[0]);
         }
 
@@ -941,7 +974,7 @@ namespace OpenDMSBackend.Core.Services
                     reader.Read();
                     AccessToken result = new AccessToken();
                     result.Value = accessToken;
-                    result.ExpiredMoment = reader.GetFieldValue<DateTimeOffset>(0);
+                    result.ExpiredMoment = this.ToDateTimeOffset(reader.GetFieldValue<DateTime>(0));
                     result.OwnerUserId = reader.GetString(1);
                     return result;
                 }

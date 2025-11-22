@@ -34,7 +34,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
             AuditLog auditLog = new AuditLog(logger);
             IIdGenerator<ulong> idGenerator = new OpenDMSBackend.Core.Services.IdGenerator();
-            var databasePersistenceD = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTransientPersistence();
+            (TransientPersistence, ISet<IDisposable>) databasePersistenceD = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTransientPersistence();
             persistence = databasePersistenceD.Item1;
             IApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), RunProgram.Instance, QualityCheck.Instance, new CodeUnitSpecificConstants());
             IAuthenticationService<User> authenticationService = new PersistentAuthenticationService(timeService, persistence, logger, constants);

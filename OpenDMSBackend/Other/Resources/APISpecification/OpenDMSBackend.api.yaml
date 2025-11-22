@@ -801,28 +801,6 @@ paths:
           description: OK
       tags:
       - OpenDMSBackend
-  /API/v2/UserController/CreateUser:
-    put:
-      parameters:
-      - in: header
-        name: user
-        schema:
-          type: string
-      - in: header
-        name: password
-        schema:
-          type: string
-      - description: Access Token
-        in: header
-        name: X-AccessToken
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: OK
-      tags:
-      - User
   /API/v2/UserController/GetRoles:
     put:
       parameters:
@@ -906,6 +884,28 @@ paths:
   /API/v2/UserController/Logout:
     put:
       parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      tags:
+      - User
+  /API/v2/UserController/Register:
+    put:
+      parameters:
+      - in: header
+        name: user
+        schema:
+          type: string
+      - in: header
+        name: password
+        schema:
+          type: string
       - description: Access Token
         in: header
         name: X-AccessToken

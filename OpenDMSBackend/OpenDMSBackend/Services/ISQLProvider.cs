@@ -29,7 +29,7 @@
         string GetScriptGetAllAccessTokenForUser();
         string GetScriptRemoveAccessToken();
         string GetScriptGetParentIdOfContainee();
-        string GetScriptGetAllStorageLocations();
+        string GetScriptGetAllStorageLocationIds();
         string GetScriptGetStorageLocation();
         string GetScriptGetFolder();
         string GetScriptGetIdFromReadableId();
@@ -45,5 +45,7 @@
         string GetScriptGetAllDocumentIds();
         string GetScriptGetAllTags();
         string GetScriptAddTag();
+        string GetScriptGetRolesOfUser();
+        string GetScriptGetStorageLocationIdOfContainee();
     }
 }

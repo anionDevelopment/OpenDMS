@@ -1,3 +1,2 @@
-
 select "Id" 
 	from "StorageLocations";

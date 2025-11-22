@@ -10,7 +10,7 @@ namespace OpenDMSBackend.Core.Services
     {
         #region user
         /// <returns>Returns the id of the created user.</returns>
-        public string Register(string username, string initialAdminPassword);
+        public string Register(string username, string password);
         public bool UserWithNameExists(string username);
         public bool UserIsAdministrator(string userId);
         public User GetUser(string userId);

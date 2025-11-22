@@ -122,9 +122,9 @@ namespace OpenDMSBackend.Core.Misc
             return this.LoadSQLScript("GetParentIdOfContainee");
         }
 
-        public string GetScriptGetAllStorageLocations()
+        public string GetScriptGetAllStorageLocationIds()
         {
-            return this.LoadSQLScript("GetAllStorageLocations");
+            return this.LoadSQLScript("GetAllStorageLocationIds");
         }
 
         public string GetScriptGetStorageLocation()
@@ -220,6 +220,15 @@ namespace OpenDMSBackend.Core.Misc
         public string GetScriptAddTag()
         {
             return this.LoadSQLScript("AddTag");
+        }
+
+        public string GetScriptGetRolesOfUser()
+        {
+            return this.LoadSQLScript("GetRolesOfUser");
+        }
+        public string GetScriptGetStorageLocationIdOfContainee()
+        {
+            return this.LoadSQLScript("GetStorageLocationIdOfContainee");
         }
     }
 }

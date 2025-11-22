@@ -24,12 +24,14 @@ namespace OpenDMSBackend.Core.Controller
         private readonly IPersistence _Persistence;
         private readonly IAuthenticationService _AuthenticationService;
         private readonly ITimeService _TimeService;
-        public UserController(IGeneralLogger logger, IPersistence persistence, IAuthenticationService authenticationService, ITimeService timeService)
+        private readonly IBusinessLogicService _BusinessLogicService;
+        public UserController(IGeneralLogger logger, IPersistence persistence, IAuthenticationService authenticationService, ITimeService timeService,IBusinessLogicService businessLogicService)
         {
             this._Logger = logger;
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
             this._TimeService = timeService;
+                this._BusinessLogicService = businessLogicService;
         }
 
         [HttpPut]
@@ -44,12 +46,10 @@ namespace OpenDMSBackend.Core.Controller
         [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(void))]
-        [Route(nameof(CreateUser))]
-        public IActionResult CreateUser([FromHeader] string user, [FromHeader] string password)
+        [Route(nameof(Register))]
+        public IActionResult Register([FromHeader] string user, [FromHeader] string password)
         {
-            User typedUser = GRYLibrary.Core.APIServer.CommonDBTypes.User.CreateNewUser(user, this._AuthenticationService.Hash(password), this._TimeService);
-            this._AuthenticationService.AddUser(typedUser);
-            this._AuthenticationService.EnsureUserHasRole(typedUser.Id, this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.UsernameAdmin).Id);
+            this._BusinessLogicService.Register(user,password);
             return this.Ok();
         }
 
