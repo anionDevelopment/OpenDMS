@@ -56,7 +56,6 @@
         <ErrorReport>none</ErrorReport>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\..\..\Projects\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
         <ProjectReference Include="..\OpenDMSBackend\OpenDMSBackend.csproj" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="coverlet.collector" Version="6.0.4">
@@ -68,6 +67,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.6" />
+        <PackageReference Include="GRYLibrary" Version="1.0.0" />
         <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
         <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
@@ -84,9 +84,9 @@
         <PackageReference Include="MSTest.TestAdapter" Version="4.0.2" />
         <PackageReference Include="MSTest.TestFramework" Version="4.0.2" />
         <PackageReference Include="NJsonSchema" Version="11.5.2" />
-        <PackageReference Include="Npgsql" Version="9.0.4" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.6.2" />
+        <PackageReference Include="Npgsql" Version="10.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+        <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
         <PackageReference Include="SimpleOCRLibrary" Version="1.5.0" />
         <PackageReference Include="System.Collections.Immutable" Version="10.0.0" />
