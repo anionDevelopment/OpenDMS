@@ -1,13 +1,11 @@
-
-<p>edit-document-dialog works!</p>
-    <!--
+<h2 mat-dialog-title>Edit document</h2>
 <mat-dialog-content>
-<p>edit-document-dialog works!</p>
-<mat-grid-list cols="2" rowHeight="fit">
-    <mat-grid-tile><strong>Titel</strong></mat-grid-tile>
-    <mat-grid-tile>Mein Dokument</mat-grid-tile>
-    <mat-grid-tile><strong>Erstellt am</strong></mat-grid-tile>
-    <mat-grid-tile>05.05.2025</mat-grid-tile>
-  </mat-grid-list> 
+  <mat-form-field >
+    <mat-label>Title</mat-label>
+    <input matInput [(ngModel)]="documentTitle">
+  </mat-form-field>
 </mat-dialog-content>
--->
+<mat-dialog-actions>
+  <button mat-button (click)="abort()">Abort</button>
+  <button mat-button (click)="save()">Save</button>
+</mat-dialog-actions>

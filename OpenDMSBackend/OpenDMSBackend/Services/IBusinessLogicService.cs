@@ -62,6 +62,7 @@ namespace OpenDMSBackend.Core.Services
         public Folder GetFolder(string requesterUserId, string folderId);
         public Document GetDocumentFromReadableId(string requesterUserId, uint readableDocumentId);
         public StorageLocation GetStorageLocation(string requesterUserId, string storageLocationId);
+        public void UpdateDocumentTitle(string requesterUserId, string documentId, string newTitle);
 
         #endregion
 

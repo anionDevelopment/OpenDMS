@@ -3,6 +3,7 @@ using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Namotion.Reflection;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
@@ -37,6 +38,24 @@ namespace OpenDMSBackend.Core.Controller
             try
             {
                 return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._AuthenticationService.GetBaseRoleOfAllUser(), new HashSet<string>(additionalOCRLanguages)));
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        [Authenticate]
+        [HttpPut]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(UpdateDocumentTitle)}/{{{nameof(documentId)}}}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public IActionResult UpdateDocumentTitle([FromRoute] string documentId, [FromBody] StringValueDTO newTitle)
+        {
+            try
+            {
+                this._BusinessLogicService.UpdateDocumentTitle(this.GetUser().Id, documentId, newTitle.Value);
+                return this.Ok();
             }
             catch
             {

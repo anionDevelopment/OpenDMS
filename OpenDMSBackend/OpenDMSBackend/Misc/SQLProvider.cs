@@ -21,6 +21,10 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("AddDocument");
         }
+        public string GetScriptUpdateDocument()
+        {
+            return this.LoadSQLScript("UpdateDocument");
+        }
 
         public string GetScriptAddRole()
         {
@@ -229,6 +233,11 @@ namespace OpenDMSBackend.Core.Misc
         public string GetScriptGetStorageLocationIdOfContainee()
         {
             return this.LoadSQLScript("GetStorageLocationIdOfContainee");
+        }
+
+        public string GetScriptGetContentOfContainer()
+        {
+            return this.LoadSQLScript("GetContentOfContainer");
         }
     }
 }

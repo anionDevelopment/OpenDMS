@@ -383,7 +383,7 @@ namespace OpenDMSBackend.Core.Services
                     }
                     return roleIds;
                 })[0]);
-                foreach (var roleId in roleIds)
+                foreach (string roleId in roleIds)
                 {
                     Role role = this.GetRoleById(roleId);
                     this.EnrichWithInheritedRoles(role);
@@ -755,9 +755,28 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
-        public void Update(string requesterUserId, Document updatedDocument)
+        public void Update(string requesterUserId, Document document)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(Update), (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptUpdateDocument();
+
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", document.Id));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Title", document.Title.Value));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Filename", document.Filename.Value));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("LastEditDate", this.ToDateTime(document.LastEditDate), typeof(DateTime)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MIMEType", document.MIMEType.Value));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentContent", document.Content));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OCRContent", document.OCRContent));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentPreview", document.Preview));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsSoftDeleted", document.IsSoftDeleted));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DeleteIsNotAllowedBefore", this.ToDateTime(document.DeleteIsNotAllowedBefore), typeof(DateTime)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MustBeHardDeletedAfter", this.ToDateTime(document.MustBeHardDeletedAfter), typeof(DateTime)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("GroupOfBusinessOwner", document.GroupOfBusinessOwner));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Version", document.Version.ToString()));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AssignedLanguages", Core.Misc.Utilities.LanguagesListToString(document.AssignedLanguages)));
+                command.ExecuteNonQuery();
+            });
         }
 
         public IContainer GetContainerById(string containerId)
@@ -874,7 +893,7 @@ namespace OpenDMSBackend.Core.Services
 
         public StorageLocation GetStorageLocation(string storageLocationId)
         {
-            return GUtilities.GetValue(this.RunTransaction(nameof(GetStorageLocation), (command) =>
+            StorageLocation result = GUtilities.GetValue(this.RunTransaction(nameof(GetStorageLocation), (command) =>
             {
                 StorageLocation? result = null;
                 command.CommandText = this._SQLProvider.GetScriptGetStorageLocation();
@@ -897,11 +916,13 @@ namespace OpenDMSBackend.Core.Services
                     return result;
                 }
             })[0]);
+            this.EnrichWithContainees(result);//this can be optimized regrading to performance: this function loads the full objets (folder and document, recursive) from the database. but in practise, only the ids are required for the requested DTO in most cases and loading the other properties as well is just unnecessary.
+            return result;
         }
 
         public Folder GetFolder(string folderId)
         {
-            return GUtilities.GetValue(this.RunTransaction(nameof(GetFolder), (command) =>
+            Folder result = GUtilities.GetValue(this.RunTransaction(nameof(GetFolder), (command) =>
             {
                 Folder? result = null;
                 command.CommandText = this._SQLProvider.GetScriptGetFolder();
@@ -924,6 +945,32 @@ namespace OpenDMSBackend.Core.Services
                     return result;
                 }
             })[0]);
+            this.EnrichWithContainees(result);
+            return result;
+        }
+
+        private void EnrichWithContainees(IContainer container)
+        {
+            container.Content = new HashSet<IContainee>();
+            ISet<string> contentIds = GUtilities.GetValue(this.RunTransaction(nameof(EnrichWithContainees), (cmd) =>
+            {
+                ISet<string> idList = new HashSet<string>();
+                cmd.CommandText = this._SQLProvider.GetScriptGetContentOfContainer();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContainerId", container.Id));
+                using DbDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        idList.Add(reader.GetString(0));
+                    }
+                }
+                return idList;
+            })[0]);
+            foreach (string id in contentIds)
+            {
+                container.Content.Add(this.GetContaineeById(id));
+            }
         }
 
         public bool IsStorageLocation(string contentId)
@@ -1019,7 +1066,7 @@ namespace OpenDMSBackend.Core.Services
 
         public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
         {
-            return GUtilities.GetValue(this.RunTransaction(nameof(Search), (cmd) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetAllAccessTokenOfUser), (cmd) =>
             {
                 ISet<AccessToken> result = new HashSet<AccessToken>();
                 cmd.CommandText = this._SQLProvider.GetScriptGetAllAccessTokenForUser();

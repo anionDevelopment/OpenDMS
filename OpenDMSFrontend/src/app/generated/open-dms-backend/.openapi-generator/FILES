@@ -17,6 +17,7 @@ model/documentPreviewDTO.ts
 model/folderDTO.ts
 model/models.ts
 model/storageLocationDTO.ts
+model/stringValueDTO.ts
 model/tagDTO.ts
 model/userInformationDTO.ts
 model/version3.ts

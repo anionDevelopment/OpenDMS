@@ -7,6 +7,7 @@
         string GetScriptAddRole();
         string GetScriptGetAllRoles();
         string GetScriptAddDocument();
+        string GetScriptUpdateDocument();
         string GetScriptDeleteInheritedRoles();
         string GetScriptAddInheritedRole();
         string GetScriptGetRoleByName();
@@ -47,5 +48,6 @@
         string GetScriptAddTag();
         string GetScriptGetRolesOfUser();
         string GetScriptGetStorageLocationIdOfContainee();
+        string GetScriptGetContentOfContainer();
     }
 }

@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import saveAs from 'file-saver';
 import { EditDocumentDialogComponent } from '../edit-document-dialog/edit-document-dialog.component';
+import { of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-edit-document-menu',
@@ -47,10 +48,17 @@ export class EditDocumentMenuComponent {
 
   editDocument() {
     const dialogRef = this.dialog.open(EditDocumentDialogComponent, {
-      data: { document: document },
+      data: { documentDTO: this.document },
     });
-    dialogRef.afterClosed().subscribe(result => {
-      //TODO trigger event
+    dialogRef.afterClosed().pipe(switchMap(result => {
+      if(result.save){
+        const newTitle:string=result.data.documentTitle;
+        return this.openDMSBackendService.aPIV2OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.document?.id!,this.storageService.getAccessToken(),{value: newTitle}).pipe(switchMap(()=>of(newTitle)));
+      }else{
+        return of(this.document?.title);
+      }
+    })).subscribe((newTitle)=>{
+      this.document!.title=newTitle;
     });
   }
 

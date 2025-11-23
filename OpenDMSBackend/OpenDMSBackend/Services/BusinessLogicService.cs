@@ -226,6 +226,13 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        public void UpdateDocumentTitle(string requesterUserId, string documentId, string newTitle)
+        {
+            var document = GetDocument(requesterUserId, documentId);
+            document.Title = OneLineString.From(newTitle);
+            Update(requesterUserId, document);
+        }
+
         public void Update(string requesterUserId, Document updatedDocument)
         {
             Document existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
@@ -287,7 +294,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     if (toPictureWasSuccessful)
                     {
-                        document.OCRContent = this._OCRService.GetOCRContent(documentAsPicture!,document.MIMEType.Value, document.AssignedLanguages);
+                        document.OCRContent = this._OCRService.GetOCRContent(documentAsPicture!, document.MIMEType.Value, document.AssignedLanguages);
                     }
                     else
                     {
@@ -385,7 +392,7 @@ namespace OpenDMSBackend.Core.Services
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
-        public void HardDelete(string? requesterUserId, string containerOrContaineeId,string reason)
+        public void HardDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
             //TODO check permission
 
@@ -438,7 +445,7 @@ namespace OpenDMSBackend.Core.Services
         public StorageLocation GetStorageLocation(string requesterUserId, string storageLocationId)
         {
             this.EnsureUserIsAllowedToViewContent(requesterUserId, storageLocationId);
-            return  this._Persistence.GetStorageLocation(storageLocationId);
+            return this._Persistence.GetStorageLocation(storageLocationId);
         }
 
         public Folder GetFolder(string requesterUserId, string folderId)
@@ -452,7 +459,7 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();//TODO remove expired accesstoken
         }
 
-        public void RemoveEntireContent(string? requesterUserId, string containerId,string reason)
+        public void RemoveEntireContent(string? requesterUserId, string containerId, string reason)
         {
             IContainer container = this._Persistence.GetContainerById(containerId);
             foreach (IContainee child in container.Content)
@@ -475,5 +482,6 @@ namespace OpenDMSBackend.Core.Services
         {
             return this._AuthenticationService.Login(username, password);
         }
+
     }
 }
