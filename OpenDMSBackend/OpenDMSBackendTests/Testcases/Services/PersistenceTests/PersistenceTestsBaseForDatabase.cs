@@ -18,10 +18,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
     public abstract class PersistenceTestsBaseForDatabase : PersistenceTestsBase
     {
         protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFramework();
-        internal override PersistenceDisposable GetPersistence()
+        internal override PersistenceDisposable GetPersistence(ITimeService timeService)
         {
             DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework();
-            ITimeService timeService = new TimeService();
             IGRYLog logger = GeneralLogger.CreateUsingConsole();
             IPersistence result = new DatabasePersistence(databaseTestFramework.GenericDatabaseInteractor().Accept(new GetOpenDMSDatabaseInteractorVisitor()), timeService, logger);
 

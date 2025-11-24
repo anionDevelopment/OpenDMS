@@ -25,9 +25,8 @@ namespace OpenDMSBackend.Tests.TestUtilities
             string result = File.ReadAllText(file, new UTF8Encoding(false));
             return result;
         }
-        public static (TransientPersistence, ISet<IDisposable>) GetTransientPersistence()
+        public static (TransientPersistence, ISet<IDisposable>) GetTransientPersistence(ITimeService timeService)
         {
-            ITimeService timeService = new TimeService();
             IIdGenerator<ulong> idGenerator = new IdGenerator();
             TransientAuthenticationServicePersistence<User> transientAuthenticationServicePersistence = new TransientAuthenticationServicePersistence(timeService);
             TransientPersistence persistence = new TransientPersistence(transientAuthenticationServicePersistence, idGenerator, timeService);

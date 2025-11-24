@@ -66,7 +66,6 @@ namespace OpenDMSBackend.Core
         }
         internal int MainImplementation(string[] commandlineArguments)
         {
-            bool runPersistent = false;
             this.IsRunning = true;
             int result = Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
             {
@@ -110,7 +109,6 @@ namespace OpenDMSBackend.Core
                             @$"^/API/Other/Maintenance/HealthCheck$",
                         },
                     };
-                    runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     if (initializationInformation.CommandlineParameter.InitialOCRDataServiceAddress != null)
                     {
                         initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataServiceAddress = initializationInformation.CommandlineParameter.InitialOCRDataServiceAddress;
@@ -119,6 +117,7 @@ namespace OpenDMSBackend.Core
                     {
                         initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataServiceAPIKey = initializationInformation.CommandlineParameter.InitialOCRDataServiceAPIKey;
                     }
+                    bool runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
                         DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseConnectionString ?? "insert your connection-string here",

@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities;
@@ -10,9 +11,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
     [TestClass]
     public class PersistenceTestsForTransient : PersistenceTestsBase
     {
-        internal override PersistenceDisposable GetPersistence()
+        internal override PersistenceDisposable GetPersistence(ITimeService timeService)
         {
-            (TransientPersistence, ISet<IDisposable>) result = TestUtilities.Utilities.GetTransientPersistence();
+            (TransientPersistence, ISet<IDisposable>) result = TestUtilities.Utilities.GetTransientPersistence(timeService);
             return new PersistenceDisposable(result.Item1, result.Item2);
         }
 

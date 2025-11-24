@@ -1,4 +1,6 @@
-﻿using GRYLibrary.Core.Misc.Strings;
+﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.OtherServices;
+using GRYLibrary.Core.Misc.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
@@ -14,7 +16,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         {
         }
 
-        internal abstract PersistenceDisposable GetPersistence();
+        internal abstract PersistenceDisposable GetPersistence(ITimeService timeService);
 
         public abstract void PersistDocumentTest();
         public void PersistDocument()
@@ -22,7 +24,8 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
                 //arrange
-                using PersistenceDisposable persistenceD = this.GetPersistence();
+                var timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
                 Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 01, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), "added-by-user-id");
                 Assert.IsFalse(persistenceD.Persistence.IsDocument(testDocument.Id));
 
@@ -40,7 +43,8 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
                 //arrange          
-                using PersistenceDisposable persistenceD = this.GetPersistence();
+                var timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
 
                 Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 02, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), "added-by-user-id");
 
@@ -59,7 +63,8 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
             {
                 //arrange
-              using PersistenceDisposable persistenceD = this.GetPersistence();
+                var timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
                 /*
                 Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 03, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), "added-by-user-id");
                 */
