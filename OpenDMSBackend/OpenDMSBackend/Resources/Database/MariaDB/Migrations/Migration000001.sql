@@ -1,4 +1,3 @@
-ALTER DATABASE CHARACTER SET utf8mb4;
 
 CREATE TABLE `Users` (
     `Id` varchar(255) not null,
@@ -36,7 +35,7 @@ CREATE TABLE `Documents` (
     `ReadableId` BIGINT unsigned not null,
     `MIMEType` varchar(255) not null,
     `DocumentPreview` longblob not null,
-    `OCRContent` longtext not null,
+    `OCRContent` longtext not null COLLATE utf8mb4_unicode_ci,
     `DocumentContent` longblob not null,
     `IsSoftDeleted` tinyint(1) not null,
     `DeleteIsNotAllowedBefore` datetime(6) null,
@@ -44,14 +43,14 @@ CREATE TABLE `Documents` (
     `GroupOfBusinessOwner` varchar(255) not null,
     `Version` varchar(255) not null,
     `AssignedLanguages` varchar(255) null,
+    `AddedByUserId` varchar(255) null,
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `Tags` (
     `Id` varchar(255) not null,
     `Name` varchar(255) not null,
-    `NameLower` varchar(255) not null,
-    `Color` varchar(8) not null,
+    `Color` INT UNSIGNED not null,
     CONSTRAINT `PK_Tags` PRIMARY KEY (`Id`)
 ) CHARACTER SET=utf8mb4;
 

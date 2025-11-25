@@ -1,12 +1,24 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v1.1.4 API documentation",
+    "title": "OpenDMSBackend v2.0.0 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v1.1.4"
+    "version": "v2.0.0"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
+      "get": {
+        "tags": [
+          "MaintenanceRoutes"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/Other/Maintenance/InitializationState": {
       "get": {
         "tags": [
           "MaintenanceRoutes"
@@ -66,7 +78,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/AddDocument/{containerId}": {
+    "/API/v2/OpenDMSBackend/AddDocument/{containerId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -166,7 +178,74 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/AddFolder/{parentFolderId}/{name}": {
+    "/API/v2/OpenDMSBackend/UpdateDocumentTitle/{documentId}": {
+      "put": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v2/OpenDMSBackend/AddFolder/{parentFolderId}/{name}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -222,7 +301,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/Rename/{containerId}/{newName}": {
+    "/API/v2/OpenDMSBackend/Rename/{containerId}/{newName}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -261,7 +340,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}": {
+    "/API/v2/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -300,7 +379,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
+    "/API/v2/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -339,7 +418,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
+    "/API/v2/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -378,7 +457,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/AddStorageLocation/{name}": {
+    "/API/v2/OpenDMSBackend/AddStorageLocation/{name}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -426,7 +505,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/GetStorageLocation/{id}": {
+    "/API/v2/OpenDMSBackend/GetStorageLocation/{id}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -474,7 +553,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/GetAllViewableStorageLocations": {
+    "/API/v2/OpenDMSBackend/GetAllViewableStorageLocations": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -523,7 +602,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/GetFolder/{id}": {
+    "/API/v2/OpenDMSBackend/GetFolder/{id}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -571,7 +650,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/Search": {
+    "/API/v2/OpenDMSBackend/Search": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -627,7 +706,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/GetDocument": {
+    "/API/v2/OpenDMSBackend/GetDocument": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -674,7 +753,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/GetDocumentFromReadableId": {
+    "/API/v2/OpenDMSBackend/GetDocumentFromReadableId": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -722,7 +801,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/GetDocumentPreview": {
+    "/API/v2/OpenDMSBackend/GetDocumentPreview": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -769,7 +848,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/GetLatestDocuments": {
+    "/API/v2/OpenDMSBackend/GetLatestDocuments": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -818,7 +897,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/GetAllTags": {
+    "/API/v2/OpenDMSBackend/GetAllTags": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -867,7 +946,7 @@
         }
       }
     },
-    "/API/v1/OpenDMSBackend/Delete/{containerOrContaineeId}": {
+    "/API/v2/OpenDMSBackend/HardDelete/{containerOrContaineeId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -891,6 +970,25 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -898,7 +996,57 @@
         }
       }
     },
-    "/API/v1/UserController/Login": {
+    "/API/v2/OpenDMSBackend/SoftDelete/{containerOrContaineeId}": {
+      "delete": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "parameters": [
+          {
+            "name": "containerOrContaineeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v2/UserController/Login": {
       "put": {
         "tags": [
           "User"
@@ -943,7 +1091,7 @@
         }
       }
     },
-    "/API/v1/UserController/CreateUser": {
+    "/API/v2/UserController/Register": {
       "put": {
         "tags": [
           "User"
@@ -980,7 +1128,7 @@
         }
       }
     },
-    "/API/v1/UserController/Logout": {
+    "/API/v2/UserController/Logout": {
       "put": {
         "tags": [
           "User"
@@ -1003,7 +1151,7 @@
         }
       }
     },
-    "/API/v1/UserController/TokenIsValid": {
+    "/API/v2/UserController/TokenIsValid": {
       "get": {
         "tags": [
           "User"
@@ -1041,7 +1189,7 @@
         }
       }
     },
-    "/API/v1/UserController/GetRoles": {
+    "/API/v2/UserController/GetRoles": {
       "put": {
         "tags": [
           "User"
@@ -1090,7 +1238,7 @@
         }
       }
     },
-    "/API/v1/UserController/GetUserInformation": {
+    "/API/v2/UserController/GetUserInformation": {
       "get": {
         "tags": [
           "User"
@@ -1227,6 +1375,10 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "addedByUserId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1295,6 +1447,10 @@
               "type": "string"
             },
             "nullable": true
+          },
+          "addedByUserId": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1355,6 +1511,16 @@
         },
         "additionalProperties": false
       },
+      "StringValueDTO": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "TagDTO": {
         "type": "object",
         "properties": {
@@ -1409,5 +1575,16 @@
         "additionalProperties": false
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "MaintenanceRoutes"
+    },
+    {
+      "name": "OpenDMSBackend"
+    },
+    {
+      "name": "User"
+    }
+  ]
 }

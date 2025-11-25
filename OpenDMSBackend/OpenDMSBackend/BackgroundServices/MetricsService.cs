@@ -23,13 +23,16 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         public void CalculateMetrics()
         {
-            try
+            if (this._Persistence.IsAvailable().Item1)
             {
-                this.MetricAmountOfDocuments.Set(this._Persistence.GetAmountOfDocuments());
-            }
-            catch (Exception exception)
-            {
-                this._Logger.Log("Error while calculating metrics", exception);
+                try
+                {
+                    this.MetricAmountOfDocuments.Set(this._Persistence.GetAmountOfDocuments());
+                }
+                catch (Exception exception)
+                {
+                    this._Logger.Log("Error while calculating metrics", exception);
+                }
             }
         }
 

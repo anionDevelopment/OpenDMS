@@ -10,7 +10,7 @@ namespace OpenDMSBackend.Core.Services
     {
         #region user
         /// <returns>Returns the id of the created user.</returns>
-        public string Register(string username, string initialAdminPassword);
+        public string Register(string username, string password);
         public bool UserWithNameExists(string username);
         public bool UserIsAdministrator(string userId);
         public User GetUser(string userId);
@@ -21,10 +21,10 @@ namespace OpenDMSBackend.Core.Services
 
         #region BusinessLogic
 
-        public void SoftDelete(string requesterUserId, string containerOrContaineeId);
-        public void HardDelete(string requesterUserId, string containerOrContaineeId);
+        public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason);
+        public void HardDelete(string? requesterUserId, string containerOrContaineeId, string reason);
 
-        public void RemoveEntireContent(string requesterUserId, string containerId);
+        public void RemoveEntireContent(string requesterUserId, string containerId,string reason);
 
         #region Document
         /// <returns>Returns the id of the created document.</returns>
@@ -62,6 +62,7 @@ namespace OpenDMSBackend.Core.Services
         public Folder GetFolder(string requesterUserId, string folderId);
         public Document GetDocumentFromReadableId(string requesterUserId, uint readableDocumentId);
         public StorageLocation GetStorageLocation(string requesterUserId, string storageLocationId);
+        public void UpdateDocumentTitle(string requesterUserId, string documentId, string newTitle);
 
         #endregion
 

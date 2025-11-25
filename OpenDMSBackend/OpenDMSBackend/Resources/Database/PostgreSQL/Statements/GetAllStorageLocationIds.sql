@@ -1,2 +1,2 @@
-
-select "Id" from "StorageLocations";
+select "Id" 
+	from "StorageLocations";

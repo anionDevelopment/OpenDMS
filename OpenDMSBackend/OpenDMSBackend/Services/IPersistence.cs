@@ -1,12 +1,12 @@
-﻿using GRYLibrary.Core.APIServer.Services;
-using GRYLibrary.Core.APIServer.Services.Trans;
+﻿using GRYLibrary.Core.APIServer.Services.Trans;
+using GRYLibrary.Core.APIServer.Utilities;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Services
 {
-    public interface IPersistence : IExternalService, IAuthenticationServicePersistence<Model.BusinessTypes.User>
+    public interface IPersistence :  IAuthenticationServicePersistence<Model.BusinessTypes.User>, IReconnectableDatabase
     {
         public IContainee GetContaineeById(string containeeId);
         public IContainer GetContainerById(string containerId);
@@ -17,7 +17,7 @@ namespace OpenDMSBackend.Core.Services
         public void AssignTag(string documentId, string tagId);
         public void UnassignTag(string documentId, string tagId);
         public TagDTO[] GetAllTags();
-        public IEnumerable<string> GetAllDocumentIds();
+        public ISet<string> GetAllDocumentIds();
         public string GetIdOfStorageLocationContainedIn(string containeeId);
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId);
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId);
@@ -56,6 +56,7 @@ namespace OpenDMSBackend.Core.Services
         /// The order is descending regarding to relevance.
         /// </returns>
         public IList<string> Search(string searchTerm);
-        IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow();
+        public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow();
+        public void Reset();
     }
 }

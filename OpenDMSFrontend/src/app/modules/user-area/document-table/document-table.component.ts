@@ -19,8 +19,6 @@ export class DocumentTableComponent implements OnInit {
   @Output()
   documentRemoved: EventEmitter<string/*document-id*/> = new EventEmitter<string>();
 
-
-
   ngOnInit(): void {
     if (this.documents$) {
       this.documents$.subscribe(newDocumentList => {

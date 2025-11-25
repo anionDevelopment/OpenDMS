@@ -21,8 +21,9 @@ namespace OpenDMSBackend.Core.Services
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly ITimeService _TimeService;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
-
-        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence, IIdGenerator<ulong> idGenerator,ITimeService timeService)
+        private bool _LogConnectionErrors = true;
+        private static readonly object _Lock = new object();
+        public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence, IIdGenerator<ulong> idGenerator, ITimeService timeService)
         {
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
             this._StorageLocations = new Dictionary<string, StorageLocation>();
@@ -58,9 +59,9 @@ namespace OpenDMSBackend.Core.Services
             this._Documents[document.Id] = document;
         }
 
-        public bool IsAvailable()
+        public (bool, Exception?) IsAvailable()
         {
-            return true;
+            return (true, null);
         }
 
         public void Dispose()
@@ -119,9 +120,9 @@ namespace OpenDMSBackend.Core.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetAllDocumentIds()
+        public ISet<string> GetAllDocumentIds()
         {
-            return this._Documents.Keys;
+            return this._Documents.Keys.ToHashSet();
         }
 
         public string GetIdOfStorageLocationContainedIn(string id)
@@ -485,7 +486,7 @@ namespace OpenDMSBackend.Core.Services
 
         public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleByName(string roleName)
         {
-            throw new NotImplementedException();
+            return this._TransientAuthenticationServicePersistence.GetRoleByName(roleName);
         }
 
         public bool DeleteIsAllowed(string documentId)
@@ -500,10 +501,24 @@ namespace OpenDMSBackend.Core.Services
 
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
-         return this._Documents
-                .Where(doc => this._TimeService.GetCurrentLocalTimeAsDateTimeOffset() < doc.Value.MustBeHardDeletedAfter)
-                .Select(doc => doc.Value.Id)
-                .ToList();
+            return this._Documents
+                   .Where(doc => this._TimeService.GetCurrentLocalTimeAsDateTimeOffset() < doc.Value.MustBeHardDeletedAfter)
+                   .Select(doc => doc.Value.Id)
+                   .ToList();
+        }
+
+
+        public void SetLogConnectionAttemptErrors(bool enabled)
+        {
+            lock (_Lock)
+            {
+                this._LogConnectionErrors = enabled;
+            }
+        }
+
+        public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleById(string roleId)
+        {
+            return this._TransientAuthenticationServicePersistence.GetRoleById(roleId);
         }
     }
 }

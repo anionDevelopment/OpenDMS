@@ -18,5 +18,4 @@ Resources/CodeAnalysisResult/*.sarif
 Resources/CA
 Resources/DevelopmentCertificate
 Resources/GRYLibrary
-Resources/OCRData
 Workspace

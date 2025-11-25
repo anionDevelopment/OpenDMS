@@ -1,2 +1,4 @@
 
-select 1 from "Roles" where "Name"=$1;
+select 1 
+	from "Roles" 
+	where "Name"=@RoleName;

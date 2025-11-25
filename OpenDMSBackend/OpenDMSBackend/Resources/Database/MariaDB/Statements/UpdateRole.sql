@@ -1,2 +1,4 @@
 
-update Roles set `Name`=@Name where `Id`=@Id;
+update Roles 
+	set `Name`=@Name 
+	where `Id`=@Id;

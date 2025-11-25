@@ -4,6 +4,7 @@ import { UserService } from '../../../generated/open-dms-backend';
 import { Router } from '@angular/router';
 import { UserDataService } from '../../../services/user-data.service';
 import { StorageService } from '../../../services/storage.service';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-login-form',
@@ -23,14 +24,14 @@ export class LoginFormComponent {
   public login(): void {
     const username: string = this.form.get('username')!.value;
     const password: string = this.form.get('password')!.value;
-    this.userService.aPIV1UserControllerLoginPut(username, password).subscribe((a: any) => {
-      this.storageService.setAccessToken(a.value!);
-      this.userDataService.loadUserData().subscribe(() => {
-        this.router.navigate(['user', 'dashboard']);
-      });
-    },
-      (error: any) => {
-        console.error(error);
-      });
+    this.userService.aPIV2UserControllerLoginPut(username, password)
+    .pipe(
+      switchMap((accessToken: any) => {
+        this.storageService.setAccessToken(accessToken.value!);
+        return this.userDataService.loadUserData();
+      })
+    ).subscribe(() => {
+      this.router.navigate(['user', 'dashboard']);
+    });
   }
 }

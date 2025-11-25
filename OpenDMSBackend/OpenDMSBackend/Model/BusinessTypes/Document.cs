@@ -32,8 +32,9 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public string GroupOfBusinessOwner { get; set; }
         public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
+        public string? AddedByUserId { get; set; }
         //TODO add list of old versions
-        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentContent, string oCRContent, byte[] documentPreview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string GroupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages)
+        public Document(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ulong readableId, ISet<Tag> tags, OneLineString mimeType, byte[] documentContent, string oCRContent, byte[] documentPreview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string GroupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string? addedByUserId)
         {
             this.Id = id;
             this.Title = title;
@@ -53,6 +54,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.DeleteIsNotAllowedBefore = deleteIsNotAllowedBefore;
             this.MustBeHardDeletedAfter = mustBeHardDeletedAfter;
             this.AssignedLanguages = assignedLanguages;
+            this.AddedByUserId = addedByUserId;
         }
 
         public override bool Equals(object? obj)
@@ -90,12 +92,16 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
 
         public DocumentPreview GetPreview()
         {
-            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.Tags, this.ReadableId, this.MIMEType, this.Preview, this.IsSoftDeleted, this.DeleteIsNotAllowedBefore, this.MustBeHardDeletedAfter, this.GroupOfBusinessOwner, this.Version,this.AssignedLanguages);
+            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.Tags, this.ReadableId, this.MIMEType, this.Preview, this.IsSoftDeleted, this.DeleteIsNotAllowedBefore, this.MustBeHardDeletedAfter, this.GroupOfBusinessOwner, this.Version,this.AssignedLanguages, this.AddedByUserId);
         }
 
         public DocumentDTO ToDTO()
         {
-            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value,GUtilities.FormatTimestamp( this.ImportDate,false), GUtilities.FormatTimestampNullable(this.LastEditDate,false), this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore,false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter,false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages);
+            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value,GUtilities.FormatTimestamp( this.ImportDate,false), GUtilities.FormatTimestampNullable(this.LastEditDate,false), this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore,false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter,false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages, this.AddedByUserId);
+        }
+        public override string ToString()
+        {
+            return $"{this.GetType().Name}[{nameof(this.ReadableId)})={this.ReadableId}, {nameof(this.Title)}=\"{this.Title.Value}\", {nameof(this.Id)}=\"{this.Id}\"]";
         }
     }
 }

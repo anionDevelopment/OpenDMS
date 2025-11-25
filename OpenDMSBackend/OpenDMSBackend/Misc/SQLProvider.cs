@@ -21,10 +21,14 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("AddDocument");
         }
-
-        public string GetScriptInsertRole()
+        public string GetScriptUpdateDocument()
         {
-            return this.LoadSQLScript("InsertRole");
+            return this.LoadSQLScript("UpdateDocument");
+        }
+
+        public string GetScriptAddRole()
+        {
+            return this.LoadSQLScript("AddRole");
         }
 
         public string GetScriptGetAllRoles()
@@ -122,9 +126,9 @@ namespace OpenDMSBackend.Core.Misc
             return this.LoadSQLScript("GetParentIdOfContainee");
         }
 
-        public string GetScriptGetAllStorageLocations()
+        public string GetScriptGetAllStorageLocationIds()
         {
-            return this.LoadSQLScript("GetAllStorageLocations");
+            return this.LoadSQLScript("GetAllStorageLocationIds");
         }
 
         public string GetScriptGetStorageLocation()
@@ -150,6 +154,90 @@ namespace OpenDMSBackend.Core.Misc
         public string GetScriptGetDocumentPreview()
         {
             return this.LoadSQLScript("GetDocumentPreview");
+        }
+
+        public string GetScriptDeleteInheritedRoles()
+        {
+            return this.LoadSQLScript("DeleteInheritedRoles");
+        }
+
+        public string GetScriptAddInheritedRole()
+        {
+            return this.LoadSQLScript("AddInheritedRole");
+        }
+
+        public string GetScriptGetRoleByName()
+        {
+            return this.LoadSQLScript("GetRoleByName");
+        }
+
+        public string GetScriptGetRoleById()
+        {
+            return this.LoadSQLScript("GetRoleById");
+        }
+
+        public string GetScriptGetInheritedRoles()
+        {
+            return this.LoadSQLScript("GetInheritedRoles");
+        }
+
+        public string GetScriptAddStorageLocation()
+        {
+            return this.LoadSQLScript("AddStorageLocation");
+        }
+
+        public string GetScriptAddFolder()
+        {
+            return this.LoadSQLScript("AddFolder");
+        }
+
+        public string GetScriptAddOrUpdateOwnerOfStorageLocation()
+        {
+            return this.LoadSQLScript("AddOrUpdateOwnerOfStorageLocation");
+        }
+
+        public string GetScriptSetParentOfContainee()
+        {
+            return this.LoadSQLScript("SetParentOfContainee");
+        }
+
+        public string GetScriptGetTagsOfDocument()
+        {
+            return this.LoadSQLScript("GetTagsOfDocument");
+        }
+
+        public string GetScriptGetTag()
+        {
+            return this.LoadSQLScript("GetTag");
+        }
+
+        public string GetScriptGetAllDocumentIds()
+        {
+            return this.LoadSQLScript("GetAllDocumentIds");
+        }
+
+        public string GetScriptGetAllTags()
+        {
+            return this.LoadSQLScript("GetAllTags");
+        }
+
+        public string GetScriptAddTag()
+        {
+            return this.LoadSQLScript("AddTag");
+        }
+
+        public string GetScriptGetRolesOfUser()
+        {
+            return this.LoadSQLScript("GetRolesOfUser");
+        }
+        public string GetScriptGetStorageLocationIdOfContainee()
+        {
+            return this.LoadSQLScript("GetStorageLocationIdOfContainee");
+        }
+
+        public string GetScriptGetContentOfContainer()
+        {
+            return this.LoadSQLScript("GetContentOfContainer");
         }
     }
 }

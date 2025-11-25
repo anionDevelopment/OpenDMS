@@ -4,9 +4,14 @@
     {
         string GetScriptAddRoleToUser();
         string GetScriptAddUser();
-        string GetScriptInsertRole();
+        string GetScriptAddRole();
         string GetScriptGetAllRoles();
         string GetScriptAddDocument();
+        string GetScriptUpdateDocument();
+        string GetScriptDeleteInheritedRoles();
+        string GetScriptAddInheritedRole();
+        string GetScriptGetRoleByName();
+        string GetScriptGetRoleById();
         string GetScriptResetDatabase();
         string GetScriptRoleExists();
         string GetScriptUpdateRole();
@@ -25,11 +30,24 @@
         string GetScriptGetAllAccessTokenForUser();
         string GetScriptRemoveAccessToken();
         string GetScriptGetParentIdOfContainee();
-        string GetScriptGetAllStorageLocations();
+        string GetScriptGetAllStorageLocationIds();
         string GetScriptGetStorageLocation();
         string GetScriptGetFolder();
         string GetScriptGetIdFromReadableId();
         string GetScriptSearch();
         string GetScriptGetDocumentPreview();
+        string GetScriptGetInheritedRoles();
+        string GetScriptAddStorageLocation();
+        string GetScriptAddFolder();
+        string GetScriptAddOrUpdateOwnerOfStorageLocation();
+        string GetScriptSetParentOfContainee();
+        string GetScriptGetTagsOfDocument();
+        string GetScriptGetTag();
+        string GetScriptGetAllDocumentIds();
+        string GetScriptGetAllTags();
+        string GetScriptAddTag();
+        string GetScriptGetRolesOfUser();
+        string GetScriptGetStorageLocationIdOfContainee();
+        string GetScriptGetContentOfContainer();
     }
 }

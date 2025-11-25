@@ -1,2 +1,3 @@
 
-select count(*) from "Documents";
+select count(*) 
+	from "Documents";

@@ -110,14 +110,7 @@ namespace OpenDMSBackend.Core.Services
 
         public Role GetRoleByName(string roleName)
         {
-            if (this._AuthentificationPersistence.GetAllRoles().Any())
-            {
-                return this._AuthentificationPersistence.GetAllRoles().Where(r => r.Name == roleName).First();
-            }
-            else
-            {
-                throw new KeyNotFoundException($"Role '{roleName}' does not exist.");
-            }
+          return this._AuthentificationPersistence.GetRoleByName(roleName);
         }
 
 
@@ -159,7 +152,7 @@ namespace OpenDMSBackend.Core.Services
         }
         private AccessToken ThrowInvalidCredentialsException()
         {
-            throw new BadRequestException(400, "Invalid credentials");
+            throw new BadRequestException(401, "Invalid credentials");
         }
 
         public void Logout(AccessToken accessToken)
@@ -194,7 +187,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserWithIdExists(string userId)
         {
-            throw new NotImplementedException();
+            return this._AuthentificationPersistence.UserWithIdExists(userId);
         }
 
         public bool UserWithNameExists(string username)
@@ -239,22 +232,22 @@ namespace OpenDMSBackend.Core.Services
 
         public Model.BusinessTypes.User GetUserById(string userId)
         {
-            throw new NotImplementedException();
+            return this._AuthentificationPersistence.GetUserById(userId);
         }
 
         public void AddUser(User user)
         {
-            this.AddUser(user as Model.BusinessTypes.User);
+            this.AddUser((Model.BusinessTypes.User)user);
         }
 
         public string GetUserName(string accessToken)
         {
-            throw new NotImplementedException();
+            return this.GetUserByAccessToken(accessToken).Name;
         }
 
         ISet<User> IAuthenticationService.GetAllUser()
         {
-            throw new NotImplementedException();
+            return this._AuthentificationPersistence.GetAllUsers().Values.Select(user => (User)user).ToHashSet();
         }
 
         public User GetUser(string userId)
@@ -264,12 +257,12 @@ namespace OpenDMSBackend.Core.Services
 
         public ISet<string> GetRolesOfUser(string userId)
         {
-            throw new NotImplementedException();
+            return this._AuthentificationPersistence.GetUserById(userId).Roles.Select(role => role.Name).ToHashSet();
         }
 
         public User GetUserByName(string name)
         {
-            throw new NotImplementedException();
+            return this._AuthentificationPersistence.GetUserByName(name);
         }
 
         public User GetUserByAccessToken(string accessToken)
@@ -280,6 +273,11 @@ namespace OpenDMSBackend.Core.Services
         public string GetBaseRoleOfAllUser()
         {
             return CodeUnitSpecificConstants.RolenameUsers;
+        }
+
+        public ClaimsPrincipal GetPrincipal(string accessToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -22,7 +22,7 @@ export class UserIconComponent {
     });
   }
   logout() {
-    this.userService.aPIV1UserControllerLogoutPut(this.storageService.getAccessToken()).subscribe(() => {
+    this.userService.aPIV2UserControllerLogoutPut(this.storageService.getAccessToken()).subscribe(() => {
       this.userDataService.unloadUserData();
       this.router.navigate(['']);
     });

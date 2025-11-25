@@ -1,2 +1,2 @@
 
-select "Id" from "Documents" where "ReadableId"=$1 limit 1;
+select "Id" from "Documents" where "ReadableId"=@ReadableId limit 1;

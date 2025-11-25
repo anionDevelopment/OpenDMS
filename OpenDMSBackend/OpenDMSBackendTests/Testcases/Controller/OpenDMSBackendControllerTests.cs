@@ -12,7 +12,6 @@ using System.Net.Http;
 namespace OpenDMSBackend.Tests.Testcases.Controller
 {
     [TestClass]
-    [Ignore]
     public class OpenDMSBackendControllerTests
     {
         [TestMethod]

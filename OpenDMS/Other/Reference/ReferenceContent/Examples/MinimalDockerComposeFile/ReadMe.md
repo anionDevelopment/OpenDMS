@@ -2,7 +2,7 @@
 
 ## Start
 
-Run `task BaseExampleStart` from the repository-base-folder.
+Run `task BaseExampleStart` (or shorter: `task beu`) from the repository-base-folder.
 
 Optionally you can create a `Variables.env` in this folder to add some configuration-values.
 
@@ -10,13 +10,15 @@ Example-content for a valid `Variables.env`-file:
 
 ```bash
 InitialAdminPassword=Adm1npa55w0rd
+InitialDatabaseType=PostgreSQL
+InitialDatabaseConnectionString=Host=opendms_database;Port=5432;Database=OpenDMSDatabase;Username=root;Password=R00tpa55w0rd;
 ```
 
 ## Access
 
 ### Database
 
-connectionstring: `postgresql://root:R00tpa55w0rd@opendms_database:5432/OpenDMSDatabase`
+connectionstring: `Host=opendms_database;Port=5432;Database=OpenDMSDatabase;Username=root;Password=R00tpa55w0rd;`
 
 Data for adminer:
 

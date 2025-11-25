@@ -29,8 +29,8 @@ using Microsoft.Extensions.Logging;
 using OpenDMSBackend.Core.BackgroundServices;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
+using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Services;
-using OpenDMSBackend.Core.Services.Misc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,14 +42,20 @@ namespace OpenDMSBackend.Core
 {
     internal class Program
     {
-        internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get; set; }
         internal bool ListenOnEveryIP { get; set; } = false;
         internal bool RunAsync { get; set; } = false;
+        internal bool IsRunning { get; set; } = false;
         internal IBusinessLogicService? _BusinessLogicService;
-        internal IGRYLog? _Log;
+        internal IInitializationService<CommandlineParameter>? _InitializationService;
+        internal IGRYLog _Log;
 
         internal IHostApplicationLifetime? _HostApplicationLifetime;
-
+        internal APIServerConfiguration<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter> _Constants;
+        internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get; set; }
+        public Program()
+        {
+            this._Log = GRYLog.Create();
+        }
         internal static int Main(string[] commandlineArguments)
         {
             return new Program().MainImplementation(commandlineArguments);
@@ -60,8 +66,8 @@ namespace OpenDMSBackend.Core
         }
         internal int MainImplementation(string[] commandlineArguments)
         {
-            bool runPersistent = false;
-            return Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
+            this.IsRunning = true;
+            int result = Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
             {
                 apiServerConfiguration.SetInitialzationInformationAction = (initializationInformation) =>
                 {
@@ -103,11 +109,19 @@ namespace OpenDMSBackend.Core
                             @$"^/API/Other/Maintenance/HealthCheck$",
                         },
                     };
-                    runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
+                    if (initializationInformation.CommandlineParameter.InitialOCRDataServiceAddress != null)
+                    {
+                        initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataServiceAddress = initializationInformation.CommandlineParameter.InitialOCRDataServiceAddress;
+                    }
+                    if (initializationInformation.CommandlineParameter.InitialOCRDataServiceAPIKey != null)
+                    {
+                        initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataServiceAPIKey = initializationInformation.CommandlineParameter.InitialOCRDataServiceAPIKey;
+                    }
+                    bool runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
-                        DatabaseConnectionString = "Server=opendms_database;Port=5432;Database=OpenDMSDatabase;UID=user;PWD=pa55w0rd;Search Path=public;",
-                        DatabaseType = Debugger.IsAttached ? "Transient" : "PostgreSQL",
+                        DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseConnectionString ?? "insert your connection-string here",
+                        DatabaseType = Debugger.IsAttached ? "Transient" : (initializationInformation.CommandlineParameter.InitialDatabaseType ?? "PostgreSQL"),
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
@@ -122,7 +136,7 @@ namespace OpenDMSBackend.Core
                     runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP( HTTP.DefaultPort);
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP(HTTP.DefaultPort);
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
@@ -184,7 +198,7 @@ namespace OpenDMSBackend.Core
                         }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementScheduler, ManagementScheduler>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceWrapper, OCRServiceWrapper>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClient>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();
@@ -202,11 +216,11 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthorizationMiddleware);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CommandlineParameter>, InitializationService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService>(sp => sp.GetRequiredService<IInitializationService<CommandlineParameter>>());
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
                         this.SetupMocks?.Invoke(functionalInformation);
-
                     }
                     catch
                     {
@@ -215,10 +229,10 @@ namespace OpenDMSBackend.Core
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
+                    this._Log = functionalInformationForWebApplication.WebApplication.Services.GetService<IGRYLog>();
                     try
                     {
                         this._BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
-                        this._Log = functionalInformationForWebApplication.WebApplication.Services.GetService<IGRYLog>();
                         this._HostApplicationLifetime = functionalInformationForWebApplication.WebApplication.Services.GetService<IHostApplicationLifetime>();
                         IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
                         IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
@@ -227,7 +241,9 @@ namespace OpenDMSBackend.Core
                         functionalInformationForWebApplication.PreRun = () =>
                         {
                             //initialize
-                            GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>()).Initialize(apiServerConfiguration.CommandlineParameter);
+                            this._InitializationService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>());
+                            this._Constants = apiServerConfiguration;
+                            this._InitializationService.Initialize(apiServerConfiguration.CommandlineParameter);
                             if (runServices)
                             {
                                 //start background-services
@@ -243,19 +259,21 @@ namespace OpenDMSBackend.Core
                                 managementScheduler.Stop().Wait();
                             }
                         };
-
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        throw;
+                        this._Log.Log("Fatal exception occurred. Server will be stopped.", e);
+                        this.Stop();
                     }
                 };
             });
+            this.IsRunning = false;
+            return result;
         }
 
         internal void Stop()
         {
-            GUtilities.AssertNotNull(this._HostApplicationLifetime, nameof(this._HostApplicationLifetime)).StopApplication();
+            GUtilities.AssertNotNull(this._Constants, nameof(this._Constants)).CancellationTokenSource.Cancel();
         }
     }
 }

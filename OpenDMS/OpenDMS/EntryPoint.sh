@@ -15,8 +15,12 @@ if [[ -n "${InitialDatabaseConnectionString}" ]]; then
   argument+=" --InitialDatabaseConnectionString $InitialDatabaseConnectionString"
 fi
 
-if [[ -n "${OCRDataFolder}" ]]; then
-  argument+=" --OCRDataFolder $OCRDataFolder"
+if [[ -n "${InitialOCRDataServiceAddress}" ]]; then
+  argument+=" --InitialOCRDataServiceAddress $InitialOCRDataServiceAddress"
+fi
+
+if [[ -n "${InitialOCRDataServiceAPIKey}" ]]; then
+  argument+=" --InitialOCRDataServiceAPIKey $InitialOCRDataServiceAPIKey"
 fi
 
 { cd /Workspace/Application/Backend && dotnet ./OpenDMSBackend.dll $argument; } &

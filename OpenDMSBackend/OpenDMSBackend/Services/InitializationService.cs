@@ -21,11 +21,10 @@ namespace OpenDMSBackend.Core.Services
         private readonly IExampleDataCreator _ExampleDataCreator;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IPersistence _Persistence;
-        private readonly IOCRServiceWrapper _OCRServiceWrapper;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private static readonly object _Lock = new object();
         private InitializationState _InitializationState;
-        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator, IOCRServiceWrapper ocrRServiceWrapper)
+        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator)
         {
             this._AuthenticationService = authenticationService;
             this._BusinessLogicService = businessLogicService;
@@ -34,7 +33,6 @@ namespace OpenDMSBackend.Core.Services
             this._ExampleDataCreator = exampleDataCreator;
             this._Persistence = persistence;
             this._IdGenerator = idGenerator;
-            this._OCRServiceWrapper = ocrRServiceWrapper;
             this.SetInitializationState(new Uninitialized());
         }
 
@@ -44,11 +42,17 @@ namespace OpenDMSBackend.Core.Services
             {
                 this.SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
-                this._OCRServiceWrapper.Initialize();
-                string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
+                Tools.WaitUntilDatabaseIsAvailable(this._Persistence, this._GeneralLogger);
+                if (this._Persistence is IInitializable initializablePersitence)
+                {
+                    initializablePersitence.Initialize();//this part runs migrations. this is idempotent and can be done on every start.
+                    GRYLibrary.Core.Misc.Utilities.AssertCondition(initializablePersitence.InitializationState is Initialized);
+                }
                 this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
+                string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;
                 if (!this._BusinessLogicService.UserWithNameExists(adminUsername))
                 {
+                    //this part runs business-logic initialization which is not idempotent and will be executed therefore only if it was never done before (which will simply be checked by existence of the admin-user)
                     this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameUsers);
                     Role usersRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
 
@@ -69,10 +73,10 @@ namespace OpenDMSBackend.Core.Services
                 this._GeneralLogger.Log("Service is initialized.", Microsoft.Extensions.Logging.LogLevel.Information);
                 this.SetInitializationState(new Initialized());
             }
-            catch
+            catch (System.Exception e)
             {
                 this.SetInitializationState(new InitializationFailed());
-                throw;
+                this._GeneralLogger.Log("Error while service-initialization.", e);
             }
         }
 

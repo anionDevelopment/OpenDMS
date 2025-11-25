@@ -72,7 +72,7 @@ describe('ViewDocumentComponent', () => {
         {
           provide: OpenDMSBackendService,
           useValue: {
-            aPIV1OpenDMSBackendGetDocumentFromReadableIdGet: () => of({
+            aPIV2OpenDMSBackendGetDocumentFromReadableIdGet: () => of({
               id: 1,
             }),
           },

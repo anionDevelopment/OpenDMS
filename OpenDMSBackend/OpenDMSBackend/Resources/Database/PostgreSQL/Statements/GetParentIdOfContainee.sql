@@ -1,2 +1,5 @@
 
-select "ContainerId" from "Container_Containee" where "ContaineeId"=$1 limit 1;
+select "ContainerId"
+    from "Container_Containee"
+    where "ContaineeId"=@ContaineeId
+    limit 1;

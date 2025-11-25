@@ -1,2 +1,5 @@
 
-SELECT 1 FROM "Folders" WHERE "Id"=$1 limit 1;
+SELECT 1 
+    FROM "Folders" 
+    WHERE "Id"=@Id 
+    limit 1;

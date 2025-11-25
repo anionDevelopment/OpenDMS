@@ -21,6 +21,7 @@ export class UserDataService {
     this.storageService.setUserId(null);
     this.storageService.setAccessToken(null);
     this.storageService.setUserIsAdmin(false);
+    this.loaded = false;
   }
 
   getUserId(): Observable<string> {
@@ -37,7 +38,7 @@ export class UserDataService {
 
   userIsLoggedIn(): Observable<boolean> {
     if (this.storageService.hasAccessToken()) {
-      return this.userService.aPIV1UserControllerTokenIsValidGet(this.storageService.getAccessToken());
+      return this.userService.aPIV2UserControllerTokenIsValidGet(this.storageService.getAccessToken());
     } else {
       return of(false);
     }
@@ -54,17 +55,19 @@ export class UserDataService {
   }
 
   ensureLoaded(): Observable<void> {
-    let pipe: Observable<any>;
+    let pipe: Observable<void>;
     if (this.loaded) {
-      pipe = of(null);//null is required here because otherwise first() will throw a 'no elements in sequence'-error
+      pipe = of(void 0);//nothing to do
     } else {
-      pipe = this.userService.aPIV1UserControllerGetUserInformationGet(this.storageService.getAccessToken()).pipe(
+      pipe = this.userService.aPIV2UserControllerGetUserInformationGet(this.storageService.getAccessToken()).pipe(
         tap((value: UserInformationDTO) => {
           this.storageService.setUserName(value.name);
           this.storageService.setUserId(value.id);
           this.storageService.setUserIsAdmin(value.isAdmin);
           this.loaded = true;
-        }
+        }),
+        switchMap(
+          () => of(void 0)
         ));
     }
     return pipe.pipe(first());
