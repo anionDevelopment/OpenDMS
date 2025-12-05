@@ -92,7 +92,4 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </EmbeddedResource>
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Model\Other\" />
-    </ItemGroup>
 </Project>
