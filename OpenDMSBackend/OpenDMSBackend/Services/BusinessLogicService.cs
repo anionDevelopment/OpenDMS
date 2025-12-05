@@ -171,7 +171,7 @@ namespace OpenDMSBackend.Core.Services
 
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
         {
-            if (Core.Misc.Utilities.GetEnvironmentTargetType() is not Productive && this.UserIsAdministrator(userId))
+            if (this.UserIsAdministrator(userId))
             {
                 return true;
             }
