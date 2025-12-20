@@ -1,6 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.CommonDBTypes;
-using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Settings;
@@ -228,7 +227,7 @@ namespace OpenDMSBackend.Core.Services
 
         public void UpdateDocumentTitle(string requesterUserId, string documentId, string newTitle)
         {
-            var document = GetDocument(requesterUserId, documentId);
+            Document document = GetDocument(requesterUserId, documentId);
             document.Title = OneLineString.From(newTitle);
             Update(requesterUserId, document);
         }
