@@ -41,10 +41,12 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
             if (runMigrations)
             {
                 IList<MigrationInstance> migrations = openDMSDatabaseInteractor.GetAllMigrations();
+                Assert.IsNotEmpty(migrations);
                 GRYMigrator migrator = new GRYMigrator(new TimeService(), migrations.ToList(), databaseInteractor);
                 migrator.InitializeDatabaseAndMigrateIfRequired();
             }
         }
+
         public abstract void Migration000001Test();
         public void Migration000001()
         {
