@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OpenDMSBackend.Core.Model.DTOs
+﻿namespace OpenDMSBackend.Core.Model.DTOs
 {
     public class StringValueDTO
     {

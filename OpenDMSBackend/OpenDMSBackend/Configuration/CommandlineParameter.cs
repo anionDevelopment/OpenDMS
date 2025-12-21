@@ -20,5 +20,23 @@ namespace OpenDMSBackend.Core.Configuration
 
         [Option(nameof(InitialOCRDataServiceAPIKey), Required = false)]
         public string? InitialOCRDataServiceAPIKey { get; set; }
+
+        [Option(nameof(InitialEnableEndpointAvailabilityCheckValue), Required = false, Default = true)]
+        public bool InitialEnableEndpointAvailabilityCheckValue { get; set; }
+
+        [Option(nameof(InitialEnableEndpointInitializationStateValue), Required = false, Default = false)]
+        public bool InitialEnableEndpointInitializationStateValue { get; set; }
+
+        [Option(nameof(InitialEnableEndpointCurrentVersionValue), Required = false, Default = false)]
+        public bool InitialEnableEndpointCurrentVersionValue { get; set; }
+
+        [Option(nameof(InitialEnableEndpointShowAllEndpointsValue), Required = false, Default = false)]
+        public bool InitialEnableEndpointShowAllEndpointsValue { get; set; }
+
+        [Option(nameof(InitialEnableEndpointHealthCheckValue), Required = false, Default = true)]
+        public bool InitialEnableEndpointHealthCheckValue { get; set; }
+
+        [Option(nameof(InitialEnableEndpointMetricsValue), Required = false, Default = false)]
+        public bool InitialEnableEndpointMetricsValue { get; set; }
     }
 }

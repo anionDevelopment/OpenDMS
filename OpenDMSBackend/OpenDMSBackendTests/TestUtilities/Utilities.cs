@@ -1,6 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
-using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
@@ -19,9 +18,9 @@ namespace OpenDMSBackend.Tests.TestUtilities
     public static class Utilities
     {
         internal static readonly object LockForTests = new object();
-        public static string GetResetDatabaseScript(string databaseName)
+        public static string GetResetDatabaseScript(string databaseTypeName)
         {
-            string file = Path.Combine(OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder, "OpenDMSBackend", "Resources", "Database", databaseName, "Statements", "ResetDatabase.sql");
+            string file = Path.Combine(OpenDMSBackend.Tests.TestUtilities.Constants.GeneralConstants.CodeUnitFolder, "OpenDMSBackend", "Resources", "Database", databaseTypeName, "Statements", "ResetDatabase.sql");
             string result = File.ReadAllText(file, new UTF8Encoding(false));
             return result;
         }
@@ -50,11 +49,6 @@ namespace OpenDMSBackend.Tests.TestUtilities
         public static string GetTestPostgreSQLConnectionString()
         {
             return @$"Host=localhost; Port=5432; Username=user; Password=pa55w0rd; Database=OpenDMSDatabase;";
-        }
-
-        public static string GetTestDatabaseCreationScriptArtifactFolder(string databaseName)
-        {
-            return GUtilities.ResolveToFullPath(@$"{GeneralConstants.CodeUnitFolder}\Other\Artifacts\${databaseName}DatabaseCreationScript");
         }
 
         public static DatabaseTestFrameworkForMariaDB GetDatabaseTestFrameworkForMariaDB()

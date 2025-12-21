@@ -1,6 +1,5 @@
-version: "3.2"
-
 services:
+
   opendmsbackend_database:
     container_name: "opendmsbackend_database"
     image: mariadb:11.5.2
@@ -11,8 +10,8 @@ services:
       MARIADB_PASSWORD: pa55w0rd
       MARIADB_ROOT_PASSWORD: R00tpa55w0rd
       MARIADB_DATABASE: OpenDMSDatabase
-#    volumes:
-#      - ./Volumes/Data:/var/lib/mysql
+    volumes:
+      - ./Volumes/OpenDMSMariaDBData:/var/lib/mysql
     networks:
       - opendms_net
 
