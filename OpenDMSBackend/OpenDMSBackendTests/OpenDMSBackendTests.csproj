@@ -67,7 +67,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.6" />
-        <PackageReference Include="GRYLibrary" Version="1.0.1" />
+        <PackageReference Include="GRYLibrary" Version="1.0.2" />
         <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
         <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.1" />
