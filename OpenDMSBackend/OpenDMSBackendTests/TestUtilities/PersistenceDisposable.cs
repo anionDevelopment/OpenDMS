@@ -13,7 +13,14 @@ namespace OpenDMSBackend.Tests.TestUtilities
             persistence.Dispose();
             foreach (IDisposable disposable in disposables)
             {
-                disposable.Dispose();
+                try
+                {
+                    disposable.Dispose();
+                }
+                catch
+                {
+                    throw;
+                }
             }
         })
         {

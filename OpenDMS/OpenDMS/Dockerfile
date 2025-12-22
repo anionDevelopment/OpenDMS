@@ -32,8 +32,9 @@ COPY OpenDMS/nginx.conf /Workspace/Application/Frontend
 
 COPY OpenDMS/EntryPoint.sh /Workspace/Other/EntryPoint
 RUN chmod +x /Workspace/Other/EntryPoint/EntryPoint.sh
+COPY OpenDMS/HealthCheck.sh /Workspace/Other/EntryPoint
+RUN chmod +x /Workspace/Other/EntryPoint/HealthCheck.sh
 
-HEALTHCHECK CMD curl --fail http://localhost:80/API/Other/Maintenance/HealthCheck
-#TODO add frontend to healthcheck
+HEALTHCHECK CMD ./HealthCheck.sh
 
 ENTRYPOINT ["./EntryPoint.sh"]

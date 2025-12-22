@@ -1,5 +1,6 @@
 ﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
+using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -54,7 +55,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     this._Program.ListenOnEveryIP = false;
                     this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
 
-                    string[] args = Array.Empty<string>();
+                    string[] args = new string[] { "--InitialEnableEndpointInitializationStateValue", "true" };
                     int exitCode = this._Program.MainImplementation(args);
                     GRYLibrary.Core.Misc.Utilities.AssertCondition(exitCode == 0, () =>
                     {
@@ -89,21 +90,28 @@ namespace OpenDMSBackend.Tests.TestUtilities
             {
                 action();
             }
+            Exception? lastException = null;
             if (!GRYLibrary.Core.Misc.Utilities.RunWithTimeout(() =>
             {
-                while (!this.IsReady())
+                while (!this.IsReady(out lastException))
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
             }, TimeSpan.FromSeconds(120)))
             {
-                throw new Exception("Could not start service.");
+                string message = "Could not start service.";
+                if (lastException != null)
+                {
+                    message = message + " Last exception: " + GRYLibrary.Core.Misc.Utilities.GetExceptionMessage(lastException);
+                }
+                throw new NotReadyException(message);
             }
-            this._BusinessLogicService = this._Program._BusinessLogicService;
+            GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._Program, nameof(_Program) + " is null.");
+            this._BusinessLogicService = this._Program!._BusinessLogicService;
             this._Log = this._Program._Log;
         }
 
-        private bool IsReady()
+        private bool IsReady(out Exception? exception)
         {
             try
             {
@@ -113,10 +121,20 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 Assert.IsTrue(response.IsSuccessStatusCode);
                 string content = response.Content.ReadAsStringAsync().WaitAndGetResult();
                 GRYLibrary.Core.Misc.Utilities.AssertCondition(content != typeof(InitializationFailed).Name);
-                return content == typeof(Initialized).Name;
+                if (content == typeof(Initialized).Name)
+                {
+                    exception = null;
+                    return true;
+                }
+                else
+                {
+                    exception = new NotReadyException($"Service-state is \"{content}\"");
+                    return false;
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                exception = ex;
                 return false;
             }
         }

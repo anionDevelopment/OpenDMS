@@ -1,6 +1,4 @@
 using GRYLibrary.Core.APIServer.CommonRoutes;
-using GRYLibrary.Core.APIServer.ConcreteEnvironments;
-using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
 using GRYLibrary.Core.APIServer.Mid.AuthS;
 using GRYLibrary.Core.APIServer.Mid.AutS;
@@ -48,7 +46,6 @@ namespace OpenDMSBackend.Core
         internal IBusinessLogicService? _BusinessLogicService;
         internal IInitializationService<CommandlineParameter>? _InitializationService;
         internal IGRYLog _Log;
-
         internal IHostApplicationLifetime? _HostApplicationLifetime;
         internal APIServerConfiguration<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter> _Constants;
         internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get; set; }
@@ -98,7 +95,15 @@ namespace OpenDMSBackend.Core
                         MaximalLengthOfResponseBodies = 500,
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ConfigurationForExceptionManagerMiddleware = new ExceptionManagerConfiguration();
-                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation();
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation()
+                    {
+                        EnableEndpointAvailabilityCheck = initializationInformation.CommandlineParameter.InitialEnableEndpointAvailabilityCheckValue,
+                        EnableEndpointInitializationState = initializationInformation.CommandlineParameter.InitialEnableEndpointInitializationStateValue,
+                        EnableEndpointCurrentVersion = initializationInformation.CommandlineParameter.InitialEnableEndpointCurrentVersionValue,
+                        EnableEndpointShowAllEndpoints = initializationInformation.CommandlineParameter.InitialEnableEndpointShowAllEndpointsValue,
+                        EnableEndpointHealthCheck = initializationInformation.CommandlineParameter.InitialEnableEndpointHealthCheckValue,
+                        EnableEndpointMetrics = initializationInformation.CommandlineParameter.InitialEnableEndpointMetricsValue,
+                    };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthenticationConfiguration = new AuthSConfiguration()
                     {
                         RoutesWhereUnauthenticatedAccessIsAllowed = new HashSet<string>()
@@ -117,7 +122,6 @@ namespace OpenDMSBackend.Core
                     {
                         initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.OCRDataServiceAPIKey = initializationInformation.CommandlineParameter.InitialOCRDataServiceAPIKey;
                     }
-                    bool runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
                         DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseConnectionString ?? "insert your connection-string here",
@@ -133,7 +137,6 @@ namespace OpenDMSBackend.Core
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration = new AutSRConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ImportDefinitions = new HashSet<ImportDefinition>();
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DefaultOCRLanguages = new HashSet<string>() { "en" };
-                    runPersistent = initializationInformation.ApplicationConstants.Environment is not Development && initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP(HTTP.DefaultPort);
@@ -142,8 +145,8 @@ namespace OpenDMSBackend.Core
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;
                     if (!initializationInformation.CommandlineParameter.RealRun)
                     {
-                        GRYLibrary.Core.Misc.Utilities.EnsureDirectoryDoesNotExist(initializationInformation.ApplicationConstants.BaseFolder);
-                        GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(initializationInformation.ApplicationConstants.BaseFolder);
+                        GUtilities.EnsureDirectoryDoesNotExist(initializationInformation.ApplicationConstants.BaseFolder);
+                        GUtilities.EnsureDirectoryExists(initializationInformation.ApplicationConstants.BaseFolder);
                     }
                 };
                 apiServerConfiguration.SetFunctionalInformationAction = (functionalInformation) =>

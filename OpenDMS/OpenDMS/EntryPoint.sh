@@ -1,26 +1,51 @@
 #!/bin/bash
+
 export IsRunningInDockerContainer=true
 
 argument="--RealRun"
 
 if [[ -n "${InitialAdminPassword}" ]]; then
-  argument+=" --InitialAdminPassword $InitialAdminPassword"
+    argument+=" --InitialAdminPassword $InitialAdminPassword"
 fi
 
 if [[ -n "${InitialDatabaseType}" ]]; then
-  argument+=" --InitialDatabaseType $InitialDatabaseType"
+    argument+=" --InitialDatabaseType $InitialDatabaseType"
 fi
 
 if [[ -n "${InitialDatabaseConnectionString}" ]]; then
-  argument+=" --InitialDatabaseConnectionString $InitialDatabaseConnectionString"
+    argument+=" --InitialDatabaseConnectionString $InitialDatabaseConnectionString"
 fi
 
 if [[ -n "${InitialOCRDataServiceAddress}" ]]; then
-  argument+=" --InitialOCRDataServiceAddress $InitialOCRDataServiceAddress"
+    argument+=" --InitialOCRDataServiceAddress $InitialOCRDataServiceAddress"
 fi
 
 if [[ -n "${InitialOCRDataServiceAPIKey}" ]]; then
-  argument+=" --InitialOCRDataServiceAPIKey $InitialOCRDataServiceAPIKey"
+    argument+=" --InitialOCRDataServiceAPIKey $InitialOCRDataServiceAPIKey"
+fi
+
+if [[ -n "${InitialEnableEndpointAvailabilityCheckValue}" ]]; then
+    argument+=" --InitialEnableEndpointAvailabilityCheckValue $InitialEnableEndpointAvailabilityCheckValue"
+fi
+
+if [[ -n "${InitialEnableEndpointInitializationStateValue}" ]]; then
+    argument+=" --InitialEnableEndpointInitializationStateValue $InitialEnableEndpointInitializationStateValue"
+fi
+
+if [[ -n "${InitialEnableEndpointCurrentVersionValue}" ]]; then
+    argument+=" --InitialEnableEndpointCurrentVersionValue $InitialEnableEndpointCurrentVersionValue"
+fi
+
+if [[ -n "${InitialEnableEndpointShowAllEndpointsValue}" ]]; then
+    argument+=" --InitialEnableEndpointShowAllEndpointsValue $InitialEnableEndpointShowAllEndpointsValue"
+fi
+
+if [[ -n "${InitialEnableEndpointHealthCheckValue}" ]]; then
+    argument+=" --InitialEnableEndpointHealthCheckValue $InitialEnableEndpointHealthCheckValue"
+fi
+
+if [[ -n "${InitialEnableEndpointMetricsValue}" ]]; then
+    argument+=" --InitialEnableEndpointMetricsValue $InitialEnableEndpointMetricsValue"
 fi
 
 { cd /Workspace/Application/Backend && dotnet ./OpenDMSBackend.dll $argument; } &
