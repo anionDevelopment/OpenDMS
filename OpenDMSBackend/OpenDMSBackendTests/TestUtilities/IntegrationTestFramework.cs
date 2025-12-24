@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
+﻿using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
@@ -33,10 +34,10 @@ namespace OpenDMSBackend.Tests.TestUtilities
         private readonly IntegrationTestConfiguration _IntegrationTestConfiguration;
         internal IBusinessLogicService? _BusinessLogicService;
         internal IGRYLog? _Log;
-        public IntegrationTestFramework(bool startServer = true) : this(new IntegrationTestConfiguration(), startServer)
+        public IntegrationTestFramework(bool startServer, IntegrationTestConfiguration config) : this(config, startServer)
         {
         }
-        public IntegrationTestFramework(IntegrationTestConfiguration integrationTestConfiguration, bool startServer = true)
+        public IntegrationTestFramework(IntegrationTestConfiguration integrationTestConfiguration, bool startServer )
         {
             this._IntegrationTestConfiguration = integrationTestConfiguration;
             if (startServer)
