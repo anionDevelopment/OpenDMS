@@ -37,7 +37,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         public IntegrationTestFramework(bool startServer, IntegrationTestConfiguration config) : this(config, startServer)
         {
         }
-        public IntegrationTestFramework(IntegrationTestConfiguration integrationTestConfiguration, bool startServer )
+        public IntegrationTestFramework(IntegrationTestConfiguration integrationTestConfiguration, bool startServer)
         {
             this._IntegrationTestConfiguration = integrationTestConfiguration;
             if (startServer)
@@ -47,7 +47,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         }
         public void StartServer()
         {
-            Action action = () =>
+            Func<Tuple<bool, Exception?>> action = () =>
             {
                 try
                 {
@@ -76,15 +76,17 @@ namespace OpenDMSBackend.Tests.TestUtilities
                         }
                         return message;
                     });
+                    return Tuple.Create<bool, Exception?>(true, null);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    throw;
+                    return Tuple.Create(false, ex);
                 }
             };
             if (this._IntegrationTestConfiguration.RunInOwnThread)
             {
                 Thread t = new Thread(() => action());
+                t.Name = nameof(Program);
                 t.Start();
             }
             else
@@ -169,17 +171,17 @@ namespace OpenDMSBackend.Tests.TestUtilities
 
         private void EnsureServerIsStopped()
         {
-            if (this._Running)
+            try
             {
-                try
+                if (this._Running)
                 {
                     this._Program.Stop();
                     GRYLibrary.Core.Misc.Utilities.WaitUntilConditionIsTrue(() => !this._Program.IsRunning);
                 }
-                catch
-                {
-                    throw;
-                }
+            }
+            catch
+            {
+                throw;
             }
         }
     }
