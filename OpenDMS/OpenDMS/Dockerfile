@@ -1,4 +1,5 @@
-FROM debian:stable-slim
+ARG image_debian
+FROM ${image_debian}:stable-20251208-slim
 ENV ISRUNNINGINCONTAINER="true"
 
 RUN mkdir /Workspace && \

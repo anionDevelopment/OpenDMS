@@ -1,8 +1,8 @@
 services:
 
-  opendmsbackend_database:
-    container_name: "opendmsbackend_database"
-    image: mariadb:11.5.2
+  opendms_database:
+    container_name: "opendms_database"
+    image: ${image_mariadb}:12.1.2
     ports:
       - "3306:3306"
     environment:
@@ -15,9 +15,9 @@ services:
     networks:
       - opendms_net
 
-  opendmsbackend_database_administration:
-    image: adminer:4.8.1
-    container_name: "opendmsbackend_database_administration"
+  opendms_database_administration:
+    image: ${image_adminer}:5.4.1
+    container_name: "opendms_database_administration"
     ports:
       - 8080:8080
     networks:

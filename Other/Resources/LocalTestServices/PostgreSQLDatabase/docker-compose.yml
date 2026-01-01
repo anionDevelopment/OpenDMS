@@ -1,8 +1,8 @@
 services:
 
-  opendmsbackend_database:
-    container_name: "opendmsbackend_database"
-    image: postgres:17.6
+  opendms_database:
+    container_name: "opendms_database"
+    image: ${image_postgres}:17.7
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pa55w0rd
@@ -17,13 +17,13 @@ services:
     command: >
       postgres -c log_connections=on -c log_disconnections=on
 
-  opendmsbackend_database_administration:
-    image: adminer:4.8.1
-    container_name: "opendmsbackend_database_administration"
+  opendms_database_administration:
+    image: ${image_adminer}:5.4.1
+    container_name: "opendms_database_administration"
     ports:
       - 8080:8080
     depends_on:
-      - opendmsbackend_database
+      - opendms_database
     networks:
       - opendms_net
 

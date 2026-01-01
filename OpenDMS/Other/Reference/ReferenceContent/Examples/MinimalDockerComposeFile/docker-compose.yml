@@ -2,7 +2,7 @@ services:
   opendms:
     container_name: opendms
     env_file: Variables.env
-    image: opendms:2.0.3
+    image: opendms:2.0.4
     ports:
     - 443:443
     volumes:
@@ -11,7 +11,7 @@ services:
     - ./Volumes/opendms/Logs:/Workspace/Logs
   opendms_database:
     container_name: opendms_database
-    image: postgres:17.6
+    image: ${imagepostgres}:17.6
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pa55w0rd
@@ -24,7 +24,7 @@ services:
     container_name: opendms_database_administration
     depends_on:
     - opendms_database
-    image: adminer:4.17.1
+    image: ${image_adminer}:5.4.1
     ports:
     - 8080:8080
   simpleocr:
