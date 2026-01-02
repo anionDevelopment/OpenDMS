@@ -1,0 +1,27 @@
+@startuml RuntimeViewProductive
+title Runtime-view Productive
+
+actor "User" as user
+note as UserNote
+  The user calls https://<domain>:443 or http://<domain>:8080
+end note
+user .. UserNote
+
+[OpenDMS (:443 and :8080)] as OpenDMS
+note as OpenDMSNote
+    Started by container-engine (for example docker).
+    The domain can be set using the commandline-parameter "--InitialDomain <domain>".
+    Backend and frontend are running in the container.
+end note
+OpenDMS .. OpenDMSNote
+
+[Database (:5432 or :3306)] as OpenDMSDatabase
+note as OpenDMSDatabaseNote
+    Database-container
+    Port can be changed of course but must be updated in the connection-string in the OpenDMS-configuration.
+end note 
+OpenDMSDatabase .. OpenDMSDatabaseNote
+
+user --> OpenDMS
+OpenDMS --> OpenDMSDatabase
+@enduml

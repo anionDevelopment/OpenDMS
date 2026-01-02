@@ -1,0 +1,26 @@
+@startuml RuntimeViewFullTest
+title Runtime-view full test
+
+actor "User" as user
+note as UserNote
+  The user calls https://opendms.test.local:443 or http://opendms.test.local:8080
+end note
+user .. UserNote
+
+[OpenDMS (:443 and :8080)] as OpenDMS
+note as OpenDMSNote
+    Started via "task BaseExampleStart" (or shorter: "task beu").
+    The domain can be changed using the commandline-parameter "--InitialDomain <domain>".
+    Backend and frontend are running in the container.
+end note 
+OpenDMS .. OpenDMSNote
+
+[Database (:5432)] as OpenDMSDatabase
+note as OpenDMSDatabaseNote
+    Database-container
+end note 
+OpenDMSDatabase .. OpenDMSDatabaseNote
+
+user --> OpenDMS
+OpenDMS --> OpenDMSDatabase
+@enduml

@@ -32,6 +32,16 @@ tasks:
       - baseexamplestop
       - bed
 
+  BaseQuickStart:
+    desc: "Base: Quick start"
+    silent: true
+    dir: ". docker run opendms:latest"
+    cmds:
+      - "python StartExample.py"
+    aliases:
+      - basequickstart
+      - bqs
+
   LocaltestserviceMariadbStart:
     desc: "LocalTestService: MariaDB start"
     silent: true

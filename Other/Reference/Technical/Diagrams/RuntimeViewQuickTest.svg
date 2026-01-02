@@ -1,0 +1,38 @@
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" contentStyleType="text/css" data-diagram-type="DESCRIPTION" height="372px" preserveAspectRatio="none" style="width:656px;height:372px;background:#FFFFFF;" version="1.1" viewBox="0 0 656 372" width="656px" zoomAndPan="magnify">
+  <ns0:title>Runtime-view quick test</ns0:title>
+  <ns0:defs />
+  <ns0:g>
+    <ns0:g class="title" data-source-line="1">
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="160.2549" x="241.2788" y="24.5332">Runtime-view quick test</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="user" data-source-line="3" data-uid="ent0002" id="entity_user">
+      <ns0:ellipse cx="267.7793" cy="52.6094" fill="#F1F1F1" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M267.7793,60.6094 L267.7793,87.6094 M254.7793,68.6094 L280.7793,68.6094 M267.7793,87.6094 L254.7793,102.6094 M267.7793,87.6094 L280.7793,102.6094" fill="none" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29.5586" x="253" y="118.6426">User</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="UserNote" data-source-line="5" data-uid="ent0003" id="entity_UserNote">
+      <ns0:path d="M6,193.1094 L6,219.4609 A0,0 0 0 0 6,219.4609 L284.2451,219.4609 A0,0 0 0 0 284.2451,219.4609 L284.2451,203.1094 L274.2451,193.1094 L161.24,193.1094 L252.92,98.9494 L153.24,193.1094 L6,193.1094 A0,0 0 0 0 6,193.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M274.2451,193.1094 L274.2451,203.1094 L284.2451,203.1094 L274.2451,193.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="257.2451" x="12" y="211.6045">The user calls https://opendms.test.local:443</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="OpenDMS" data-source-line="9" data-uid="ent0005" id="entity_OpenDMS">
+      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="145.8203" x="319" y="182.1094" />
+      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="444.8203" y="187.1094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="442.8203" y="189.1094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="442.8203" y="193.1094" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="105.8203" x="334" y="216.6426">OpenDMS (:443)</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="OpenDMSNote" data-source-line="11" data-uid="ent0006" id="entity_OpenDMSNote">
+      <ns0:path d="M134,290.1094 L134,365.5156 A0,0 0 0 0 134,365.5156 L649.8125,365.5156 A0,0 0 0 0 649.8125,365.5156 L649.8125,300.1094 L639.8125,290.1094 L396,290.1094 L392,230.1494 L388,290.1094 L134,290.1094 A0,0 0 0 0 134,290.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M639.8125,290.1094 L639.8125,300.1094 L649.8125,300.1094 L639.8125,290.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="286.146" x="140" y="308.6045">Started by container-engine (for example docker).</ns0:text>
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="494.8125" x="140" y="324.9561">The domain can be set using the commandline-parameter "--InitialDomain &lt;domain&gt;".</ns0:text>
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="292.7031" x="140" y="341.3076">Backend and frontend are running in the container.</ns0:text>
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="216.7725" x="140" y="357.6592">Transient will be used as persistence.</ns0:text>
+    </ns0:g>
+    <ns0:g class="link" data-entity-1="user" data-entity-2="OpenDMS" data-source-line="18" data-uid="lnk8" id="link_user_OpenDMS">
+      <ns0:path d="M283.2,98.9494 C304.42,119.6494 338.8063,153.1984 363.8663,177.6584" fill="none" id="user-to-OpenDMS" style="stroke:#181818;stroke-width:1;" />
+      <ns0:polygon fill="#181818" points="368.16,181.8494,364.5134,172.7005,364.5819,178.3569,358.9255,178.4255,368.16,181.8494" style="stroke:#181818;stroke-width:1;" />
+    </ns0:g>
+  </ns0:g>
+</ns0:svg>

@@ -2,7 +2,7 @@
 
 ## Compliance
 
-(This section contains explanations to compliance-related topics which mostly refers to the German [GoBD](https://ao.bundesfinanzministerium.de/ao/2023/Anhaenge/BMF-Schreiben-und-gleichlautende-Laendererlasse/Anhang-64/inhalt.html).)
+This section contains explanations to compliance-related topics which mostly refers to the German [GoBD](https://ao.bundesfinanzministerium.de/ao/2023/Anhaenge/BMF-Schreiben-und-gleichlautende-Laendererlasse/Anhang-64/inhalt.html) but may be also applicable for the requirements of many other document-management-regulation-systems.
 
 ### Audit-log
 
@@ -48,11 +48,14 @@ In this script you can use existing document-properties like the original filena
 
 ## Preview
 
-TODO
+OpenDMS automatically generates a preview for any document which can be viewed in the Web-UI.
 
 ## OCR
 
-TODO
+To use OCR a OCR-service must be available.
+OpenDMS then let the OCR-service analyze documents by that service.
+OpenDMS does not contain an own OCR-service.
+See [the OCR-article in the OCRBackend-reference](https://github.com/anionDev/OpenDMS/blob/main/OpenDMSBackend/Other/Reference/ReferenceContent/articles/OCR.md) for more information.
 
 ## Bulk editing
 

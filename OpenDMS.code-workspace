@@ -44,6 +44,18 @@
 				]
 			},
 			{
+				"label": "Base: Quick start",
+				"command": "python StartExample.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder} docker run opendms:latest"
+				},
+				"aliases": [
+					"bqs"
+				]
+			},
+			{
 				"label": "Run: Frontend",
 				"command": "npm run start",
 				"args": [],

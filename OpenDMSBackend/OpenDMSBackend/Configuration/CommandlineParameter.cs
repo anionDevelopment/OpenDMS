@@ -21,6 +21,9 @@ namespace OpenDMSBackend.Core.Configuration
         [Option(nameof(InitialOCRDataServiceAPIKey), Required = false)]
         public string? InitialOCRDataServiceAPIKey { get; set; }
 
+        [Option(nameof(InitialDomain), Required = false)]
+        public string? InitialDomain { get; set; }
+
         [Option(nameof(InitialEnableEndpointAvailabilityCheckValue), Required = false, Default = true)]
         public bool InitialEnableEndpointAvailabilityCheckValue { get; set; }
 
