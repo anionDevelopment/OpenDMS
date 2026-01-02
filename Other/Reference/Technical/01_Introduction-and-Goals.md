@@ -2,13 +2,8 @@
 
 ## Overview
 
-TODO
+OpenDMS claims to be a useful document-management-system.
 
 ## Quality goals
 
 TODO
-
-## Stakeholder
-
-| Name | How to contact | Reason |
-| ---- | -------------- | ------ |

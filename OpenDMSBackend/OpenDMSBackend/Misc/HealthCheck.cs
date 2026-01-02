@@ -33,7 +33,7 @@ namespace OpenDMSBackend.Core.Misc
                 HealthStatus result = HealthStatus.Healthy;
 
                 Tools.CheckSingleExternalService(this._Logger, this._Persistence.GetType().Name, this._Persistence, ref result, messages, true, true);
-                //Tools.CheckSingleExternalService(this._Logger, this._OCRService.GetType().Name, this._OCRService, ref result, messages, true, false);
+                Tools.CheckSingleExternalService(this._Logger, this._OCRService.GetType().Name, this._OCRService, ref result, messages, true, false);
 
                 return (result, messages);
             }, context, cancellationToken, this._InitializationService);

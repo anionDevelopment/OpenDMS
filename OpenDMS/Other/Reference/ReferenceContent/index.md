@@ -1,3 +1,3 @@
 # OpenDMS reference
 
-## Usage
+See [Usage](./Articles/Usage.md)

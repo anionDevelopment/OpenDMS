@@ -68,7 +68,7 @@ namespace OpenDMSBackend.Core
             {
                 apiServerConfiguration.SetInitialzationInformationAction = (initializationInformation) =>
                 {
-                    string domain = Tools.GetDefaultDomainValue(GeneralConstants.CodeUnitName);
+                    string domain = string.IsNullOrWhiteSpace(initializationInformation.CommandlineParameter.InitialDomain) ? Tools.GetDefaultDomainValue(GeneralConstants.CodeUnitName) : initializationInformation.CommandlineParameter.InitialDomain;
                     initializationInformation.ApplicationConstants.CommonRoutesHostInformation = new DoNotHostCommonRoutes();
                     initializationInformation.ApplicationConstants.HostMaintenanceInformation = new HostMaintenanceRoutes()
                     {
@@ -125,7 +125,7 @@ namespace OpenDMSBackend.Core
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration = new DatabasePersistenceConfiguration()
                     {
                         DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseConnectionString ?? "insert your connection-string here",
-                        DatabaseType = Debugger.IsAttached ? "Transient" : (initializationInformation.CommandlineParameter.InitialDatabaseType ?? "PostgreSQL"),
+                        DatabaseType = "Transient",
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
@@ -139,7 +139,7 @@ namespace OpenDMSBackend.Core
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.DefaultOCRLanguages = new HashSet<string>() { "en" };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.HeaderServiceConfiguration = new HeaderServiceConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.HostAPISpecificationForInNonDevelopmentEnvironment = true;
-                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP(HTTP.DefaultPort);
+                    initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Protocol = new HTTP();
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.Domain = domain;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePasswordHex = GeneralConstants.DevelopmentCertificatePasswordHex;
                     initializationInformation.InitialApplicationConfiguration.ServerConfiguration.DevelopmentCertificatePFXHex = GeneralConstants.DevelopmentCertificatePFXHex;

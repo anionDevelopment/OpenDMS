@@ -1,11 +1,7 @@
 export const environment: {
-    production: boolean | undefined,
-    development: boolean | undefined,
-    apiUrl: string | undefined,
-    verbose: boolean | undefined,
+    production: boolean,
+    development: boolean,
 } = {
-    production: undefined,
-    development: undefined,
-    apiUrl: undefined,
-    verbose: undefined,
+    production: false,
+    development: false,
 };

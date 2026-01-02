@@ -1,0 +1,56 @@
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" contentStyleType="text/css" data-diagram-type="DESCRIPTION" height="458px" preserveAspectRatio="none" style="width:1027px;height:458px;background:#FFFFFF;" version="1.1" viewBox="0 0 1027 458" width="1027px" zoomAndPan="magnify">
+  <ns0:title>Runtime-view Productive</ns0:title>
+  <ns0:defs />
+  <ns0:g>
+    <ns0:g class="title" data-source-line="1">
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="167.2549" x="423.2834" y="24.5332">Runtime-view Productive</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="user" data-source-line="3" data-uid="ent0002" id="entity_user">
+      <ns0:ellipse cx="342.2793" cy="52.6094" fill="#F1F1F1" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M342.2793,60.6094 L342.2793,87.6094 M329.2793,68.6094 L355.2793,68.6094 M342.2793,87.6094 L329.2793,102.6094 M342.2793,87.6094 L355.2793,102.6094" fill="none" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="29.5586" x="327.5" y="118.6426">User</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="UserNote" data-source-line="5" data-uid="ent0003" id="entity_UserNote">
+      <ns0:path d="M6,193.1094 L6,219.4609 A0,0 0 0 0 6,219.4609 L360.8804,219.4609 A0,0 0 0 0 360.8804,219.4609 L360.8804,203.1094 L350.8804,193.1094 L203.4,193.1094 L327.25,95.7094 L195.4,193.1094 L6,193.1094 A0,0 0 0 0 6,193.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M350.8804,193.1094 L350.8804,203.1094 L360.8804,203.1094 L350.8804,193.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="116.3271" x="12" y="211.6045">The user calls https:</ns0:text>
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacing" textLength="127.2007" x="128.3271" y="211.6045">&lt;domain&gt;:443 or http:</ns0:text>
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="90.3525" x="255.5278" y="211.6045">&lt;domain&gt;:8080</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="OpenDMS" data-source-line="9" data-uid="ent0005" id="entity_OpenDMS">
+      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="211.9922" x="396.5" y="182.1094" />
+      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="588.4922" y="187.1094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="586.4922" y="189.1094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="586.4922" y="193.1094" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="171.9922" x="411.5" y="216.6426">OpenDMS (:443 and :8080)</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="OpenDMSNote" data-source-line="11" data-uid="ent0006" id="entity_OpenDMSNote">
+      <ns0:path d="M47.5,290.1094 L47.5,349.1641 A0,0 0 0 0 47.5,349.1641 L563.3125,349.1641 A0,0 0 0 0 563.3125,349.1641 L563.3125,300.1094 L553.3125,290.1094 L360.07,290.1094 L461.68,230.2094 L352.07,290.1094 L47.5,290.1094 A0,0 0 0 0 47.5,290.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M553.3125,290.1094 L553.3125,300.1094 L563.3125,300.1094 L553.3125,290.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="286.146" x="53.5" y="308.6045">Started by container-engine (for example docker).</ns0:text>
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="494.8125" x="53.5" y="324.9561">The domain can be set using the commandline-parameter "--InitialDomain &lt;domain&gt;".</ns0:text>
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="292.7031" x="53.5" y="341.3076">Backend and frontend are running in the container.</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="OpenDMSDatabase" data-source-line="17" data-uid="ent0008" id="entity_OpenDMSDatabase">
+      <ns0:rect fill="#F1F1F1" height="47.6094" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="203.4404" x="599" y="295.6094" />
+      <ns0:rect fill="#F1F1F1" height="10" style="stroke:#181818;stroke-width:0.5;" width="15" x="782.4404" y="300.6094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="780.4404" y="302.6094" />
+      <ns0:rect fill="#F1F1F1" height="2" style="stroke:#181818;stroke-width:0.5;" width="4" x="780.4404" y="306.6094" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="163.4404" x="614" y="330.1426">Database (:5432 or :3306)</ns0:text>
+    </ns0:g>
+    <ns0:g class="entity" data-entity="OpenDMSDatabaseNote" data-source-line="19" data-uid="ent0009" id="entity_OpenDMSDatabaseNote">
+      <ns0:path d="M380.5,409.1094 L380.5,451.8125 A0,0 0 0 0 380.5,451.8125 L1020.8218,451.8125 A0,0 0 0 0 1020.8218,451.8125 L1020.8218,419.1094 L1010.8218,409.1094 L704.5,409.1094 L700.5,343.7294 L696.5,409.1094 L380.5,409.1094 A0,0 0 0 0 380.5,409.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:path d="M1010.8218,409.1094 L1010.8218,419.1094 L1020.8218,419.1094 L1010.8218,409.1094" fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;" />
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="113.458" x="386.5" y="427.6045">Database-container</ns0:text>
+      <ns0:text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="619.3218" x="386.5" y="443.9561">Port can be changed of course but must be updated in the connection-string in the OpenDMS-configuration.</ns0:text>
+    </ns0:g>
+    <ns0:g class="link" data-entity-1="user" data-entity-2="OpenDMS" data-source-line="24" data-uid="lnk11" id="link_user_OpenDMS">
+      <ns0:path d="M357.55,95.4894 C383.61,115.1994 432.834,152.4308 467.064,178.3108" fill="none" id="user-to-OpenDMS" style="stroke:#181818;stroke-width:1;" />
+      <ns0:polygon fill="#181818" points="471.85,181.9294,467.0833,173.3109,467.8616,178.9139,462.2586,179.6923,471.85,181.9294" style="stroke:#181818;stroke-width:1;" />
+    </ns0:g>
+    <ns0:g class="link" data-entity-1="OpenDMS" data-entity-2="OpenDMSDatabase" data-source-line="25" data-uid="lnk12" id="link_OpenDMS_OpenDMSDatabase">
+      <ns0:path d="M543.53,230.2094 C577.51,249.3494 620.332,273.4653 654.302,292.5953" fill="none" id="OpenDMS-to-OpenDMSDatabase" style="stroke:#181818;stroke-width:1;" />
+      <ns0:polygon fill="#181818" points="659.53,295.5394,653.6507,287.6378,655.1733,293.0859,649.7252,294.6085,659.53,295.5394" style="stroke:#181818;stroke-width:1;" />
+    </ns0:g>
+  </ns0:g>
+</ns0:svg>
