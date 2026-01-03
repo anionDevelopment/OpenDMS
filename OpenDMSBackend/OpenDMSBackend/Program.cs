@@ -86,7 +86,6 @@ namespace OpenDMSBackend.Core
                     {
                         NotLoggedRoutes = new HashSet<string>()
                         {
-                            @$"^/favicon\.ico$",
                             @$"^/API/Other/Resources/APISpecification/*",
                             @$"^/API/Other/Maintenance/Metrics$",
                             @$"^/API/Other/Maintenance/HealthCheck$",
