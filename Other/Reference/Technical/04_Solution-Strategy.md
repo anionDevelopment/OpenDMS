@@ -8,6 +8,8 @@ This section contains explanations to compliance-related topics which mostly ref
 
 TODO
 
+Remark: See [The context- and scope-section](./04_Solution-Strategy.md) for information about how reliable this audit-log can be. 
+
 ### Business-owner
 
 In OpenDMS every document has a clearly defined usergroup which represents the business-owner.
