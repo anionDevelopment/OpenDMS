@@ -17,21 +17,26 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             return new PersistenceDisposable(result.Item1, result.Item2);
         }
 
-        [TestMethod(nameof(DatabasePersistenceCreateDocumentTest))]
+        public override void Dispose()
+        {
+            GRYLibrary.Core.Misc.Utilities.NoOperation();
+        }
+
+        [TestMethod(DisplayName = nameof(DatabasePersistenceCreateDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void DatabasePersistenceCreateDocumentTest()
         {
             this.DatabasePersistenceCreateDocument();
         }
 
-        [TestMethod(nameof(GetAmountOfDocumentsTest))]
+        [TestMethod(DisplayName = nameof(GetAmountOfDocumentsTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void GetAmountOfDocumentsTest()
         {
             this.GetAmountOfDocuments();
         }
 
-        [TestMethod(nameof(PersistDocumentTest))]
+        [TestMethod(DisplayName = nameof(PersistDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void PersistDocumentTest()
         {

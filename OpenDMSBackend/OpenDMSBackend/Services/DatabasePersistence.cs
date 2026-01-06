@@ -79,7 +79,7 @@ namespace OpenDMSBackend.Core.Services
         #region Save/Load document binary
         private string GetDocumentsDataFolder()
         {
-            var result = Path.Combine(_Constants.GetDataFolder(), "Documents");
+            var result = Path.Combine(this._Constants.GetDataFolder(), "Documents");
             GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(result);
             return result;
         }
@@ -113,7 +113,7 @@ namespace OpenDMSBackend.Core.Services
         {
             this.RunTransaction(nameof(CreateDocument), (command) =>
             {
-                SaveDocument(document);
+                this.SaveDocument(document);
                 command.CommandText = this._SQLProvider.GetScriptAddDocument();
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", document.Id));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Title", document.Title.Value));
@@ -558,9 +558,9 @@ namespace OpenDMSBackend.Core.Services
                                 (uint)reader.GetInt32(5),//readableid
                                 new HashSet<Tag>(),//tags
                                 OneLineString.From(reader.GetString(6)),//mimetype
-                                LoadDocument(id),//content
+                                this.LoadDocument(id),//content
                                 reader.GetString(8),//ocrcontent
-                                LoadDocumentPreview(id),//preview
+                                this.LoadDocumentPreview(id),//preview
                                 reader.GetBoolean(10),//is soft deleted
                                 this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 11)),//delete is not allowed before
                                  this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 12)),//must be deleted after
@@ -895,7 +895,7 @@ namespace OpenDMSBackend.Core.Services
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), this.ToDateTimeOffset(reader.GetDateTime(3)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)), new HashSet<Tag>(), (uint)reader.GetInt32(5), OneLineString.From(reader.GetString(6)), GetDocumentPreview(id), reader.GetBoolean(8), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)), reader.GetString(11), Version3.Parse(reader.GetString(12)), Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), reader.GetString(13));
+                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), this.ToDateTimeOffset(reader.GetDateTime(3)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)), new HashSet<Tag>(), (uint)reader.GetInt32(5), OneLineString.From(reader.GetString(6)), this.LoadDocumentPreview(id), reader.GetBoolean(8), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)), reader.GetString(11), Version3.Parse(reader.GetString(12)), Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), reader.GetString(13));
                     //TODO load tags
                     return document;
                 }

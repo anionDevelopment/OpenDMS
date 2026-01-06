@@ -45,7 +45,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, persistence, idGenerator);
         }
 
-        [TestMethod(nameof(DatabaseInitializationTest))]
+        [TestMethod(DisplayName = nameof(DatabaseInitializationTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public void DatabaseInitializationTest()
         {
@@ -61,7 +61,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             // TODO add more assertions
         }
 
-        [TestMethod(nameof(RegisterTest))]
+        [TestMethod(DisplayName = nameof(RegisterTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public void RegisterTest()
         {
@@ -81,7 +81,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             // TODO add more assertions
         }
 
-        [TestMethod(nameof(GetLatestDocumentsTest))]
+        [TestMethod(DisplayName = nameof(GetLatestDocumentsTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
         public void GetLatestDocumentsTest()
         {

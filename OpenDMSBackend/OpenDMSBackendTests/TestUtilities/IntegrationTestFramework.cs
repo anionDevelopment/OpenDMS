@@ -109,7 +109,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 }
                 throw new NotReadyException(message);
             }
-            GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._Program, nameof(_Program) + " is null.");
+            GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._Program, nameof(this._Program) + " is null.");
             this._BusinessLogicService = this._Program!._BusinessLogicService;
             this._Log = this._Program._Log;
         }

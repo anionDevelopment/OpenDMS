@@ -11,8 +11,12 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         {
             return OpenDMSBackend.Tests.TestUtilities.Utilities.GetDatabaseTestFrameworkForPostgreSQL();
         }
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
 
-        [TestMethod(nameof(DatabasePersistenceCreateDocumentTest))]
+        [TestMethod(DisplayName = nameof(DatabasePersistenceCreateDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void DatabasePersistenceCreateDocumentTest()
         {
@@ -20,7 +24,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         }
 
 
-        [TestMethod(nameof(GetAmountOfDocumentsTest))]
+        [TestMethod(DisplayName = nameof(GetAmountOfDocumentsTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void GetAmountOfDocumentsTest()
         {
@@ -28,7 +32,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         }
 
 
-        [TestMethod(nameof(PersistDocumentTest))]
+        [TestMethod(DisplayName = nameof(PersistDocumentTest))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public override void PersistDocumentTest()
         {
