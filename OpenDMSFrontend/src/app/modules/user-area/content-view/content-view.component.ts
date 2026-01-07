@@ -54,11 +54,11 @@ export class ContentViewComponent implements OnInit {//shows the content of a co
   }
 
   loadDocument(documentId: string): void {
-    this.openDMSBackendService.aPIV2OpenDMSBackendGetDocumentPreviewGet(this.storageService.getAccessToken(), documentId).subscribe(document => this.addDocument(document));
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentPreviewGet(this.storageService.getAccessToken(), documentId).subscribe(document => this.addDocument(document));
   }
 
   loadFolder(folderId: string): void {
-    this.openDMSBackendService.aPIV2OpenDMSBackendGetFolderIdGet(folderId, this.storageService.getAccessToken()).subscribe(folder => this.addFolder(folder));
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetFolderIdGet(folderId, this.storageService.getAccessToken()).subscribe(folder => this.addFolder(folder));
   }
 
   onFolderAdded(newFolder: FolderDTO): void {

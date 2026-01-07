@@ -227,9 +227,9 @@ namespace OpenDMSBackend.Core.Services
 
         public void UpdateDocumentTitle(string requesterUserId, string documentId, string newTitle)
         {
-            Document document = GetDocument(requesterUserId, documentId);
+            Document document = this.GetDocument(requesterUserId, documentId);
             document.Title = OneLineString.From(newTitle);
-            Update(requesterUserId, document);
+            this.Update(requesterUserId, document);
         }
 
         public void Update(string requesterUserId, Document updatedDocument)

@@ -31,7 +31,7 @@ export class EditDocumentMenuComponent {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
     dialogRef.afterClosed().subscribe(userConfirmedAction => {
       if (userConfirmedAction) {
-        this.openDMSBackendService.aPIV2OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.document!.id!, this.storageService.getAccessToken())
+        this.openDMSBackendService.aPIV3OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.document!.id!, this.storageService.getAccessToken())
           .subscribe(() => {
             this.documentRemoved.emit(this.document?.id!);
           });
@@ -40,7 +40,7 @@ export class EditDocumentMenuComponent {
   }
 
   downloadDocument() {
-    this.openDMSBackendService.aPIV2OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.document!.id!)
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.document!.id!)
       .subscribe(document => {
         saveAs(this.utilitiesService.base64toBlob(document.documentContentAsBase64!, "octet/stream"), document.filename!);
       });
@@ -51,19 +51,19 @@ export class EditDocumentMenuComponent {
       data: { documentDTO: this.document },
     });
     dialogRef.afterClosed().pipe(switchMap(result => {
-      if(result.save){
-        const newTitle:string=result.data.documentTitle;
-        return this.openDMSBackendService.aPIV2OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.document?.id!,this.storageService.getAccessToken(),{value: newTitle}).pipe(switchMap(()=>of(newTitle)));
-      }else{
+      if (result.save) {
+        const newTitle: string = result.data.documentTitle;
+        return this.openDMSBackendService.aPIV3OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.document?.id!, this.storageService.getAccessToken(), { value: newTitle }).pipe(switchMap(() => of(newTitle)));
+      } else {
         return of(this.document?.title);
       }
-    })).subscribe((newTitle)=>{
-      this.document!.title=newTitle;
+    })).subscribe((newTitle) => {
+      this.document!.title = newTitle;
     });
   }
 
   viewDocument() {
-    this.openDMSBackendService.aPIV2OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.document!.id!)
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.document!.id!)
       .subscribe(documentDTO => {
         var fileURL = window.URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
         const tab = window.open()!;

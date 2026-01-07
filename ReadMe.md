@@ -20,7 +20,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 
 - Show and download exiting documents.
 
-## Not implemented features
+## Features which are not implemented yet
 
 - Allows self-hosting.
 - Allow uploading and deleting documents.
@@ -37,7 +37,6 @@ See the general [product reference](./Other/Reference/Reference.md).
 - Implement search/filter by title/OCR-content/metadata/etc.
 - Allow setting tags.
 - Allow login with OpenID.
-- Refactor authentication-mechanism if required for security-purposes.
 
 ## Getting Started
 
@@ -61,7 +60,7 @@ See the [Changelog-folder](./Other/Resources/Changelog).
 
 Contributions are always welcome.
 
-This product has the contribution-requirements defines by [DefaultOpenSourceContributionProcess](https://projects.aniondev.de/PublicProjects/Common/ProjectTemplates/-/blob/main/Conventions/Contributing/DefaultOpenSourceContributionProcess/DefaultOpenSourceContributionProcess.md).
+See [Contributing.md](./Contributing.md) for information about that.
 
 ## Repository-structure
 

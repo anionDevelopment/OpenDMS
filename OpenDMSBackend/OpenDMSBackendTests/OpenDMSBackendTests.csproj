@@ -2,9 +2,9 @@
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Authors>Marius Göcke</Authors>
-        <Version>2.0.5</Version>
-        <AssemblyVersion>2.0.5</AssemblyVersion>
-        <FileVersion>2.0.5</FileVersion>
+        <Version>3.0.0</Version>
+        <AssemblyVersion>3.0.0</AssemblyVersion>
+        <FileVersion>3.0.0</FileVersion>
         <SelfContained>false</SelfContained>
         <IsPackable>false</IsPackable>
         <PreserveCompilationContext>false</PreserveCompilationContext>
@@ -29,7 +29,7 @@
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\Other\Resources\PublicKeys\StronglyNamedKey\OpenDMSPublicKey.snk</AssemblyOriginatorKeyFile>
         <DelaySign>true</DelaySign>
-        <NoWarn>1701;1702;CA1822;CS1591;CS1573;IDE0045;IDE0046;IDE0054;IDE0058;IDE0074;IDE0090;IDE0017;IDE0063;CA1859;CA1860;IDE0039</NoWarn>
+        <NoWarn>1701;1702;CA1822;CS1591;CS1573;IDE0045;IDE0046;IDE0054;IDE0058;IDE0074;IDE0090;IDE0017;IDE0063;CA1859;CA1860;IDE0039;CS1861</NoWarn>
         <WarningsAsErrors>NU1605</WarningsAsErrors>
         <ErrorLog>..\Other\Resources\CodeAnalysisResult\OpenDMSBackendTests.sarif</ErrorLog>
         <OutputType>Library</OutputType>
@@ -67,7 +67,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="ExtendedXmlSerializer" Version="3.9.6" />
-        <PackageReference Include="GRYLibrary" Version="1.0.3" />
+        <PackageReference Include="GRYLibrary" Version="1.0.4" />
         <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
         <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.1" />

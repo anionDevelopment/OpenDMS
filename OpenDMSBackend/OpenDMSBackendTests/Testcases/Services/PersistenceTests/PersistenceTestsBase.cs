@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
-    public abstract class PersistenceTestsBase
+    public abstract class PersistenceTestsBase:IDisposable
     {
         public PersistenceTestsBase()
         {
@@ -18,6 +18,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 
         internal abstract PersistenceDisposable GetPersistence(ITimeService timeService);
 
+        public abstract void Dispose();
         public abstract void PersistDocumentTest();
         public void PersistDocument()
         {
@@ -84,5 +85,6 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
                 */
             }
         }
+
     }
 }

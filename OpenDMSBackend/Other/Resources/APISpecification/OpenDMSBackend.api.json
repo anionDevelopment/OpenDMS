@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v2.0.5 API documentation",
+    "title": "OpenDMSBackend v3.0.0 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v2.0.5"
+    "version": "v3.0.0"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
@@ -78,7 +78,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/AddDocument/{containerId}": {
+    "/API/v3/OpenDMSBackend/AddDocument/{containerId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -178,7 +178,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/UpdateDocumentTitle/{documentId}": {
+    "/API/v3/OpenDMSBackend/UpdateDocumentTitle/{documentId}": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -245,7 +245,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/AddFolder/{parentFolderId}/{name}": {
+    "/API/v3/OpenDMSBackend/AddFolder/{parentFolderId}/{name}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -301,7 +301,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/Rename/{containerId}/{newName}": {
+    "/API/v3/OpenDMSBackend/Rename/{containerId}/{newName}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -340,7 +340,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}": {
+    "/API/v3/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -379,7 +379,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
+    "/API/v3/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -418,7 +418,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
+    "/API/v3/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -457,7 +457,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/AddStorageLocation/{name}": {
+    "/API/v3/OpenDMSBackend/AddStorageLocation/{name}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -505,7 +505,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/GetStorageLocation/{id}": {
+    "/API/v3/OpenDMSBackend/GetStorageLocation/{id}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -553,7 +553,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/GetAllViewableStorageLocations": {
+    "/API/v3/OpenDMSBackend/GetAllViewableStorageLocations": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -602,7 +602,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/GetFolder/{id}": {
+    "/API/v3/OpenDMSBackend/GetFolder/{id}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -650,7 +650,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/Search": {
+    "/API/v3/OpenDMSBackend/Search": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -706,7 +706,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/GetDocument": {
+    "/API/v3/OpenDMSBackend/GetDocument": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -753,7 +753,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/GetDocumentFromReadableId": {
+    "/API/v3/OpenDMSBackend/GetDocumentFromReadableId": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -801,7 +801,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/GetDocumentPreview": {
+    "/API/v3/OpenDMSBackend/GetDocumentPreview": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -848,7 +848,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/GetLatestDocuments": {
+    "/API/v3/OpenDMSBackend/GetLatestDocuments": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -897,7 +897,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/GetAllTags": {
+    "/API/v3/OpenDMSBackend/GetAllTags": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -946,7 +946,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/HardDelete/{containerOrContaineeId}": {
+    "/API/v3/OpenDMSBackend/HardDelete/{containerOrContaineeId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -996,7 +996,7 @@
         }
       }
     },
-    "/API/v2/OpenDMSBackend/SoftDelete/{containerOrContaineeId}": {
+    "/API/v3/OpenDMSBackend/SoftDelete/{containerOrContaineeId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -1046,7 +1046,7 @@
         }
       }
     },
-    "/API/v2/UserController/Login": {
+    "/API/v3/UserController/Login": {
       "put": {
         "tags": [
           "User"
@@ -1091,7 +1091,7 @@
         }
       }
     },
-    "/API/v2/UserController/Register": {
+    "/API/v3/UserController/Register": {
       "put": {
         "tags": [
           "User"
@@ -1128,7 +1128,7 @@
         }
       }
     },
-    "/API/v2/UserController/Logout": {
+    "/API/v3/UserController/Logout": {
       "put": {
         "tags": [
           "User"
@@ -1151,7 +1151,7 @@
         }
       }
     },
-    "/API/v2/UserController/TokenIsValid": {
+    "/API/v3/UserController/TokenIsValid": {
       "get": {
         "tags": [
           "User"
@@ -1189,7 +1189,7 @@
         }
       }
     },
-    "/API/v2/UserController/GetRoles": {
+    "/API/v3/UserController/GetRoles": {
       "put": {
         "tags": [
           "User"
@@ -1238,7 +1238,7 @@
         }
       }
     },
-    "/API/v2/UserController/GetUserInformation": {
+    "/API/v3/UserController/GetUserInformation": {
       "get": {
         "tags": [
           "User"

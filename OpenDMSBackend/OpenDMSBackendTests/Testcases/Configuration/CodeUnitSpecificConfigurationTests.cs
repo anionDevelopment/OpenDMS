@@ -7,7 +7,7 @@ namespace OpenDMSBackend.Tests.Testcases.Configuration
     [TestClass]
     public class CodeUnitSpecificConfigurationTests
     {
-        [TestMethod(nameof(CodeUnitSpecificConfigurationRegistrationIsAllowed))]
+        [TestMethod(DisplayName = nameof(CodeUnitSpecificConfigurationRegistrationIsAllowed))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public void CodeUnitSpecificConfigurationRegistrationIsAllowed()
         {
@@ -23,7 +23,7 @@ namespace OpenDMSBackend.Tests.Testcases.Configuration
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod(nameof(CodeUnitSpecificConfigurationLoginIsAllowed))]
+        [TestMethod(DisplayName = nameof(CodeUnitSpecificConfigurationLoginIsAllowed))]
         [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
         public void CodeUnitSpecificConfigurationLoginIsAllowed()
         {

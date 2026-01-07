@@ -14,7 +14,7 @@ export class DocumentsListComponent {
   latestDocuments$: BehaviorSubject<DocumentPreviewDTO[]> = new BehaviorSubject<DocumentPreviewDTO[]>([]);
 
   constructor(storageService: StorageService, openDMSBackendService: OpenDMSBackendService) {
-    openDMSBackendService.aPIV2OpenDMSBackendGetLatestDocumentsGet(storageService.getAccessToken()).subscribe(documents => {
+    openDMSBackendService.aPIV3OpenDMSBackendGetLatestDocumentsGet(storageService.getAccessToken()).subscribe(documents => {
       var sortedDocuments = documents.sort((a, b) => {
         const aD: Date = this.getNewestDate(a);
         const bD: Date = this.getNewestDate(b);

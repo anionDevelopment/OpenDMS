@@ -1,11 +1,14 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
+using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Migration;
 using GRYLibrary.Core.Misc.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
@@ -115,20 +118,25 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
             {
                 using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework(true))
                 {
-                    //arrange
-                    using IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
-                    IOpenDMSDatabaseInteractor openDMSDatabaseInteractor = databaseInteractor.Accept(new GetOpenDMSDatabaseInteractorVisitor());
-                    ITimeService timeService = new TimeService();
-                    IGRYLog log = GRYLog.Create();
-                    using DatabasePersistence databasePersistence = new DatabasePersistence(openDMSDatabaseInteractor, timeService, log);
-                    OpenDMSBackend.Core.Model.BusinessTypes.Document expectedDocument = new OpenDMSBackend.Core.Model.BusinessTypes.Document("id", OneLineString.From("title"), OneLineString.From("filename"), OneLineString.From("originalfilename"), new System.DateTimeOffset(2025, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), default, 2, new HashSet<Tag>(), OneLineString.From("mimetype"), new byte[] { 2, 3, 4 }, "ocrcontent", new byte[] { 5, 6, 7 }, false, new System.DateTimeOffset(2026, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), new System.DateTimeOffset(2027, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), "ownergroup", new GRYLibrary.Core.Misc.Version3(2, 3, 4), new HashSet<string>() { "eng", "deu", "fra" }, "creator-user-id");
-                    databasePersistence.CreateDocument(expectedDocument);
+                    using (var tempfolder = new GRYLibrary.Core.Misc.TempFolder())
+                    {
+                        //arrange
+                        using IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
+                        IOpenDMSDatabaseInteractor openDMSDatabaseInteractor = databaseInteractor.Accept(new GetOpenDMSDatabaseInteractorVisitor());
+                        ITimeService timeService = new TimeService();
+                        IGRYLog log = GRYLog.Create();
+                        Mock<IApplicationConstants> applicationConstantsMock = new Mock<IApplicationConstants>(MockBehavior.Strict);
+                        applicationConstantsMock.Setup(m => m.GetDataFolder()).Returns(tempfolder.Path);
+                        using DatabasePersistence databasePersistence = new DatabasePersistence(openDMSDatabaseInteractor, timeService, log, applicationConstantsMock.Object);
+                        OpenDMSBackend.Core.Model.BusinessTypes.Document expectedDocument = new OpenDMSBackend.Core.Model.BusinessTypes.Document("id", OneLineString.From("title"), OneLineString.From("filename"), OneLineString.From("originalfilename"), new System.DateTimeOffset(2025, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), default, 2, new HashSet<Tag>(), OneLineString.From("mimetype"), new byte[] { 2, 3, 4 }, "ocrcontent", new byte[] { 5, 6, 7 }, false, new System.DateTimeOffset(2026, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), new System.DateTimeOffset(2027, 11, 17, 17, 54, 38, TimeSpan.FromHours(2)), "ownergroup", new GRYLibrary.Core.Misc.Version3(2, 3, 4), new HashSet<string>() { "eng", "deu", "fra" }, "creator-user-id");
+                        databasePersistence.CreateDocument(expectedDocument);
 
-                    //act
-                    Core.Model.BusinessTypes.Document actualDocument = databasePersistence.GetDocument(expectedDocument.Id);
+                        //act
+                        Core.Model.BusinessTypes.Document actualDocument = databasePersistence.GetDocument(expectedDocument.Id);
 
-                    //assert
-                    Assert.AreEqual(expectedDocument, actualDocument);
+                        //assert
+                        Assert.AreEqual(expectedDocument, actualDocument);
+                    }
                 }
             }
         }

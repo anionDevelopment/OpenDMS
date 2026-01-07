@@ -56,7 +56,7 @@ describe('UserSettingsComponent', () => {
         {
           provide: UserService,
           useValue: {
-            aPIV2UserControllerGetUserInformationGet: (token: string) => of({
+            aPIV3UserControllerGetUserInformationGet: (token: string) => of({
               id: "id1",
               name: "admin",
               isAdmin: true,
