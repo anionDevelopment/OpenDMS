@@ -15,9 +15,9 @@ export class ViewDocumentComponent {
   constructor(storageService: StorageService, openDMSBackendService: OpenDMSBackendService, route: ActivatedRoute, private router: Router) {
     route.params.subscribe(params => {
       const readableId = params['readableId'];
-      openDMSBackendService.aPIV2OpenDMSBackendGetDocumentFromReadableIdGet(storageService.getAccessToken(), readableId).subscribe(document => {
+      openDMSBackendService.aPIV3OpenDMSBackendGetDocumentFromReadableIdGet(storageService.getAccessToken(), readableId).subscribe(document => {
         this.document = document;
-        openDMSBackendService.aPIV2OpenDMSBackendGetDocumentPreviewGet(storageService.getAccessToken(), document.id!).subscribe(documentPreview => {
+        openDMSBackendService.aPIV3OpenDMSBackendGetDocumentPreviewGet(storageService.getAccessToken(), document.id!).subscribe(documentPreview => {
           this.documentPreview = documentPreview;
         });
       });

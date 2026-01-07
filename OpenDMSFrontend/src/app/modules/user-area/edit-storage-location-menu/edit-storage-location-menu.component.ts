@@ -18,13 +18,13 @@ export class EditStorageLocationMenuComponent {
 
   @Output()
   storageLocationAdded: EventEmitter<StorageLocationDTO> = new EventEmitter<StorageLocationDTO>();
-  
-    public constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, private router: Router, private utilitiesService: UtilitiesService) {
-    }
 
-  addStorageLocation() : void {
-    this.openDMSBackendService.aPIV2OpenDMSBackendAddStorageLocationNamePost("New storage-location", this.storageService.getAccessToken()).subscribe(newStorageLocationId => {
-      this.openDMSBackendService.aPIV2OpenDMSBackendGetStorageLocationIdGet(newStorageLocationId, this.storageService.getAccessToken()).subscribe((newStorageLocation) => {
+  public constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, private router: Router, private utilitiesService: UtilitiesService) {
+  }
+
+  addStorageLocation(): void {
+    this.openDMSBackendService.aPIV3OpenDMSBackendAddStorageLocationNamePost("New storage-location", this.storageService.getAccessToken()).subscribe(newStorageLocationId => {
+      this.openDMSBackendService.aPIV3OpenDMSBackendGetStorageLocationIdGet(newStorageLocationId, this.storageService.getAccessToken()).subscribe((newStorageLocation) => {
         this.storageLocationAdded.next(newStorageLocation);
       });
     });

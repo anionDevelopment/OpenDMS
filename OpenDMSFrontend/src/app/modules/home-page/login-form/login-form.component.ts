@@ -24,14 +24,14 @@ export class LoginFormComponent {
   public login(): void {
     const username: string = this.form.get('username')!.value;
     const password: string = this.form.get('password')!.value;
-    this.userService.aPIV2UserControllerLoginPut(username, password)
-    .pipe(
-      switchMap((accessToken: any) => {
-        this.storageService.setAccessToken(accessToken.value!);
-        return this.userDataService.loadUserData();
-      })
-    ).subscribe(() => {
-      this.router.navigate(['user', 'dashboard']);
-    });
+    this.userService.aPIV3UserControllerLoginPut(username, password)
+      .pipe(
+        switchMap((accessToken: any) => {
+          this.storageService.setAccessToken(accessToken.value!);
+          return this.userDataService.loadUserData();
+        })
+      ).subscribe(() => {
+        this.router.navigate(['user', 'dashboard']);
+      });
   }
 }

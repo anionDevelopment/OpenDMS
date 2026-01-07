@@ -66,7 +66,7 @@ describe('ContentTreeComponent', () => {
         {
           provide: OpenDMSBackendService,
           useValue: {
-            aPIV2OpenDMSBackendGetAllViewableStorageLocationsGet: () => of([]),
+            aPIV3OpenDMSBackendGetAllViewableStorageLocationsGet: () => of([]),
           },
         }
       ]

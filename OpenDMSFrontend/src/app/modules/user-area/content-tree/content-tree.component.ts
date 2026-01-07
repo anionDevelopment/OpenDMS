@@ -15,7 +15,7 @@ export class ContentTreeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.openDMSBackendService.aPIV2OpenDMSBackendGetAllViewableStorageLocationsGet(this.storageService.getAccessToken()).subscribe((storageLocations) => {
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetAllViewableStorageLocationsGet(this.storageService.getAccessToken()).subscribe((storageLocations) => {
       storageLocations.forEach(storageLocation => {
         this.storageLocations.push(storageLocation);
       });
@@ -26,8 +26,8 @@ export class ContentTreeComponent implements OnInit {
     var storageLocations = this.storageLocations.filter(storageLocation => storageLocation.id != containerId);
     this.storageLocations = [...storageLocations];
   }
-  
-  onStorageLocationAdded(storageLocation: StorageLocationDTO){
+
+  onStorageLocationAdded(storageLocation: StorageLocationDTO) {
     var storageLocations = this.storageLocations
     storageLocations.push(storageLocation);
     this.storageLocations = [...storageLocations];
