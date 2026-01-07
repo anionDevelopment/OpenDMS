@@ -559,15 +559,15 @@ namespace OpenDMSBackend.Core.Services
                                 new HashSet<Tag>(),//tags
                                 OneLineString.From(reader.GetString(6)),//mimetype
                                 this.LoadDocument(id),//content
-                                reader.GetString(8),//ocrcontent
+                                reader.GetString(7),//ocrcontent
                                 this.LoadDocumentPreview(id),//preview
-                                reader.GetBoolean(10),//is soft deleted
-                                this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 11)),//delete is not allowed before
-                                 this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 12)),//must be deleted after
-                                reader.GetString(13),//businessowner
-                                Version3.Parse(reader.GetString(14)),//version
-                                Core.Misc.Utilities.StringToLanguagesList(reader.GetString(15)),//languages
-                                reader.GetString(16)//userid
+                                reader.GetBoolean(8),//is soft deleted
+                                this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//delete is not allowed before
+                                 this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)),//must be deleted after
+                                reader.GetString(11),//businessowner
+                                Version3.Parse(reader.GetString(12)),//version
+                                Core.Misc.Utilities.StringToLanguagesList(reader.GetString(13)),//languages
+                                reader.GetString(14)//userid
                             );
                             return document;
                         }
@@ -895,7 +895,27 @@ namespace OpenDMSBackend.Core.Services
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    DocumentPreview document = new DocumentPreview(id, OneLineString.From(reader.GetString(0)), OneLineString.From(reader.GetString(1)), OneLineString.From(reader.GetString(2)), this.ToDateTimeOffset(reader.GetDateTime(3)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)), new HashSet<Tag>(), (uint)reader.GetInt32(5), OneLineString.From(reader.GetString(6)), this.LoadDocumentPreview(id), reader.GetBoolean(8), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)), this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)), reader.GetString(11), Version3.Parse(reader.GetString(12)), Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), reader.GetString(13));
+                    //select "Title", "Filename", "OriginalFilename", "ImportDate", "LastEditDate", "ReadableId", "MIMEType", "DocumentPreview","IsSoftDeleted","DeleteIsNotAllowedBefore","MustBeHardDeletedAfter","GroupOfBusinessOwner","Version", "AssignedLanguages","AddedByUserId"
+
+                    DocumentPreview document = new DocumentPreview(
+                        id,//id
+                        OneLineString.From(reader.GetString(0)),//title
+                        OneLineString.From(reader.GetString(1)),//filename
+                        OneLineString.From(reader.GetString(2)),//originalfilename
+                        this.ToDateTimeOffset(reader.GetDateTime(3)),//import time
+                        this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)),//updatetime
+                        new HashSet<Tag>(),
+                        (uint)reader.GetInt32(5),//readable id 
+                        OneLineString.From(reader.GetString(6)),//mimetype
+                        this.LoadDocumentPreview(id),
+                        reader.GetBoolean(7),//isdeleted
+                        this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader,8)),//delete is not allowed before
+                        this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//must be deleted after
+                        reader.GetString(10),//business owner
+                        Version3.Parse(reader.GetString(11)),//version
+                        Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), //languages
+                        reader.GetString(13)//creator-user-is
+                    );
                     //TODO load tags
                     return document;
                 }
