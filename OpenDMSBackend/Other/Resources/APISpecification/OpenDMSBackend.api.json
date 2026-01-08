@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v3.0.0 API documentation",
+    "title": "OpenDMSBackend v3.0.1 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v3.0.0"
+    "version": "v3.0.1"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
