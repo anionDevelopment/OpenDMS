@@ -215,8 +215,8 @@ components:
       type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
-  title: OpenDMSBackend v3.0.2 API documentation
-  version: v3.0.2
+  title: OpenDMSBackend v3.0.3 API documentation
+  version: v3.0.3
 openapi: 3.0.4
 paths:
   /API/Other/Maintenance/AvailabilityCheck:
