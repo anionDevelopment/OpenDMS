@@ -3,7 +3,7 @@ from ScriptCollection.TFCPS.Docker.TFCPS_CodeUnitSpecific_Docker import TFCPS_Co
 
 def update_dependencies():
     tf:TFCPS_CodeUnitSpecific_Docker_Functions=TFCPS_CodeUnitSpecific_Docker_CLI.parse(__file__)    
-    tf.tfcps_Tools_General.update_images_in_example(tf.get_codeunit_folder())
+    tf.tfcps_Tools_General.update_images_in_example(tf.get_codeunit_folder(),["opendms"])
     #TODO update image in example
     
 if __name__ == "__main__":
