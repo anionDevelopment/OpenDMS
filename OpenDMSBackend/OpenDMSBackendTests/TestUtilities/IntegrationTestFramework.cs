@@ -1,5 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Settings;
-using GRYLibrary.Core.APIServer.Settings.Configuration;
+﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;

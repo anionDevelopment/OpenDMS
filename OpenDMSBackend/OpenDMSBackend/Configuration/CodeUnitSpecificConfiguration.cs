@@ -16,25 +16,25 @@ namespace OpenDMSBackend.Core.Configuration
 {
     public class CodeUnitSpecificConfiguration : ISupportRequestLoggingMiddleware, ISupportExceptionManagerMiddleware, ISupportAuthenticationMiddleware, ISupportAuthorizationMiddleware
     {
-        public virtual bool RegistrationIsEnabled { get; set; }
-        public virtual bool LoginIsEnabled { get; set; }
-        #region Required for persistence mode
-        public virtual IDatabasePersistenceConfiguration DatabasePersistenceConfiguration { get; set; }
-        #endregion
-        public virtual ICommonRoutesInformation CommonRoutesInformation { get; set; }
-        public virtual IMaintenanceRoutesInformation MaintenanceRoutesInformation { get; set; }
-        public virtual IDRequestLoggingConfiguration ConfigurationForDLoggingMiddleware { get; set; }
-        public virtual IRequestLoggingConfiguration ConfigurationForLoggingMiddleware { get { return this.ConfigurationForDLoggingMiddleware; } }
-        public virtual IAutSRConfiguration AuthorizationConfiguration { get; set; }
-        public virtual IAuthorizationConfiguration ConfigurationForAuthorizationMiddleware { get { return this.AuthorizationConfiguration; } }
-        public virtual IAuthSConfiguration AuthenticationConfiguration { get; set; }
-        public virtual IAuthenticationConfiguration ConfigurationForAuthenticationMiddleware { get { return this.AuthenticationConfiguration; } }
-        public virtual IExceptionManagerConfiguration ConfigurationForExceptionManagerMiddleware { get; set; }
-        public virtual IHeaderServiceConfiguration HeaderServiceConfiguration { get; set; }
-        public virtual IGRYLogConfiguration AuditLogConfiguration { get; set; }
-        public virtual ISet<ImportDefinition> ImportDefinitions { get; set; }
-        public virtual ISet<string> DefaultOCRLanguages { get; set; }
-        public virtual string OCRDataServiceAddress { get; set; }
-        public virtual string OCRDataServiceAPIKey { get; set; }
+        public bool RegistrationIsEnabled { get; set; }
+        public bool LoginIsEnabled { get; set; }
+        #region Required only for database-persistence
+        public IDatabasePersistenceConfiguration DatabasePersistenceConfiguration { get; set; }
+# endreg
+        public ICommonRoutesInformation CommonRoutesInformation { get; set; }
+        public IMaintenanceRoutesInformation MaintenanceRoutesInformation { get; set; }
+        public IDRequestLoggingConfiguration ConfigurationForDLoggingMiddleware { get; set; }
+        public IRequestLoggingConfiguration ConfigurationForLoggingMiddleware { get { return this.ConfigurationForDLoggingMiddleware; } }
+        public IAutSRConfiguration AuthorizationConfiguration { get; set; }
+        public IAuthorizationConfiguration ConfigurationForAuthorizationMiddleware { get { return this.AuthorizationConfiguration; } }
+        public IAuthSConfiguration AuthenticationConfiguration { get; set; }
+        public IAuthenticationConfiguration ConfigurationForAuthenticationMiddleware { get { return this.AuthenticationConfiguration; } }
+        public IExceptionManagerConfiguration ConfigurationForExceptionManagerMiddleware { get; set; }
+        public IHeaderServiceConfiguration HeaderServiceConfiguration { get; set; }
+        public IGRYLogConfiguration AuditLogConfiguration { get; set; }
+        public ISet<ImportDefinition> ImportDefinitions { get; set; }
+        public ISet<string> DefaultOCRLanguages { get; set; }
+        public string OCRDataServiceAddress { get; set; }
+        public string OCRDataServiceAPIKey { get; set; }
     }
 }

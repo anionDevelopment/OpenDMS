@@ -20,7 +20,7 @@ namespace OpenDMSBackend.Core.Misc
         {
             this._Logger = logger;
             this._Persistence = persistence;
-            this._InitializationService  =initializationService;
+            this._InitializationService = initializationService;
             this._OCRService = ocrService;
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
