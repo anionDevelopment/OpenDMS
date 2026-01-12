@@ -1,5 +1,8 @@
+ARG debianversion
+ARG CodeUnitVersion
 ARG image_debian
-FROM ${image_debian}:stable-20251208-slim
+FROM ${image_debian}:{debianversion}
+LABEL version=${CodeUnitVersion}
 ENV ISRUNNINGINCONTAINER="true"
 
 RUN mkdir /Workspace && \
