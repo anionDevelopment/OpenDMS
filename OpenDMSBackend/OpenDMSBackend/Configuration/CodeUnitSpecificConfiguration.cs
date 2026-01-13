@@ -18,9 +18,8 @@ namespace OpenDMSBackend.Core.Configuration
     {
         public bool RegistrationIsEnabled { get; set; }
         public bool LoginIsEnabled { get; set; }
-        #region Required only for database-persistence
         public IDatabasePersistenceConfiguration DatabasePersistenceConfiguration { get; set; }
-# endreg
+
         public ICommonRoutesInformation CommonRoutesInformation { get; set; }
         public IMaintenanceRoutesInformation MaintenanceRoutesInformation { get; set; }
         public IDRequestLoggingConfiguration ConfigurationForDLoggingMiddleware { get; set; }
