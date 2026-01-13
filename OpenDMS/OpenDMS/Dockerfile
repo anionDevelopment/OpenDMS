@@ -1,7 +1,7 @@
 ARG debianversion
 ARG CodeUnitVersion
 ARG image_debian
-FROM ${image_debian}:{debianversion}
+FROM ${image_debian}:${debianversion}
 LABEL version=${CodeUnitVersion}
 ENV ISRUNNINGINCONTAINER="true"
 
