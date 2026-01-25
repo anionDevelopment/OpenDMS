@@ -155,7 +155,7 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
                         IGeneralLogger logger = functionalInformation.Logger;
-                        IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog")));
+                        IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog", GeneralLogger.CreateUsingConsole())));
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
@@ -267,7 +267,7 @@ namespace OpenDMSBackend.Core
                         this.Stop();
                     }
                 };
-            });
+            }, this._Log);
             this.IsRunning = false;
             return result;
         }
