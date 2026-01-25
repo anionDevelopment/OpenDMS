@@ -13,8 +13,8 @@ def build():
     },{
         "debian":tf._protected_sc.default_fallback_docker_registry,
     })
-    tf.tfcps_Tools_General.merge_sbom_file_from_dependent_codeunit_into_this(tf.get_codeunit_folder(),tf.get_codeunit_name(),"ConSurvBackend",tf.use_cache())
-    tf.tfcps_Tools_General.merge_sbom_file_from_dependent_codeunit_into_this(tf.get_codeunit_folder(),tf.get_codeunit_name(),"ConSurvFrontend",tf.use_cache())
+    tf.tfcps_Tools_General.merge_sbom_file_from_dependent_codeunit_into_this(tf.get_codeunit_folder(),tf.get_codeunit_name(),"OpenDMSBackend",tf.use_cache())
+    tf.tfcps_Tools_General.merge_sbom_file_from_dependent_codeunit_into_this(tf.get_codeunit_folder(),tf.get_codeunit_name(),"OpenDMSFrontend",tf.use_cache())
 
 
 if __name__ == "__main__":
