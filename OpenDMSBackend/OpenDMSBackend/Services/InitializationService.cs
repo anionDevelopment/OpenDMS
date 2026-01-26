@@ -41,7 +41,7 @@ namespace OpenDMSBackend.Core.Services
             try
             {
                 this.SetInitializationState(new Initializing());
-                this._GeneralLogger.Log("Initialize service...", Microsoft.Extensions.Logging.LogLevel.Information);
+                this._GeneralLogger.Log("Initialize services...", Microsoft.Extensions.Logging.LogLevel.Information);
                 Tools.WaitUntilDatabaseIsAvailable(this._Persistence, this._GeneralLogger);
                 if (this._Persistence is IInitializable initializablePersitence)
                 {
