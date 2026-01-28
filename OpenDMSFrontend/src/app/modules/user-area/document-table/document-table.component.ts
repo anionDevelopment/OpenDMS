@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class DocumentTableComponent implements OnInit {
 
-  displayedColumns: string[] = ["id", "name", "importdate", "options"];
+  displayedColumns: string[] = ["id", "name", "preview", "importdate", "options"];
 
   @Input()
   documents$: Observable<DocumentPreviewDTO[]> | null = null;

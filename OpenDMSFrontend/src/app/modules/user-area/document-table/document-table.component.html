@@ -1,23 +1,33 @@
 <table mat-table [dataSource]="documents">
+
     <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef> Id </th>
         <td mat-cell *matCellDef="let element">
             <app-link-to-document [documentPreview]="element"></app-link-to-document>
         </td>
     </ng-container>
-    <!--TODO add a preview column-->
+
     <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Title </th>
         <td mat-cell *matCellDef="let element">
             {{element.title}}
         </td>
     </ng-container>
+
+    <ng-container matColumnDef="preview">
+        <th mat-header-cell *matHeaderCellDef> Preview </th>
+        <td class="preview1" mat-cell *matCellDef="let element">
+            <img class="preview-img" [src]="'data:image/png;base64,' + element.previewAsBase64">
+        </td>
+    </ng-container>
+
     <ng-container matColumnDef="importdate">
         <th mat-header-cell *matHeaderCellDef> Created at </th>
         <td mat-cell *matCellDef="let element">
             {{element.importDate}}
         </td>
     </ng-container>
+
     <ng-container matColumnDef="options">
         <th mat-header-cell *matHeaderCellDef> Options </th>
         <td mat-cell *matCellDef="let element">
@@ -25,6 +35,7 @@
                 (documentRemoved)="onDocumentRemoved($event)"></app-edit-document-menu>
         </td>
     </ng-container>
+
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>

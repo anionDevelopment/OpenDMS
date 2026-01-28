@@ -9,7 +9,7 @@
             Original filename: {{document?.originalFilename}}<br />
             Import-date: {{document?.importDate}}<br />
             Last edit-date: {{document?.lastEditDate}}<br />
-            Tags: {{formatTags(document?.tags!)}}<br />
+            Tags: {{'{'}}{{formatTags(document?.tags!)}}{{'}'}}<br />
         </p>
         <app-edit-document-menu [document]="documentPreview"
             (documentRemoved)="onDocumentRemoved()"></app-edit-document-menu>
