@@ -2,7 +2,8 @@
   "profiles": {
     "OpenDMSBackend": {
       "commandName": "Project",
-      "commandLineArgs": "Run --RealRun --InitialAdminPassword admin"
+      //"commandLineArgs": "Run --RealRun --InitialAdminPassword admin",
+      "commandLineArgs": "Run --RealRun --InitialAdminPassword admin --InitialDatabaseType PostgreSQL --InitialDatabaseConnectionString \"Host=localhost;Port=5432;Username=user;Password=pa55w0rd;Database=OpenDMSDatabase;\""
     }
   }
 }

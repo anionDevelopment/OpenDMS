@@ -2,10 +2,22 @@
   cursor: pointer;
 }
 
-.preview1 {}
+.col-id {
+  width: 10%;
+}
 
-.preview2 {}
+.col-preview {
+  width: 10%;
+}
 
-.preview-img {
-  height: 48px;
+.col-name {
+  width: 55%;
+}
+
+.col-importdate {
+  width: 15%;
+}
+
+.col-options {
+  width: 10%;
 }

@@ -154,7 +154,7 @@ namespace OpenDMSBackend.Core.Services
             }
             else
             {
-                return default(DateTimeOffset);
+                return null;
             }
         }
 
