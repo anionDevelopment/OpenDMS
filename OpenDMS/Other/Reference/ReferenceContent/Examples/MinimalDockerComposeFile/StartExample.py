@@ -14,7 +14,9 @@ def start_dockerfile_example():
         'InitialDatabaseType': 'PostgreSQL',
         'InitialDatabaseConnectionString': 'Host=opendms_database;Port=5432;Database=OpenDMSDatabase;Username=root;Password=R00tpa55w0rd;',
         'InitialOCRDataServiceAddress': 'https://localhost:448',
-#        'InitialOCRDataServiceAPIKey': '',
+        "image_postgres":sc.get_image_with_registry_for_docker_image("postgres",None,sc.default_fallback_docker_registry),
+        "image_simpleocr":sc.get_image_with_registry_for_docker_image("simpleocr",None,sc.default_fallback_docker_registry),
+        "image_adminer":sc.get_image_with_registry_for_docker_image("adminer",None,sc.default_fallback_docker_registry),
     }))
     t.start_dockerfile_example(current_file, True, True, env_file_name)
 
