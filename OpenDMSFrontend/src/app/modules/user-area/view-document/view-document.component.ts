@@ -10,13 +10,13 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './view-document.component.scss'
 })
 export class ViewDocumentComponent {
-  document: DocumentDTO | null = null;
+  doc: DocumentDTO | null = null;
   documentPreview: DocumentPreviewDTO | null = null;
   constructor(storageService: StorageService, openDMSBackendService: OpenDMSBackendService, route: ActivatedRoute, private router: Router) {
     route.params.subscribe(params => {
       const readableId = params['readableId'];
       openDMSBackendService.aPIV3OpenDMSBackendGetDocumentFromReadableIdGet(storageService.getAccessToken(), readableId).subscribe(document => {
-        this.document = document;
+        this.doc = document;
         openDMSBackendService.aPIV3OpenDMSBackendGetDocumentPreviewGet(storageService.getAccessToken(), document.id!).subscribe(documentPreview => {
           this.documentPreview = documentPreview;
         });

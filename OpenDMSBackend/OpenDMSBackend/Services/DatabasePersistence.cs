@@ -64,33 +64,35 @@ namespace OpenDMSBackend.Core.Services
         #region Save/Load document binary
         private string GetDocumentsDataFolder()
         {
-            var result = Path.Combine(this._Constants.GetDataFolder(), "Documents");
-            GRYLibrary.Core.Misc.Utilities.EnsureDirectoryExists(result);
+            string result = Path.Combine(this._Constants.GetDataFolder(), "Documents");
+            GUtilities.EnsureDirectoryExists(result);
             return result;
         }
         private void SaveDocument(Document document)
         {
-            var dataFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + document.Id + ".content.txt");
-            GRYLibrary.Core.Misc.Utilities.EnsureFileExists(dataFilePath);
+            string dataFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + document.Id + ".content.dat");
+            GUtilities.EnsureFileExists(dataFilePath);
             File.WriteAllBytes(dataFilePath, document.Content);
 
-            var previewFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + document.Id + ".preview.txt");
-            GRYLibrary.Core.Misc.Utilities.EnsureFileExists(previewFilePath);
-            File.WriteAllBytes(dataFilePath, document.Preview);
+            string previewFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + document.Id + ".preview.dat");
+            GUtilities.EnsureFileExists(previewFilePath);
+            File.WriteAllBytes(previewFilePath, document.Preview);
         }
 
         private byte[] LoadDocumentPreview(string id)
         {
-            var dataFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + id + ".content.txt");
-            GRYLibrary.Core.Misc.Utilities.AssertCondition(File.Exists(dataFilePath), $"Document with id {id} could not be loaded.");
-            return File.ReadAllBytes(dataFilePath);
+            string dataFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + id + ".preview.dat");
+            GUtilities.AssertCondition(File.Exists(dataFilePath), $"Document with id {id} could not be loaded.");
+            byte[] result = File.ReadAllBytes(dataFilePath);
+            return result;
         }
 
         private byte[] LoadDocument(string id)
         {
-            var dataFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + id + ".preview.txt");
-            GRYLibrary.Core.Misc.Utilities.AssertCondition(File.Exists(dataFilePath), $"Document with id {id} could not be loaded.");
-            return File.ReadAllBytes(dataFilePath);
+            string dataFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + id + ".content.dat");
+            GUtilities.AssertCondition(File.Exists(dataFilePath), $"Document with id {id} could not be loaded.");
+            byte[] result = File.ReadAllBytes(dataFilePath);
+            return result;
         }
         #endregion
 
@@ -152,7 +154,7 @@ namespace OpenDMSBackend.Core.Services
             }
             else
             {
-                return default(DateTimeOffset);
+                return null;
             }
         }
 

@@ -2,17 +2,18 @@
     <app-user-area-container>
         <p>
             Document meta-data:<br />
-            Title: {{document?.title}}<br />
-            ID: {{document?.readableId}}<br />
-            Technical ID: {{document?.id}}<br />
-            Filename: {{document?.filename}}<br />
-            Original filename: {{document?.originalFilename}}<br />
-            Import-date: {{document?.importDate}}<br />
-            Last edit-date: {{document?.lastEditDate}}<br />
-            Tags: {{formatTags(document?.tags!)}}<br />
+            Title: {{doc?.title}}<br />
+            ID: {{doc?.readableId}}<br />
+            Technical ID: {{doc?.id}}<br />
+            Filename: {{doc?.filename}}<br />
+            Original filename: {{doc?.originalFilename}}<br />
+            Import-date: {{doc?.importDate}}<br />
+            Last edit-date: {{(doc?.lastEditDate) ? doc!.lastEditDate : '(not available)'}}<br />
+            Tags: {{'{'}}{{(doc?.tags && 0
+            < doc?.tags!.size) ? formatTags(doc?.tags!):' '}}{{' }'}}<br />
         </p>
-        <app-edit-document-menu [document]="documentPreview"
+        <app-document-preview *ngIf="documentPreview" [documentPreview]="documentPreview"></app-document-preview>
+        <app-edit-document-menu [documentPreview]="documentPreview"
             (documentRemoved)="onDocumentRemoved()"></app-edit-document-menu>
-        <app-document-preview [document]="document"></app-document-preview>
     </app-user-area-container>
 </app-frame-work>

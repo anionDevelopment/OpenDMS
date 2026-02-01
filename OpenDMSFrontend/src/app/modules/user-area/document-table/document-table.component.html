@@ -1,30 +1,41 @@
 <table mat-table [dataSource]="documents">
+
     <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> Id </th>
+        <th mat-header-cell *matHeaderCellDef class="col-id"> Id </th>
         <td mat-cell *matCellDef="let element">
             <app-link-to-document [documentPreview]="element"></app-link-to-document>
         </td>
     </ng-container>
-    <!--TODO add a preview column-->
+
+    <ng-container matColumnDef="preview">
+        <th mat-header-cell *matHeaderCellDef class="col-preview"> Preview </th>
+        <td mat-cell *matCellDef="let element">
+            <app-document-preview [documentPreview]="element"></app-document-preview>
+        </td>
+    </ng-container>
+
     <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Title </th>
+        <th mat-header-cell *matHeaderCellDef class="col-title"> Title </th>
         <td mat-cell *matCellDef="let element">
             {{element.title}}
         </td>
     </ng-container>
+
     <ng-container matColumnDef="importdate">
-        <th mat-header-cell *matHeaderCellDef> Created at </th>
+        <th mat-header-cell *matHeaderCellDef class="col-importdate"> Created at </th>
         <td mat-cell *matCellDef="let element">
             {{element.importDate}}
         </td>
     </ng-container>
+
     <ng-container matColumnDef="options">
-        <th mat-header-cell *matHeaderCellDef> Options </th>
+        <th mat-header-cell *matHeaderCellDef class="col-options"> Options </th>
         <td mat-cell *matCellDef="let element">
-            <app-edit-document-menu [document]="element"
+            <app-edit-document-menu [documentPreview]="element"
                 (documentRemoved)="onDocumentRemoved($event)"></app-edit-document-menu>
         </td>
     </ng-container>
+
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
