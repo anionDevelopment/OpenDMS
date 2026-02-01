@@ -13,7 +13,6 @@
     "start": "ng serve --configuration Development --host 0.0.0.0 --live-reload=false --disable-host-check",
     "lint": "ng lint"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "19.1.5",
     "@angular/cdk": "19.1.3",
