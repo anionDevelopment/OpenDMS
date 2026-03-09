@@ -15,7 +15,7 @@ services:
       POSTGRES_DB: OpenDMSDatabase
       POSTGRES_PASSWORD: pa55w0rd
       POSTGRES_USER: user
-    image: ${image_postgres}:17.7
+    image: ${image_postgres}
     ports:
     - 5432:5432
     volumes:
@@ -24,12 +24,12 @@ services:
     container_name: opendms_database_administration
     depends_on:
     - opendms_database
-    image: ${image_adminer}:5.4.1
+    image: ${image_adminer}
     ports:
     - 8080:8080
   simpleocr:
     container_name: simpleocr
-    image: ${image_simpleocr}:1.5.0
+    image: ${image_simpleocr}
     ports:
     - 448:443
     volumes:

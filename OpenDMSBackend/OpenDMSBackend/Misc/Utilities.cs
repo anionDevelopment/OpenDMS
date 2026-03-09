@@ -49,6 +49,10 @@ namespace OpenDMSBackend.Core.Misc
                 return new HashSet<string>() { languages };
             }
         }
+        internal static bool IsRunningInContainer()
+        {
+            return "true".Equals(Environment.GetEnvironmentVariable("ISRUNNINGINCONTAINER"));
+        }
 
         internal static UserInformationDTO GetUserInformation(User user)
         {

@@ -1,6 +1,6 @@
 services:
   opendms_reverseproxy:
-    image: ${image_nginx}:1.29.4
+    image: ${image_nginx}
     container_name: "opendms_reverseproxy"
     volumes:
       - "./nginx.conf:/etc/nginx/nginx.conf:ro"
