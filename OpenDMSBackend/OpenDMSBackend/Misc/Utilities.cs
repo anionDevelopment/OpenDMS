@@ -40,7 +40,7 @@ namespace OpenDMSBackend.Core.Misc
             {
                 return new HashSet<string>();
             }
-            else if (languages.Contains(","))
+            else if (languages.Contains(','))
             {
                 return new HashSet<string>(languages.Split(","));
             }

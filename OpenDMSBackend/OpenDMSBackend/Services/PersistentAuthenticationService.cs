@@ -52,7 +52,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = roleName,
-                InheritedRoles = new HashSet<Role>(),
+                DirectlyInheritedRoles = new HashSet<Role>(),
             };
             this._AuthentificationPersistence.AddRole(newRole);
         }
@@ -147,7 +147,7 @@ namespace OpenDMSBackend.Core.Services
             accessToken.Value = Guid.NewGuid().ToString();
             accessToken.ExpiredMoment = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset().AddDays(1.0);
             userByNameTyped.AccessToken.Add(accessToken);
-            this._AuthentificationPersistence.AddAccessToken(userByNameTyped.Id, accessToken);
+            this._AuthentificationPersistence.AddAccessToken(accessToken);
             return accessToken;
         }
         private AccessToken ThrowInvalidCredentialsException()

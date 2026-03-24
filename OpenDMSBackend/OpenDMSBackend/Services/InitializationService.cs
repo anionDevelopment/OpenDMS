@@ -58,7 +58,8 @@ namespace OpenDMSBackend.Core.Services
 
                     this._AuthenticationService.EnsureRoleExists(CodeUnitSpecificConstants.RolenameAdmins);
                     Role adminsRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameAdmins);
-                    adminsRole.InheritedRoles = new HashSet<Role>() { usersRole };
+                    adminsRole.DirectlyInheritedRoles = new HashSet<Role>();
+                    adminsRole.DirectlyInheritedRoles.Add(usersRole);
                     this._AuthenticationService.UpdateRole(adminsRole);
 
                     string initialAdminPassword = string.IsNullOrWhiteSpace(commandlineParameter.InitialAdminPassword) ? CodeUnitSpecificConstants.UsernameAdmin : commandlineParameter.InitialAdminPassword;

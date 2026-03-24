@@ -31,6 +31,7 @@ using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using OpenDMSBackendUtilities = OpenDMSBackend.Core.Misc.Utilities;
@@ -154,8 +155,8 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForLoggingMiddleware);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
-                        IGeneralLogger logger = functionalInformation.Logger;
-                        IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog", GeneralLogger.CreateUsingConsole())));
+                        IGRYLog logger = functionalInformation.Logger;
+                        IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog", GRYLog.Create(), logger.Configuration.LogTargets.Where(t => t.LogLevels.Contains(LogLevel.Debug)).Any())));
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();

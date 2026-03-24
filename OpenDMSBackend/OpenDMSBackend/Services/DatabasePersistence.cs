@@ -165,110 +165,100 @@ namespace OpenDMSBackend.Core.Services
 
         public ISet<Role> GetAllRoles()
         {
-            lock (_Lock)
+            ISet<Role> roles = this.RunTransaction(nameof(GetAllRoles), true, (command) =>
             {
-                ISet<Role> roles = GUtilities.GetValue(this.RunTransaction(nameof(GetAllRoles), true, (command) =>
+                ISet<Role> rolesInternal = new HashSet<Role>();
+                command.CommandText = this._SQLProvider.GetScriptGetAllRoles();
+                using (DbDataReader reader = command.ExecuteReader())
                 {
-                    ISet<Role> rolesInternal = new HashSet<Role>();
-                    command.CommandText = this._SQLProvider.GetScriptGetAllRoles();
-                    using (DbDataReader reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            string id = reader.GetString(0);
-                            string name = reader.GetString(1);
-                            rolesInternal.Add(new Role() { Id = id, Name = name });
-                        }
-                        reader.Close();
-                        return rolesInternal;
+                        string id = reader.GetString(0);
+                        string name = reader.GetString(1);
+                        rolesInternal.Add(new Role() { Id = id, Name = name });
                     }
-                })[0]);
-                foreach (Role role in roles)
-                {
-                    this.EnrichWithInheritedRoles(role);
+                    reader.Close();
+                    return rolesInternal;
                 }
-                return roles;
-            }
-        }
-
-        private void EnrichWithInheritedRoles(Role role)
-        {
-            role.InheritedRoles = new HashSet<Role>();
-
-            foreach (string directlyInheritedRoleId in this.GetDirectlyInheritedRoleIds(role.Id))
+                ;
+            })[0];
+            foreach (Role role in roles)
             {
-                Role inheritedRole = this.GetRoleById(directlyInheritedRoleId);
-                role.InheritedRoles.Add(inheritedRole);
+                this.EnrichWithDirectlyInheritedRoles(role);
             }
+            return roles;
         }
 
-
-
-        private ISet<string> GetDirectlyInheritedRoleIds(string roleId)
+        private void EnrichWithDirectlyInheritedRoles(Role role)
         {
-            ISet<string> roles = this.RunTransaction<ISet<string>>(nameof(EnrichWithInheritedRoles) + "_" + roleId, true, (cmd) =>
-              {
-                  ISet<string> directlyInheritedRoleIds = new HashSet<string>();
-                  cmd.CommandText = this._SQLProvider.GetScriptGetInheritedRoles();
-                  cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", roleId));
-                  using (DbDataReader reader = cmd.ExecuteReader())
-                  {
-
-                      if (reader.HasRows)
-                      {
-                          while (reader.Read())
-                          {
-                              directlyInheritedRoleIds.Add(reader.GetString(0));
-                          }
-                      }
-                  }
-                  return directlyInheritedRoleIds;
-              })[0]!;//TODO check why esclamation-mark-operator is required here.
-            return roles;
+            //TODO loading inherited roles is very inperformant currently, this should be optimized
+            ISet<string> inheritedRoleIds = this.RunTransaction(nameof(EnrichWithDirectlyInheritedRoles), true, (command) =>
+            {
+                ISet<string> inheritedRoleIdsInternal = new HashSet<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetDirectlyInheritedRoleIds();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", role.Id));
+                using (DbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        inheritedRoleIdsInternal.Add(reader.GetString(0));
+                    }
+                    reader.Close();
+                    return inheritedRoleIdsInternal;
+                }
+                ;
+            })[0];
+            foreach (string inheritedRoleId in inheritedRoleIds)
+            {
+                role.DirectlyInheritedRoles.Add(this.GetRoleById(inheritedRoleId));
+            }
         }
 
         public void AddRole(Role role)
         {
             this.RunTransaction(nameof(AddRole), true, (command) =>
             {
-                command.CommandText = this._SQLProvider.GetScriptAddRole();
-
+                command.CommandText = this._SQLProvider.GetScriptInsertRole();
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", role.Id));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", role.Name));
                 command.ExecuteNonQuery();
             }, (command) =>
             {
-                //TODO add inherited roles
+                //TODO check if inherited roles must be updated
             });
         }
 
         public void UpdateRole(Role role)
         {
-            List<Action<DbCommand>> actions = new List<Action<DbCommand>>();
-            actions.Add((cmd) =>
+            this.RunTransaction(nameof(UpdateRole), true, (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUpdateRole();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", role.Id));
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", role.Name));
                 cmd.ExecuteNonQuery();
-            });
-            actions.Add((cmd) =>
+            }, (cmd) =>
             {
-                cmd.CommandText = this._SQLProvider.GetScriptDeleteInheritedRoles();
+                cmd.CommandText = this._SQLProvider.GetScriptDeleteDirectlyInheritedRoles();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", role.Id));
                 cmd.ExecuteNonQuery();
-            });
-            foreach (Role inheritedRole in role.InheritedRoles)
+            }, (cmd) =>
             {
-                actions.Add((cmd) =>
+                if (role.DirectlyInheritedRoles.Any())
                 {
-                    cmd.CommandText = this._SQLProvider.GetScriptAddInheritedRole();
-                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", role.Id));
-                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("InheritedRoleId", inheritedRole.Id));
+                    List<string> insertLines = new List<string>();
+                    uint index = 0;
+                    cmd.Parameters.Clear();
+                    foreach (Role directlyInheritedRole in role.DirectlyInheritedRoles)
+                    {
+                        insertLines.Add($"(@RoleId{index}, @InheritedRoleId{index})");//attention: this syntax must always be both: mariadb-compliant and postgresql-compliant
+                        cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter($"RoleId{index}", role.Id));
+                        cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter($"InheritedRoleId{index}", directlyInheritedRole.Id));
+                        index++;
+                    }
+                    cmd.CommandText = this._SQLProvider.GetScriptAddDirectlyInheritedRoles().Replace("__generated__", string.Join(",\n        ", insertLines));
                     cmd.ExecuteNonQuery();
-                });
-            }
-            this.RunTransaction(nameof(UpdateRole) + "_" + role.Id, true, actions.ToArray());
+                }
+            });
         }
 
         public void DeleteRoleByName(string roleName)
@@ -324,7 +314,7 @@ namespace OpenDMSBackend.Core.Services
 
         public User GetUserById(string userId)
         {
-            User result = GUtilities.GetValue(this.RunTransaction(nameof(GetUserById) + "_" + userId, true, (cmd) =>
+            User result = this.RunTransaction(nameof(GetUserById), true, (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetUserById();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", userId));
@@ -335,23 +325,33 @@ namespace OpenDMSBackend.Core.Services
                     User user = new User();
                     user.Id = userId;
                     user.Name = reader.GetString(1);
-                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
+                    user.PasswordHash = reader.GetString(2);
                     user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
                     user.RegistrationMoment = reader.GetDateTime(6);
-                    user.Roles = new HashSet<Role>();
                     return user;
                 }
                 else
                 {
                     throw new KeyNotFoundException($"No user found with id '{userId}'");
                 }
-            })[0]);
+            })[0];
             this.EnrichWithRoles(result);
-            this.EnrichWhichAccessToken(result);
-            this.EnrichWhichTOTPToken(result);
+            this.EnrichWithAccessToken(result);
+            this.EnrichWithTOTPToken(result);
             return result;
+        }
+        private void EnrichWithRoles(User user)
+        {
+            ISet<Role> allRoles = this.GetAllRoles();
+            foreach (Role role in allRoles)
+            {
+                if (this.UserHasRole(user.Id, role.Id))
+                {
+                    user.Roles.Add(role);
+                }
+            }
         }
 
         public User GetUserByName(string userName)
@@ -382,48 +382,20 @@ namespace OpenDMSBackend.Core.Services
                     }
                 })[0]);
                 this.EnrichWithRoles(result);
-                this.EnrichWhichAccessToken(result);
-                this.EnrichWhichTOTPToken(result);
+                this.EnrichWithAccessToken(result);
+                this.EnrichWithTOTPToken(result);
                 return result;
             }
         }
 
-        private void EnrichWithRoles(User user)
-        {
-            lock (_Lock)
-            {
-                HashSet<string> roleIds = GUtilities.GetValue(this.RunTransaction(nameof(EnrichWithRoles) + "_" + user.Id, true, (cmd) =>
-                {
-                    cmd.CommandText = this._SQLProvider.GetScriptGetRolesOfUser();
-                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", user.Id));
-                    HashSet<string> roleIds = new HashSet<string>();
-                    using DbDataReader reader = cmd.ExecuteReader();
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            roleIds.Add(reader.GetString(0));
-                        }
-                    }
-                    return roleIds;
-                })[0]);
-                foreach (string roleId in roleIds)
-                {
-                    Role role = this.GetRoleById(roleId);
-                    this.EnrichWithInheritedRoles(role);
-                    user.Roles.Add(role);
-                }
-            }
-        }
-
-        private void EnrichWhichTOTPToken(User result)
+        private void EnrichWithTOTPToken(User result)
         {
             //TODO
         }
 
-        private void EnrichWhichAccessToken(User user)
+        private void EnrichWithAccessToken(User user)
         {
-            this.RunTransaction(nameof(EnrichWhichAccessToken), true, (cmd) =>
+            this.RunTransaction(nameof(EnrichWithAccessToken), true, (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetAllAccessTokenForUser();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", user.Id));
@@ -571,13 +543,13 @@ namespace OpenDMSBackend.Core.Services
                         throw;
                     }
                 })[0]);
-                this.EnrichWhichTags(result);
+                this.EnrichWithTags(result);
                 return result;
             }
         }
 
 
-        private void EnrichWhichTags(Document document)
+        private void EnrichWithTags(Document document)
         {
             ISet<string> tagIds = this.GetTagIdsOfDocument(document.Id);
             foreach (string tagId in tagIds)
@@ -1183,59 +1155,50 @@ namespace OpenDMSBackend.Core.Services
 
         public Role GetRoleByName(string roleName)
         {
-            lock (_Lock)
+            Role result = this.RunTransaction(nameof(GetRoleByName), true, (cmd) =>
             {
-                Role result = GUtilities.GetValue(this.RunTransaction(nameof(GetRoleByName) + "_" + roleName, true, (cmd) =>
+                cmd.CommandText = this._SQLProvider.GetScriptGetRoleByName();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", roleName));
+                using DbDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
                 {
-                    cmd.CommandText = this._SQLProvider.GetScriptGetRoleByName();
-                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", roleName));
-                    using DbDataReader reader = cmd.ExecuteReader();
-                    if (reader.HasRows)
-                    {
-                        Role role = new Role();
-                        reader.Read();
-                        role.Id = reader.GetString(0);
-                        role.Name = roleName;
-                        return role;
-                    }
-                    else
-                    {
-                        throw new KeyNotFoundException($"No role found with name '{roleName}'.");
-                    }
-                })[0]);
-                this.EnrichWithInheritedRoles(result);
-                return result;
-            }
+                    reader.Read();
+                    Role role = new Role();
+                    role.Id = reader.GetString(0);
+                    role.Name = roleName;
+                    return role;
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No role found with rolename '{roleName}'");
+                }
+            })[0];
+            this.EnrichWithDirectlyInheritedRoles(result);
+            return result;
         }
 
         public Role GetRoleById(string roleId)
         {
-            lock (_Lock)
+            Role result = this.RunTransaction(nameof(GetRoleById), true, (cmd) =>
             {
-                Role result = GUtilities.GetValue(this.RunTransaction(nameof(GetRoleById) + "_" + roleId, true, (cmd) =>
+                cmd.CommandText = this._SQLProvider.GetScriptGetRoleById();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", roleId));
+                using DbDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
                 {
+                    reader.Read();
                     Role role = new Role();
-                    cmd.CommandText = this._SQLProvider.GetScriptGetRoleById();
-                    cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", roleId));
-                    using (DbDataReader reader = cmd.ExecuteReader())
-                    {
-
-                        if (reader.HasRows)
-                        {
-                            reader.Read();
-                            role.Id = roleId;
-                            role.Name = reader.GetString(0);
-                        }
-                        else
-                        {
-                            throw new KeyNotFoundException($"No role found with id '{roleId}'.");
-                        }
-                    }
+                    role.Id = roleId;
+                    role.Name = reader.GetString(0);
                     return role;
-                })[0]);
-                this.EnrichWithInheritedRoles(result);
-                return result;
-            }
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No role found with id '{roleId}'");
+                }
+            })[0];
+            this.EnrichWithDirectlyInheritedRoles(result);
+            return result;
         }
 
         public bool DeleteIsAllowed(string documentId)
@@ -1287,6 +1250,24 @@ namespace OpenDMSBackend.Core.Services
             {
                 cmd.CommandText = this._SQLProvider.GetScriptResetDatabase();
                 cmd.ExecuteNonQuery();
+            });
+        }
+
+        public void WaitUntilAvailable(TimeSpan timeSpan)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddAccessToken(AccessToken newAccessToken)
+        {
+            this.RunTransaction(nameof(AddAccessToken), true, (cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptAddAccessToken();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", newAccessToken.Value));
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ExpiredMoment", newAccessToken.ExpiredMoment));
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", newAccessToken.OwnerUserId));
+                using DbDataReader reader = cmd.ExecuteReader();
+                return reader.HasRows;
             });
         }
     }

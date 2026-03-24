@@ -4,6 +4,7 @@ using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using OpenDMSBackend.Core;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
@@ -17,23 +18,13 @@ namespace OpenDMSBackend.Tests.TestUtilities
 {
     public sealed class IntegrationTestFramework : IDisposable
     {
-        private bool _Running
-        {
-            get
-            {
-                if (this._Program == null)
-                {
-                    return false;
-                }
-                return this._Program.IsRunning;
-            }
-        }
+        private bool Started = false;
         private readonly IDictionary<User, string> _UserPasswords = new Dictionary<User, string>();
         private Program? _Program = null;
         private readonly IntegrationTestConfiguration _IntegrationTestConfiguration;
         internal IBusinessLogicService? _BusinessLogicService;
         internal IGRYLog? _Log;
-        public IntegrationTestFramework(bool startServer, IntegrationTestConfiguration config) : this(config, startServer)
+        public IntegrationTestFramework(bool startServer) : this(new IntegrationTestConfiguration(), startServer)
         {
         }
         public IntegrationTestFramework(IntegrationTestConfiguration integrationTestConfiguration, bool startServer)
@@ -46,17 +37,21 @@ namespace OpenDMSBackend.Tests.TestUtilities
         }
         public void StartServer()
         {
-            Func<Tuple<bool, Exception?>> action = () =>
+            Action action = () =>
             {
                 try
                 {
-                    this._Program = new Program();
-                    this._Program.RunAsync = !this._IntegrationTestConfiguration.RunInOwnThread;
-                    this._Program.ListenOnEveryIP = false;
-                    this._Program.SetupMocks = this._IntegrationTestConfiguration.SetupMocks;
+                    this._Program = new Program
+                    {
+                        RunAsync = !this._IntegrationTestConfiguration.RunInOwnThread,
+                        ListenOnEveryIP = false,
+                        SetupMocks = this._IntegrationTestConfiguration.SetupMocks
+                    };
 
-                    string[] args = new string[] { "--InitialEnableEndpointInitializationStateValue", "true" };
+                    string[] args = new string[] {
+                    };//TODO add option to pass more configuration-values for the test-run like port etc. so that this can not go wrong due to a different configuration from a previous (manual) run.
                     int exitCode = this._Program.MainImplementation(args);
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
                     GRYLibrary.Core.Misc.Utilities.AssertCondition(exitCode == 0, () =>
                     {
                         string message = $"Exitode of main-method was {exitCode}.";
@@ -75,17 +70,19 @@ namespace OpenDMSBackend.Tests.TestUtilities
                         }
                         return message;
                     });
-                    return Tuple.Create<bool, Exception?>(true, null);
+
                 }
                 catch (Exception ex)
                 {
-                    return Tuple.Create(false, ex);
+                    throw;
                 }
             };
             if (this._IntegrationTestConfiguration.RunInOwnThread)
             {
-                Thread t = new Thread(() => action());
-                t.Name = nameof(Program);
+                Thread t = new Thread(() => action())
+                {
+                    Name = nameof(Program)
+                };
                 t.Start();
             }
             else
@@ -99,17 +96,20 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
-            }, TimeSpan.FromSeconds(120)))
+            }, TimeSpan.
+            FromSeconds(120)))
             {
-                string message = "Could not start service.";
-                if (lastException != null)
+                if (lastException == null)
                 {
-                    message = message + " Last exception: " + GRYLibrary.Core.Misc.Utilities.GetExceptionMessage(lastException);
+                    throw new DependencyNotAvailableException("Could not start service.");
                 }
-                throw new NotReadyException(message);
+                else
+                {
+                    throw lastException;
+                }
             }
-            GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._Program, nameof(this._Program) + " is null.");
-            this._BusinessLogicService = this._Program!._BusinessLogicService;
+            this.Started = true;
+            this._BusinessLogicService = this._Program._BusinessLogicService;
             this._Log = this._Program._Log;
         }
 
@@ -118,25 +118,18 @@ namespace OpenDMSBackend.Tests.TestUtilities
             try
             {
                 using HttpClient client = this.GetClient();
-                string url = $"{this.GetServerURL()}{ServerConfiguration.APIRoutePrefix}/Other/Maintenance/InitializationState";
+                string url = $"{this.GetServerURL()}{ServerConfiguration.APIRoutePrefix}/Other/Maintenance/HealthCheck";
                 HttpResponseMessage response = client.GetAsync(url).WaitAndGetResult();
                 Assert.IsTrue(response.IsSuccessStatusCode);
                 string content = response.Content.ReadAsStringAsync().WaitAndGetResult();
-                GRYLibrary.Core.Misc.Utilities.AssertCondition(content != typeof(InitializationFailed).Name);
-                if (content == typeof(Initialized).Name)
-                {
-                    exception = null;
-                    return true;
-                }
-                else
-                {
-                    exception = new NotReadyException($"Service-state is \"{content}\"");
-                    return false;
-                }
+                dynamic obj = JsonConvert.DeserializeObject(content);
+                int status = (int)obj["status"];
+                exception = null;
+                return status == 2;//2 means healthy.
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                exception = ex;
+                exception = e;
                 return false;
             }
         }
@@ -170,17 +163,10 @@ namespace OpenDMSBackend.Tests.TestUtilities
 
         private void EnsureServerIsStopped()
         {
-            try
+            if (this.Started)
             {
-                if (this._Running)
-                {
-                    this._Program.Stop();
-                    GRYLibrary.Core.Misc.Utilities.WaitUntilConditionIsTrue(() => !this._Program.IsRunning);
-                }
-            }
-            catch
-            {
-                throw;
+                this._Program.Stop();
+                this.Started = false;
             }
         }
     }

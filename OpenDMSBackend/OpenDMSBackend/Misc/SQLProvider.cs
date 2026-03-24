@@ -239,5 +239,25 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("GetContentOfContainer");
         }
+
+        public string GetScriptDeleteDirectlyInheritedRoles()
+        {
+            return this.LoadSQLScript("DeleteDirectlyInheritedRoles");
+        }
+
+        public string GetScriptAddDirectlyInheritedRoles()
+        {
+            return this.LoadSQLScript("AddDirectlyInheritedRoles");
+        }
+
+        public string GetScriptInsertRole()
+        {
+            return this.LoadSQLScript("InsertRole");
+        }
+
+        public string GetScriptGetDirectlyInheritedRoleIds()
+        {
+            return this.LoadSQLScript("GetDirectlyInheritedRoleIds");
+        }
     }
 }

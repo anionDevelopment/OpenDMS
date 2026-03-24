@@ -409,10 +409,6 @@ namespace OpenDMSBackend.Core.Services
             return this._TransientAuthenticationServicePersistence.GetAccessToken(accessToken);
         }
 
-        public void AddAccessToken(string userId, AccessToken newAccessToken)
-        {
-            this._TransientAuthenticationServicePersistence.AddAccessToken(userId, newAccessToken);
-        }
 
         public void RemoveAccessToken(string accessToken)
         {
@@ -519,6 +515,11 @@ namespace OpenDMSBackend.Core.Services
         public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleById(string roleId)
         {
             return this._TransientAuthenticationServicePersistence.GetRoleById(roleId);
+        }
+
+        public void AddAccessToken(AccessToken newAccessToken)
+        {
+            this._TransientAuthenticationServicePersistence.AddAccessToken(newAccessToken);
         }
     }
 }

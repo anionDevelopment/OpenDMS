@@ -103,5 +103,10 @@ namespace OpenDMSBackend.Core.Services
         {
             throw new NotSupportedException();
         }
+
+        public void WaitUntilAvailable(TimeSpan timeSpan)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
