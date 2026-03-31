@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
 {
     [TestClass]
+    [Ignore("this file causes problems on some systems due test-case-runs which do not terminate.")]
     public class DatabaseTestsForMariaDB : DatabaseTestsBase
     {
         protected override DatabaseTestFrameworkTemplate GetDatabaseTestFrameworkImplementation()

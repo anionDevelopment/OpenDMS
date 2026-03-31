@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en-US">
+  <file id="ngi18n" original="ng.template">
+    <unit id="username">
+      <notes>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:4,5</note>
+      </notes>
+      <segment>
+        <source>Username</source>
+      </segment>
+    </unit>
+    <unit id="password">
+      <notes>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:11,12</note>
+      </notes>
+      <segment>
+        <source>Password</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>

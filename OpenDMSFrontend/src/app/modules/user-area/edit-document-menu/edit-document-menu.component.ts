@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { UtilitiesService } from '../../../services/utilities.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import saveAs from 'file-saver';
+import { saveAs } from 'file-saver';
 import { EditDocumentDialogComponent } from '../edit-document-dialog/edit-document-dialog.component';
 import { of, switchMap } from 'rxjs';
 

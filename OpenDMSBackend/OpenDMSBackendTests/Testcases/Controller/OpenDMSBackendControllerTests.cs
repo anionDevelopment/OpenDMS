@@ -1,13 +1,14 @@
-﻿using GRYLibrary.Core.Misc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.OtherServices;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using OpenDMSBackend.Core.Services;
-using OpenDMSBackend.Tests.TestUtilities;
 using System;
-using System.Net;
-using System.Net.Http;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace OpenDMSBackend.Tests.Testcases.Controller
 {
@@ -15,47 +16,54 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
     public class OpenDMSBackendControllerTests
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
-        public void AddDocumentTest()
+        public void TestAddDocument()
         {
-            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
+            // arrange
+            Mock<IAuthenticationService> authenticationServiceMock = new Mock<IAuthenticationService>(MockBehavior.Strict);
+            ITimeService timeService = new TimeService();
+            Mock<IBusinessLogicService> businessServiceMock = new Mock<IBusinessLogicService>(MockBehavior.Strict);
+            string documentIde = Guid.NewGuid().ToString();
+            string role = "role";
+            string userId = "userid";
+            string title = "title";
+            string containerId = "containerId";
+            string filename = "filename";
+            byte[] content = new byte[] { 1, 2, 3 };
+            User user = new User() { Id = userId };
+
+
+            ISet<string> additionalOCRLanguages = new HashSet<string>() { "deu", "eng" };
+            authenticationServiceMock.Setup(mock => mock.GetUser(userId)).Returns(user);
+            authenticationServiceMock.Setup(mock => mock.GetBaseRoleOfAllUser()).Returns(role);
+            businessServiceMock.Setup(mock => mock.AddDocument(userId, title, containerId, filename, content, role, new HashSet<string>(additionalOCRLanguages))).Returns(documentIde);
+            OpenDMSBackend.Core.Controller.OpenDMSBackendController controller = new OpenDMSBackend.Core.Controller.OpenDMSBackendController(businessServiceMock.Object, authenticationServiceMock.Object, timeService);
+
+            var claims = new List<Claim>
             {
-                // arrange
-                string documentId = "documentId";
-                string requesterUserId = "requesterUserId";
-                string? title = "title";
-                string originalFilename = "originalFilename";
-                byte[] content = new byte[] { 3, 5 };
-                string groupOfBusinessOwner = "groupOfBusinessOwner";
-                Mock<IExampleDataCreator> exampleDataCreatorMock = new Mock<IExampleDataCreator>();
-                string ocrLanguages = "deu+eng";
-                using IntegrationTestFramework testFramework = new IntegrationTestFramework(new IntegrationTestConfiguration((functionalInformation) =>
+                new Claim( "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",userId)
+            };
+            var identity = new ClaimsIdentity(claims, "TestAuth");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
                 {
-                    ServiceDescriptor exampleDataCreatorMockDescriptor =
-                        new ServiceDescriptor(
-                            typeof(IExampleDataCreator),
-                            (_) => exampleDataCreatorMock.Object,
-                            ServiceLifetime.Singleton);
-                    functionalInformation.WebApplicationBuilder.Services.Replace(exampleDataCreatorMockDescriptor);
-                }, true),true);
-                Core.Model.BusinessTypes.User user = testFramework.GetUser();
-                string containerId = testFramework._BusinessLogicService.AddStorageLocation(user.Id, "storageLocation");
+                    User = claimsPrincipal
+                }
+            };
 
-                string addUrl = $"{testFramework.GetServerURL()}{OpenDMSBackend.Core.Controller.OpenDMSBackendController.ControllerRoute}/{nameof(OpenDMSBackend.Core.Controller.OpenDMSBackendController.AddDocument)}/{containerId}?filename={originalFilename}&title={title}&additionalOCRLanguages={ocrLanguages}";
-                using HttpClient client = testFramework.GetClient(user);
-                using ByteArrayContent byteArrayContent = new ByteArrayContent(content);
-                byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+            // act
+            IActionResult actualResult = controller.AddDocument(content, containerId, filename, title, additionalOCRLanguages);
 
-                // act
-                HttpResponseMessage response = client.PostAsync(addUrl, byteArrayContent).WaitAndGetResult();
-
-                // assert
-                string contentString = response.Content.ReadAsStringAsync().WaitAndGetResult();
-                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"Got response-code \"{response.StatusCode}\". Response-body: \"{contentString}\"");
-                bool isValidGuid = Guid.TryParse(contentString, out Guid parsedGuid);
-                Assert.IsTrue(isValidGuid);
-                Assert.AreNotEqual(Guid.Empty, parsedGuid);
-            }
+            // assert
+            OkObjectResult okObjectResult = actualResult as OkObjectResult;
+            Assert.IsNotNull(okObjectResult);
+            Assert.AreEqual(documentIde, (string)okObjectResult.Value);
+            businessServiceMock.Verify(mock => mock.AddDocument(userId, title, containerId, filename, content, role, new HashSet<string>(additionalOCRLanguages)), Times.Once());
+            businessServiceMock.VerifyNoOtherCalls();
+            authenticationServiceMock.Verify(mock => mock.GetBaseRoleOfAllUser(), Times.Once());
+            authenticationServiceMock.Verify(mock => mock.GetUser(userId),Times.Once());
+            authenticationServiceMock.VerifyNoOtherCalls();
         }
         //TODO add testcase that you get a 403-response when you try to load a document without having the requried permissions.
     }

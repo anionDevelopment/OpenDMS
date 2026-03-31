@@ -1,4 +1,5 @@
 using GRYLibrary.Core.APIServer.CommonRoutes;
+using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
 using GRYLibrary.Core.APIServer.Mid.AuthS;
 using GRYLibrary.Core.APIServer.Mid.AutS;
@@ -16,7 +17,6 @@ using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
-using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.FilePath;
@@ -63,11 +63,13 @@ namespace OpenDMSBackend.Core
         }
         internal int MainImplementation(string[] commandlineArguments)
         {
+            bool runningUsually = false;
             this.IsRunning = true;
             int result = Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
             {
                 apiServerConfiguration.SetInitialzationInformationAction = (initializationInformation) =>
                 {
+                    runningUsually = initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     string domain = string.IsNullOrWhiteSpace(initializationInformation.CommandlineParameter.InitialDomain) ? Tools.GetDefaultDomainValue(GeneralConstants.CodeUnitName) : initializationInformation.CommandlineParameter.InitialDomain;
                     initializationInformation.ApplicationConstants.CommonRoutesHostInformation = new DoNotHostCommonRoutes();
                     initializationInformation.ApplicationConstants.HostMaintenanceInformation = new HostMaintenanceRoutes()
@@ -126,6 +128,7 @@ namespace OpenDMSBackend.Core
                         DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseConnectionString ?? "insert your connection-string here",
                         DatabaseType = initializationInformation.CommandlineParameter.InitialDatabaseType ?? "Transient",
                     };
+                    bool runServices = !runningUsually;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
                     {
@@ -194,13 +197,20 @@ namespace OpenDMSBackend.Core
                             {
                                 BaseRoleOfAllUser = CodeUnitSpecificConstants.RolenameUsers
                             });
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, OpenDMSBackendTransientAuthenticationService>();
-                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, TransientAuthenticationServicePersistence>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService<Model.BusinessTypes.User>, TransientAuthenticationService<Model.BusinessTypes.User>>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>, TransientAuthenticationServicePersistence<Model.BusinessTypes.User>>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
                         }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementScheduler, ManagementScheduler>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClient>();
+                        if (functionalInformation.InitializationInformation.CommandlineParameter.UseMockOCRService)
+                        {
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClientMock>();
+                        }
+                        else
+                        {
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClient>();
+                        }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();
@@ -217,8 +227,15 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthenticationMiddleware);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthorizationMiddleware);
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CommandlineParameter>, InitializationService>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService>(sp => sp.GetRequiredService<IInitializationService<CommandlineParameter>>());
+                        if (runningUsually)
+                        {
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CommandlineParameter>, InitializationService>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService>(sp => sp.GetRequiredService<IInitializationService<CommandlineParameter>>());
+                        }
+                        else
+                        {
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService, NoInitializationService<CommandlineParameter>>();
+                        }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsService, MetricsService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IHealthCheck, HealthCheck>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IExampleDataCreator, ExampleDataCreator>();
@@ -231,36 +248,34 @@ namespace OpenDMSBackend.Core
                 };
                 apiServerConfiguration.ConfigureWebApplication = (functionalInformationForWebApplication) =>
                 {
+                    this._Constants = apiServerConfiguration;
                     this._Log = functionalInformationForWebApplication.WebApplication.Services.GetService<IGRYLog>();
                     try
                     {
-                        this._BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
-                        this._HostApplicationLifetime = functionalInformationForWebApplication.WebApplication.Services.GetService<IHostApplicationLifetime>();
-                        IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
-                        IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
-                        functionalInformationForWebApplication.RunAsync = this.RunAsync;
-                        bool runServices = functionalInformationForWebApplication.InitializationInformation.CommandlineParameter.RealRun;
-                        functionalInformationForWebApplication.PreRun = () =>
+                        if (runningUsually)
                         {
-                            //initialize
-                            this._InitializationService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>());
-                            this._Constants = apiServerConfiguration;
-                            this._InitializationService.Initialize(apiServerConfiguration.CommandlineParameter);
-                            if (runServices)
+                            this._BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
+                            this._HostApplicationLifetime = functionalInformationForWebApplication.WebApplication.Services.GetService<IHostApplicationLifetime>();
+                            IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
+                            IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
+                            functionalInformationForWebApplication.RunAsync = this.RunAsync;
+                            functionalInformationForWebApplication.PreRun = () =>
                             {
+                                //initialize
+                                this._InitializationService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IInitializationService<CommandlineParameter>>());
+                                this._InitializationService.Initialize(apiServerConfiguration.CommandlineParameter);
                                 //start background-services
                                 metricsService.StartAsync();
                                 managementScheduler.StartAsync();
-                            }
-                        };
-                        functionalInformationForWebApplication.PostRun = () =>
-                        {
-                            if (runServices)
+                            };
+                            functionalInformationForWebApplication.PostRun = () =>
                             {
                                 metricsService.Stop().Wait();
                                 managementScheduler.Stop().Wait();
-                            }
-                        };
+                                int i = 0;
+                            };
+                        }
+                        int j = 0;
                     }
                     catch (Exception e)
                     {
@@ -276,6 +291,10 @@ namespace OpenDMSBackend.Core
         internal void Stop()
         {
             GUtilities.AssertNotNull(this._Constants, nameof(this._Constants)).CancellationTokenSource.Cancel();
+            while (this.IsRunning)
+            {
+                System.Threading.Thread.Sleep(System.TimeSpan.FromMilliseconds(100));
+            }
         }
     }
 }

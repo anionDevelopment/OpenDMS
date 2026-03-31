@@ -36,7 +36,7 @@ namespace OpenDMSBackend.Core.Controller
         {
             try
             {
-                return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._AuthenticationService.GetBaseRoleOfAllUser(), new HashSet<string>(additionalOCRLanguages)));
+                return this.Ok(this._BusinessLogicService.AddDocument(this.GetUser().Id, title, containerId, filename, content, this._AuthenticationService.GetBaseRoleOfAllUser(), new HashSet<string>(additionalOCRLanguages)));//TODO check if GetBaseRoleOfAllUser is really correct here
             }
             catch
             {

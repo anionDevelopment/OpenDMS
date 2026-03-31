@@ -27,7 +27,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         public static (TransientPersistence, ISet<IDisposable>) GetTransientPersistence(ITimeService timeService)
         {
             IIdGenerator<ulong> idGenerator = new IdGenerator();
-            TransientAuthenticationServicePersistence<User> transientAuthenticationServicePersistence = new TransientAuthenticationServicePersistence(timeService);
+            TransientAuthenticationServicePersistence<User> transientAuthenticationServicePersistence = new TransientAuthenticationServicePersistence<User>(timeService);
             TransientPersistence persistence = new TransientPersistence(transientAuthenticationServicePersistence, idGenerator, timeService);
             return (persistence, new HashSet<IDisposable>());
         }

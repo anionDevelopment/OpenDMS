@@ -5,6 +5,7 @@ using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
+using GRYLibrary.Core.APIServer.Verbs;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Configuration;
@@ -79,6 +80,11 @@ namespace OpenDMSBackend.Core.Services
                 this.SetInitializationState(new InitializationFailed());
                 this._GeneralLogger.Log("Error while service-initialization.", e);
             }
+        }
+
+        public void InitializeBase(RunServer commandlineParameter)
+        {
+
         }
 
         public InitializationState GetInitializationState()

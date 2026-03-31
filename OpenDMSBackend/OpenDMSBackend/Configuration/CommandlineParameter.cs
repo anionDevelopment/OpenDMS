@@ -41,5 +41,8 @@ namespace OpenDMSBackend.Core.Configuration
 
         [Option(nameof(InitialEnableEndpointMetricsValue), Required = false, Default = false)]
         public bool InitialEnableEndpointMetricsValue { get; set; }
+
+        [Option(nameof(UseMockOCRService), Required = false, Default = false)]
+        public bool UseMockOCRService { get; set; }
     }
 }

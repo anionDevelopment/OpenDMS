@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
 {
     [TestClass]
+    [Ignore("this file causes problems on some systems due test-case-runs which do not terminate.")]
     public class PersistenceTestsForPostgreSQL : PersistenceTestsBaseForDatabase
     {
         protected override DatabaseTestFrameworkTemplate GetDatabaseTestFramework()

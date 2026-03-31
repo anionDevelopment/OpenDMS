@@ -1,14 +1,14 @@
 <form [formGroup]="form" (ngSubmit)="login()">
 
     <mat-form-field>
-        <mat-label>Username</mat-label>
+        <mat-label i18n="@@username">Username</mat-label>
         <input type="text" matInput placeholder="Example: johndoe" formControlName="username">
     </mat-form-field>
 
     <br />
 
     <mat-form-field>
-        <mat-label>Password</mat-label>
+        <mat-label i18n="@@password">Password</mat-label>
         <input type="password" matInput formControlName="password">
     </mat-form-field>
 

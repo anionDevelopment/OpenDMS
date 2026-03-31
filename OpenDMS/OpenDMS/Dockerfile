@@ -1,7 +1,6 @@
-ARG debianversion
 ARG CodeUnitVersion
 ARG image_debian
-FROM ${image_debian}:${debianversion}
+FROM ${image_debian}
 LABEL version=${CodeUnitVersion}
 ENV ISRUNNINGINCONTAINER="true"
 
@@ -33,7 +32,7 @@ ADD Other/Resources/DependentCodeUnits/OpenDMSFrontend/BuildResult_WebApplicatio
 COPY Other/Resources/DevelopmentCertificate/OpenDMSDevelopmentCertificate.crt /Workspace/Other/Certificates
 COPY Other/Resources/DevelopmentCertificate/OpenDMSDevelopmentCertificate.key /Workspace/Other/Certificates
 COPY OpenDMS/nginx.conf /Workspace/Application/Frontend
-COPY ConSurv/nginx.loadings-settings.conf /Workspace/Application/Frontend
+COPY OpenDMS/nginx.loadings-settings.conf /Workspace/Application/Frontend
 
 
 COPY OpenDMS/EntryPoint.sh /Workspace/Other/EntryPoint

@@ -1,11 +1,11 @@
 ﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
-using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using OpenDMSBackend.Core;
+using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using System;
@@ -49,6 +49,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     };
 
                     string[] args = new string[] {
+                        $"--{nameof(CommandlineParameter.UseMockOCRService)}"
                     };//TODO add option to pass more configuration-values for the test-run like port etc. so that this can not go wrong due to a different configuration from a previous (manual) run.
                     int exitCode = this._Program.MainImplementation(args);
                     Thread.Sleep(TimeSpan.FromSeconds(5));
@@ -96,8 +97,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
-            }, TimeSpan.
-            FromSeconds(120)))
+            }, TimeSpan.FromSeconds(120)))
             {
                 if (lastException == null)
                 {
@@ -108,9 +108,10 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     throw lastException;
                 }
             }
+            var program = GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._Program, nameof(this._Program));
             this.Started = true;
-            this._BusinessLogicService = this._Program._BusinessLogicService;
-            this._Log = this._Program._Log;
+            this._BusinessLogicService =GRYLibrary.Core.Misc.Utilities.GetValue( program._BusinessLogicService,nameof(Program._BusinessLogicService));
+            this._Log = program._Log;
         }
 
         private bool IsReady(out Exception? exception)
@@ -122,10 +123,19 @@ namespace OpenDMSBackend.Tests.TestUtilities
                 HttpResponseMessage response = client.GetAsync(url).WaitAndGetResult();
                 Assert.IsTrue(response.IsSuccessStatusCode);
                 string content = response.Content.ReadAsStringAsync().WaitAndGetResult();
-                dynamic obj = JsonConvert.DeserializeObject(content);
+                dynamic obj = JsonConvert.DeserializeObject(content)!;
                 int status = (int)obj["status"];
                 exception = null;
-                return status == 2;//2 means healthy.
+                if (status == 2) //2 means healthy.
+                {
+                    exception = null;
+                    return true;
+                }
+                else
+                {
+                    exception = new NotReadyException($"Service is not healthy yet due to status \"{status}\".");
+                    return false;
+                }
             }
             catch (Exception e)
             {
@@ -147,8 +157,9 @@ namespace OpenDMSBackend.Tests.TestUtilities
         {
             string username = Guid.NewGuid().ToString();
             string password = Guid.NewGuid().ToString();
-            string userId = this._BusinessLogicService.Register(username, password);
-            User user = this._BusinessLogicService.GetUser(userId);
+            var businessLogicService = GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._BusinessLogicService, nameof(this._BusinessLogicService));
+            string userId = businessLogicService.Register(username, password);
+            User user = businessLogicService.GetUser(userId);
             this._UserPasswords[user] = password;
             return user;
         }

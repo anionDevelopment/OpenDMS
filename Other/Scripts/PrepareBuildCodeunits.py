@@ -7,7 +7,7 @@ def prepare_build_codeunits():
     t.tfcps_Tools_General.generate_tasksfile_from_workspace_file(t.repository_folder)
     t.tfcps_Tools_General.generate_codeunits_overview_diagram(t.repository_folder)
     t.tfcps_Tools_General.generate_svg_files_from_plantuml_files_for_repository(t.repository_folder,t.use_cache())
-    t.sc.ensure_docker_network_is_available("consurv_net")
+    t.sc.ensure_docker_network_is_available("opendms_net")
     t.tfcps_Tools_General.pull_images_of_test_services(t.repository_folder,None)
 
 if __name__ == "__main__":
