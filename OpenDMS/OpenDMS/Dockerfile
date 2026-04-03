@@ -1,9 +1,10 @@
-ARG CodeUnitVersion
 ARG image_debian
 FROM ${image_debian}
+ARG CodeUnitVersion
+ARG DotNetRuntime
 LABEL version=${CodeUnitVersion}
 ENV ISRUNNINGINCONTAINER="true"
-
+#TODO make it possible to have an own apt-server for apt-packages to get rid of rate limits
 RUN mkdir /Workspace && \
     mkdir /Workspace/Application && \
     mkdir /Workspace/Application/Backend && \
@@ -27,7 +28,7 @@ RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod
 
 RUN rm -rf /var/lib/apt/lists/*
 
-ADD Other/Resources/DependentCodeUnits/OpenDMSBackend/BuildResult_DotNet_linux-x64 /Workspace/Application/Backend
+ADD Other/Resources/DependentCodeUnits/OpenDMSBackend/BuildResult_DotNet_${DotNetRuntime} /Workspace/Application/Backend
 ADD Other/Resources/DependentCodeUnits/OpenDMSFrontend/BuildResult_WebApplication /Workspace/Application/Frontend/WebApplicationFiles
 COPY Other/Resources/DevelopmentCertificate/OpenDMSDevelopmentCertificate.crt /Workspace/Other/Certificates
 COPY Other/Resources/DevelopmentCertificate/OpenDMSDevelopmentCertificate.key /Workspace/Other/Certificates
