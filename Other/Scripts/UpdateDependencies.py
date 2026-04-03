@@ -1,11 +1,8 @@
-from pathlib import Path
-from ScriptCollection.GeneralUtilities import GeneralUtilities
-from ScriptCollection.ImageUpdater import ImageUpdaterHelper, ConcreteImageUpdaterForDebian
-from ScriptCollection.TFCPS.TFCPS_Tools_General import TFCPS_Tools_General
-from ScriptCollection.ScriptCollectionCore import ScriptCollectionCore
+from ScriptCollection.TFCPS.TFCPS_Generic import  TFCPS_Generic_CLI,TFCPS_Generic_Functions
 
 def update_dependencies():
-    pass#TODO update image-tags in ImageDefinition.csv
+    t :TFCPS_Generic_Functions= TFCPS_Generic_CLI().parse(__file__)
+    t.tfcps_Tools_General.update_dependent_oci_images(t.repository_folder)
 
 if __name__ == "__main__":
     update_dependencies()
