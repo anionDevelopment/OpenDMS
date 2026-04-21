@@ -21,11 +21,16 @@ namespace OpenDMSBackend.Core.Services
 
         public InitializationState InitializationState { get; private set; } = new Initialized();
 
+        /// <summary>Initializes a new instance of <see cref="OCRServiceClient"/>.</summary>
+        /// <param name="configuration">The persisted server configuration, including the OCR service address and API key.</param>
+        /// <param name="log">The logger for diagnostic output.</param>
+        /// <param name="cmdParameter">Commandline parameters (reserved for future use).</param>
         public OCRServiceClient(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IGRYLog log, CommandlineParameter cmdParameter)
         {
             this._Configuration = configuration;
             this._Log = log;
         }
+        /// <inheritdoc />
         public (bool, Exception?) IsAvailable()
         {
             try
@@ -39,6 +44,7 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             GRYLibrary.Core.Misc.Utilities.NoOperation();
@@ -53,6 +59,7 @@ namespace OpenDMSBackend.Core.Services
             return client;
         }
 
+        /// <inheritdoc />
         public string GetOCRContent(byte[] fileContent, string mimeType, ISet<string> languages)
         {
             using HttpClient httpClient = this.GetHttpClient();
@@ -66,6 +73,7 @@ namespace OpenDMSBackend.Core.Services
             return response.Content.ReadAsStringAsync().WaitAndGetResult();
         }
 
+        /// <inheritdoc />
         public byte[] ToPicture(byte[] fileContent, string mimeType)
         {
             using HttpClient httpClient = this.GetHttpClient();
@@ -84,6 +92,7 @@ namespace OpenDMSBackend.Core.Services
             return this._Configuration.ApplicationSpecificConfiguration.OCRDataServiceAddress + "/API/V1/SimpleOCR";
         }
 
+        /// <inheritdoc />
         public ISet<Language> GetSupportedLanguages()
         {
             using HttpClient httpClient = this.GetHttpClient();
@@ -94,16 +103,19 @@ namespace OpenDMSBackend.Core.Services
             return GRYLibrary.Core.Misc.Utilities.GetValue(result);
         }
 
+        /// <inheritdoc />
         public void ReInitialize()
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc />
         public void Initialize()
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc />
         public void WaitUntilAvailable(TimeSpan timeSpan)
         {
             throw new NotImplementedException();

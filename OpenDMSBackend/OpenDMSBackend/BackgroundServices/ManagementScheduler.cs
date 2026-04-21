@@ -24,6 +24,13 @@ namespace OpenDMSBackend.Core.BackgroundServices
         private readonly IPersistence _Persistence;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _PersistedAPIServerConfiguration;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
+        /// <summary>Initializes a new instance of <see cref="ManagementScheduler"/>.</summary>
+        /// <param name="logger">The logger used for diagnostic output.</param>
+        /// <param name="auditLog">The audit-log service.</param>
+        /// <param name="persistedAPIServerConfiguration">The persisted API server configuration.</param>
+        /// <param name="persistence">The persistence service.</param>
+        /// <param name="applicationConstants">Application-wide constants, including the execution mode.</param>
+        /// <param name="generalResourceLoader">Loader for embedded general resources.</param>
         public ManagementScheduler(IGRYLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence, IApplicationConstants applicationConstants, IGeneralResourceLoader generalResourceLoader) : base(applicationConstants.ExecutionMode, logger)
         {
             this.Enabled = true;
@@ -98,6 +105,9 @@ namespace OpenDMSBackend.Core.BackgroundServices
             }
         }
 
+        /// <summary>Runs the TypeScript adapt-script defined in the import definition to mutate document metadata.</summary>
+        /// <param name="importDefinition">The import definition that optionally carries a TypeScript script body.</param>
+        /// <param name="document">The document whose metadata will be modified by the script.</param>
         public void RunAdaptScript(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition, Model.BusinessTypes.Document document)
         {
             if (importDefinition.AdaptDocumentScriptBody != null)

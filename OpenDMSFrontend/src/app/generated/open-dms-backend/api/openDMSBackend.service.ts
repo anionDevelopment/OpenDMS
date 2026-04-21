@@ -46,12 +46,13 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param containerId 
+     * Uploads a new document into the specified container.
+     * @param containerId The ID of the container (folder or storage location) to add the document to.
      * @param xAccessToken Access Token
-     * @param filename 
-     * @param title 
-     * @param additionalOCRLanguages 
-     * @param body 
+     * @param filename The file name for the uploaded document.
+     * @param title An optional display title for the document.
+     * @param additionalOCRLanguages Additional languages to use during OCR processing.
+     * @param body The raw binary content of the document.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -138,8 +139,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param parentFolderId 
-     * @param name 
+     * Creates a new folder inside the specified parent folder.
+     * @param parentFolderId The ID of the parent folder in which to create the new folder.
+     * @param name The name of the new folder.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -204,7 +206,8 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param name 
+     * Creates a new storage location with the given name owned by the current user.
+     * @param name The display name of the new storage location.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -266,8 +269,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param storageLocationId 
-     * @param sharedWithUserId 
+     * Grants the specified user permission to view the specified storage location.
+     * @param storageLocationId The id of the storage location to share.
+     * @param sharedWithUserId The id of the user to grant access to.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -329,6 +333,7 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
+     * Returns all tags defined in the system.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -387,6 +392,7 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
+     * Returns all storage locations the current user is allowed to view.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -445,8 +451,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
+     * Returns the full document identified by its human-readable numeric id.
      * @param xAccessToken Access Token
-     * @param readableId 
+     * @param readableId The human-readable numeric id of the document to retrieve.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -509,8 +516,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
+     * Returns the full document with the specified id.
      * @param xAccessToken Access Token
-     * @param id 
+     * @param id The id of the document to retrieve.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -573,8 +581,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
+     * Returns a preview representation of the document with the specified id.
      * @param xAccessToken Access Token
-     * @param id 
+     * @param id The id of the document whose preview is requested.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -637,7 +646,8 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param id 
+     * Returns the folder with the specified id.
+     * @param id The id of the folder to retrieve.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -699,6 +709,7 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
+     * Returns the most recently added documents visible to the current user.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -757,7 +768,8 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param id 
+     * Returns the storage location with the specified id.
+     * @param id The id of the storage location to retrieve.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -819,9 +831,10 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param containerOrContaineeId 
+     * Permanently deletes the specified container or document and all its contents.
+     * @param containerOrContaineeId The id of the container or document to delete.
      * @param xAccessToken Access Token
-     * @param body 
+     * @param body The stated reason for the deletion, recorded in the audit log.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -891,8 +904,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param containeeIdToMove 
-     * @param targetContainerId 
+     * Moves the specified containee into the target container.
+     * @param containeeIdToMove The id of the document or folder to move.
+     * @param targetContainerId The id of the container to move the item into.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -954,8 +968,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param containerId 
-     * @param newName 
+     * Renames the specified container to the given new name.
+     * @param containerId The id of the container to rename.
+     * @param newName The new name to assign.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -1017,8 +1032,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
+     * Searches for documents visible to the current user that match the given search term.
      * @param xAccessToken Access Token
-     * @param searchTerm 
+     * @param searchTerm The term to search for across document titles, filenames, tags, and OCR content.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -1081,9 +1097,10 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param containerOrContaineeId 
+     * Marks the specified container or document as soft-deleted without removing it from storage.
+     * @param containerOrContaineeId The id of the container or document to soft-delete.
      * @param xAccessToken Access Token
-     * @param body 
+     * @param body The stated reason for the deletion, recorded in the audit log.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -1153,8 +1170,9 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param storageLocationId 
-     * @param sharedWithUserId 
+     * Revokes the specified user\&#39;s permission to view the specified storage location.
+     * @param storageLocationId The id of the storage location.
+     * @param sharedWithUserId The id of the user whose access should be revoked.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -1216,9 +1234,10 @@ export class OpenDMSBackendService extends BaseService {
     }
 
     /**
-     * @param documentId 
+     * Updates the display title of an existing document.
+     * @param documentId The ID of the document whose title should be updated.
      * @param xAccessToken Access Token
-     * @param stringValueDTO 
+     * @param stringValueDTO The new title value to assign to the document.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */

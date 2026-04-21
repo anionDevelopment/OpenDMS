@@ -83,10 +83,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Uploads a new document into the specified container.",
         "parameters": [
           {
             "name": "containerId",
             "in": "path",
+            "description": "The ID of the container (folder or storage location) to add the document to.",
             "required": true,
             "schema": {
               "type": "string"
@@ -95,6 +97,7 @@
           {
             "name": "filename",
             "in": "query",
+            "description": "The file name for the uploaded document.",
             "schema": {
               "type": "string"
             }
@@ -102,6 +105,7 @@
           {
             "name": "title",
             "in": "query",
+            "description": "An optional display title for the document.",
             "schema": {
               "type": "string"
             }
@@ -109,6 +113,7 @@
           {
             "name": "additionalOCRLanguages",
             "in": "query",
+            "description": "Additional languages to use during OCR processing.",
             "schema": {
               "type": "array",
               "items": {
@@ -127,6 +132,7 @@
           }
         ],
         "requestBody": {
+          "description": "The raw binary content of the document.",
           "content": {
             "application/json": {
               "schema": {
@@ -183,10 +189,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Updates the display title of an existing document.",
         "parameters": [
           {
             "name": "documentId",
             "in": "path",
+            "description": "The ID of the document whose title should be updated.",
             "required": true,
             "schema": {
               "type": "string"
@@ -203,6 +211,7 @@
           }
         ],
         "requestBody": {
+          "description": "The new title value to assign to the document.",
           "content": {
             "application/json": {
               "schema": {
@@ -250,10 +259,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Creates a new folder inside the specified parent folder.",
         "parameters": [
           {
             "name": "parentFolderId",
             "in": "path",
+            "description": "The ID of the parent folder in which to create the new folder.",
             "required": true,
             "schema": {
               "type": "string"
@@ -262,6 +273,7 @@
           {
             "name": "name",
             "in": "path",
+            "description": "The name of the new folder.",
             "required": true,
             "schema": {
               "type": "string"
@@ -306,10 +318,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Renames the specified container to the given new name.",
         "parameters": [
           {
             "name": "containerId",
             "in": "path",
+            "description": "The id of the container to rename.",
             "required": true,
             "schema": {
               "type": "string"
@@ -318,6 +332,7 @@
           {
             "name": "newName",
             "in": "path",
+            "description": "The new name to assign.",
             "required": true,
             "schema": {
               "type": "string"
@@ -345,10 +360,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Moves the specified containee into the target container.",
         "parameters": [
           {
             "name": "containeeIdToMove",
             "in": "path",
+            "description": "The id of the document or folder to move.",
             "required": true,
             "schema": {
               "type": "string"
@@ -357,6 +374,7 @@
           {
             "name": "targetContainerId",
             "in": "path",
+            "description": "The id of the container to move the item into.",
             "required": true,
             "schema": {
               "type": "string"
@@ -384,10 +402,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Grants the specified user permission to view the specified storage location.",
         "parameters": [
           {
             "name": "storageLocationId",
             "in": "path",
+            "description": "The id of the storage location to share.",
             "required": true,
             "schema": {
               "type": "string"
@@ -396,6 +416,7 @@
           {
             "name": "sharedWithUserId",
             "in": "path",
+            "description": "The id of the user to grant access to.",
             "required": true,
             "schema": {
               "type": "string"
@@ -423,10 +444,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Revokes the specified user's permission to view the specified storage location.",
         "parameters": [
           {
             "name": "storageLocationId",
             "in": "path",
+            "description": "The id of the storage location.",
             "required": true,
             "schema": {
               "type": "string"
@@ -435,6 +458,7 @@
           {
             "name": "sharedWithUserId",
             "in": "path",
+            "description": "The id of the user whose access should be revoked.",
             "required": true,
             "schema": {
               "type": "string"
@@ -462,10 +486,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Creates a new storage location with the given name owned by the current user.",
         "parameters": [
           {
             "name": "name",
             "in": "path",
+            "description": "The display name of the new storage location.",
             "required": true,
             "schema": {
               "type": "string"
@@ -510,10 +536,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Returns the storage location with the specified id.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "The id of the storage location to retrieve.",
             "required": true,
             "schema": {
               "type": "string"
@@ -558,6 +586,7 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Returns all storage locations the current user is allowed to view.",
         "parameters": [
           {
             "name": "X-AccessToken",
@@ -607,10 +636,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Returns the folder with the specified id.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "The id of the folder to retrieve.",
             "required": true,
             "schema": {
               "type": "string"
@@ -655,10 +686,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Searches for documents visible to the current user that match the given search term.",
         "parameters": [
           {
             "name": "searchTerm",
             "in": "query",
+            "description": "The term to search for across document titles, filenames, tags, and OCR content.",
             "schema": {
               "type": "string"
             }
@@ -711,10 +744,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Returns the full document with the specified id.",
         "parameters": [
           {
             "name": "id",
             "in": "query",
+            "description": "The id of the document to retrieve.",
             "schema": {
               "type": "string"
             }
@@ -758,10 +793,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Returns the full document identified by its human-readable numeric id.",
         "parameters": [
           {
             "name": "readableId",
             "in": "query",
+            "description": "The human-readable numeric id of the document to retrieve.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -806,10 +843,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Returns a preview representation of the document with the specified id.",
         "parameters": [
           {
             "name": "id",
             "in": "query",
+            "description": "The id of the document whose preview is requested.",
             "schema": {
               "type": "string"
             }
@@ -853,6 +892,7 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Returns the most recently added documents visible to the current user.",
         "parameters": [
           {
             "name": "X-AccessToken",
@@ -902,6 +942,7 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Returns all tags defined in the system.",
         "parameters": [
           {
             "name": "X-AccessToken",
@@ -951,10 +992,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Permanently deletes the specified container or document and all its contents.",
         "parameters": [
           {
             "name": "containerOrContaineeId",
             "in": "path",
+            "description": "The id of the container or document to delete.",
             "required": true,
             "schema": {
               "type": "string"
@@ -971,6 +1014,7 @@
           }
         ],
         "requestBody": {
+          "description": "The stated reason for the deletion, recorded in the audit log.",
           "content": {
             "application/json": {
               "schema": {
@@ -1001,10 +1045,12 @@
         "tags": [
           "OpenDMSBackend"
         ],
+        "summary": "Marks the specified container or document as soft-deleted without removing it from storage.",
         "parameters": [
           {
             "name": "containerOrContaineeId",
             "in": "path",
+            "description": "The id of the container or document to soft-delete.",
             "required": true,
             "schema": {
               "type": "string"
@@ -1021,6 +1067,7 @@
           }
         ],
         "requestBody": {
+          "description": "The stated reason for the deletion, recorded in the audit log.",
           "content": {
             "application/json": {
               "schema": {
@@ -1051,10 +1098,12 @@
         "tags": [
           "User"
         ],
+        "summary": "Authenticates a user with the given credentials and returns an access token on success.",
         "parameters": [
           {
             "name": "user",
             "in": "header",
+            "description": "The username.",
             "schema": {
               "type": "string"
             }
@@ -1062,6 +1111,7 @@
           {
             "name": "password",
             "in": "header",
+            "description": "The plain-text password.",
             "schema": {
               "type": "string"
             }
@@ -1096,10 +1146,12 @@
         "tags": [
           "User"
         ],
+        "summary": "Registers a new user account. Requires administrator privileges.",
         "parameters": [
           {
             "name": "user",
             "in": "header",
+            "description": "The username for the new account.",
             "schema": {
               "type": "string"
             }
@@ -1107,6 +1159,7 @@
           {
             "name": "password",
             "in": "header",
+            "description": "The plain-text password for the new account.",
             "schema": {
               "type": "string"
             }
@@ -1133,6 +1186,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Invalidates the current session's access token, logging the user out.",
         "parameters": [
           {
             "name": "X-AccessToken",
@@ -1156,10 +1210,12 @@
         "tags": [
           "User"
         ],
+        "summary": "Checks whether the given access token is currently valid.",
         "parameters": [
           {
             "name": "accessToken",
             "in": "header",
+            "description": "The access token to validate.",
             "schema": {
               "type": "string"
             }
@@ -1194,6 +1250,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Returns the roles assigned to the currently authenticated user.",
         "parameters": [
           {
             "name": "X-AccessToken",
@@ -1243,6 +1300,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Returns profile information for the currently authenticated user.",
         "parameters": [
           {
             "name": "X-AccessToken",
@@ -1381,7 +1439,8 @@
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Represents a data transfer object for a full document, including its content."
       },
       "DocumentPreviewDTO": {
         "type": "object",
@@ -1453,7 +1512,8 @@
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Represents a data transfer object for a document preview, without the full document content."
       },
       "FolderDTO": {
         "type": "object",

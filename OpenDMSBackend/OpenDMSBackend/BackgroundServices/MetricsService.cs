@@ -13,6 +13,10 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         public Gauge MetricAmountOfDocuments { get; private set; }
         private readonly IPersistence _Persistence;
+        /// <summary>Initializes a new instance of <see cref="MetricsService"/>.</summary>
+        /// <param name="constants">Application-wide constants including the execution mode.</param>
+        /// <param name="logger">The logger for diagnostic output.</param>
+        /// <param name="persistence">The persistence service used to read document counts.</param>
         public MetricsService(IApplicationConstants<CodeUnitSpecificConstants> constants, IGRYLog logger, IPersistence persistence) : base(constants.ExecutionMode, logger)
         {
             this.Enabled = true;
@@ -21,6 +25,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
             this.MetricAmountOfDocuments = Metrics.CreateGauge(CodeUnitSpecificConstants.MetricsNameAmountOfDocuments, "Amount of existing documents");
         }
 
+        /// <summary>Reads the current document count from persistence and updates the Prometheus gauge.</summary>
         public void CalculateMetrics()
         {
             if (this._Persistence.IsAvailable().Item1)

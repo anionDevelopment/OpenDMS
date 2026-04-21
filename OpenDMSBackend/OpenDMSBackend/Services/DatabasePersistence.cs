@@ -31,6 +31,11 @@ namespace OpenDMSBackend.Core.Services
 
         public InitializationState InitializationState { get; private set; }
 
+        /// <summary>Initializes a new database-backed persistence instance.</summary>
+        /// <param name="database">The database interactor used to execute SQL commands.</param>
+        /// <param name="timeService">The service used to obtain the current time.</param>
+        /// <param name="log">The logger for diagnostic output.</param>
+        /// <param name="constants">Application-wide constants including the data folder path.</param>
         public DatabasePersistence(IOpenDMSDatabaseInteractor database, ITimeService timeService, IGRYLog log, IApplicationConstants constants)
         {
             this._TimeService = timeService;
@@ -96,6 +101,7 @@ namespace OpenDMSBackend.Core.Services
         }
         #endregion
 
+        /// <inheritdoc />
         public void CreateDocument(Document document)
         {
             this.RunTransaction(nameof(CreateDocument), true, (command) =>
@@ -158,11 +164,13 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public IDictionary<string, User> GetAllUsers()
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public ISet<Role> GetAllRoles()
         {
             ISet<Role> roles = this.RunTransaction(nameof(GetAllRoles), true, (command) =>
@@ -214,6 +222,7 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public void AddRole(Role role)
         {
             this.RunTransaction(nameof(AddRole), true, (command) =>
@@ -228,6 +237,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void UpdateRole(Role role)
         {
             this.RunTransaction(nameof(UpdateRole), true, (cmd) =>
@@ -261,16 +271,19 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void DeleteRoleByName(string roleName)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public bool AccessTokenExists(string accessToken, out User user)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void AddUser(User user)
         {
             this.RunTransaction(nameof(AddUser) + "_" + user.Id, true, (command) =>
@@ -290,6 +303,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public bool UserWithNameExists(string userName)
         {
             return this.RunTransaction(nameof(UserWithNameExists), true, (cmd) =>
@@ -301,6 +315,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
+        /// <inheritdoc />
         public bool UserWithIdExists(string userId)
         {
             return this.RunTransaction(nameof(UserWithIdExists), true, (cmd) =>
@@ -312,6 +327,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
+        /// <inheritdoc />
         public User GetUserById(string userId)
         {
             User result = this.RunTransaction(nameof(GetUserById), true, (cmd) =>
@@ -354,6 +370,7 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public User GetUserByName(string userName)
         {
             lock (_Lock)
@@ -415,11 +432,13 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void RemoveUser(string userId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public bool RoleExists(string roleName)
         {
             return this.RunTransaction(nameof(RoleExists), true, (cmd) =>
@@ -431,6 +450,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
+        /// <inheritdoc />
         public void AddRoleToUser(string userId, string roleId)
         {
             this.RunTransaction(nameof(AddRoleToUser), true, (command) =>
@@ -442,11 +462,13 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void RemoveRoleFromUser(string userId, string roleId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public bool UserHasRole(string userId, string roleId)
         {
             return this.RunTransaction(nameof(UserHasRole), true, (cmd) =>
@@ -459,16 +481,19 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
+        /// <inheritdoc />
         public User GetUserByAccessToken(string accessToken)
         {
             return this.GetUserById(this.GetAccessToken(accessToken).OwnerUserId);
         }
 
+        /// <inheritdoc />
         public void UpdateUser(User user)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public uint GetAmountOfDocuments()
         {
             return this.RunTransaction(nameof(GetAmountOfDocuments), true, (cmd) =>
@@ -488,6 +513,7 @@ namespace OpenDMSBackend.Core.Services
         }
 
 
+        /// <inheritdoc />
         public (bool, Exception?) IsAvailable()
         {
             lock (_Lock)
@@ -497,6 +523,7 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public Document GetDocument(string id)
         {
             lock (_Lock)
@@ -558,6 +585,7 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public void CreateTag(Tag tag)
         {
             this.RunTransaction(nameof(CreateTag), true, (command) =>
@@ -570,16 +598,19 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void AssignTag(string documentId, string tagId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void UnassignTag(string documentId, string tagId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public TagDTO[] GetAllTags()
         {
             HashSet<TagDTO> result = new HashSet<TagDTO>();
@@ -640,6 +671,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public ISet<string> GetAllDocumentIds()
         {
             HashSet<string> result = new HashSet<string>();
@@ -657,6 +689,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public string GetIdOfStorageLocationContainedIn(string containeeId)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetIdOfStorageLocationContainedIn), true, (command) =>
@@ -677,16 +710,19 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
+        /// <inheritdoc />
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public string AddStoragLocation(string name)
         {
             string id = Guid.NewGuid().ToString();
@@ -700,6 +736,7 @@ namespace OpenDMSBackend.Core.Services
             return id;
         }
 
+        /// <inheritdoc />
         public void SetOwnerOfStorageLocation(string storageLocationId, string userId)
         {
             this.RunTransaction(nameof(SetOwnerOfStorageLocation), true, (command) =>
@@ -711,6 +748,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public string AddFolder(string name)
         {
             string id = Guid.NewGuid().ToString();
@@ -724,6 +762,7 @@ namespace OpenDMSBackend.Core.Services
             return id;
         }
 
+        /// <inheritdoc />
         public void SetParentOfContainee(IContainee containee, string parentContainerId)
         {
             this.RunTransaction(nameof(SetParentOfContainee), true, (command) =>
@@ -735,26 +774,31 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void HardDelete(string containerOrContaineeId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void Rename(string containerId, string newName)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void Update(string requesterUserId, Document document)
         {
             this.RunTransaction(nameof(Update), true, (command) =>
@@ -777,6 +821,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public IContainer GetContainerById(string containerId)
         {
             if (this.IsStorageLocation(containerId))
@@ -790,6 +835,7 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No {nameof(IContainer)} available with id \"{containerId}\".");
         }
 
+        /// <inheritdoc />
         public IContainee GetContaineeById(string containeeId)
         {
             if (this.IsDocument(containeeId))
@@ -803,6 +849,7 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No {nameof(IContainee)} available with id \"{containeeId}\".");
         }
 
+        /// <inheritdoc />
         public string GetParentIdOfContainee(string containeeId)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetParentIdOfContainee), true, (cmd) =>
@@ -823,11 +870,13 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
+        /// <inheritdoc />
         public bool IsContaineeId(string id)
         {
             return this.IsDocument(id) || this.IsFolder(id);
         }
 
+        /// <inheritdoc />
         public bool IsStorageLocationId(string id)
         {
             return this.RunTransaction(nameof(IsStorageLocationId), true, (cmd) =>
@@ -847,6 +896,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
+        /// <inheritdoc />
         public DocumentPreview GetDocumentPreview(string id)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetDocumentPreview), true, (cmd) =>
@@ -888,6 +938,7 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
+        /// <inheritdoc />
         public IEnumerable<string> GetAllStorageLocationIds()
         {
             ISet<string> result = GUtilities.GetValue(this.RunTransaction(nameof(GetAllStorageLocationIds), true, (command) =>
@@ -909,6 +960,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public StorageLocation GetStorageLocation(string storageLocationId)
         {
             StorageLocation result = GUtilities.GetValue(this.RunTransaction(nameof(GetStorageLocation), true, (command) =>
@@ -938,6 +990,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public Folder GetFolder(string folderId)
         {
             Folder result = GUtilities.GetValue(this.RunTransaction(nameof(GetFolder), true, (command) =>
@@ -991,6 +1044,7 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public bool IsStorageLocation(string contentId)
         {
             return this.RunTransaction(nameof(IsStorageLocation), true, (cmd) =>
@@ -1003,6 +1057,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
+        /// <inheritdoc />
         public bool IsFolder(string contentId)
         {
             return this.RunTransaction(nameof(IsFolder), true, (cmd) =>
@@ -1015,6 +1070,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
+        /// <inheritdoc />
         public bool IsDocument(string contentId)
         {
             return this.RunTransaction(nameof(IsDocument), true, (cmd) =>
@@ -1027,6 +1083,7 @@ namespace OpenDMSBackend.Core.Services
             })[0];
         }
 
+        /// <inheritdoc />
         public AccessToken GetAccessToken(string accessToken)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetAccessToken), true, (cmd) =>
@@ -1062,6 +1119,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void RemoveAccessToken(string accessToken)
         {
             this.RunTransaction(nameof(RemoveAccessToken), true, (cmd) =>
@@ -1077,11 +1135,13 @@ namespace OpenDMSBackend.Core.Services
             //TODO 
         }
 
+        /// <inheritdoc />
         public ulong GetLatestReadableId()
         {
             return this.GetAmountOfDocuments();
         }
 
+        /// <inheritdoc />
         public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetAllAccessTokenOfUser), true, (cmd) =>
@@ -1105,11 +1165,13 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
+        /// <inheritdoc />
         public void RemoveChild(string parentId, string childId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public string GetIdFromReadableId(uint readableId)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetIdFromReadableId), true, (cmd) =>
@@ -1130,6 +1192,7 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
+        /// <inheritdoc />
         public IList<string> Search(string searchTerm)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(Search), true, (cmd) =>
@@ -1153,6 +1216,7 @@ namespace OpenDMSBackend.Core.Services
             })[0]);
         }
 
+        /// <inheritdoc />
         public Role GetRoleByName(string roleName)
         {
             Role result = this.RunTransaction(nameof(GetRoleByName), true, (cmd) =>
@@ -1177,6 +1241,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public Role GetRoleById(string roleId)
         {
             Role result = this.RunTransaction(nameof(GetRoleById), true, (cmd) =>
@@ -1201,31 +1266,37 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public bool DeleteIsAllowed(string documentId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void SoftDelete(string documentId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             //TODO
         }
 
+        /// <inheritdoc />
         public void SetLogConnectionAttemptErrors(bool enabled)
         {
             this._Database.SetLogConnectionAttemptErrors(enabled);
         }
 
+        /// <inheritdoc />
         public void Initialize()
         {
             lock (_Lock)
@@ -1244,6 +1315,7 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public void Reset()
         {
             this.RunTransaction(nameof(Reset), false, (cmd) =>
@@ -1253,11 +1325,13 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void WaitUntilAvailable(TimeSpan timeSpan)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void AddAccessToken(AccessToken newAccessToken)
         {
             this.RunTransaction(nameof(AddAccessToken), true, (cmd) =>

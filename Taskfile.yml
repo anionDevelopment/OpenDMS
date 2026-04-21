@@ -111,3 +111,13 @@ tasks:
     aliases:
       - runfrontend
       - rf
+
+  Translate:
+    desc: "Translate"
+    silent: true
+    dir: "./OpenDMSFrontend/Other"
+    cmds:
+      - "python Translate.py {{.CLI_ARGS}}"
+    aliases:
+      - translate
+      - t

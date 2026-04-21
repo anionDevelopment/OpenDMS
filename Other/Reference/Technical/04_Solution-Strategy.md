@@ -33,19 +33,19 @@ The only second option for a hard-delete is by reaching the delete-deadline.
 
 ### Lock-up period
 
-For every document in OpenDMS you can define define a date where it is not possible to delete the document before this date.
+For every document in OpenDMS you can define a date where it is not possible to delete the document before this date.
 This date will be applied for hard- and soft-delete.
 Only a user which is business-owner of the document is allowed to edit the lock-up period of a document.
 
 ### Delete-deadline
 
-For every document in OpenDMS you can define define a date where OpenDMS ensures that the document will be hard-deleted immediately after this date.
+For every document in OpenDMS you can define a date where OpenDMS ensures that the document will be hard-deleted immediately after this date.
 
 Only a user which is business-owner of the document is allowed to edit the delete-deadline of a document.
 
 ## Automatic document-processing on import
 
-When importing documenty by a import-definition then it is possible to define a typescript-script to edit some basic settings like the filename or the business-owner of the document.
+When importing documents by a import-definition then it is possible to define a typescript-script to edit some basic settings like the filename or the business-owner of the document.
 In this script you can use existing document-properties like the original filename or the import-timestamp.
 
 ## Preview

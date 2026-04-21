@@ -23,6 +23,10 @@ namespace OpenDMSBackend.Core.Services
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
         private bool _LogConnectionErrors = true;
         private static readonly object _Lock = new object();
+        /// <summary>Initializes a new in-memory persistence instance.</summary>
+        /// <param name="transientAuthenticationServicePersistence">The in-memory authentication persistence delegate.</param>
+        /// <param name="idGenerator">Generator for unique numeric readable ids.</param>
+        /// <param name="timeService">The service used to obtain the current time.</param>
         public TransientPersistence(IAuthenticationServicePersistence<User> transientAuthenticationServicePersistence, IIdGenerator<ulong> idGenerator, ITimeService timeService)
         {
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
@@ -42,6 +46,7 @@ namespace OpenDMSBackend.Core.Services
             this.Reset();
         }
 
+        /// <inheritdoc />
         public void Reset()
         {
             this._StorageLocationOwnerAssignments.Clear();
@@ -54,47 +59,57 @@ namespace OpenDMSBackend.Core.Services
             this._IdGenerator.Reset();
         }
 
+        /// <inheritdoc />
         public void CreateDocument(Document document)
         {
             this._Documents[document.Id] = document;
         }
 
+        /// <inheritdoc />
         public (bool, Exception?) IsAvailable()
         {
             return (true, null);
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             Utilities.NoOperation();
         }
 
+        /// <inheritdoc />
         public uint GetAmountOfDocuments()
         {
             return (uint)this._Documents.Count;
         }
 
+        /// <inheritdoc />
         public bool UserWithNameExists(string username)
         {
             return this._TransientAuthenticationServicePersistence.UserWithNameExists(username);
         }
 
+        /// <inheritdoc />
         public bool UserWithIdExists(string userId)
         {
             return this._TransientAuthenticationServicePersistence.UserWithIdExists(userId);
         }
 
+        /// <summary>Generates and returns a new unique readable id.</summary>
+        /// <returns>The next available unique readable id.</returns>
         public ulong GetNewReadableId()
         {
             return this._IdGenerator.GenerateNewId();
         }
 
+        /// <inheritdoc />
         public Document GetDocument(string id)
         {
             Document result = this._Documents[id];
             return result;
         }
 
+        /// <inheritdoc />
         public void CreateTag(Tag tag)
         {
             this._Tags[tag.Id] = tag;
@@ -105,26 +120,31 @@ namespace OpenDMSBackend.Core.Services
             return this._Tags[id];
         }
 
+        /// <inheritdoc />
         public void AssignTag(string documentId, string tagId)
         {
             this.GetDocument(documentId).Tags.Add(this.GetTag(tagId));
         }
 
+        /// <inheritdoc />
         public void UnassignTag(string documentId, string tagId)
         {
             this.GetDocument(documentId).Tags.Remove(this.GetTag(tagId));
         }
 
+        /// <inheritdoc />
         public TagDTO[] GetAllTags()
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public ISet<string> GetAllDocumentIds()
         {
             return this._Documents.Keys.ToHashSet();
         }
 
+        /// <inheritdoc />
         public string GetIdOfStorageLocationContainedIn(string id)
         {
             if (this.IsContaineeId(id))
@@ -141,6 +161,7 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
         {
             if (this._StorageLocations.ContainsKey(storageLocationId))
@@ -153,11 +174,13 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
         {
             return false;//TODO
         }
 
+        /// <inheritdoc />
         public string AddStoragLocation(string name)
         {
             StorageLocation sl = new StorageLocation();
@@ -167,11 +190,13 @@ namespace OpenDMSBackend.Core.Services
             return sl.Id;
         }
 
+        /// <inheritdoc />
         public void SetOwnerOfStorageLocation(string storageLocationId, string userId)
         {
             this._StorageLocationOwnerAssignments[storageLocationId] = userId;
         }
 
+        /// <inheritdoc />
         public string AddFolder(string name)
         {
             Folder folder = new Folder()
@@ -183,6 +208,7 @@ namespace OpenDMSBackend.Core.Services
             return folder.Id;
         }
 
+        /// <inheritdoc />
         public void SetParentOfContainee(IContainee containee, string parentContainerId)
         {
             this._ContaineeContainerAssignments[containee.Id] = parentContainerId;
@@ -201,6 +227,7 @@ namespace OpenDMSBackend.Core.Services
             });
         }
 
+        /// <inheritdoc />
         public void HardDelete(string containerOrContaineeId)
         {
             Core.Misc.Utilities.DoForContentObject(this, containerOrContaineeId,
@@ -222,26 +249,31 @@ namespace OpenDMSBackend.Core.Services
                 });
         }
 
+        /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void Rename(string containerId, string newName)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void Update(string requesterUserId, Document updatedDocument)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public IContainee GetContaineeById(string containeeId)
         {
             if (this._Documents.TryGetValue(containeeId, out Document? document))
@@ -255,6 +287,7 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No {nameof(IContainee)} available with id \"{containeeId}\".");
         }
 
+        /// <inheritdoc />
         public IContainer GetContainerById(string containerId)
         {
             if (this._StorageLocations.TryGetValue(containerId, out StorageLocation? storageLocation))
@@ -268,164 +301,195 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No {nameof(IContainer)} available with id \"{containerId}\".");
         }
 
+        /// <inheritdoc />
         public string GetParentIdOfContainee(string containeeId)
         {
             return this._ContaineeContainerAssignments[containeeId];
         }
 
+        /// <inheritdoc />
         public bool IsContaineeId(string containeeId)
         {
             return this._Documents.ContainsKey(containeeId) || this._Folders.ContainsKey(containeeId);
         }
 
+        /// <inheritdoc />
         public bool IsStorageLocationId(string id)
         {
             return this._StorageLocations.ContainsKey(id);
         }
 
+        /// <inheritdoc />
         public DocumentPreview GetDocumentPreview(string id)
         {
             return this.GetDocument(id).GetPreview();
         }
 
+        /// <inheritdoc />
         public IEnumerable<string> GetAllStorageLocationIds()
         {
             return this._StorageLocations.Keys.ToList();
         }
 
+        /// <inheritdoc />
         public StorageLocation GetStorageLocation(string storageLocationId)
         {
             return this._StorageLocations[storageLocationId];
         }
 
+        /// <inheritdoc />
         public Folder GetFolder(string folderId)
         {
             return this._Folders[folderId];
         }
 
+        /// <inheritdoc />
         public bool IsStorageLocation(string contentId)
         {
             return this._StorageLocations.ContainsKey(contentId);
         }
 
+        /// <inheritdoc />
         public bool IsFolder(string contentId)
         {
             return this._Folders.ContainsKey(contentId);
         }
 
+        /// <inheritdoc />
         public bool IsDocument(string contentId)
         {
             return this._Documents.ContainsKey(contentId);
         }
 
+        /// <inheritdoc />
         public ulong GetLatestReadableId()
         {
             return this.GetAmountOfDocuments();
         }
 
+        /// <inheritdoc />
         public IDictionary<string, User> GetAllUsers()
         {
             return this._TransientAuthenticationServicePersistence.GetAllUsers();
         }
 
+        /// <inheritdoc />
         public ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> GetAllRoles()
         {
             return this._TransientAuthenticationServicePersistence.GetAllRoles();
         }
 
+        /// <inheritdoc />
         public void AddRole(GRYLibrary.Core.APIServer.CommonDBTypes.Role role)
         {
             this._TransientAuthenticationServicePersistence.AddRole(role);
         }
 
+        /// <inheritdoc />
         public void UpdateRole(GRYLibrary.Core.APIServer.CommonDBTypes.Role role)
         {
             this._TransientAuthenticationServicePersistence.UpdateRole(role);
         }
 
+        /// <inheritdoc />
         public void DeleteRoleByName(string roleName)
         {
             this._TransientAuthenticationServicePersistence.DeleteRoleByName(roleName);
         }
 
+        /// <inheritdoc />
         public bool AccessTokenExists(string accessToken, out User? user)
         {
             return this._TransientAuthenticationServicePersistence.AccessTokenExists(accessToken, out user);
         }
 
+        /// <inheritdoc />
         public void AddUser(User newUser)
         {
             this._TransientAuthenticationServicePersistence.AddUser(newUser);
         }
 
+        /// <inheritdoc />
         public User GetUserById(string userId)
         {
             return this._TransientAuthenticationServicePersistence.GetUserById(userId);
         }
 
+        /// <inheritdoc />
         public User GetUserByName(string userName)
         {
             return this._TransientAuthenticationServicePersistence.GetUserByName(userName);
         }
 
+        /// <inheritdoc />
         public void RemoveUser(string userId)
         {
             this._TransientAuthenticationServicePersistence.RemoveUser(userId);
         }
 
+        /// <inheritdoc />
         public bool RoleExists(string roleName)
         {
             return this._TransientAuthenticationServicePersistence.RoleExists(roleName);
         }
 
+        /// <inheritdoc />
         public void AddRoleToUser(string userId, string roleId)
         {
 
             this._TransientAuthenticationServicePersistence.AddRoleToUser(userId, roleId);
         }
 
+        /// <inheritdoc />
         public void RemoveRoleFromUser(string userId, string roleId)
         {
             this._TransientAuthenticationServicePersistence.RemoveRoleFromUser(userId, roleId);
         }
 
+        /// <inheritdoc />
         public bool UserHasRole(string userId, string roleId)
         {
             return this._TransientAuthenticationServicePersistence.UserHasRole(userId, roleId);
         }
 
+        /// <inheritdoc />
         public User GetUserByAccessToken(string accessToken)
         {
             return this._TransientAuthenticationServicePersistence.GetUserByAccessToken(accessToken);
         }
 
+        /// <inheritdoc />
         public void UpdateUser(User user)
         {
             this._TransientAuthenticationServicePersistence.UpdateUser(user);
         }
 
+        /// <inheritdoc />
         public AccessToken GetAccessToken(string accessToken)
         {
             return this._TransientAuthenticationServicePersistence.GetAccessToken(accessToken);
         }
 
-
+        /// <inheritdoc />
         public void RemoveAccessToken(string accessToken)
         {
             this._TransientAuthenticationServicePersistence.RemoveAccessToken(accessToken);
         }
 
+        /// <inheritdoc />
         public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)
         {
             return this._TransientAuthenticationServicePersistence.GetAllAccessTokenOfUser(userId);
         }
 
+        /// <inheritdoc />
         public void RemoveChild(string parentId, string childId)
         {
             IContainer container = this.GetContainerById(parentId);
             container.Content = container.Content.Where(child => child.Id != childId).ToHashSet();
         }
 
+        /// <inheritdoc />
         public string GetIdFromReadableId(uint readableId)
         {
             foreach (KeyValuePair<string, Document> document in this._Documents)
@@ -438,6 +502,7 @@ namespace OpenDMSBackend.Core.Services
             throw new KeyNotFoundException($"No document found with readable id '{readableId}'.");
         }
 
+        /// <inheritdoc />
         public IList<string> Search(string searchTerm)
         {
             IDictionary<string, uint> result = new Dictionary<string, uint>();
@@ -480,21 +545,25 @@ namespace OpenDMSBackend.Core.Services
             return 0;
         }
 
+        /// <inheritdoc />
         public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleByName(string roleName)
         {
             return this._TransientAuthenticationServicePersistence.GetRoleByName(roleName);
         }
 
+        /// <inheritdoc />
         public bool DeleteIsAllowed(string documentId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void SoftDelete(string documentId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
             return this._Documents
@@ -504,6 +573,7 @@ namespace OpenDMSBackend.Core.Services
         }
 
 
+        /// <inheritdoc />
         public void SetLogConnectionAttemptErrors(bool enabled)
         {
             lock (_Lock)
@@ -512,11 +582,13 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleById(string roleId)
         {
             return this._TransientAuthenticationServicePersistence.GetRoleById(roleId);
         }
 
+        /// <inheritdoc />
         public void AddAccessToken(AccessToken newAccessToken)
         {
             this._TransientAuthenticationServicePersistence.AddAccessToken(newAccessToken);

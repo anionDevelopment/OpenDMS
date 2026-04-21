@@ -14,6 +14,7 @@ using System.Collections.Generic;
 
 namespace OpenDMSBackend.Core.Configuration
 {
+    /// <summary>Holds all code-unit-specific runtime configuration values for the OpenDMS backend.</summary>
     public class CodeUnitSpecificConfiguration : ISupportRequestLoggingMiddleware, ISupportExceptionManagerMiddleware, ISupportAuthenticationMiddleware, ISupportAuthorizationMiddleware
     {
         public bool RegistrationIsEnabled { get; set; }

@@ -149,6 +149,19 @@
 					"lrd"
 				],
 				"allowcustomarguments": true
+			},
+			{
+				"label": "Translate",
+				"command": "python Translate.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/OpenDMSFrontend/Other"
+				},
+				"aliases": [
+					"t"
+				],
+				"allowcustomarguments": true
 			}
 		]
 	},

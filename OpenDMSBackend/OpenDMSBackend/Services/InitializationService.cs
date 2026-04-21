@@ -25,6 +25,14 @@ namespace OpenDMSBackend.Core.Services
         private readonly IIdGenerator<ulong> _IdGenerator;
         private static readonly object _Lock = new object();
         private InitializationState _InitializationState;
+        /// <summary>Initializes a new instance of <see cref="InitializationService"/>.</summary>
+        /// <param name="authenticationService">The authentication service used for role and user setup.</param>
+        /// <param name="businessLogicService">The business logic service used during initialization.</param>
+        /// <param name="generalLogger">The logger for diagnostic output.</param>
+        /// <param name="constants">Application-wide constants.</param>
+        /// <param name="exampleDataCreator">Service that seeds example data in development environments.</param>
+        /// <param name="persistence">The persistence service used to wait for DB availability and read state.</param>
+        /// <param name="idGenerator">Generator for unique numeric ids, reset from the stored max readable id.</param>
         public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator)
         {
             this._AuthenticationService = authenticationService;
@@ -37,6 +45,7 @@ namespace OpenDMSBackend.Core.Services
             this.SetInitializationState(new Uninitialized());
         }
 
+        /// <inheritdoc />
         public void Initialize(CommandlineParameter commandlineParameter)
         {
             try
@@ -82,11 +91,13 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public void InitializeBase(RunServer commandlineParameter)
         {
 
         }
 
+        /// <inheritdoc />
         public InitializationState GetInitializationState()
         {
             lock (_Lock)
@@ -94,6 +105,8 @@ namespace OpenDMSBackend.Core.Services
                 return this._InitializationState;
             }
         }
+
+        /// <inheritdoc />
         public void SetInitializationState(InitializationState initializationState)
         {
             lock (_Lock)

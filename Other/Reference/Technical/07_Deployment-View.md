@@ -6,7 +6,7 @@ OpenDMS will be deployed as OCI-container so the administrator needs a container
 
 ## Infrastructure-requirements
 
-OpenDMS is supposed to be run behind a reverseproxy to protect certain maintenance-routes and to manage the TLS-overhead.
+OpenDMS is supposed to be run behind a reverse-proxy to protect certain maintenance-routes and to manage the TLS-overhead.
 
 ## Deployment-processes
 

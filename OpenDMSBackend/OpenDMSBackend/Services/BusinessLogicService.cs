@@ -35,6 +35,17 @@ namespace OpenDMSBackend.Core.Services
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
         private readonly IAuditLog _AuditLog;
+        /// <summary>Initializes a new instance of <see cref="BusinessLogicService"/>.</summary>
+        /// <param name="persistence">The persistence service used to store and retrieve data.</param>
+        /// <param name="authenticationService">The authentication service for user management.</param>
+        /// <param name="timeService">The service used to obtain the current time.</param>
+        /// <param name="constants">Application-wide constants.</param>
+        /// <param name="logger">The general-purpose logger.</param>
+        /// <param name="configuration">The persisted server configuration.</param>
+        /// <param name="oCRService">The OCR service client.</param>
+        /// <param name="idGenerator">Generator for unique numeric identifiers.</param>
+        /// <param name="generalResourceLoader">Loader for embedded general resources.</param>
+        /// <param name="auditLog">The audit log service.</param>
         public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader, IAuditLog auditLog)
         {
             this._Persistence = persistence;
@@ -49,6 +60,15 @@ namespace OpenDMSBackend.Core.Services
             this._AuditLog = auditLog;
         }
 
+        /// <summary>Creates and persists a new document in the specified container.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="title">The display title of the document, or <see langword="null"/> to use the original filename.</param>
+        /// <param name="containerId">The id of the container (folder or storage location) to place the document in.</param>
+        /// <param name="originalFilename">The original filename including extension.</param>
+        /// <param name="content">The raw byte content of the document.</param>
+        /// <param name="groupOfBusinessOwner">The business-owner group associated with the document.</param>
+        /// <param name="additionalOCRLanguages">Additional ISO-639-1 language codes to use during OCR analysis.</param>
+        /// <returns>The id of the newly created document.</returns>
         public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
             lock (_LockObject)
@@ -79,6 +99,10 @@ namespace OpenDMSBackend.Core.Services
             return errorMessages.Count == 0;
         }
 
+        /// <summary>Registers a new user account if registration is currently enabled.</summary>
+        /// <param name="username">The desired username.</param>
+        /// <param name="password">The plain-text password to hash and store.</param>
+        /// <returns>The id of the newly created user.</returns>
         public string Register(string username, string password)
         {
             lock (_LockObject)
@@ -98,12 +122,17 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <summary>Retrieves a document by its id, enforcing view-permission checks.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the document.</param>
+        /// <param name="id">The id of the document to retrieve.</param>
+        /// <returns>The requested <see cref="Document"/>.</returns>
         public Document GetDocument(string requesterUserId, string id)
         {
             this.EnsureUserIsAllowedToViewContent(requesterUserId, id);
             return this._Persistence.GetDocument(id);
         }
 
+        /// <inheritdoc />
         public DocumentPreview GetDocumentPreview(string requesterUserId, string documentId)
         {
             this.EnsureUserIsAllowedToViewContent(requesterUserId, documentId);
@@ -118,11 +147,13 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public bool UserIsAllowedToEditContent(string userId, string documentId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public IList<DocumentPreview> Search(string requesterUserId, string searchTerm)
         {
             IList<string> searchResults = new List<string>();
@@ -136,29 +167,38 @@ namespace OpenDMSBackend.Core.Services
                 .ToList();
         }
 
+        /// <inheritdoc />
         public bool UserWithNameExists(string username)
         {
             return this._Persistence.UserWithNameExists(username);
         }
 
+        /// <inheritdoc />
         public void CreateTag(string tagName, ExtendedColor tagColor)
         {
             //TODO do permission check
             this._Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(), tagName, tagColor));
         }
 
+        /// <summary>Assigns an existing tag to an existing document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="tagId">The id of the tag to assign.</param>
         public void AssignTag(string documentId, string tagId)
         {
             //TODO do permission check
             this._Persistence.AssignTag(documentId, tagId);
         }
 
+        /// <summary>Removes a tag assignment from an existing document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="tagId">The id of the tag to unassign.</param>
         public void UnassignTag(string documentId, string tagId)
         {
             //TODO do permission check
             this._Persistence.UnassignTag(documentId, tagId);
         }
 
+        /// <inheritdoc />
         public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
             return Core.Misc.Utilities.DoForContentObject(this._Persistence, contentId,
@@ -168,6 +208,7 @@ namespace OpenDMSBackend.Core.Services
             );
         }
 
+        /// <inheritdoc />
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
         {
             if (this.UserIsAdministrator(userId))
@@ -186,6 +227,7 @@ namespace OpenDMSBackend.Core.Services
             return false;
         }
 
+        /// <inheritdoc />
         public bool UserIsAllowedToViewFolder(string userId, string contentId)
         {
             string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(contentId);
@@ -197,6 +239,7 @@ namespace OpenDMSBackend.Core.Services
             return false;
         }
 
+        /// <inheritdoc />
         public bool UserIsAllowedToViewDocument(string userId, string contentId)
         {
             string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(contentId);
@@ -208,11 +251,13 @@ namespace OpenDMSBackend.Core.Services
             return false;
         }
 
+        /// <inheritdoc />
         public TagDTO[] GetAllTags()
         {
             return this._Persistence.GetAllTags();
         }
 
+        /// <inheritdoc />
         public IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId)
         {
             List<DocumentPreview> result = this._Persistence
@@ -225,6 +270,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public void UpdateDocumentTitle(string requesterUserId, string documentId, string newTitle)
         {
             Document document = this.GetDocument(requesterUserId, documentId);
@@ -232,6 +278,7 @@ namespace OpenDMSBackend.Core.Services
             this.Update(requesterUserId, document);
         }
 
+        /// <inheritdoc />
         public void Update(string requesterUserId, Document updatedDocument)
         {
             Document existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
@@ -355,6 +402,7 @@ namespace OpenDMSBackend.Core.Services
             return result;
         }
 
+        /// <inheritdoc />
         public string AddStorageLocation(string requesterUserId, string name)
         {
             //TODO check permission
@@ -364,6 +412,7 @@ namespace OpenDMSBackend.Core.Services
             return id;
         }
 
+        /// <inheritdoc />
         public string AddFolder(string requesterUserId, string name, string parentContainerId)
         {
             //TODO check permission
@@ -373,24 +422,28 @@ namespace OpenDMSBackend.Core.Services
             return id;
         }
 
+        /// <inheritdoc />
         public void Rename(string requesterUserId, string containerId, string newName)
         {
             //TODO check permission
             this._Persistence.Rename(containerId, newName);
         }
 
+        /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
             //TODO check permission
             this._Persistence.AuthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
+        /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
             //TODO check permission
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
+        /// <inheritdoc />
         public void HardDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
             //TODO check permission
@@ -409,11 +462,13 @@ namespace OpenDMSBackend.Core.Services
             this._AuditLog.AuditLogger.Log($"Hard-deleted {this._AuditLog.AuditLogger}. Reason: {reason}");
         }
 
+        /// <inheritdoc />
         public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)
         {
             //TODO check permission
@@ -430,34 +485,40 @@ namespace OpenDMSBackend.Core.Services
             );
         }
 
+        /// <inheritdoc />
         public bool UserIsAdministrator(string userId)
         {
             return this._AuthenticationService.GetUser(userId).GetAllRoles().Where(role => role.Name == CodeUnitSpecificConstants.RolenameAdmins).Any();
         }
 
+        /// <inheritdoc />
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId)
         {
             List<StorageLocation> result = this._Persistence.GetAllStorageLocationIds().Where(storageLocationId => this.UserIsAllowedToViewStorageLocation(requesterUserId, storageLocationId)).Select(this._Persistence.GetStorageLocation).ToList();
             return result;
         }
 
+        /// <inheritdoc />
         public StorageLocation GetStorageLocation(string requesterUserId, string storageLocationId)
         {
             this.EnsureUserIsAllowedToViewContent(requesterUserId, storageLocationId);
             return this._Persistence.GetStorageLocation(storageLocationId);
         }
 
+        /// <inheritdoc />
         public Folder GetFolder(string requesterUserId, string folderId)
         {
             this.EnsureUserIsAllowedToViewContent(requesterUserId, folderId);
             return this._Persistence.GetFolder(folderId);
         }
 
+        /// <inheritdoc />
         public void Housekeeping()
         {
             throw new NotImplementedException();//TODO remove expired accesstoken
         }
 
+        /// <inheritdoc />
         public void RemoveEntireContent(string? requesterUserId, string containerId, string reason)
         {
             IContainer container = this._Persistence.GetContainerById(containerId);
@@ -467,16 +528,19 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public Document GetDocumentFromReadableId(string requesterUserId, uint readableId)
         {
             return this.GetDocument(requesterUserId, this._Persistence.GetIdFromReadableId(readableId));
         }
 
+        /// <inheritdoc />
         public Model.BusinessTypes.User GetUser(string userId)
         {
             return this._AuthenticationService.GetUserTyped(userId);
         }
 
+        /// <inheritdoc />
         public AccessToken Login(string username, string password)
         {
             return this._AuthenticationService.Login(username, password);

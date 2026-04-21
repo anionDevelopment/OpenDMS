@@ -1,5 +1,5 @@
 <mat-form-field>
-    <mat-label>Search term</mat-label>
+    <mat-label i18n="@@search_term">Search term</mat-label>
     <input matInput [(ngModel)]='searchText' (keydown.enter)="search()">
 </mat-form-field>
 <button mat-button type="submit" (click)="search()" [disabled]="!searchText || searchText.trim() === ''">

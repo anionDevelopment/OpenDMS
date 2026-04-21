@@ -16,6 +16,11 @@ namespace OpenDMSBackend.Core.Misc
         private readonly IPersistence _Persistence;
         private readonly IInitializationService<CommandlineParameter> _InitializationService;
         private readonly IOCRServiceClient _OCRService;
+        /// <summary>Initializes a new instance of <see cref="HealthCheck"/>.</summary>
+        /// <param name="logger">The logger for diagnostic output.</param>
+        /// <param name="persistence">The persistence service to check for availability.</param>
+        /// <param name="initializationService">The initialization service used to verify the app is ready.</param>
+        /// <param name="ocrService">The OCR service to check for availability.</param>
         public HealthCheck(IGeneralLogger logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRServiceClient ocrService)
         {
             this._Logger = logger;
@@ -23,6 +28,7 @@ namespace OpenDMSBackend.Core.Misc
             this._InitializationService = initializationService;
             this._OCRService = ocrService;
         }
+        /// <inheritdoc />
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             this._Logger.Log("Start calculating health-status", Microsoft.Extensions.Logging.LogLevel.Debug);

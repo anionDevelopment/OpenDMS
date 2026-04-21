@@ -10,6 +10,9 @@
 import { Version3 } from './version3';
 
 
+/**
+ * Represents a data transfer object for a document preview, without the full document content.
+ */
 export interface DocumentPreviewDTO { 
     id?: string | null;
     title?: string | null;

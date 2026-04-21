@@ -20,6 +20,10 @@ namespace OpenDMSBackend.Core.Controller
         private readonly IBusinessLogicService _BusinessLogicService;
         private readonly IAuthenticationService _AuthenticationService;
         private readonly ITimeService _TimeService;
+        /// <summary>Initializes a new instance of <see cref="OpenDMSBackendController"/>.</summary>
+        /// <param name="businessLogicService">The business logic service used to process document operations.</param>
+        /// <param name="authenticationService">The authentication service used to resolve the current user.</param>
+        /// <param name="timeService">The time service used for time-dependent operations.</param>
         public OpenDMSBackendController(IBusinessLogicService businessLogicService, IAuthenticationService authenticationService, ITimeService timeService)
         {
             this._BusinessLogicService = businessLogicService;
@@ -27,6 +31,13 @@ namespace OpenDMSBackend.Core.Controller
             this._TimeService = timeService;
         }
 
+        /// <summary>Uploads a new document into the specified container.</summary>
+        /// <param name="content">The raw binary content of the document.</param>
+        /// <param name="containerId">The ID of the container (folder or storage location) to add the document to.</param>
+        /// <param name="filename">The file name for the uploaded document.</param>
+        /// <param name="title">An optional display title for the document.</param>
+        /// <param name="additionalOCRLanguages">Additional languages to use during OCR processing.</param>
+        /// <returns>The ID of the newly created document.</returns>
         [Authenticate]
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -44,6 +55,10 @@ namespace OpenDMSBackend.Core.Controller
             }
         }
 
+        /// <summary>Updates the display title of an existing document.</summary>
+        /// <param name="documentId">The ID of the document whose title should be updated.</param>
+        /// <param name="newTitle">The new title value to assign to the document.</param>
+        /// <returns>200 OK on success.</returns>
         [Authenticate]
         [HttpPut]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -62,6 +77,10 @@ namespace OpenDMSBackend.Core.Controller
             }
         }
 
+        /// <summary>Creates a new folder inside the specified parent folder.</summary>
+        /// <param name="parentFolderId">The ID of the parent folder in which to create the new folder.</param>
+        /// <param name="name">The name of the new folder.</param>
+        /// <returns>The ID of the newly created folder.</returns>
         [Authenticate]
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -72,6 +91,10 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.AddFolder(this.GetUser().Id, name, parentFolderId));
         }
 
+        /// <summary>Renames the specified container to the given new name.</summary>
+        /// <param name="containerId">The id of the container to rename.</param>
+        /// <param name="newName">The new name to assign.</param>
+        /// <returns>200 OK on success.</returns>
         [Authenticate]
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -83,6 +106,10 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Moves the specified containee into the target container.</summary>
+        /// <param name="containeeIdToMove">The id of the document or folder to move.</param>
+        /// <param name="targetContainerId">The id of the container to move the item into.</param>
+        /// <returns>200 OK on success.</returns>
         [Authenticate]
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -94,6 +121,10 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Grants the specified user permission to view the specified storage location.</summary>
+        /// <param name="storageLocationId">The id of the storage location to share.</param>
+        /// <param name="sharedWithUserId">The id of the user to grant access to.</param>
+        /// <returns>200 OK on success.</returns>
         [Authenticate]
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -105,6 +136,10 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Revokes the specified user's permission to view the specified storage location.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="sharedWithUserId">The id of the user whose access should be revoked.</param>
+        /// <returns>200 OK on success.</returns>
         [Authenticate]
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -116,6 +151,9 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Creates a new storage location with the given name owned by the current user.</summary>
+        /// <param name="name">The display name of the new storage location.</param>
+        /// <returns>The id of the newly created storage location.</returns>
         [Authenticate]
         [HttpPost]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -126,6 +164,9 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.AddStorageLocation(this.GetUser().Id, name));
         }
 
+        /// <summary>Returns the storage location with the specified id.</summary>
+        /// <param name="id">The id of the storage location to retrieve.</param>
+        /// <returns>The storage location as a <see cref="StorageLocationDTO"/>.</returns>
         [Authenticate]
         [HttpGet]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -136,6 +177,8 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetStorageLocation(this.GetUser().Id, id).ToDTO());
         }
 
+        /// <summary>Returns all storage locations the current user is allowed to view.</summary>
+        /// <returns>An array of <see cref="StorageLocationDTO"/> representing every accessible storage location.</returns>
         [Authenticate]
         [HttpGet]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -146,6 +189,9 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetAllViewableStorageLocations(this.GetUser().Id).Select(sl => sl.ToDTO()));
         }
 
+        /// <summary>Returns the folder with the specified id.</summary>
+        /// <param name="id">The id of the folder to retrieve.</param>
+        /// <returns>The folder as a <see cref="FolderDTO"/>.</returns>
         [Authenticate]
         [HttpGet]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -156,6 +202,9 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetFolder(this.GetUser().Id, id).ToDTO());
         }
 
+        /// <summary>Searches for documents visible to the current user that match the given search term.</summary>
+        /// <param name="searchTerm">The term to search for across document titles, filenames, tags, and OCR content.</param>
+        /// <returns>A list of matching documents as <see cref="DocumentPreviewDTO"/> objects, ordered by relevance.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpGet]
@@ -166,6 +215,9 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.Search(this.GetUser().Id, searchTerm).Select(searchResult => searchResult.ToDTO()));
         }
 
+        /// <summary>Returns the full document with the specified id.</summary>
+        /// <param name="id">The id of the document to retrieve.</param>
+        /// <returns>The document as a <see cref="DocumentDTO"/>.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpGet]
@@ -176,6 +228,9 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, id).ToDTO());
         }
 
+        /// <summary>Returns the full document identified by its human-readable numeric id.</summary>
+        /// <param name="readableId">The human-readable numeric id of the document to retrieve.</param>
+        /// <returns>The document as a <see cref="DocumentDTO"/>.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpGet]
@@ -186,6 +241,9 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetDocumentFromReadableId(this.GetUser().Id, readableId).ToDTO());
         }
 
+        /// <summary>Returns a preview representation of the document with the specified id.</summary>
+        /// <param name="id">The id of the document whose preview is requested.</param>
+        /// <returns>The document preview as a <see cref="DocumentPreviewDTO"/>.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpGet]
@@ -196,6 +254,8 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetDocumentPreview(this.GetUser().Id, id).ToDTO());
         }
 
+        /// <summary>Returns the most recently added documents visible to the current user.</summary>
+        /// <returns>A list of the latest documents as <see cref="DocumentPreviewDTO"/> objects.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpGet]
@@ -206,6 +266,8 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetLatestDocuments(this.GetUser().Id).Select(preview => preview.ToDTO()));
         }
 
+        /// <summary>Returns all tags defined in the system.</summary>
+        /// <returns>An array of all tags as <see cref="TagDTO"/> objects.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpPut]
@@ -216,6 +278,10 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetAllTags());
         }
 
+        /// <summary>Permanently deletes the specified container or document and all its contents.</summary>
+        /// <param name="containerOrContaineeId">The id of the container or document to delete.</param>
+        /// <param name="reason">The stated reason for the deletion, recorded in the audit log.</param>
+        /// <returns>200 OK on success.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpDelete]
@@ -227,6 +293,10 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Marks the specified container or document as soft-deleted without removing it from storage.</summary>
+        /// <param name="containerOrContaineeId">The id of the container or document to soft-delete.</param>
+        /// <param name="reason">The stated reason for the deletion, recorded in the audit log.</param>
+        /// <returns>200 OK on success.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpDelete]

@@ -74,11 +74,16 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             return HashCode.Combine(this.Id);
         }
 
+        /// <summary>Converts this instance to its DTO representation.</summary>
+        /// <returns>A <see cref="DocumentPreviewDTO"/> populated from this instance.</returns>
         public DocumentPreviewDTO ToDTO()
         {
             return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, GUtilities.FormatTimestamp(this.ImportDate, false), GUtilities.FormatTimestampNullable(this.LastEditDate, false), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore, false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter, false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages,this.AddedByUserId);
         }
 
+        /// <summary>Returns the most recent date of the document — last-edit date if available, otherwise import date.</summary>
+        /// <param name="document">The document preview to inspect.</param>
+        /// <returns>The last-edit date if set, otherwise the import date.</returns>
         public DateTimeOffset GetNewestDate(DocumentPreview document)
         {
             if (document.LastEditDate == default)
