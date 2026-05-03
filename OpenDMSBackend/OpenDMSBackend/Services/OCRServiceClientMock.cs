@@ -1,4 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
@@ -21,10 +22,10 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="log">The logger for diagnostic output.</param>
         /// <param name="cmdParameter">Commandline parameters (reserved for future use).</param>
         /// <param name="configuration">The persisted server configuration.</param>
-        public OCRServiceClientMock(IGRYLog log, CommandlineParameter cmdParameter, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration)
+        public OCRServiceClientMock(IServerLog log, CommandlineParameter cmdParameter, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration)
         {
             this._Configuration = configuration;
-            this._Log = log;
+            this._Log = log.Logger;
         }
         /// <inheritdoc />
         public (bool, Exception?) IsAvailable()

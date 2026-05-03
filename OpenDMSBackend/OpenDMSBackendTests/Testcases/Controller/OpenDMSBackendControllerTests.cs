@@ -38,12 +38,12 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
             businessServiceMock.Setup(mock => mock.AddDocument(userId, title, containerId, filename, content, role, new HashSet<string>(additionalOCRLanguages))).Returns(documentIde);
             OpenDMSBackend.Core.Controller.OpenDMSBackendController controller = new OpenDMSBackend.Core.Controller.OpenDMSBackendController(businessServiceMock.Object, authenticationServiceMock.Object, timeService);
 
-            var claims = new List<Claim>
+            List<Claim> claims = new List<Claim>
             {
                 new Claim( "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",userId)
             };
-            var identity = new ClaimsIdentity(claims, "TestAuth");
-            var claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
             controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext

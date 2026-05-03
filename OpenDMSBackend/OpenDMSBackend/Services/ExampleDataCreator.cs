@@ -14,7 +14,7 @@ namespace OpenDMSBackend.Core.Services
         /// <summary>Initializes a new instance of <see cref="ExampleDataCreator"/>.</summary>
         /// <param name="businessLogicService">The business logic service used to create example entities.</param>
         /// <param name="authenticationService">The authentication service used to retrieve role information.</param>
-        public ExampleDataCreator(IBusinessLogicService businessLogicService,IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> authenticationService)
+        public ExampleDataCreator(IBusinessLogicService businessLogicService, IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> authenticationService)
         {
             this._BusinessLogicService = businessLogicService;
             this._AuthenticationService = authenticationService;
@@ -88,7 +88,7 @@ namespace OpenDMSBackend.Core.Services
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
             DateTime creationDate = initialDate.AddMinutes(documentNumber);
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
-            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content,  groupOfBusinessOwner,new HashSet<string>());
+            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content, groupOfBusinessOwner, new HashSet<string>());
         }
 
         /// <summary>Loads the content of an embedded example document by file name.</summary>

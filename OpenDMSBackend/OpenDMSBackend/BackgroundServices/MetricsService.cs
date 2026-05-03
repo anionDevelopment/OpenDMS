@@ -5,6 +5,7 @@ using Prometheus;
 using OpenDMSBackend.Core.Constants;
 using System;
 using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Core.Misc.Logger;
 
 namespace OpenDMSBackend.Core.BackgroundServices
 {
@@ -17,7 +18,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
         /// <param name="constants">Application-wide constants including the execution mode.</param>
         /// <param name="logger">The logger for diagnostic output.</param>
         /// <param name="persistence">The persistence service used to read document counts.</param>
-        public MetricsService(IApplicationConstants<CodeUnitSpecificConstants> constants, IGRYLog logger, IPersistence persistence) : base(constants.ExecutionMode, logger)
+        public MetricsService(IApplicationConstants<CodeUnitSpecificConstants> constants, IMetricsServiceLog logger, IPersistence persistence) : base(constants.ExecutionMode, logger.Logger)
         {
             this.Enabled = true;
             this.AdditionalDelay = TimeSpan.FromSeconds(5);

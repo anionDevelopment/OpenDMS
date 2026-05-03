@@ -1,4 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
@@ -25,10 +26,10 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="configuration">The persisted server configuration, including the OCR service address and API key.</param>
         /// <param name="log">The logger for diagnostic output.</param>
         /// <param name="cmdParameter">Commandline parameters (reserved for future use).</param>
-        public OCRServiceClient(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IGRYLog log, CommandlineParameter cmdParameter)
+        public OCRServiceClient(IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IServerLog log, CommandlineParameter cmdParameter)
         {
             this._Configuration = configuration;
-            this._Log = log;
+            this._Log = log.Logger;
         }
         /// <inheritdoc />
         public (bool, Exception?) IsAvailable()

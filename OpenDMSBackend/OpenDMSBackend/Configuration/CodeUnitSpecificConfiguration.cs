@@ -20,7 +20,6 @@ namespace OpenDMSBackend.Core.Configuration
         public bool RegistrationIsEnabled { get; set; }
         public bool LoginIsEnabled { get; set; }
         public IDatabasePersistenceConfiguration DatabasePersistenceConfiguration { get; set; }
-
         public ICommonRoutesInformation CommonRoutesInformation { get; set; }
         public IMaintenanceRoutesInformation MaintenanceRoutesInformation { get; set; }
         public IDRequestLoggingConfiguration ConfigurationForDLoggingMiddleware { get; set; }
@@ -32,6 +31,8 @@ namespace OpenDMSBackend.Core.Configuration
         public IExceptionManagerConfiguration ConfigurationForExceptionManagerMiddleware { get; set; }
         public IHeaderServiceConfiguration HeaderServiceConfiguration { get; set; }
         public IGRYLogConfiguration AuditLogConfiguration { get; set; }
+        public IGRYLogConfiguration ManagementSchedulerServiceLogConfiguration { get; set; }
+        public IGRYLogConfiguration MetricsServiceLogConfiguration { get; set; }
         public ISet<ImportDefinition> ImportDefinitions { get; set; }
         public ISet<string> DefaultOCRLanguages { get; set; }
         public string OCRDataServiceAddress { get; set; }

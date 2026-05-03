@@ -11,6 +11,7 @@ using GRYLibrary.Core.APIServer.Services.CredH;
 using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Services.Trans;
@@ -28,6 +29,7 @@ using OpenDMSBackend.Core.BackgroundServices;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Misc;
+using OpenDMSBackend.Core.Misc.Logger;
 using OpenDMSBackend.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -51,7 +53,7 @@ namespace OpenDMSBackend.Core
         internal Action<FunctionalInformation<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter>> SetupMocks { get; set; }
         public Program()
         {
-            this._Log = GRYLog.Create();
+            this._Log = new InitialLog().Logger;
         }
         internal static int Main(string[] commandlineArguments)
         {
@@ -69,6 +71,10 @@ namespace OpenDMSBackend.Core
             {
                 apiServerConfiguration.SetInitialzationInformationAction = (initializationInformation) =>
                 {
+                    if (initializationInformation.CommandlineParameter.EnforceVerbose)
+                    {
+                        _Log.Configuration.AddLogLevel(LogLevel.Debug);
+                    }
                     runningUsually = initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
                     string domain = string.IsNullOrWhiteSpace(initializationInformation.CommandlineParameter.InitialDomain) ? Tools.GetDefaultDomainValue(GeneralConstants.CodeUnitName) : initializationInformation.CommandlineParameter.InitialDomain;
                     initializationInformation.ApplicationConstants.CommonRoutesHostInformation = new DoNotHostCommonRoutes();
@@ -129,7 +135,9 @@ namespace OpenDMSBackend.Core
                         DatabaseType = initializationInformation.CommandlineParameter.InitialDatabaseType ?? "Transient",
                     };
                     bool runServices = !runningUsually;
-                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./AuditLog.log"), true);
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./Audit.log"), true);
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ManagementSchedulerServiceLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./ManagementService.log"), true);
+                    initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MetricsServiceLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./MetricsService.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.CommonRoutesInformation = new CommonRoutesInformation()
                     {
                         ContactLink = $"https://information.{domain}/Products/{GeneralConstants.CodeUnitName}/Contact",
@@ -159,8 +167,28 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForDLoggingMiddleware);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DatabasePersistenceConfiguration);
                         IGRYLog logger = functionalInformation.Logger;
-                        IAuditLog auditLog = new AuditLog(functionalInformation.InitializationInformation.ApplicationConstants.ExecutionMode.Accept(new GetLoggerVisitor(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder(), "AuditLog", GRYLog.Create(), logger.Configuration.LogTargets.Where(t => t.LogLevels.Contains(LogLevel.Debug)).Any())));
+
+                        AuditLog auditLog = new AuditLog(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder());
+                        if (functionalInformation.InitializationInformation.CommandlineParameter.EnforceVerbose)
+                        {
+                            auditLog.Logger.Configuration.AddLogLevel(LogLevel.Debug);
+                        }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuditLog>(auditLog);
+
+                        ManagementServiceLog managementServiceLog = new ManagementServiceLog(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ManagementSchedulerServiceLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder());
+                        if (functionalInformation.InitializationInformation.CommandlineParameter.EnforceVerbose)
+                        {
+                            managementServiceLog.Logger.Configuration.AddLogLevel(LogLevel.Debug);
+                        }
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementServiceLog>(managementServiceLog);
+
+                        MetricsServiceLog metricsServiceLog = new MetricsServiceLog(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.MetricsServiceLogConfiguration, functionalInformation.InitializationInformation.ApplicationConstants.GetLogFolder());
+                        if (functionalInformation.InitializationInformation.CommandlineParameter.EnforceVerbose)
+                        {
+                            metricsServiceLog.Logger.Configuration.AddLogLevel(LogLevel.Debug);
+                        }
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IMetricsServiceLog>(metricsServiceLog);
+
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IIdGenerator<ulong>, Services.IdGenerator>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<ITimeService, TimeService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<CommandlineParameter>(functionalInformation.InitializationInformation.CommandlineParameter);
@@ -202,7 +230,7 @@ namespace OpenDMSBackend.Core
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationServicePersistence<Model.BusinessTypes.User>>(sp => sp.GetRequiredService<ITransientAuthenticationServicePersistence<Model.BusinessTypes.User>>());
                         }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IGeneralResourceLoader, Services.GeneralResourceLoader>();
-                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementScheduler, ManagementScheduler>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IManagementScheduler, ManagementService>();
                         if (functionalInformation.InitializationInformation.CommandlineParameter.UseMockOCRService)
                         {
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClientMock>();

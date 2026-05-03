@@ -2,6 +2,7 @@
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
@@ -33,11 +34,11 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="exampleDataCreator">Service that seeds example data in development environments.</param>
         /// <param name="persistence">The persistence service used to wait for DB availability and read state.</param>
         /// <param name="idGenerator">Generator for unique numeric ids, reset from the stored max readable id.</param>
-        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IGeneralLogger generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator)
+        public InitializationService(IAuthenticationService<Model.BusinessTypes.User> authenticationService, IBusinessLogicService businessLogicService, IServerLog generalLogger, IApplicationConstants<CodeUnitSpecificConstants> constants, IExampleDataCreator exampleDataCreator, IPersistence persistence, IIdGenerator<ulong> idGenerator)
         {
             this._AuthenticationService = authenticationService;
             this._BusinessLogicService = businessLogicService;
-            this._GeneralLogger = generalLogger;
+            this._GeneralLogger = generalLogger.Logger;
             this._Constants = constants;
             this._ExampleDataCreator = exampleDataCreator;
             this._Persistence = persistence;

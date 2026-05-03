@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
@@ -46,13 +47,13 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="idGenerator">Generator for unique numeric identifiers.</param>
         /// <param name="generalResourceLoader">Loader for embedded general resources.</param>
         /// <param name="auditLog">The audit log service.</param>
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IGeneralLogger logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader, IAuditLog auditLog)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IServerLog logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader, IAuditLog auditLog)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
             this._TimeService = timeService;
             this._Constants = constants;
-            this._Logger = logger;
+            this._Logger = logger.Logger;
             this._Configuration = configuration;
             this._OCRService = oCRService;
             this._IdGenerator = idGenerator;
@@ -117,7 +118,7 @@ namespace OpenDMSBackend.Core.Services
                 Role userRole = this._AuthenticationService.GetRoleByName(CodeUnitSpecificConstants.RolenameUsers);
                 this._AuthenticationService.EnsureUserHasRole(newUser.Id, userRole.Id);
 
-                this._AuditLog.AuditLogger.Log($"User with id {newUser.Id} registered.", Microsoft.Extensions.Logging.LogLevel.Information);
+                this._AuditLog.Logger.Log($"User with id {newUser.Id} registered.", Microsoft.Extensions.Logging.LogLevel.Information);
                 return newUser.Id;
             }
         }
@@ -408,7 +409,7 @@ namespace OpenDMSBackend.Core.Services
             //TODO check permission
             string id = this._Persistence.AddStoragLocation(name);
             this._Persistence.SetOwnerOfStorageLocation(id, requesterUserId);
-            this._AuditLog.AuditLogger.Log($"Storage-location '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
+            this._AuditLog.Logger.Log($"Storage-location '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
             return id;
         }
 
@@ -418,7 +419,7 @@ namespace OpenDMSBackend.Core.Services
             //TODO check permission
             string id = this._Persistence.AddFolder(name);
             this._Persistence.SetParentOfContainee(this.GetContainee(id), parentContainerId);
-            this._AuditLog.AuditLogger.Log($"Folder '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
+            this._AuditLog.Logger.Log($"Folder '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
             return id;
         }
 
@@ -459,7 +460,7 @@ namespace OpenDMSBackend.Core.Services
             Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId, reason), (folderId) => this.RemoveEntireContent(requesterUserId, folderId, reason), null);
 
             this._Persistence.HardDelete(containerOrContaineeId);
-            this._AuditLog.AuditLogger.Log($"Hard-deleted {this._AuditLog.AuditLogger}. Reason: {reason}");
+            this._AuditLog.Logger.Log($"Hard-deleted {containerOrContaineeId}. Reason: {reason}");
         }
 
         /// <inheritdoc />

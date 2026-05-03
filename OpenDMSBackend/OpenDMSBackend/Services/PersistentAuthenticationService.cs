@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Crypto;
@@ -32,10 +33,10 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="authentificationPersistence">Persistence layer for authentication data.</param>
         /// <param name="logger">Logger used for diagnostic output.</param>
         /// <param name="constants">Application-wide constants.</param>
-        public PersistentAuthenticationService(ITimeService timeService, IAuthenticationServicePersistence<Model.BusinessTypes.User> authentificationPersistence, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants)
+        public PersistentAuthenticationService(ITimeService timeService, IAuthenticationServicePersistence<Model.BusinessTypes.User> authentificationPersistence, IServerLog logger, IApplicationConstants<CodeUnitSpecificConstants> constants)
         {
             this._AuthentificationPersistence = authentificationPersistence;
-            this._Logger = logger;
+            this._Logger = logger.Logger;
             this._Constants = constants;
             this._TimeService = timeService;
         }

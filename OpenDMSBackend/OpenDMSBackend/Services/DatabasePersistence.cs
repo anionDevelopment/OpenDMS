@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
@@ -36,11 +37,11 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="timeService">The service used to obtain the current time.</param>
         /// <param name="log">The logger for diagnostic output.</param>
         /// <param name="constants">Application-wide constants including the data folder path.</param>
-        public DatabasePersistence(IOpenDMSDatabaseInteractor database, ITimeService timeService, IGRYLog log, IApplicationConstants constants)
+        public DatabasePersistence(IOpenDMSDatabaseInteractor database, ITimeService timeService, IServerLog log, IApplicationConstants constants)
         {
             this._TimeService = timeService;
             this._Database = database;
-            this._Log = log;
+            this._Log = log.Logger;
             this._SQLProvider = database.GetSQLProvider();
             this.InitializationState = new Uninitialized();
             this._Constants = constants;

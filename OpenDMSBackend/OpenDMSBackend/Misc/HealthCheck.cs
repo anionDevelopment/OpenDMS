@@ -1,4 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Init;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -21,9 +22,9 @@ namespace OpenDMSBackend.Core.Misc
         /// <param name="persistence">The persistence service to check for availability.</param>
         /// <param name="initializationService">The initialization service used to verify the app is ready.</param>
         /// <param name="ocrService">The OCR service to check for availability.</param>
-        public HealthCheck(IGeneralLogger logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRServiceClient ocrService)
+        public HealthCheck(IServerLog logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRServiceClient ocrService)
         {
-            this._Logger = logger;
+            this._Logger = logger.Logger;
             this._Persistence = persistence;
             this._InitializationService = initializationService;
             this._OCRService = ocrService;
