@@ -53,5 +53,6 @@
         string GetScriptAddDirectlyInheritedRoles();
         string GetScriptInsertRole();
         string GetScriptGetDirectlyInheritedRoleIds();
+        string GetScriptGetUserByExternalLogin();
     }
 }

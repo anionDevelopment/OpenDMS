@@ -593,5 +593,27 @@ namespace OpenDMSBackend.Core.Services
         {
             this._TransientAuthenticationServicePersistence.AddAccessToken(newAccessToken);
         }
+
+        /// <inheritdoc />
+        public Model.BusinessTypes.User? GetUserByExternalLogin(string providerId, string subject)
+        {
+            lock (_Lock)
+            {
+                foreach (Model.BusinessTypes.User user in this._TransientAuthenticationServicePersistence.GetAllUsers().Values)
+                {
+                    if (user.ExternalLoginProvider == providerId && user.ExternalLoginSubject == subject)
+                    {
+                        return user;
+                    }
+                }
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public bool UserWithExternalLoginExists(string providerId, string subject)
+        {
+            return this.GetUserByExternalLogin(providerId, subject) != null;
+        }
     }
 }

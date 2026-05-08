@@ -19,6 +19,13 @@ namespace OpenDMSBackend.Core.Configuration
     {
         public bool RegistrationIsEnabled { get; set; }
         public bool LoginIsEnabled { get; set; }
+
+        /// <summary>
+        /// List of configured OpenID Connect providers.
+        /// Add one entry per provider (e.g. Keycloak realm) to enable OIDC login for it.
+        /// Leave empty to disable OIDC login entirely.
+        /// </summary>
+        public IList<OIDCProviderEntry> OIDCProviders { get; set; } = new List<OIDCProviderEntry>();
         public IDatabasePersistenceConfiguration DatabasePersistenceConfiguration { get; set; }
         public ICommonRoutesInformation CommonRoutesInformation { get; set; }
         public IMaintenanceRoutesInformation MaintenanceRoutesInformation { get; set; }

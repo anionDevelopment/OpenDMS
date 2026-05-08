@@ -314,5 +314,11 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("GetDirectlyInheritedRoleIds");
         }
+
+        /// <inheritdoc />
+        public string GetScriptGetUserByExternalLogin()
+        {
+            return this.LoadSQLScript("GetUserByExternalLogin");
+        }
     }
 }

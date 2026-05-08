@@ -299,6 +299,8 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RegistrationMoment", user.RegistrationMoment));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TOTPActivated", user.TOTP?.IsActicated, typeof(bool)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TOTPSecretKey", user.TOTP?.SecretKey, typeof(string)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ExternalLoginProvider", user.ExternalLoginProvider, typeof(string)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ExternalLoginSubject", user.ExternalLoginSubject, typeof(string)));
 
                 command.ExecuteNonQuery();
             });
@@ -342,11 +344,13 @@ namespace OpenDMSBackend.Core.Services
                     User user = new User();
                     user.Id = userId;
                     user.Name = reader.GetString(1);
-                    user.PasswordHash = reader.GetString(2);
+                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
                     user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
                     user.RegistrationMoment = reader.GetDateTime(6);
+                    user.ExternalLoginProvider = DBUtilities.GetNullableValue<string>(reader, 9);
+                    user.ExternalLoginSubject = DBUtilities.GetNullableValue<string>(reader, 10);
                     return user;
                 }
                 else
@@ -392,6 +396,8 @@ namespace OpenDMSBackend.Core.Services
                         user.UserIsActivated = reader.GetBoolean(4);
                         user.UserIsLocked = reader.GetBoolean(5);
                         user.RegistrationMoment = reader.GetDateTime(6);
+                        user.ExternalLoginProvider = DBUtilities.GetNullableValue<string>(reader, 9);
+                        user.ExternalLoginSubject = DBUtilities.GetNullableValue<string>(reader, 10);
                         return user;
                     }
                     else
@@ -1324,6 +1330,47 @@ namespace OpenDMSBackend.Core.Services
                 cmd.CommandText = this._SQLProvider.GetScriptResetDatabase();
                 cmd.ExecuteNonQuery();
             });
+        }
+
+        /// <inheritdoc />
+        public Model.BusinessTypes.User? GetUserByExternalLogin(string providerId, string subject)
+        {
+            User? result = this.RunTransaction(nameof(GetUserByExternalLogin), true, (cmd) =>
+            {
+                cmd.CommandText = this._SQLProvider.GetScriptGetUserByExternalLogin();
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ExternalLoginProvider", providerId));
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ExternalLoginSubject", subject));
+                using DbDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    User user = new User();
+                    user.Id = reader.GetString(0);
+                    user.Name = reader.GetString(1);
+                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
+                    user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
+                    user.UserIsActivated = reader.GetBoolean(4);
+                    user.UserIsLocked = reader.GetBoolean(5);
+                    user.RegistrationMoment = reader.GetDateTime(6);
+                    user.ExternalLoginProvider = DBUtilities.GetNullableValue<string>(reader, 9);
+                    user.ExternalLoginSubject = DBUtilities.GetNullableValue<string>(reader, 10);
+                    return user;
+                }
+                return null;
+            })[0];
+            if (result != null)
+            {
+                this.EnrichWithRoles(result);
+                this.EnrichWithAccessToken(result);
+                this.EnrichWithTOTPToken(result);
+            }
+            return result;
+        }
+
+        /// <inheritdoc />
+        public bool UserWithExternalLoginExists(string providerId, string subject)
+        {
+            return this.GetUserByExternalLogin(providerId, subject) != null;
         }
 
         /// <inheritdoc />

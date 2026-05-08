@@ -203,5 +203,14 @@ namespace OpenDMSBackend.Core.Services
 
         /// <summary>Resets the persistence store to its initial empty state.</summary>
         public void Reset();
+
+        /// <summary>
+        /// Returns the user that is linked to the given external OIDC provider and subject.
+        /// Returns <see langword="null"/> if no such user exists.
+        /// </summary>
+        public Model.BusinessTypes.User? GetUserByExternalLogin(string providerId, string subject);
+
+        /// <summary>Returns whether a user with the given external login exists.</summary>
+        public bool UserWithExternalLoginExists(string providerId, string subject);
     }
 }

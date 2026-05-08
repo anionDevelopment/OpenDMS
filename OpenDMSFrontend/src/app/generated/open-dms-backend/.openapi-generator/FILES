@@ -5,6 +5,7 @@ api.base.service.ts
 api.module.ts
 api/api.ts
 api/maintenanceRoutes.service.ts
+api/oIDC.service.ts
 api/openDMSBackend.service.ts
 api/user.service.ts
 configuration.ts
@@ -16,6 +17,10 @@ model/documentDTO.ts
 model/documentPreviewDTO.ts
 model/folderDTO.ts
 model/models.ts
+model/oIDCCallbackRequestDTO.ts
+model/oIDCInitiationDTO.ts
+model/oIDCProviderDTO.ts
+model/problemDetails.ts
 model/storageLocationDTO.ts
 model/stringValueDTO.ts
 model/tagDTO.ts

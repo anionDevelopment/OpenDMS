@@ -10,9 +10,11 @@ import { AdminSettingsComponent } from './modules/admin-area/admin-settings/admi
 import { DocumentsListComponent } from './modules/user-area/documents-list/documents-list.component';
 import { HintNotFoundComponent } from './modules/home-page/hint-not-found/hint-not-found.component';
 import { ViewDocumentComponent } from './modules/user-area/view-document/view-document.component';
+import { OidcCallbackComponent } from './modules/home-page/oidc-callback/oidc-callback.component';
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
+    { path: 'oidc-callback', component: OidcCallbackComponent },
     { path: 'admin/dashboard', component: AdminDashboardComponent, canActivate: [authenticationCheckGuard] },
     { path: 'admin/settings', component: AdminSettingsComponent, canActivate: [authenticationCheckGuard] },
     { path: 'admin/users', component: UsersListComponent, canActivate: [authenticationCheckGuard] },

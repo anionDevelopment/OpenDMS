@@ -17,3 +17,20 @@
     <button mat-flat-button i18n="@@login_button">Login</button>
 
 </form>
+
+<ng-container *ngIf="oidcProviders.length > 0">
+    <hr />
+
+    <mat-form-field>
+        <mat-label i18n="@@oidc_provider_label">Login with</mat-label>
+        <mat-select [(value)]="selectedProviderId">
+            <mat-option *ngFor="let provider of oidcProviders" [value]="provider.id">
+                {{ provider.displayName }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <br />
+
+    <button mat-flat-button type="button" [disabled]="!selectedProviderId" (click)="loginWithOidc()" i18n="@@oidc_login_button">Login with selected provider</button>
+</ng-container>

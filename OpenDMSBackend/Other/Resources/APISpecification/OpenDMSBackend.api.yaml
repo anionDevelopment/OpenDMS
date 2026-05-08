@@ -152,6 +152,76 @@ components:
           nullable: true
           type: string
       type: object
+    OIDCCallbackRequestDTO:
+      additionalProperties: false
+      description: Sent by the frontend to exchange an OIDC authorization code for
+        an OpenDMS access token.
+      properties:
+        code:
+          description: The authorization code received from the OIDC provider callback.
+          nullable: true
+          type: string
+        providerId:
+          description: The provider id that initiated the flow (e.g. "keycloak-1").
+          nullable: true
+          type: string
+        state:
+          description: The state value from the callback, used to look up the stored
+            code verifier.
+          nullable: true
+          type: string
+      type: object
+    OIDCInitiationDTO:
+      additionalProperties: false
+      description: Returned when initiating an OIDC login; the frontend redirects
+        the user to OpenDMSBackend.Core.Model.DTOs.OIDCInitiationDTO.AuthorizationUrl.
+      properties:
+        authorizationUrl:
+          description: The full URL to redirect the user's browser to at the OIDC
+            provider.
+          nullable: true
+          type: string
+        state:
+          description: "The OIDC state value. The frontend must store this and verify\
+            \ it matches what comes back\r\nin the callback query parameter before\
+            \ calling ExchangeOIDCCode."
+          nullable: true
+          type: string
+      type: object
+    OIDCProviderDTO:
+      additionalProperties: false
+      description: Public representation of a configured OIDC provider, returned to
+        the frontend.
+      properties:
+        displayName:
+          description: The human-readable label for the login button.
+          nullable: true
+          type: string
+        id:
+          description: The unique provider id (e.g. "keycloak-1").
+          nullable: true
+          type: string
+      type: object
+    ProblemDetails:
+      additionalProperties: {}
+      properties:
+        detail:
+          nullable: true
+          type: string
+        instance:
+          nullable: true
+          type: string
+        status:
+          format: int32
+          nullable: true
+          type: integer
+        title:
+          nullable: true
+          type: string
+        type:
+          nullable: true
+          type: string
+      type: object
     StorageLocationDTO:
       additionalProperties: false
       properties:
@@ -219,8 +289,8 @@ components:
       type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
-  title: OpenDMSBackend v3.0.5 API documentation
-  version: v3.0.5
+  title: OpenDMSBackend v3.1.0 API documentation
+  version: v3.1.0
 openapi: 3.0.4
 paths:
   /API/Other/Maintenance/AvailabilityCheck:
@@ -265,6 +335,111 @@ paths:
           description: OK
       tags:
       - MaintenanceRoutes
+  /API/v3/OIDCController/ExchangeOIDCCode:
+    post:
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/OIDCCallbackRequestDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OIDCCallbackRequestDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/OIDCCallbackRequestDTO'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Bad Request
+      summary: "Exchanges the OIDC authorization code for an OpenDMS access token.\r\
+        \nCreates a new OpenDMS account for the user on their first login via this\
+        \ provider."
+      tags:
+      - OIDC
+  /API/v3/OIDCController/GetOIDCProviders:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OIDCProviderDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OIDCProviderDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OIDCProviderDTO'
+                type: array
+          description: OK
+      summary: Returns the list of configured OIDC providers. An empty list means
+        OIDC login is not available.
+      tags:
+      - OIDC
+  /API/v3/OIDCController/InitiateOIDCLogin:
+    get:
+      parameters:
+      - description: The id of the OIDC provider (e.g. "keycloak-1").
+        in: query
+        name: providerId
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OIDCInitiationDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/OIDCInitiationDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/OIDCInitiationDTO'
+          description: OK
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Not Found
+      summary: Initiates an OIDC login for the specified provider. Returns the authorization
+        URL to redirect the user to.
+      tags:
+      - OIDC
   /API/v3/OpenDMSBackend/AddDocument/{containerId}:
     post:
       parameters:
@@ -1061,5 +1236,6 @@ paths:
       - User
 tags:
 - name: MaintenanceRoutes
+- name: OIDC
 - name: OpenDMSBackend
 - name: User

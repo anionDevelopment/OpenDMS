@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenDMSBackendTests", "Open
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C0DBDDF5-3B3E-479B-9C18-0E7271FD559C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GRYLibrary", "..\..\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj", "{77B4B7C2-ABF0-2E14-A8DD-066F1ED1E428}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Development|Any CPU = Development|Any CPU
@@ -28,6 +30,12 @@ Global
 		{740C3BA4-87F3-49A3-95C8-A3CEC80C01BF}.Productive|Any CPU.Build.0 = Productive|Any CPU
 		{740C3BA4-87F3-49A3-95C8-A3CEC80C01BF}.QualityCheck|Any CPU.ActiveCfg = QualityCheck|Any CPU
 		{740C3BA4-87F3-49A3-95C8-A3CEC80C01BF}.QualityCheck|Any CPU.Build.0 = QualityCheck|Any CPU
+		{77B4B7C2-ABF0-2E14-A8DD-066F1ED1E428}.Development|Any CPU.ActiveCfg = Development|Any CPU
+		{77B4B7C2-ABF0-2E14-A8DD-066F1ED1E428}.Development|Any CPU.Build.0 = Development|Any CPU
+		{77B4B7C2-ABF0-2E14-A8DD-066F1ED1E428}.Productive|Any CPU.ActiveCfg = Productive|Any CPU
+		{77B4B7C2-ABF0-2E14-A8DD-066F1ED1E428}.Productive|Any CPU.Build.0 = Productive|Any CPU
+		{77B4B7C2-ABF0-2E14-A8DD-066F1ED1E428}.QualityCheck|Any CPU.ActiveCfg = QualityCheck|Any CPU
+		{77B4B7C2-ABF0-2E14-A8DD-066F1ED1E428}.QualityCheck|Any CPU.Build.0 = QualityCheck|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,6 +12,7 @@ using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Logger;
+using GRYLibrary.Core.APIServer.Services.OIDC;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Services.Trans;
@@ -119,6 +120,7 @@ namespace OpenDMSBackend.Core
                             @$"^/API/Other/Resources/APISpecification/*",
                             @$"^/API/Other/Maintenance/Metrics$",
                             @$"^/API/Other/Maintenance/HealthCheck$",
+                            @$"^/API/v{GeneralConstants.CodeUnitMajorVersion}/OIDCController/.*$",
                         },
                     };
                     if (initializationInformation.CommandlineParameter.InitialOCRDataServiceAddress != null)
@@ -240,6 +242,8 @@ namespace OpenDMSBackend.Core
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClient>();
                         }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOIDCService, OIDCService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOIDCLoginService, OIDCLoginService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IUserAuthorizationService>(sp => sp.GetRequiredService<IRoleBasedAuthorizationService>());

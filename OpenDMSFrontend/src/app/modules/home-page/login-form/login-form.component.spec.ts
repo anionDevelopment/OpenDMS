@@ -8,8 +8,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { UserService } from '../../../generated/open-dms-backend';
+import { MatSelectModule } from '@angular/material/select';
+import { OIDCService, UserService } from '../../../generated/open-dms-backend';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
 
 describe('LoginFormComponent', () => {
   let component: LoginFormComponent;
@@ -27,6 +29,7 @@ describe('LoginFormComponent', () => {
         MatInputModule,
         MatButtonModule,
         MatIconModule,
+        MatSelectModule,
       ],
       declarations: [
         LoginFormComponent,
@@ -35,6 +38,10 @@ describe('LoginFormComponent', () => {
         {
           provide: UserService,
           useValue: {}
+        },
+        {
+          provide: OIDCService,
+          useValue: { aPIV3OIDCControllerGetOIDCProvidersGet: () => of([]) }
         }
       ]
     }).compileComponents();
