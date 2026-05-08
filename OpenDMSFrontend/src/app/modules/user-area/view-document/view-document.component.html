@@ -1,19 +1,34 @@
 <app-frame-work>
-    <app-user-area-container>
-        <p>
-            <span i18n="@@doc_metadata_heading">Document meta-data:</span><br />
-            <span i18n="@@doc_metadata_title_label">Title:</span> {{doc?.title}}<br />
-            <span i18n="@@doc_metadata_id_label">ID:</span> {{doc?.readableId}}<br />
-            <span i18n="@@doc_metadata_technical_id_label">Technical ID:</span> {{doc?.id}}<br />
-            <span i18n="@@doc_metadata_filename_label">Filename:</span> {{doc?.filename}}<br />
-            <span i18n="@@doc_metadata_original_filename_label">Original filename:</span> {{doc?.originalFilename}}<br />
-            <span i18n="@@doc_metadata_import_date_label">Import-date:</span> {{doc?.importDate}}<br />
-            <span i18n="@@doc_metadata_last_edit_date_label">Last edit-date:</span> {{(doc?.lastEditDate) ? doc!.lastEditDate : '(not available)'}}<br />
-            <span i18n="@@doc_metadata_tags_label">Tags:</span> {{'{'}}{{(doc?.tags && 0
-            < doc?.tags!.size) ? formatTags(doc?.tags!):' '}}{{' }'}}<br />
-        </p>
-        <app-document-preview *ngIf="documentPreview" [documentPreview]="documentPreview"></app-document-preview>
-        <app-edit-document-menu [documentPreview]="documentPreview"
-            (documentRemoved)="onDocumentRemoved()"></app-edit-document-menu>
-    </app-user-area-container>
+  <app-user-area-container>
+    <p>
+      <span i18n="@@doc_metadata_heading">Document meta-data:</span>
+      <br>
+      <span i18n="@@doc_metadata_title_label">Title:</span>
+      {{doc?.title}}
+      <br>
+      <span i18n="@@doc_metadata_id_label">ID:</span>
+      {{doc?.readableId}}
+      <br>
+      <span i18n="@@doc_metadata_technical_id_label">Technical ID:</span>
+      {{doc?.id}}
+      <br>
+      <span i18n="@@doc_metadata_filename_label">Filename:</span>
+      {{doc?.filename}}
+      <br>
+      <span i18n="@@doc_metadata_original_filename_label">Original filename:</span>
+      {{doc?.originalFilename}}
+      <br>
+      <span i18n="@@doc_metadata_import_date_label">Import-date:</span>
+      {{doc?.importDate | timestamp}}
+      <br>
+      <span i18n="@@doc_metadata_last_edit_date_label">Last edit-date:</span>
+      {{doc?.lastEditDate ? (doc!.lastEditDate | timestamp) : '(not available)'}}
+      <br>
+      <span i18n="@@doc_metadata_tags_label">Tags:</span>
+      {{doc?.tags?.size ? formatTags(doc!.tags!) : ''}}
+      <br>
+    </p>
+    <app-document-preview *ngIf="documentPreview" [documentPreview]="documentPreview"></app-document-preview>
+    <app-edit-document-menu [documentPreview]="documentPreview" (documentRemoved)="onDocumentRemoved()"></app-edit-document-menu>
+  </app-user-area-container>
 </app-frame-work>

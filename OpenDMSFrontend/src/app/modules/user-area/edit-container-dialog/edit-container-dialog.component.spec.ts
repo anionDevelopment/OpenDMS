@@ -14,7 +14,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -57,8 +57,15 @@ describe('EditContainerDialogComponent', () => {
       providers: [
         {
           provide: UserService,
-          useValue: {
-          },
+          useValue: {},
+        },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: { containerTitle: '' },
+        },
+        {
+          provide: MatDialogRef,
+          useValue: {},
         },
       ],
     }).compileComponents();

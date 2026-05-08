@@ -1,8 +1,8 @@
 <mat-form-field>
-    <mat-label i18n="@@search_term">Search term</mat-label>
-    <input matInput [(ngModel)]='searchText' (keydown.enter)="search()">
+  <mat-label i18n="@@search_term">Search term</mat-label>
+  <input matInput [(ngModel)]="searchText" (keydown.enter)="search()">
 </mat-form-field>
 <button mat-button type="submit" (click)="search()" [disabled]="!searchText || searchText.trim() === ''">
-    <mat-icon>search</mat-icon>
+  <mat-icon>search</mat-icon>
 </button>
 <app-document-table [documents$]="documents$" (documentRemoved)="onDocumentRemoved($event)"></app-document-table>

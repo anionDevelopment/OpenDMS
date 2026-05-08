@@ -7,7 +7,7 @@ namespace OpenDMSBackend.Core.Misc
     {
         /// <summary>Initializes the SQL provider for the specified database type.</summary>
         /// <param name="databaseType">The database type identifier used to locate the embedded SQL script folder (e.g. "MariaDB" or "PostgreSQL").</param>
-        public SQLProvider(string databaseType ) : base($"OpenDMSBackend.Core.Resources.Database.{databaseType}.Statements") { }
+        public SQLProvider(string databaseType) : base($"OpenDMSBackend.Core.Resources.Database.{databaseType}.Statements") { }
 
         /// <inheritdoc />
         public string GetScriptResetDatabase()
@@ -319,6 +319,18 @@ namespace OpenDMSBackend.Core.Misc
         public string GetScriptGetUserByExternalLogin()
         {
             return this.LoadSQLScript("GetUserByExternalLogin");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRenameFolder()
+        {
+            return this.LoadSQLScript("RenameFolder");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRenameStorageLocation()
+        {
+            return this.LoadSQLScript("RenameStorageLocation");
         }
     }
 }

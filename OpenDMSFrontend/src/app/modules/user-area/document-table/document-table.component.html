@@ -1,44 +1,37 @@
-<table mat-table [dataSource]="documents">
-
-    <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef class="col-id" i18n="@@col_id"> Id </th>
-        <td mat-cell *matCellDef="let element">
-            <app-link-to-document [documentPreview]="element"></app-link-to-document>
-        </td>
-    </ng-container>
-
-    <ng-container matColumnDef="preview">
-        <th mat-header-cell *matHeaderCellDef class="col-preview" i18n="@@col_preview"> Preview </th>
-        <td mat-cell *matCellDef="let element">
-            <app-document-preview [documentPreview]="element"></app-document-preview>
-        </td>
-    </ng-container>
-
-    <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef class="col-title" i18n="@@col_title"> Title </th>
-        <td mat-cell *matCellDef="let element">
-            {{element.title}}
-        </td>
-    </ng-container>
-
-    <ng-container matColumnDef="importdate">
-        <th mat-header-cell *matHeaderCellDef class="col-importdate" i18n="@@col_created_at"> Created at </th>
-        <td mat-cell *matCellDef="let element">
-            {{element.importDate}}
-        </td>
-    </ng-container>
-
-    <ng-container matColumnDef="options">
-        <th mat-header-cell *matHeaderCellDef class="col-options" i18n="@@col_options"> Options </th>
-        <td mat-cell *matCellDef="let element">
-            <app-edit-document-menu [documentPreview]="element"
-                (documentRemoved)="onDocumentRemoved($event)"></app-edit-document-menu>
-        </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+<table mat-table [dataSource]="dataSource" matSort>
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-id" i18n="@@col_id">Id</th>
+    <td mat-cell *matCellDef="let element">
+      <app-link-to-document [documentPreview]="element">{{element.readableId}}</app-link-to-document>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="preview">
+    <th mat-header-cell *matHeaderCellDef class="col-preview" i18n="@@col_preview">Preview</th>
+    <td mat-cell *matCellDef="let element">
+      <app-document-preview [documentPreview]="element"></app-document-preview>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-title" i18n="@@col_title">Title</th>
+    <td mat-cell *matCellDef="let element">
+      <app-link-to-document [documentPreview]="element">{{element.title}}</app-link-to-document>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="importdate">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-importdate" i18n="@@col_created_at">Created at</th>
+    <td mat-cell *matCellDef="let element">{{element.importDate | timestamp}}</td>
+  </ng-container>
+  <ng-container matColumnDef="lasteditdate">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header class="col-lasteditdate" i18n="@@col_last_edit_date">Last edited</th>
+    <td mat-cell *matCellDef="let element">{{element.lastEditDate | timestamp}}</td>
+  </ng-container>
+  <ng-container matColumnDef="options">
+    <th mat-header-cell *matHeaderCellDef class="col-options" i18n="@@col_options">Options</th>
+    <td mat-cell *matCellDef="let element">
+      <app-edit-document-menu [documentPreview]="element" (documentRemoved)="onDocumentRemoved($event)"></app-edit-document-menu>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
-
-<mat-paginator [pageSizeOptions]="[10, 100]" showFirstLastButtons>
-</mat-paginator>
+<mat-paginator [pageSizeOptions]="[10, 100]" showFirstLastButtons></mat-paginator>
