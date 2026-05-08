@@ -15,7 +15,7 @@ export class Settings {
         return environment.production;
     }
     public static getAppName(): string {
-        return packageInfo.name;
+        return "OpenDMS";
     }
     public static getAppVersion(): string {
         return packageInfo.version;

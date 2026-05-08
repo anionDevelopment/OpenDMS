@@ -264,13 +264,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void Rename(string containerId, string newName)
         {
-            throw new NotImplementedException();
+           GetContainerById(containerId).Name = newName;
         }
 
         /// <inheritdoc />
         public void Update(string requesterUserId, Document updatedDocument)
         {
-            throw new NotImplementedException();
+            _Documents[updatedDocument.Id] = updatedDocument;
         }
 
         /// <inheritdoc />

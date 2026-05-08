@@ -132,7 +132,7 @@
     </unit>
     <unit id="content_view_document_count">
       <notes>
-        <note category="location">src/app/modules/user-area/content-view/content-view.component.html:14,15</note>
+        <note category="location">src/app/modules/user-area/content-view/content-view.component.html:15,16</note>
       </notes>
       <segment>
         <source><ph id="0" equiv="INTERPOLATION" disp="{{(documents$|async)!.length}}"/> document(s)</source>
@@ -218,6 +218,40 @@
         <source>Search</source>
       </segment>
     </unit>
+    <unit id="edit_container_dialog_title">
+      <notes>
+        <note category="location">src/app/modules/user-area/edit-container-dialog/edit-container-dialog.component.html:1,3</note>
+      </notes>
+      <segment>
+        <source>Edit container</source>
+      </segment>
+    </unit>
+    <unit id="container_title_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/edit-container-dialog/edit-container-dialog.component.html:4,5</note>
+      </notes>
+      <segment>
+        <source>Title</source>
+      </segment>
+    </unit>
+    <unit id="abort">
+      <notes>
+        <note category="location">src/app/modules/user-area/edit-container-dialog/edit-container-dialog.component.html:9,10</note>
+        <note category="location">src/app/modules/user-area/edit-document-dialog/edit-document-dialog.component.html:9,10</note>
+      </notes>
+      <segment>
+        <source>Abort</source>
+      </segment>
+    </unit>
+    <unit id="save">
+      <notes>
+        <note category="location">src/app/modules/user-area/edit-container-dialog/edit-container-dialog.component.html:10,11</note>
+        <note category="location">src/app/modules/user-area/edit-document-dialog/edit-document-dialog.component.html:10,11</note>
+      </notes>
+      <segment>
+        <source>Save</source>
+      </segment>
+    </unit>
     <unit id="add_folder">
       <notes>
         <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:1</note>
@@ -266,22 +300,6 @@
       </notes>
       <segment>
         <source>Title</source>
-      </segment>
-    </unit>
-    <unit id="abort">
-      <notes>
-        <note category="location">src/app/modules/user-area/edit-document-dialog/edit-document-dialog.component.html:9,10</note>
-      </notes>
-      <segment>
-        <source>Abort</source>
-      </segment>
-    </unit>
-    <unit id="save">
-      <notes>
-        <note category="location">src/app/modules/user-area/edit-document-dialog/edit-document-dialog.component.html:10,11</note>
-      </notes>
-      <segment>
-        <source>Save</source>
       </segment>
     </unit>
     <unit id="view_document">
@@ -391,7 +409,7 @@
     </unit>
     <unit id="doc_metadata_import_date_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:10,11</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:10</note>
       </notes>
       <segment>
         <source>Import-date:</source>
@@ -407,7 +425,7 @@
     </unit>
     <unit id="doc_metadata_tags_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12,13</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12</note>
       </notes>
       <segment>
         <source>Tags:</source>

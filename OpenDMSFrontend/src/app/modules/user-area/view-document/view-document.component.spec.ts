@@ -30,6 +30,7 @@ import { of } from 'rxjs';
 import { EditDocumentMenuComponent } from '../edit-document-menu/edit-document-menu.component';
 import { DocumentPreviewComponent } from '../document-preview/document-preview.component';
 import { UserIconComponent } from '../user-icon/user-icon.component';
+import { TimestampPipe } from '../../../pipes/timestamp.pipe';
 
 describe('ViewDocumentComponent', () => {
   let component: ViewDocumentComponent;
@@ -61,6 +62,7 @@ describe('ViewDocumentComponent', () => {
         RouterTestingModule
       ],
       declarations: [
+        TimestampPipe,
         UserIconComponent,
         EditDocumentMenuComponent,
         DocumentPreviewComponent,

@@ -796,7 +796,16 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void Rename(string containerId, string newName)
         {
-            throw new NotImplementedException();
+            string script = this.IsFolder(containerId)
+                ? this._SQLProvider.GetScriptRenameFolder()
+                : this._SQLProvider.GetScriptRenameStorageLocation();
+            this.RunTransaction(nameof(Rename), true, (command) =>
+            {
+                command.CommandText = script;
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", containerId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", newName));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />

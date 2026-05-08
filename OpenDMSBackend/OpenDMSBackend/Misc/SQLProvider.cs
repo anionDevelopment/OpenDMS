@@ -314,5 +314,17 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("GetDirectlyInheritedRoleIds");
         }
+
+        /// <inheritdoc />
+        public string GetScriptRenameFolder()
+        {
+            return this.LoadSQLScript("RenameFolder");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRenameStorageLocation()
+        {
+            return this.LoadSQLScript("RenameStorageLocation");
+        }
     }
 }

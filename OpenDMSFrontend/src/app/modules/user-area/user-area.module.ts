@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TimestampPipe } from '../../pipes/timestamp.pipe';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { UserSettingsComponent } from './user-settings/user-settings.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -36,10 +37,12 @@ import { LinkToDocumentComponent } from './link-to-document/link-to-document.com
 import { DocumentPreviewComponent } from './document-preview/document-preview.component';
 import { EditDocumentMenuComponent } from './edit-document-menu/edit-document-menu.component';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSortModule } from '@angular/material/sort';
 import { EditStorageLocationMenuComponent } from './edit-storage-location-menu/edit-storage-location-menu.component';
 
 @NgModule({
   declarations: [
+    TimestampPipe,
     ConfirmationDialogComponent,
     ContentTreeComponent,
     ContentViewComponent,
@@ -68,6 +71,7 @@ import { EditStorageLocationMenuComponent } from './edit-storage-location-menu/e
     MatDividerModule,
     MatCheckboxModule,
     MatGridListModule,
+    MatSortModule,
     MatSelectModule,
     MatMenuModule,
     MatPaginatorModule,

@@ -53,5 +53,7 @@
         string GetScriptAddDirectlyInheritedRoles();
         string GetScriptInsertRole();
         string GetScriptGetDirectlyInheritedRoleIds();
+        string GetScriptRenameFolder();
+        string GetScriptRenameStorageLocation();
     }
 }

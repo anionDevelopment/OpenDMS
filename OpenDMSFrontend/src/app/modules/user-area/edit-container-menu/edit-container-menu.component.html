@@ -1,17 +1,13 @@
 <button mat-button color="primary" (click)="addFolder()" [disabled]="!userIsAllowedToAddDocument" aria-label="Add folder" i18n-aria-label="@@add_folder">
-    <mat-icon>create_new_folder</mat-icon>
+  <mat-icon>create_new_folder</mat-icon>
 </button>
-
 <button mat-button color="primary" (click)="uploadFile.click()" [disabled]="!userIsAllowedToAddFolder" aria-label="Upload document" i18n-aria-label="@@upload_document">
-    <mat-icon>post_add</mat-icon>
+  <mat-icon>post_add</mat-icon>
 </button>
-
-<input #uploadFile (change)="addDocument($event)" type='file' style="display:none" />
-
+<input #uploadFile (change)="addDocument($event)" type="file" style="display:none">
 <button mat-button (click)="edit()" aria-label="Edit" i18n-aria-label="@@edit">
-    <mat-icon>edit</mat-icon>
+  <mat-icon>edit</mat-icon>
 </button>
-
 <button mat-button (click)="removeContainer()" aria-label="Delete" i18n-aria-label="@@delete">
-    <mat-icon>delete</mat-icon>
+  <mat-icon>delete</mat-icon>
 </button>
