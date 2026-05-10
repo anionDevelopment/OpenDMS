@@ -3,7 +3,7 @@
   <file id="ngi18n" original="ng.template">
     <unit id="admin_menu_label">
       <notes>
-        <note category="location">src/app/modules/admin-area/admin-area-container/admin-area-container.component.html:4,5</note>
+        <note category="location">src/app/modules/admin-area/admin-area-container/admin-area-container.component.html:4,6</note>
       </notes>
       <segment>
         <source>Admin-menu:</source>
@@ -28,7 +28,7 @@
     </unit>
     <unit id="admin_user_placeholder">
       <notes>
-        <note category="location">src/app/modules/admin-area/user/user.component.html:2,4</note>
+        <note category="location">src/app/modules/admin-area/user/user.component.html:2,3</note>
       </notes>
       <segment>
         <source>user works!</source>
@@ -44,7 +44,7 @@
     </unit>
     <unit id="hint_not_authenticated">
       <notes>
-        <note category="location">src/app/modules/home-page/hint-not-authenticated/hint-not-authenticated.component.html:2,4</note>
+        <note category="location">src/app/modules/home-page/hint-not-authenticated/hint-not-authenticated.component.html:2,3</note>
       </notes>
       <segment>
         <source>You must be authenticated for this action.</source>
@@ -52,7 +52,7 @@
     </unit>
     <unit id="hint_not_authorized">
       <notes>
-        <note category="location">src/app/modules/home-page/hint-not-authorized/hint-not-authorized.component.html:2,4</note>
+        <note category="location">src/app/modules/home-page/hint-not-authorized/hint-not-authorized.component.html:2,3</note>
       </notes>
       <segment>
         <source>You are not authorized for this action.</source>
@@ -60,7 +60,7 @@
     </unit>
     <unit id="hint_not_found">
       <notes>
-        <note category="location">src/app/modules/home-page/hint-not-found/hint-not-found.component.html:4,6</note>
+        <note category="location">src/app/modules/home-page/hint-not-found/hint-not-found.component.html:3,5</note>
       </notes>
       <segment>
         <source>Site not found</source>
@@ -68,7 +68,7 @@
     </unit>
     <unit id="username">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:4,5</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:3,4</note>
       </notes>
       <segment>
         <source>Username</source>
@@ -76,7 +76,7 @@
     </unit>
     <unit id="login_username_placeholder">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:5</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:4</note>
       </notes>
       <segment>
         <source>Example: johndoe</source>
@@ -84,7 +84,7 @@
     </unit>
     <unit id="password">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:11,12</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:8,9</note>
       </notes>
       <segment>
         <source>Password</source>
@@ -92,7 +92,7 @@
     </unit>
     <unit id="login_button">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:17,19</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:12,13</note>
       </notes>
       <segment>
         <source>Login</source>
@@ -148,7 +148,7 @@
     </unit>
     <unit id="large_preview_alt">
       <notes>
-        <note category="location">src/app/modules/user-area/document-preview/document-preview.component.html:5</note>
+        <note category="location">src/app/modules/user-area/document-preview/document-preview.component.html:4</note>
       </notes>
       <segment>
         <source>large preview</source>
@@ -156,42 +156,50 @@
     </unit>
     <unit id="col_id">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:4,5</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:4</note>
       </notes>
       <segment>
-        <source> Id </source>
+        <source>Id</source>
       </segment>
     </unit>
     <unit id="col_preview">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:11,12</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:9,10</note>
       </notes>
       <segment>
-        <source> Preview </source>
+        <source>Preview</source>
       </segment>
     </unit>
     <unit id="col_title">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:18,19</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:15,16</note>
       </notes>
       <segment>
-        <source> Title </source>
+        <source>Title</source>
       </segment>
     </unit>
     <unit id="col_created_at">
       <notes>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:21,22</note>
+      </notes>
+      <segment>
+        <source>Created at</source>
+      </segment>
+    </unit>
+    <unit id="col_last_edit_date">
+      <notes>
         <note category="location">src/app/modules/user-area/document-table/document-table.component.html:25,26</note>
       </notes>
       <segment>
-        <source> Created at </source>
+        <source>Last edited</source>
       </segment>
     </unit>
     <unit id="col_options">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:32,33</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:29,30</note>
       </notes>
       <segment>
-        <source> Options </source>
+        <source>Options</source>
       </segment>
     </unit>
     <unit id="tab_latest_documents">
@@ -204,7 +212,7 @@
     </unit>
     <unit id="tab_all_documents">
       <notes>
-        <note category="location">src/app/modules/user-area/documents-list/documents-list.component.html:8,9</note>
+        <note category="location">src/app/modules/user-area/documents-list/documents-list.component.html:7,8</note>
       </notes>
       <segment>
         <source>All documents</source>
@@ -212,7 +220,7 @@
     </unit>
     <unit id="tab_search">
       <notes>
-        <note category="location">src/app/modules/user-area/documents-list/documents-list.component.html:11,12</note>
+        <note category="location">src/app/modules/user-area/documents-list/documents-list.component.html:11</note>
       </notes>
       <segment>
         <source>Search</source>
@@ -262,7 +270,7 @@
     </unit>
     <unit id="upload_document">
       <notes>
-        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:5</note>
+        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:4</note>
       </notes>
       <segment>
         <source>Upload document</source>
@@ -270,8 +278,8 @@
     </unit>
     <unit id="edit">
       <notes>
-        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:11</note>
-        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:9</note>
+        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:8</note>
+        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:7</note>
       </notes>
       <segment>
         <source>Edit</source>
@@ -279,8 +287,8 @@
     </unit>
     <unit id="delete">
       <notes>
-        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:15</note>
-        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:13</note>
+        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:11</note>
+        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:10</note>
       </notes>
       <segment>
         <source>Delete</source>
@@ -312,7 +320,7 @@
     </unit>
     <unit id="download">
       <notes>
-        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:5</note>
+        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:4</note>
       </notes>
       <segment>
         <source>Download</source>
@@ -336,7 +344,7 @@
     </unit>
     <unit id="user_menu_label">
       <notes>
-        <note category="location">src/app/modules/user-area/user-area-container/user-area-container.component.html:4,5</note>
+        <note category="location">src/app/modules/user-area/user-area-container/user-area-container.component.html:4,6</note>
       </notes>
       <segment>
         <source>User-menu:</source>
@@ -345,7 +353,7 @@
     <unit id="hello_user">
       <notes>
         <note category="location">src/app/modules/user-area/user-dashboard/user-dashboard.component.html:3,4</note>
-        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:7,8</note>
+        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:5,6</note>
       </notes>
       <segment>
         <source>Hello <ph id="0" equiv="INTERPOLATION" disp="{{this.userName}}"/></source>
@@ -353,7 +361,7 @@
     </unit>
     <unit id="logout">
       <notes>
-        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:8,9</note>
+        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:6,7</note>
       </notes>
       <segment>
         <source>Logout</source>
@@ -361,7 +369,7 @@
     </unit>
     <unit id="doc_metadata_heading">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:4,5</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:4,6</note>
       </notes>
       <segment>
         <source>Document meta-data:</source>
@@ -369,7 +377,7 @@
     </unit>
     <unit id="doc_metadata_title_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:5,6</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:6,8</note>
       </notes>
       <segment>
         <source>Title:</source>
@@ -377,7 +385,7 @@
     </unit>
     <unit id="doc_metadata_id_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:6,7</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:9,11</note>
       </notes>
       <segment>
         <source>ID:</source>
@@ -385,7 +393,7 @@
     </unit>
     <unit id="doc_metadata_technical_id_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:7,8</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12,15</note>
       </notes>
       <segment>
         <source>Technical ID:</source>
@@ -393,7 +401,7 @@
     </unit>
     <unit id="doc_metadata_filename_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:8,9</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:15,17</note>
       </notes>
       <segment>
         <source>Filename:</source>
@@ -401,7 +409,7 @@
     </unit>
     <unit id="doc_metadata_original_filename_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:9,10</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:18,21</note>
       </notes>
       <segment>
         <source>Original filename:</source>
@@ -409,7 +417,7 @@
     </unit>
     <unit id="doc_metadata_import_date_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:10</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:21,22</note>
       </notes>
       <segment>
         <source>Import-date:</source>
@@ -417,7 +425,7 @@
     </unit>
     <unit id="doc_metadata_last_edit_date_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:11</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:24,25</note>
       </notes>
       <segment>
         <source>Last edit-date:</source>
@@ -425,7 +433,7 @@
     </unit>
     <unit id="doc_metadata_tags_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:27,28</note>
       </notes>
       <segment>
         <source>Tags:</source>
