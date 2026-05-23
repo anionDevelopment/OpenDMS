@@ -7,3 +7,5 @@ Other/Resources/TypeScript/**
 !Other/Resources/TypeScript/package-lock.json
 CLAUDE.local.md
 .claude/settings.local.json
+
+.claude/*.lock
