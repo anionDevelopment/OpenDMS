@@ -6,10 +6,7 @@
         <span>{{folder.name}}</span>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <app-content-view [title]="folder.name" [folderIds]="folder.containedFolderIds"
-      [documentIds]="folder.containedDocumentIds" [containerId]="folder.id!" [isFolder]="true"
-      (containerRemoved)="onContainerRemoved($event)"
-      (containerTitleChanged)="onSubFolderTitleChanged(folder, $event)"></app-content-view>
+    <app-content-view [title]="folder.name" [folderIds]="folder.containedFolderIds" [documentIds]="folder.containedDocumentIds" [containerId]="folder.id!" [isFolder]="true" (containerRemoved)="onContainerRemoved($event)" (containerTitleChanged)="onSubFolderTitleChanged(folder, $event)"></app-content-view>
   </mat-expansion-panel>
   <mat-expansion-panel *ngIf="(documents$|async)!.length>0">
     <mat-expansion-panel-header>
@@ -21,7 +18,5 @@
     <app-document-table [documents$]="documents$" (documentRemoved)="onDocumentRemoved($event)"></app-document-table>
   </mat-expansion-panel>
 </mat-accordion>
-<app-edit-container-menu [containerId]="containerId!" [containerTitle]="title" (documentAdded)="onDocumentAdded($event)"
-  (folderAdded)="onFolderAdded($event)" (containerRemoved)="onRemoved()"
-  (containerTitleChanged)="onContainerTitleChanged($event)"></app-edit-container-menu>
+<app-edit-container-menu [containerId]="containerId!" [containerTitle]="title" (documentAdded)="onDocumentAdded($event)" (folderAdded)="onFolderAdded($event)" (containerRemoved)="onRemoved()" (containerTitleChanged)="onContainerTitleChanged($event)"></app-edit-container-menu>
 <!--TODO set userIsAllowedToAddDocument and userIsAllowedToAddFolder-->

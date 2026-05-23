@@ -22,7 +22,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
     public abstract class PersistenceTestsBaseForDatabase : PersistenceTestsBase
     {
         protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFramework();
-        private TempFolder _TempFolder;
+        private readonly TempFolder _TempFolder;
         public PersistenceTestsBaseForDatabase()
         {
             _TempFolder = new TempFolder();

@@ -63,10 +63,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.msbuild" Version="6.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="ExtendedXmlSerializer" Version="3.10.0" />
     <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
     <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />

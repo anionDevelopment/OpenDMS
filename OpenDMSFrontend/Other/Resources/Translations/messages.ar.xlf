@@ -235,6 +235,14 @@
         <source>Created at</source>
       </segment>
     </unit>
+    <unit id="col_last_edit_date">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:25,26</note>
+      </notes>
+      <segment>
+        <source>Last edited</source>
+      </segment>
+    </unit>
     <unit id="col_options">
       <notes>
         <note category="location">src/app/modules/user-area/document-table/document-table.component.html:32,33</note>
