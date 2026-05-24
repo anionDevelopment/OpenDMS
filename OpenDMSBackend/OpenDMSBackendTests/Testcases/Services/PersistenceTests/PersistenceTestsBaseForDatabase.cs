@@ -1,5 +1,6 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Utilities;
@@ -21,7 +22,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
     public abstract class PersistenceTestsBaseForDatabase : PersistenceTestsBase
     {
         protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFramework();
-        private TempFolder _TempFolder;
+        private readonly TempFolder _TempFolder;
         public PersistenceTestsBaseForDatabase()
         {
             _TempFolder = new TempFolder();
@@ -33,7 +34,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         internal override PersistenceDisposable GetPersistence(ITimeService timeService)
         {
             DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework();
-            IGRYLog logger = GeneralLogger.CreateUsingConsole();
+            IServerLog logger = ServerLog.GetTransientLog();
             Mock<IApplicationConstants> applicationConstantsMock = new Mock<IApplicationConstants>(MockBehavior.Strict);
             applicationConstantsMock.Setup(m => m.GetDataFolder()).Returns(_TempFolder.Path);
             IPersistence result = new DatabasePersistence(databaseTestFramework.GenericDatabaseInteractor().Accept(new GetOpenDMSDatabaseInteractorVisitor()), timeService, logger, applicationConstantsMock.Object);

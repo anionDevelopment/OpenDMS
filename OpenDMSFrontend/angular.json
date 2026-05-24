@@ -13,6 +13,42 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "en",
+        "locales": {
+          "ar": "Other/Resources/Translations/messages.ar.xlf",
+          "cs": "Other/Resources/Translations/messages.cs.xlf",
+          "da": "Other/Resources/Translations/messages.da.xlf",
+          "de": "Other/Resources/Translations/messages.de.xlf",
+          "de-CH": "Other/Resources/Translations/messages.de-CH.xlf",
+          "de-AT": "Other/Resources/Translations/messages.de-AT.xlf",
+          "en-GB": "Other/Resources/Translations/messages.en-GB.xlf",
+          "es": "Other/Resources/Translations/messages.es.xlf",
+          "fa": "Other/Resources/Translations/messages.fa.xlf",
+          "fi": "Other/Resources/Translations/messages.fi.xlf",
+          "fr": "Other/Resources/Translations/messages.fr.xlf",
+          "he": "Other/Resources/Translations/messages.he.xlf",
+          "hi": "Other/Resources/Translations/messages.hi.xlf",
+          "id": "Other/Resources/Translations/messages.id.xlf",
+          "it": "Other/Resources/Translations/messages.it.xlf",
+          "ja": "Other/Resources/Translations/messages.ja.xlf",
+          "ko": "Other/Resources/Translations/messages.ko.xlf",
+          "ms": "Other/Resources/Translations/messages.ms.xlf",
+          "nl": "Other/Resources/Translations/messages.nl.xlf",
+          "ms-MY": "Other/Resources/Translations/messages.ms-MY.xlf",
+          "ms-SG": "Other/Resources/Translations/messages.ms-SG.xlf",
+          "nb": "Other/Resources/Translations/messages.nb.xlf",
+          "pl": "Other/Resources/Translations/messages.pl.xlf",
+          "pt": "Other/Resources/Translations/messages.pt.xlf",
+          "pt-BR": "Other/Resources/Translations/messages.pt-BR.xlf",
+          "ru": "Other/Resources/Translations/messages.ru.xlf",
+          "sv": "Other/Resources/Translations/messages.sv.xlf",
+          "th": "Other/Resources/Translations/messages.th.xlf",
+          "ur": "Other/Resources/Translations/messages.ur.xlf",
+          "vi": "Other/Resources/Translations/messages.vi.xlf",
+          "zh": "Other/Resources/Translations/messages.zh.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
@@ -21,7 +57,8 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -38,6 +75,7 @@
           },
           "configurations": {
             "Productive": {
+              "localize": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -59,6 +97,7 @@
               ]
             },
             "QualityCheck": {
+              "localize": true,
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
@@ -70,6 +109,7 @@
               ]
             },
             "Development": {
+              "localize": true,
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
@@ -100,7 +140,12 @@
           "defaultConfiguration": "QualityCheck"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "outputPath": "Other/Resources/Translations",
+            "format": "xlf2",
+            "outFile": "messages.xlf"
+          }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -113,7 +158,8 @@
             "codeCoverage": true,
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",

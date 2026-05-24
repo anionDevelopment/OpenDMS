@@ -1,8 +1,8 @@
-<h2 mat-dialog-title>Delete</h2>
+<h2 mat-dialog-title i18n="@@delete_dialog_title">Delete</h2>
 <mat-dialog-content>
-    Would you like to delete this item?
+  <span i18n="@@delete_dialog_content">Would you like to delete this item?</span>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-button (click)="close(false)">No</button>
-    <button mat-button (click)="close(true)" cdkFocusInitial>Yes</button>
+  <button mat-button (click)="close(false)" i18n="@@no">No</button>
+  <button mat-button (click)="close(true)" cdkFocusInitial i18n="@@yes">Yes</button>
 </mat-dialog-actions>

@@ -49,5 +49,11 @@
         string GetScriptGetRolesOfUser();
         string GetScriptGetStorageLocationIdOfContainee();
         string GetScriptGetContentOfContainer();
+        string GetScriptDeleteDirectlyInheritedRoles();
+        string GetScriptAddDirectlyInheritedRoles();
+        string GetScriptInsertRole();
+        string GetScriptGetDirectlyInheritedRoleIds();
+        string GetScriptRenameFolder();
+        string GetScriptRenameStorageLocation();
     }
 }

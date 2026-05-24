@@ -5,6 +5,7 @@ using Prometheus;
 using OpenDMSBackend.Core.Constants;
 using System;
 using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Core.Misc.Logger;
 
 namespace OpenDMSBackend.Core.BackgroundServices
 {
@@ -13,14 +14,19 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         public Gauge MetricAmountOfDocuments { get; private set; }
         private readonly IPersistence _Persistence;
-        public MetricsService(IApplicationConstants<CodeUnitSpecificConstants> constants, IGRYLog logger, IPersistence persistence) : base(constants.ExecutionMode, logger)
+        /// <summary>Initializes a new instance of <see cref="MetricsService"/>.</summary>
+        /// <param name="constants">Application-wide constants including the execution mode.</param>
+        /// <param name="logger">The logger for diagnostic output.</param>
+        /// <param name="persistence">The persistence service used to read document counts.</param>
+        public MetricsService(IApplicationConstants<CodeUnitSpecificConstants> constants, IMetricsServiceLog logger, IPersistence persistence) : base(constants.ExecutionMode, logger.Logger)
         {
             this.Enabled = true;
-            this.AdditionalDelay = TimeSpan.FromMinutes(1);
+            this.AdditionalDelay = TimeSpan.FromSeconds(5);
             this._Persistence = persistence;
             this.MetricAmountOfDocuments = Metrics.CreateGauge(CodeUnitSpecificConstants.MetricsNameAmountOfDocuments, "Amount of existing documents");
         }
 
+        /// <summary>Reads the current document count from persistence and updates the Prometheus gauge.</summary>
         public void CalculateMetrics()
         {
             if (this._Persistence.IsAvailable().Item1)
@@ -39,6 +45,14 @@ namespace OpenDMSBackend.Core.BackgroundServices
         protected override void Run()
         {
             this.CalculateMetrics();
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                //add dispose logic here if required
+            }
+            base.Dispose(disposing);
         }
     }
 }

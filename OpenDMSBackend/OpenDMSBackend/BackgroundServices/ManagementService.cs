@@ -1,5 +1,6 @@
 ﻿using GRYLibrary.Core.APIServer.BaseServices;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
@@ -8,6 +9,7 @@ using GRYLibrary.Core.ExecutePrograms.WaitingStates;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.ClearScript.V8;
 using OpenDMSBackend.Core.Configuration;
+using OpenDMSBackend.Core.Misc.Logger;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
 using System;
@@ -18,13 +20,20 @@ using System.Runtime.InteropServices;
 
 namespace OpenDMSBackend.Core.BackgroundServices
 {
-    public class ManagementScheduler : IteratingBackgroundService, IManagementScheduler
+    public class ManagementService : IteratingBackgroundService, IManagementScheduler
     {
         private readonly IAuditLog _AuditLog;
         private readonly IPersistence _Persistence;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _PersistedAPIServerConfiguration;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
-        public ManagementScheduler(IGRYLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence, IApplicationConstants applicationConstants, IGeneralResourceLoader generalResourceLoader) : base(applicationConstants.ExecutionMode, logger)
+        /// <summary>Initializes a new instance of <see cref="ManagementService"/>.</summary>
+        /// <param name="logger">The logger used for diagnostic output.</param>
+        /// <param name="auditLog">The audit-log service.</param>
+        /// <param name="persistedAPIServerConfiguration">The persisted API server configuration.</param>
+        /// <param name="persistence">The persistence service.</param>
+        /// <param name="applicationConstants">Application-wide constants, including the execution mode.</param>
+        /// <param name="generalResourceLoader">Loader for embedded general resources.</param>
+        public ManagementService(IManagementServiceLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence, IApplicationConstants applicationConstants, IGeneralResourceLoader generalResourceLoader) : base(applicationConstants.ExecutionMode, logger.Logger)
         {
             this.Enabled = true;
             this._GeneralResourceLoader = generalResourceLoader;
@@ -98,6 +107,9 @@ namespace OpenDMSBackend.Core.BackgroundServices
             }
         }
 
+        /// <summary>Runs the TypeScript adapt-script defined in the import definition to mutate document metadata.</summary>
+        /// <param name="importDefinition">The import definition that optionally carries a TypeScript script body.</param>
+        /// <param name="document">The document whose metadata will be modified by the script.</param>
         public void RunAdaptScript(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition, Model.BusinessTypes.Document document)
         {
             if (importDefinition.AdaptDocumentScriptBody != null)
@@ -226,6 +238,14 @@ namespace OpenDMSBackend.Core.BackgroundServices
         private IEnumerable<ExternalFile> GetDocuments(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition)
         {
             return new List<ExternalFile>();
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                //add dispose logic here if required
+            }
+            base.Dispose(disposing);
         }
 
         internal class ExternalFile

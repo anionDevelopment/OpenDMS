@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { DocumentPreviewDTO } from '../../../generated/open-dms-backend';
 import { Observable } from 'rxjs';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-document-table',
@@ -10,26 +12,40 @@ import { Observable } from 'rxjs';
 })
 export class DocumentTableComponent implements OnInit {
 
-  displayedColumns: string[] = ["id", "name", "importdate", "options"];
+  displayedColumns: string[] = ["id", "preview", "name", "importdate", "lasteditdate", "options"];
 
   @Input()
   documents$: Observable<DocumentPreviewDTO[]> | null = null;
-  documents: DocumentPreviewDTO[] = [];
+  dataSource = new MatTableDataSource<DocumentPreviewDTO>([]);
 
   @Output()
-  documentRemoved: EventEmitter<string/*document-id*/> = new EventEmitter<string>();
+  documentRemoved: EventEmitter<string> = new EventEmitter<string>();
+
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit(): void {
     if (this.documents$) {
       this.documents$.subscribe(newDocumentList => {
-        this.documents = newDocumentList;
+        this.dataSource.data = newDocumentList;
       });
     }
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'id': return item.readableId ?? '';
+        case 'name': return item.title ?? '';
+        case 'importdate': return item.importDate ?? '';
+        case 'lasteditdate': return item.lastEditDate ?? '';
+        default: return '';
+      }
+    };
+  }
+
   onDocumentRemoved(documentId: string) {
-    const documents = this.documents.filter(item => item.id != documentId);
-    this.documents = [...documents];
+    this.dataSource.data = this.dataSource.data.filter(item => item.id != documentId);
     this.documentRemoved.emit(documentId);
   }
 

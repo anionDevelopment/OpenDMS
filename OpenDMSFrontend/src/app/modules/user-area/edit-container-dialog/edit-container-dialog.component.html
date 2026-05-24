@@ -1,8 +1,11 @@
-
-<p>edit-container-dialog2 works!</p>
-    <!--
+<h2 mat-dialog-title i18n="@@edit_container_dialog_title">Edit container</h2>
 <mat-dialog-content>
-<p>edit-container-dialog2 works!</p>
-
+  <mat-form-field>
+    <mat-label i18n="@@container_title_label">Title</mat-label>
+    <input matInput [(ngModel)]="containerTitle">
+  </mat-form-field>
 </mat-dialog-content>
--->
+<mat-dialog-actions>
+  <button mat-button (click)="abort()" i18n="@@abort">Abort</button>
+  <button mat-button (click)="save()" i18n="@@save">Save</button>
+</mat-dialog-actions>

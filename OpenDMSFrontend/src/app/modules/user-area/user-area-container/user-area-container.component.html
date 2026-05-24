@@ -1,24 +1,22 @@
 <section class="layout">
-    <div class="sidebar">
-        <div class="drawer">
-            User-menu:<br />
-            <button mat-button [disabled]="false" (click)="onAdminAreaClick()">{{getSiteTitle("admin")}}</button>
-            <button mat-button [disabled]="activeSite=='Dashboard'"
-                (click)="onDashboardClick()">{{getSiteTitle("dashboard")}}</button>
-            <button mat-button [disabled]="activeSite=='Documents'"
-                (click)="onDocumentsClick()">{{getSiteTitle("documents")}}</button>
-            <button mat-button [disabled]="activeSite=='Settings'"
-                (click)="onSettingsClick()">{{getSiteTitle("settings")}}</button>
-        </div>
+  <div class="sidebar">
+    <div class="drawer">
+      <span i18n="@@user_menu_label">User-menu:</span>
+      <br>
+      <button mat-button [disabled]="false" (click)="onAdminAreaClick()">{{getSiteTitle("admin")}}</button>
+      <button mat-button [disabled]="activeSite=='Dashboard'" (click)="onDashboardClick()">{{getSiteTitle("dashboard")}}</button>
+      <button mat-button [disabled]="activeSite=='Documents'" (click)="onDocumentsClick()">{{getSiteTitle("documents")}}</button>
+      <button mat-button [disabled]="activeSite=='Settings'" (click)="onSettingsClick()">{{getSiteTitle("settings")}}</button>
     </div>
-    <div class="body">
-        <div class="header">
-            <h1>{{activeSite}}</h1>
-            <app-user-icon class="user-icon"></app-user-icon>
-        </div>
-        <mat-divider></mat-divider>
-        <div>
-            <ng-content></ng-content>
-        </div>
+  </div>
+  <div class="body">
+    <div class="header">
+      <h1>{{activeSite}}</h1>
+      <app-user-icon class="user-icon"></app-user-icon>
     </div>
+    <mat-divider></mat-divider>
+    <div>
+      <ng-content></ng-content>
+    </div>
+  </div>
 </section>

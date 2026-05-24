@@ -2,6 +2,7 @@
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.MidT.Auth;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
@@ -25,15 +26,25 @@ namespace OpenDMSBackend.Core.Controller
         private readonly IAuthenticationService _AuthenticationService;
         private readonly ITimeService _TimeService;
         private readonly IBusinessLogicService _BusinessLogicService;
-        public UserController(IGeneralLogger logger, IPersistence persistence, IAuthenticationService authenticationService, ITimeService timeService,IBusinessLogicService businessLogicService)
+        /// <summary>Initializes a new instance of <see cref="UserController"/>.</summary>
+        /// <param name="logger">The logger for diagnostic output.</param>
+        /// <param name="persistence">The persistence service.</param>
+        /// <param name="authenticationService">The authentication service for user operations.</param>
+        /// <param name="timeService">The time service.</param>
+        /// <param name="businessLogicService">The business logic service.</param>
+        public UserController(IServerLog logger, IPersistence persistence, IAuthenticationService authenticationService, ITimeService timeService,IBusinessLogicService businessLogicService)
         {
-            this._Logger = logger;
+            this._Logger = logger.Logger;
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
             this._TimeService = timeService;
                 this._BusinessLogicService = businessLogicService;
         }
 
+        /// <summary>Authenticates a user with the given credentials and returns an access token on success.</summary>
+        /// <param name="user">The username.</param>
+        /// <param name="password">The plain-text password.</param>
+        /// <returns>An <see cref="AccessToken"/> on success, or 401 if credentials are invalid.</returns>
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AccessToken))]
         [Route(nameof(Login))]
@@ -42,6 +53,10 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._AuthenticationService.Login(user, password));
         }
 
+        /// <summary>Registers a new user account. Requires administrator privileges.</summary>
+        /// <param name="user">The username for the new account.</param>
+        /// <param name="password">The plain-text password for the new account.</param>
+        /// <returns>200 OK on success.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
         [HttpPut]
@@ -53,6 +68,8 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Invalidates the current session's access token, logging the user out.</summary>
+        /// <returns>200 OK on success, or 401 if no active token is present.</returns>
         [Authenticate]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(void))]
@@ -69,6 +86,9 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Checks whether the given access token is currently valid.</summary>
+        /// <param name="accessToken">The access token to validate.</param>
+        /// <returns><see langword="true"/> if the token is valid; otherwise <see langword="false"/>.</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         [Route(nameof(TokenIsValid))]
@@ -77,6 +97,8 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._AuthenticationService.AccessTokenIsValid(accessToken));
         }
 
+        /// <summary>Returns the roles assigned to the currently authenticated user.</summary>
+        /// <returns>An array of role names.</returns>
         [Authenticate]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string[]))]
@@ -86,6 +108,8 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this.GetUser().Roles);
         }
 
+        /// <summary>Returns profile information for the currently authenticated user.</summary>
+        /// <returns>A <see cref="UserInformationDTO"/> containing the user's id, name, and admin flag.</returns>
         [Authenticate]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserInformationDTO))]

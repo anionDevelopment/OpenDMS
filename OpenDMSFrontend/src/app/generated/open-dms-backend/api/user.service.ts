@@ -1,5 +1,5 @@
 /**
- * OpenDMSBackend v3.0.4 API documentation
+ * OpenDMSBackend v3.0.5 API documentation
  *
  * 
  *
@@ -38,6 +38,7 @@ export class UserService extends BaseService {
     }
 
     /**
+     * Returns the roles assigned to the currently authenticated user.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -96,6 +97,7 @@ export class UserService extends BaseService {
     }
 
     /**
+     * Returns profile information for the currently authenticated user.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -154,8 +156,9 @@ export class UserService extends BaseService {
     }
 
     /**
-     * @param user 
-     * @param password 
+     * Authenticates a user with the given credentials and returns an access token on success.
+     * @param user The username.
+     * @param password The plain-text password.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -213,6 +216,7 @@ export class UserService extends BaseService {
     }
 
     /**
+     * Invalidates the current session\&#39;s access token, logging the user out.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -268,9 +272,10 @@ export class UserService extends BaseService {
     }
 
     /**
+     * Registers a new user account. Requires administrator privileges.
      * @param xAccessToken Access Token
-     * @param user 
-     * @param password 
+     * @param user The username for the new account.
+     * @param password The plain-text password for the new account.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -331,7 +336,8 @@ export class UserService extends BaseService {
     }
 
     /**
-     * @param accessToken 
+     * Checks whether the given access token is currently valid.
+     * @param accessToken The access token to validate.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */

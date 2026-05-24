@@ -40,6 +40,9 @@ export class ContentViewComponent implements OnInit {//shows the content of a co
   @Output()
   containerRemoved: EventEmitter<string/*container-id*/> = new EventEmitter<string>();
 
+  @Output()
+  containerTitleChanged: EventEmitter<string> = new EventEmitter<string>();
+
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
 
   }
@@ -95,5 +98,14 @@ export class ContentViewComponent implements OnInit {//shows the content of a co
   }
   onRemoved() {
     this.containerRemoved.emit(this.containerId!);
+  }
+
+  onContainerTitleChanged(newTitle: string): void {
+    this.title = newTitle;
+    this.containerTitleChanged.emit(newTitle);
+  }
+
+  onSubFolderTitleChanged(folder: FolderDTO, newTitle: string): void {
+    folder.name = newTitle;
   }
 } 

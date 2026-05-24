@@ -10,14 +10,15 @@
 		"tasks": [
 			{
 				"label": "Base: Build all codeunits",
-				"command": "scbuildcodeunits {{.CLI_ARGS}}",
+				"command": "scbuildcodeunits",
 				"type": "shell",
 				"options": {
 					"cwd": "${workspaceFolder}"
 				},
 				"aliases": [
 					"bb"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "Base: Example start",
@@ -29,7 +30,8 @@
 				},
 				"aliases": [
 					"beu"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "Base: Example stop",
@@ -41,7 +43,8 @@
 				},
 				"aliases": [
 					"bed"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "Base: Quick start",
@@ -53,7 +56,8 @@
 				},
 				"aliases": [
 					"bqs"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "Run: Frontend",
@@ -65,7 +69,8 @@
 				},
 				"aliases": [
 					"rf"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "LocalTestService: MariaDB start",
@@ -77,7 +82,8 @@
 				},
 				"aliases": [
 					"ldmu"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "LocalTestService: MariaDB stop",
@@ -89,7 +95,8 @@
 				},
 				"aliases": [
 					"ldmd"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "LocalTestService: PostgreSQL start",
@@ -101,7 +108,8 @@
 				},
 				"aliases": [
 					"ldpu"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "LocalTestService: PostgreSQL stop",
@@ -113,7 +121,8 @@
 				},
 				"aliases": [
 					"ldpd"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "LocalTestService: Reverse-proxy start",
@@ -125,7 +134,8 @@
 				},
 				"aliases": [
 					"lru"
-				]
+				],
+				"allowcustomarguments": true
 			},
 			{
 				"label": "LocalTestService: Reverse-proxy stop",
@@ -137,7 +147,21 @@
 				},
 				"aliases": [
 					"lrd"
-				]
+				],
+				"allowcustomarguments": true
+			},
+			{
+				"label": "Translate",
+				"command": "python Translate.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/OpenDMSFrontend/Other"
+				},
+				"aliases": [
+					"t"
+				],
+				"allowcustomarguments": true
 			}
 		]
 	},

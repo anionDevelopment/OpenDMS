@@ -1,6 +1,7 @@
 ﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Crypto;
@@ -25,14 +26,26 @@ namespace OpenDMSBackend.Core.Services
         private readonly IGeneralLogger _Logger;
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly ITimeService _TimeService;
-        public PersistentAuthenticationService(ITimeService timeService, IAuthenticationServicePersistence<Model.BusinessTypes.User> authentificationPersistence, IGeneralLogger logger, IApplicationConstants<CodeUnitSpecificConstants> constants)
+        /// <summary>
+        /// Initializes a new instance of <see cref="PersistentAuthenticationService"/>.
+        /// </summary>
+        /// <param name="timeService">Service used to retrieve the current time.</param>
+        /// <param name="authentificationPersistence">Persistence layer for authentication data.</param>
+        /// <param name="logger">Logger used for diagnostic output.</param>
+        /// <param name="constants">Application-wide constants.</param>
+        public PersistentAuthenticationService(ITimeService timeService, IAuthenticationServicePersistence<Model.BusinessTypes.User> authentificationPersistence, IServerLog logger, IApplicationConstants<CodeUnitSpecificConstants> constants)
         {
             this._AuthentificationPersistence = authentificationPersistence;
-            this._Logger = logger;
+            this._Logger = logger.Logger;
             this._Constants = constants;
             this._TimeService = timeService;
         }
 
+        /// <summary>
+        /// Determines whether the given access token is currently valid.
+        /// </summary>
+        /// <param name="accessToken">The access token string to validate.</param>
+        /// <returns><c>true</c> if the token exists and has not expired; otherwise <c>false</c>.</returns>
         public bool AccessTokenIsValid(string accessToken)
         {
             try
@@ -46,32 +59,37 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public void AddRole(string roleName)
         {
             Role newRole = new Role()
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = roleName,
-                InheritedRoles = new HashSet<Role>(),
+                DirectlyInheritedRoles = new HashSet<Role>(),
             };
             this._AuthentificationPersistence.AddRole(newRole);
         }
 
+        /// <inheritdoc />
         public void AddUser(Model.BusinessTypes.User user)
         {
             this.AddUserTyped(user);
         }
 
+        /// <inheritdoc />
         public void AddUserTyped(Model.BusinessTypes.User user)
         {
             this._AuthentificationPersistence.AddUser(user);
         }
 
+        /// <inheritdoc />
         public void EnsureRoleDoesNotExist(string roleName)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void EnsureRoleExists(string roleName)
         {
             if (!this.RoleExists(roleName))
@@ -80,11 +98,13 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public void EnsureUserDoesNotHaveRole(string userId, string roleId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void EnsureUserHasRole(string userId, string roleId)
         {
             if (!this.UserHasRole(userId, roleId))
@@ -93,38 +113,46 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
         public void AddRoleToUser(string userId, string roleId)
         {
             this._AuthentificationPersistence.AddRoleToUser(userId, roleId);
         }
 
+        /// <inheritdoc />
         public ISet<Model.BusinessTypes.User> GetAllUser()
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public ISet<Model.BusinessTypes.User> GetAllUserTyped()
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public Role GetRoleByName(string roleName)
         {
           return this._AuthentificationPersistence.GetRoleByName(roleName);
         }
 
-
+        /// <inheritdoc />
         public Model.BusinessTypes.User GetUserTyped(string userId)
         {
             return this._AuthentificationPersistence.GetUserById(userId);
         }
 
+        /// <summary>Computes a SHA-256 hex-string hash of the given password.</summary>
+        /// <param name="password">The plain-text password to hash.</param>
+        /// <returns>The hex-encoded SHA-256 hash.</returns>
         public string Hash(string password)
         {
             string result = GUtilities.ByteArrayToHexString(new SHA256().Hash(GUtilities.StringToByteArray(password)));
             return result;
         }
 
+        /// <inheritdoc />
         public AccessToken Login(string userName, string password)
         {
             if (!this._AuthentificationPersistence.UserWithNameExists(userName))
@@ -147,7 +175,7 @@ namespace OpenDMSBackend.Core.Services
             accessToken.Value = Guid.NewGuid().ToString();
             accessToken.ExpiredMoment = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset().AddDays(1.0);
             userByNameTyped.AccessToken.Add(accessToken);
-            this._AuthentificationPersistence.AddAccessToken(userByNameTyped.Id, accessToken);
+            this._AuthentificationPersistence.AddAccessToken(accessToken);
             return accessToken;
         }
         private AccessToken ThrowInvalidCredentialsException()
@@ -155,126 +183,151 @@ namespace OpenDMSBackend.Core.Services
             throw new BadRequestException(401, "Invalid credentials");
         }
 
+        /// <inheritdoc />
         public void Logout(AccessToken accessToken)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void LogoutEverywhere(string userId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public void RemoveUser(string userId)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public bool RoleExists(string roleName)
         {
             return this._AuthentificationPersistence.RoleExists(roleName);
         }
 
+        /// <inheritdoc />
         public bool UserExists(string userId)
         {
             return this._AuthentificationPersistence.UserWithIdExists(userId);
         }
 
+        /// <inheritdoc />
         public bool UserHasRole(string userId, string roleId)
         {
             return this._AuthentificationPersistence.UserHasRole(userId, roleId);
         }
 
+        /// <inheritdoc />
         public bool UserWithIdExists(string userId)
         {
             return this._AuthentificationPersistence.UserWithIdExists(userId);
         }
 
+        /// <inheritdoc />
         public bool UserWithNameExists(string username)
         {
             return this._AuthentificationPersistence.UserWithNameExists(username);
         }
 
+        /// <inheritdoc />
         public void Logout(string accessToken)
         {
             this._AuthentificationPersistence.RemoveAccessToken(accessToken);
         }
 
+        /// <inheritdoc />
         public void Logout(ClaimsPrincipal user)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public bool UserExistsByName(string userName)
         {
             return this._AuthentificationPersistence.UserWithNameExists(userName);
         }
 
+        /// <inheritdoc />
         public void UpdateRole(Role role)
         {
             this._AuthentificationPersistence.UpdateRole(role);
         }
 
+        /// <inheritdoc />
         public ISet<Role> GetRoles(Model.BusinessTypes.User user)
         {
             return user.Roles;
         }
 
+        /// <inheritdoc />
         public void UpdateUser(Model.BusinessTypes.User user)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public Model.BusinessTypes.User GetUserByNameTyped(string userName)
         {
             return this._AuthentificationPersistence.GetUserByName(userName);
         }
 
+        /// <inheritdoc />
         public Model.BusinessTypes.User GetUserById(string userId)
         {
             return this._AuthentificationPersistence.GetUserById(userId);
         }
 
+        /// <inheritdoc />
         public void AddUser(User user)
         {
             this.AddUser((Model.BusinessTypes.User)user);
         }
 
+        /// <inheritdoc />
         public string GetUserName(string accessToken)
         {
             return this.GetUserByAccessToken(accessToken).Name;
         }
 
+        /// <inheritdoc />
         ISet<User> IAuthenticationService.GetAllUser()
         {
             return this._AuthentificationPersistence.GetAllUsers().Values.Select(user => (User)user).ToHashSet();
         }
 
+        /// <inheritdoc />
         public User GetUser(string userId)
         {
             return this._AuthentificationPersistence.GetUserById(userId);
         }
 
+        /// <inheritdoc />
         public ISet<string> GetRolesOfUser(string userId)
         {
             return this._AuthentificationPersistence.GetUserById(userId).Roles.Select(role => role.Name).ToHashSet();
         }
 
+        /// <inheritdoc />
         public User GetUserByName(string name)
         {
             return this._AuthentificationPersistence.GetUserByName(name);
         }
 
+        /// <inheritdoc />
         public User GetUserByAccessToken(string accessToken)
         {
             return this._AuthentificationPersistence.GetUserByAccessToken(accessToken);
         }
 
+        /// <inheritdoc />
         public string GetBaseRoleOfAllUser()
         {
             return CodeUnitSpecificConstants.RolenameUsers;
         }
 
+        /// <inheritdoc />
         public ClaimsPrincipal GetPrincipal(string accessToken)
         {
             throw new NotImplementedException();

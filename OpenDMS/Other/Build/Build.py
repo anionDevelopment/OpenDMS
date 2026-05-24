@@ -1,17 +1,15 @@
-from pathlib import Path
-from packaging.version import Version
-from ScriptCollection.GeneralUtilities import GeneralUtilities
-from ScriptCollection.ImageUpdater import ConcreteImageUpdaterForDebian
+from ScriptCollection.GeneralUtilities import Platform
 from ScriptCollection.TFCPS.Docker.TFCPS_CodeUnitSpecific_Docker import TFCPS_CodeUnitSpecific_Docker_Functions,TFCPS_CodeUnitSpecific_Docker_CLI
 
  
 def build():
+    platforms:list[Platform] = [
+            Platform.Linux_AMD64,
+            Platform.Linux_ARM64,
+    ]
     tf:TFCPS_CodeUnitSpecific_Docker_Functions=TFCPS_CodeUnitSpecific_Docker_CLI.parse(__file__)
-    debian_tag:str=GeneralUtilities.read_text_from_file_without_linebreak(GeneralUtilities.resolve_relative_path("../../../../Other/Resources/Dependencies/Debian/Version.txt",str(Path(__file__).absolute())))
-    tf.build({
-        "debianversion":debian_tag,
-    },{
-        "debian":tf._protected_sc.default_fallback_docker_registry,
+    tf.build(platforms,{
+        "image_debian":tf.tfcps_Tools_General.oci_image_manager.get_registry_address_for_image_with_default_tag(tf.get_repository_folder(),"Debian"),
     })
     tf.tfcps_Tools_General.merge_sbom_file_from_dependent_codeunit_into_this(tf.get_codeunit_folder(),tf.get_codeunit_name(),"OpenDMSBackend",tf.use_cache())
     tf.tfcps_Tools_General.merge_sbom_file_from_dependent_codeunit_into_this(tf.get_codeunit_folder(),tf.get_codeunit_name(),"OpenDMSFrontend",tf.use_cache())

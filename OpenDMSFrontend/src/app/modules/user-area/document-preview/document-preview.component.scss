@@ -1,0 +1,15 @@
+.image-popup {
+    position: fixed;
+    z-index: 1000;
+    border: 1px solid #ccc;
+    background: white;
+    padding: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+.popup-img {
+    max-height: 400px;
+    width: auto;
+    display: block;
+}

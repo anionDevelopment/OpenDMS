@@ -1,9 +1,11 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Migration;
 using GRYLibrary.Core.Misc.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,10 +21,10 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
 {
     public abstract class DatabaseTestsBase
     {
-        protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFrameworkImplementation();
+        protected abstract DatabaseTestFrameworkTemplate GetDatabaseTestFramework();
         protected DatabaseTestFrameworkTemplate GetDatabaseTestFramework(bool runMigrations)
         {
-            DatabaseTestFrameworkTemplate result = this.GetDatabaseTestFrameworkImplementation();
+            DatabaseTestFrameworkTemplate result = this.GetDatabaseTestFramework();
             this.PrepareDatabase(result, runMigrations);
             return result;
         }
@@ -117,13 +119,13 @@ namespace OpenDMSBackend.Tests.Testcases.Services.DatabaseTests
             {
                 using (DatabaseTestFrameworkTemplate databaseTestFramework = this.GetDatabaseTestFramework(true))
                 {
-                    using (var tempfolder = new GRYLibrary.Core.Misc.TempFolder())
+                    using (TempFolder tempfolder = new GRYLibrary.Core.Misc.TempFolder())
                     {
                         //arrange
                         using IGenericDatabaseInteractor databaseInteractor = databaseTestFramework.GenericDatabaseInteractor();
                         IOpenDMSDatabaseInteractor openDMSDatabaseInteractor = databaseInteractor.Accept(new GetOpenDMSDatabaseInteractorVisitor());
                         ITimeService timeService = new TimeService();
-                        IGRYLog log = GRYLog.Create();
+                        IServerLog log = ServerLog.GetTransientLog();
                         Mock<IApplicationConstants> applicationConstantsMock = new Mock<IApplicationConstants>(MockBehavior.Strict);
                         applicationConstantsMock.Setup(m => m.GetDataFolder()).Returns(tempfolder.Path);
                         using DatabasePersistence databasePersistence = new DatabasePersistence(openDMSDatabaseInteractor, timeService, log, applicationConstantsMock.Object);

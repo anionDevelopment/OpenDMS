@@ -11,12 +11,16 @@ namespace OpenDMSBackend.Core.Services
         private readonly IBusinessLogicService _BusinessLogicService;
         private readonly IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> _AuthenticationService;
 
-        public ExampleDataCreator(IBusinessLogicService businessLogicService,IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> authenticationService)
+        /// <summary>Initializes a new instance of <see cref="ExampleDataCreator"/>.</summary>
+        /// <param name="businessLogicService">The business logic service used to create example entities.</param>
+        /// <param name="authenticationService">The authentication service used to retrieve role information.</param>
+        public ExampleDataCreator(IBusinessLogicService businessLogicService, IAuthenticationService<OpenDMSBackend.Core.Model.BusinessTypes.User> authenticationService)
         {
             this._BusinessLogicService = businessLogicService;
             this._AuthenticationService = authenticationService;
         }
 
+        /// <inheritdoc />
         public void AddExampleData()
         {
             DateTime now = DateTime.Now;
@@ -84,9 +88,12 @@ namespace OpenDMSBackend.Core.Services
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
             DateTime creationDate = initialDate.AddMinutes(documentNumber);
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
-            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content,  groupOfBusinessOwner,new HashSet<string>());
+            this._BusinessLogicService.AddDocument(ownerId, title, locationId, filename, content, groupOfBusinessOwner, new HashSet<string>());
         }
 
+        /// <summary>Loads the content of an embedded example document by file name.</summary>
+        /// <param name="documentName">The name of the embedded example document file (e.g. "Document01.pdf").</param>
+        /// <returns>The raw byte content of the embedded resource.</returns>
         public static byte[] GetFileContentFromEmbeddedExampleDocuments(string documentName)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();

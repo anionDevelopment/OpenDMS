@@ -2,7 +2,7 @@
 
 ## Context
 
-OpenDMS as documet-management-system should be usable for everyone and every organisation in a self-hosted way.
+OpenDMS as document-management-system should be usable for everyone and every organisation in a self-hosted way.
 
 ## Scope
 

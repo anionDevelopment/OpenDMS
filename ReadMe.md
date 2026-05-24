@@ -18,17 +18,16 @@ See the general [product reference](./Other/Reference/Reference.md).
 
 ## Features
 
-- Show and download exiting documents.
+- Show and download existing documents.
 
 ## Features which are not implemented yet
 
-- Allows self-hosting.
-- Allow uploading and deleting documents.
+- Allow deleting documents.
 - Allow setting retention-date-metadata.
 - Allow setting contact-metadata.
-- Allow setting document-type.
+- Allow setting document-type-metadata.
 - Allow defining arbitrary-metadata.
-- Allow linkig other documents.
+- Allow linking other documents.
 - Allow setting permissions to share documents with other users.
 - Allow moving documents to another folder.
 - Implement OCR.
@@ -46,7 +45,7 @@ TODO
 
 ## Reference
 
-The OpenDMS-reference can be found [here](./Other/Respurec/Reference/Reference.md).
+The OpenDMS-reference can be found [here](./Other/Resources/Reference/Reference.md).
 
 ## Build
 
@@ -56,7 +55,7 @@ This product requires to use `scbuildcodeunits` implemented/provided by [ScriptC
 
 See the [Changelog-folder](./Other/Resources/Changelog).
 
-## Contribue
+## Contribute
 
 Contributions are always welcome.
 

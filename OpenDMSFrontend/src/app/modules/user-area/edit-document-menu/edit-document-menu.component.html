@@ -1,15 +1,12 @@
-<button mat-button (click)="viewDocument()">
-    <mat-icon>visibility</mat-icon>
+<button mat-button (click)="viewDocument()" aria-label="View document" i18n-aria-label="@@view_document">
+  <mat-icon>visibility</mat-icon>
 </button>
-
-<button mat-button (click)="downloadDocument()">
-    <mat-icon>download</mat-icon>
+<button mat-button (click)="downloadDocument()" aria-label="Download" i18n-aria-label="@@download">
+  <mat-icon>download</mat-icon>
 </button>
-
-<button mat-button (click)="editDocument()">
-    <mat-icon>edit</mat-icon>
+<button mat-button (click)="editDocument()" aria-label="Edit" i18n-aria-label="@@edit">
+  <mat-icon>edit</mat-icon>
 </button>
-
-<button mat-button (click)="removeDocument()">
-    <mat-icon>delete</mat-icon>
+<button mat-button (click)="removeDocument()" aria-label="Delete" i18n-aria-label="@@delete">
+  <mat-icon>delete</mat-icon>
 </button>

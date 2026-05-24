@@ -15,6 +15,8 @@ components:
       type: object
     DocumentDTO:
       additionalProperties: false
+      description: Represents a data transfer object for a full document, including
+        its content.
       properties:
         addedByUserId:
           nullable: true
@@ -77,6 +79,8 @@ components:
       type: object
     DocumentPreviewDTO:
       additionalProperties: false
+      description: Represents a data transfer object for a document preview, without
+        the full document content.
       properties:
         addedByUserId:
           nullable: true
@@ -215,8 +219,8 @@ components:
       type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
-  title: OpenDMSBackend v3.0.4 API documentation
-  version: v3.0.4
+  title: OpenDMSBackend v3.0.5 API documentation
+  version: v3.0.5
 openapi: 3.0.4
 paths:
   /API/Other/Maintenance/AvailabilityCheck:
@@ -264,20 +268,25 @@ paths:
   /API/v3/OpenDMSBackend/AddDocument/{containerId}:
     post:
       parameters:
-      - in: path
+      - description: The ID of the container (folder or storage location) to add the
+          document to.
+        in: path
         name: containerId
         required: true
         schema:
           type: string
-      - in: query
+      - description: The file name for the uploaded document.
+        in: query
         name: filename
         schema:
           type: string
-      - in: query
+      - description: An optional display title for the document.
+        in: query
         name: title
         schema:
           type: string
-      - in: query
+      - description: Additional languages to use during OCR processing.
+        in: query
         name: additionalOCRLanguages
         schema:
           items:
@@ -307,6 +316,7 @@ paths:
             schema:
               format: byte
               type: string
+        description: The raw binary content of the document.
       responses:
         '200':
           content:
@@ -320,17 +330,20 @@ paths:
               schema:
                 type: string
           description: OK
+      summary: Uploads a new document into the specified container.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/AddFolder/{parentFolderId}/{name}:
     post:
       parameters:
-      - in: path
+      - description: The ID of the parent folder in which to create the new folder.
+        in: path
         name: parentFolderId
         required: true
         schema:
           type: string
-      - in: path
+      - description: The name of the new folder.
+        in: path
         name: name
         required: true
         schema:
@@ -354,12 +367,14 @@ paths:
               schema:
                 type: string
           description: OK
+      summary: Creates a new folder inside the specified parent folder.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/AddStorageLocation/{name}:
     post:
       parameters:
-      - in: path
+      - description: The display name of the new storage location.
+        in: path
         name: name
         required: true
         schema:
@@ -383,17 +398,21 @@ paths:
               schema:
                 type: string
           description: OK
+      summary: Creates a new storage location with the given name owned by the current
+        user.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
     post:
       parameters:
-      - in: path
+      - description: The id of the storage location to share.
+        in: path
         name: storageLocationId
         required: true
         schema:
           type: string
-      - in: path
+      - description: The id of the user to grant access to.
+        in: path
         name: sharedWithUserId
         required: true
         schema:
@@ -407,6 +426,8 @@ paths:
       responses:
         '200':
           description: OK
+      summary: Grants the specified user permission to view the specified storage
+        location.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetAllTags:
@@ -437,6 +458,7 @@ paths:
                   $ref: '#/components/schemas/TagDTO'
                 type: array
           description: OK
+      summary: Returns all tags defined in the system.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetAllViewableStorageLocations:
@@ -467,12 +489,14 @@ paths:
                   $ref: '#/components/schemas/StorageLocationDTO'
                 type: array
           description: OK
+      summary: Returns all storage locations the current user is allowed to view.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetDocument:
     get:
       parameters:
-      - in: query
+      - description: The id of the document to retrieve.
+        in: query
         name: id
         schema:
           type: string
@@ -495,12 +519,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/DocumentDTO'
           description: OK
+      summary: Returns the full document with the specified id.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetDocumentFromReadableId:
     get:
       parameters:
-      - in: query
+      - description: The human-readable numeric id of the document to retrieve.
+        in: query
         name: readableId
         schema:
           format: int32
@@ -524,12 +550,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/DocumentDTO'
           description: OK
+      summary: Returns the full document identified by its human-readable numeric
+        id.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetDocumentPreview:
     get:
       parameters:
-      - in: query
+      - description: The id of the document whose preview is requested.
+        in: query
         name: id
         schema:
           type: string
@@ -552,12 +581,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/DocumentPreviewDTO'
           description: OK
+      summary: Returns a preview representation of the document with the specified
+        id.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetFolder/{id}:
     get:
       parameters:
-      - in: path
+      - description: The id of the folder to retrieve.
+        in: path
         name: id
         required: true
         schema:
@@ -581,6 +613,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/FolderDTO'
           description: OK
+      summary: Returns the folder with the specified id.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetLatestDocuments:
@@ -611,12 +644,14 @@ paths:
                   $ref: '#/components/schemas/DocumentPreviewDTO'
                 type: array
           description: OK
+      summary: Returns the most recently added documents visible to the current user.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetStorageLocation/{id}:
     get:
       parameters:
-      - in: path
+      - description: The id of the storage location to retrieve.
+        in: path
         name: id
         required: true
         schema:
@@ -640,12 +675,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/StorageLocationDTO'
           description: OK
+      summary: Returns the storage location with the specified id.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/HardDelete/{containerOrContaineeId}:
     delete:
       parameters:
-      - in: path
+      - description: The id of the container or document to delete.
+        in: path
         name: containerOrContaineeId
         required: true
         schema:
@@ -667,20 +704,25 @@ paths:
           text/json:
             schema:
               type: string
+        description: The stated reason for the deletion, recorded in the audit log.
       responses:
         '200':
           description: OK
+      summary: Permanently deletes the specified container or document and all its
+        contents.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}:
     post:
       parameters:
-      - in: path
+      - description: The id of the document or folder to move.
+        in: path
         name: containeeIdToMove
         required: true
         schema:
           type: string
-      - in: path
+      - description: The id of the container to move the item into.
+        in: path
         name: targetContainerId
         required: true
         schema:
@@ -694,17 +736,20 @@ paths:
       responses:
         '200':
           description: OK
+      summary: Moves the specified containee into the target container.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/Rename/{containerId}/{newName}:
     post:
       parameters:
-      - in: path
+      - description: The id of the container to rename.
+        in: path
         name: containerId
         required: true
         schema:
           type: string
-      - in: path
+      - description: The new name to assign.
+        in: path
         name: newName
         required: true
         schema:
@@ -718,12 +763,15 @@ paths:
       responses:
         '200':
           description: OK
+      summary: Renames the specified container to the given new name.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/Search:
     get:
       parameters:
-      - in: query
+      - description: The term to search for across document titles, filenames, tags,
+          and OCR content.
+        in: query
         name: searchTerm
         schema:
           type: string
@@ -752,12 +800,15 @@ paths:
                   $ref: '#/components/schemas/DocumentPreviewDTO'
                 type: array
           description: OK
+      summary: Searches for documents visible to the current user that match the given
+        search term.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/SoftDelete/{containerOrContaineeId}:
     delete:
       parameters:
-      - in: path
+      - description: The id of the container or document to soft-delete.
+        in: path
         name: containerOrContaineeId
         required: true
         schema:
@@ -779,20 +830,25 @@ paths:
           text/json:
             schema:
               type: string
+        description: The stated reason for the deletion, recorded in the audit log.
       responses:
         '200':
           description: OK
+      summary: Marks the specified container or document as soft-deleted without removing
+        it from storage.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
     post:
       parameters:
-      - in: path
+      - description: The id of the storage location.
+        in: path
         name: storageLocationId
         required: true
         schema:
           type: string
-      - in: path
+      - description: The id of the user whose access should be revoked.
+        in: path
         name: sharedWithUserId
         required: true
         schema:
@@ -806,12 +862,15 @@ paths:
       responses:
         '200':
           description: OK
+      summary: Revokes the specified user's permission to view the specified storage
+        location.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/UpdateDocumentTitle/{documentId}:
     put:
       parameters:
-      - in: path
+      - description: The ID of the document whose title should be updated.
+        in: path
         name: documentId
         required: true
         schema:
@@ -833,6 +892,7 @@ paths:
           text/json:
             schema:
               $ref: '#/components/schemas/StringValueDTO'
+        description: The new title value to assign to the document.
       responses:
         '200':
           content:
@@ -846,6 +906,7 @@ paths:
               schema:
                 type: string
           description: OK
+      summary: Updates the display title of an existing document.
       tags:
       - OpenDMSBackend
   /API/v3/UserController/GetRoles:
@@ -876,6 +937,7 @@ paths:
                   type: string
                 type: array
           description: OK
+      summary: Returns the roles assigned to the currently authenticated user.
       tags:
       - User
   /API/v3/UserController/GetUserInformation:
@@ -900,16 +962,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserInformationDTO'
           description: OK
+      summary: Returns profile information for the currently authenticated user.
       tags:
       - User
   /API/v3/UserController/Login:
     put:
       parameters:
-      - in: header
+      - description: The username.
+        in: header
         name: user
         schema:
           type: string
-      - in: header
+      - description: The plain-text password.
+        in: header
         name: password
         schema:
           type: string
@@ -926,6 +991,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccessToken'
           description: OK
+      summary: Authenticates a user with the given credentials and returns an access
+        token on success.
       tags:
       - User
   /API/v3/UserController/Logout:
@@ -940,16 +1007,19 @@ paths:
       responses:
         '200':
           description: OK
+      summary: Invalidates the current session's access token, logging the user out.
       tags:
       - User
   /API/v3/UserController/Register:
     put:
       parameters:
-      - in: header
+      - description: The username for the new account.
+        in: header
         name: user
         schema:
           type: string
-      - in: header
+      - description: The plain-text password for the new account.
+        in: header
         name: password
         schema:
           type: string
@@ -962,12 +1032,14 @@ paths:
       responses:
         '200':
           description: OK
+      summary: Registers a new user account. Requires administrator privileges.
       tags:
       - User
   /API/v3/UserController/TokenIsValid:
     get:
       parameters:
-      - in: header
+      - description: The access token to validate.
+        in: header
         name: accessToken
         schema:
           type: string
@@ -984,6 +1056,7 @@ paths:
               schema:
                 type: boolean
           description: OK
+      summary: Checks whether the given access token is currently valid.
       tags:
       - User
 tags:

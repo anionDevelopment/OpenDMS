@@ -27,6 +27,10 @@ export class ContentTreeComponent implements OnInit {
     this.storageLocations = [...storageLocations];
   }
 
+  onStorageLocationTitleChanged(storageLocation: StorageLocationDTO, newTitle: string): void {
+    storageLocation.name = newTitle;
+  }
+
   onStorageLocationAdded(storageLocation: StorageLocationDTO) {
     var storageLocations = this.storageLocations
     storageLocations.push(storageLocation);

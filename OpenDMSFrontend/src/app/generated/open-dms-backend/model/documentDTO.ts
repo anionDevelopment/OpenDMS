@@ -1,5 +1,5 @@
 /**
- * OpenDMSBackend v3.0.4 API documentation
+ * OpenDMSBackend v3.0.5 API documentation
  *
  * 
  *
@@ -11,6 +11,9 @@ import { Version3 } from './version3';
 import { TagDTO } from './tagDTO';
 
 
+/**
+ * Represents a data transfer object for a full document, including its content.
+ */
 export interface DocumentDTO { 
     id?: string | null;
     title?: string | null;

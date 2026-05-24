@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { DocumentDTO, FolderDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
-import { EditContainerDialogComponent as EditContainerDialogComponent } from '../edit-container-dialog/edit-container-dialog.component';
+import { EditContainerDialogComponent } from '../edit-container-dialog/edit-container-dialog.component';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
@@ -14,6 +14,9 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 export class EditContainerMenuComponent {
   @Input()
   containerId: string | null | undefined = null;
+
+  @Input()
+  containerTitle: string | null | undefined = null;
 
   @Input()
   userIsAllowedToAddDocument: boolean = true;//TODO set initial value to false and set only to true when user has permission to do that
@@ -29,6 +32,9 @@ export class EditContainerMenuComponent {
 
   @Output()
   containerRemoved: EventEmitter<void> = new EventEmitter<void>();
+
+  @Output()
+  containerTitleChanged: EventEmitter<string> = new EventEmitter<string>();
 
   readonly dialog = inject(MatDialog);
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
@@ -61,12 +67,18 @@ export class EditContainerMenuComponent {
 
   edit(): void {
     const dialogRef = this.dialog.open(EditContainerDialogComponent, {
-      data: { document: document },
+      data: { containerTitle: this.containerTitle ?? '' },
     });
     dialogRef.afterClosed().subscribe(result => {
-      //TODO update something if changed
+      if (result?.save) {
+        const newTitle: string = result.data.containerTitle;
+        this.openDMSBackendService.aPIV3OpenDMSBackendRenameContainerIdNewNamePost(this.containerId!, newTitle, this.storageService.getAccessToken()).subscribe(() => {
+          this.containerTitleChanged.emit(newTitle);
+        });
+      }
     });
   }
+
   removeContainer(): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
     dialogRef.afterClosed().subscribe(userConfirmedAction => {

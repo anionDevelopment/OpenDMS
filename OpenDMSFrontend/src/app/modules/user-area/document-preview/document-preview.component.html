@@ -1,8 +1,6 @@
-<p>document-preview works!</p>
-<!--TODO show a preview of the document.
-for this preview the preview-property can be used.
-on a button-click it should be possible to show the full document.
-this must be implemented for every documentt-type in a scrollable way.
-this component should work for pictures, pdf, word, excel and powerpoint.
-the type of the document can be recognized by the MimeType-attribute.
--->
+<div *ngIf="image" class="image-wrapper" (mousemove)="updatePopupPosition($event)" (mouseleave)="popupVisible=false">
+  <img [src]="image" width="100" height="75" alt="preview" i18n-alt="@@preview_alt">
+  <div class="image-popup" *ngIf="popupVisible" [ngStyle]="{'top.px': popupY, 'left.px': popupX}">
+    <img [src]="image" alt="large preview" i18n-alt="@@large_preview_alt" class="popup-img">
+  </div>
+</div>

@@ -1,4 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Init;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -16,13 +17,19 @@ namespace OpenDMSBackend.Core.Misc
         private readonly IPersistence _Persistence;
         private readonly IInitializationService<CommandlineParameter> _InitializationService;
         private readonly IOCRServiceClient _OCRService;
-        public HealthCheck(IGeneralLogger logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRServiceClient ocrService)
+        /// <summary>Initializes a new instance of <see cref="HealthCheck"/>.</summary>
+        /// <param name="logger">The logger for diagnostic output.</param>
+        /// <param name="persistence">The persistence service to check for availability.</param>
+        /// <param name="initializationService">The initialization service used to verify the app is ready.</param>
+        /// <param name="ocrService">The OCR service to check for availability.</param>
+        public HealthCheck(IServerLog logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRServiceClient ocrService)
         {
-            this._Logger = logger;
+            this._Logger = logger.Logger;
             this._Persistence = persistence;
             this._InitializationService = initializationService;
             this._OCRService = ocrService;
         }
+        /// <inheritdoc />
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             this._Logger.Log("Start calculating health-status", Microsoft.Extensions.Logging.LogLevel.Debug);

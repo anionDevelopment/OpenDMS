@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { UtilitiesService } from '../../../services/utilities.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import saveAs from 'file-saver';
+import { saveAs } from 'file-saver';
 import { EditDocumentDialogComponent } from '../edit-document-dialog/edit-document-dialog.component';
 import { of, switchMap } from 'rxjs';
 
@@ -17,7 +17,7 @@ import { of, switchMap } from 'rxjs';
 })
 export class EditDocumentMenuComponent {
   @Input()
-  document: DocumentPreviewDTO | null = null;
+  documentPreview: DocumentPreviewDTO | null = null;
 
   @Output()
   documentRemoved: EventEmitter<string/*document-id*/> = new EventEmitter<string>();
@@ -31,16 +31,16 @@ export class EditDocumentMenuComponent {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
     dialogRef.afterClosed().subscribe(userConfirmedAction => {
       if (userConfirmedAction) {
-        this.openDMSBackendService.aPIV3OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.document!.id!, this.storageService.getAccessToken())
+        this.openDMSBackendService.aPIV3OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.documentPreview!.id!, this.storageService.getAccessToken())
           .subscribe(() => {
-            this.documentRemoved.emit(this.document?.id!);
+            this.documentRemoved.emit(this.documentPreview?.id!);
           });
       }
     });
   }
 
   downloadDocument() {
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.document!.id!)
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.documentPreview!.id!)
       .subscribe(document => {
         saveAs(this.utilitiesService.base64toBlob(document.documentContentAsBase64!, "octet/stream"), document.filename!);
       });
@@ -48,22 +48,22 @@ export class EditDocumentMenuComponent {
 
   editDocument() {
     const dialogRef = this.dialog.open(EditDocumentDialogComponent, {
-      data: { documentDTO: this.document },
+      data: { documentDTO: this.documentPreview },
     });
     dialogRef.afterClosed().pipe(switchMap(result => {
       if (result.save) {
         const newTitle: string = result.data.documentTitle;
-        return this.openDMSBackendService.aPIV3OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.document?.id!, this.storageService.getAccessToken(), { value: newTitle }).pipe(switchMap(() => of(newTitle)));
+        return this.openDMSBackendService.aPIV3OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.documentPreview?.id!, this.storageService.getAccessToken(), { value: newTitle }).pipe(switchMap(() => of(newTitle)));
       } else {
-        return of(this.document?.title);
+        return of(this.documentPreview?.title);
       }
     })).subscribe((newTitle) => {
-      this.document!.title = newTitle;
+      this.documentPreview!.title = newTitle;
     });
   }
 
   viewDocument() {
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.document!.id!)
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.documentPreview!.id!)
       .subscribe(documentDTO => {
         var fileURL = window.URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
         const tab = window.open()!;

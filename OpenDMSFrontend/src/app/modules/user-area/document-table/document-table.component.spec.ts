@@ -26,6 +26,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { HomePageModule } from '../../home-page/home-page.module';
 import { NoopAnimationDriver } from '@angular/animations/browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSortModule } from '@angular/material/sort';
+import { TimestampPipe } from '../../../pipes/timestamp.pipe';
 
 describe('DocumentTableComponent', () => {
   let component: DocumentTableComponent;
@@ -54,9 +56,11 @@ describe('DocumentTableComponent', () => {
         MatSidenavModule,
         MatButtonModule,
         MatTabsModule,
+        MatSortModule,
         HomePageModule
       ],
       declarations: [
+        TimestampPipe,
         DocumentTableComponent,
       ],
       providers: [
