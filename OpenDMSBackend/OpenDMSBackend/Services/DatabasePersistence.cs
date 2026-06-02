@@ -624,9 +624,10 @@ namespace OpenDMSBackend.Core.Services
                     {
                         Tag tag = new Tag(
                             reader.GetString(0),
-                            reader.GetString(0),
+                            reader.GetString(1),
                             new ExtendedColor(reader.GetInt32(2))
                         );
+                        result.Add(tag.ToDTO());
                     }
                 }
             });
@@ -644,7 +645,7 @@ namespace OpenDMSBackend.Core.Services
                       reader.Read();
                       return new Tag(
                         reader.GetString(0),
-                        reader.GetString(0),
+                        reader.GetString(1),
                         new ExtendedColor(reader.GetInt32(2))
                       );
                   }
