@@ -42,5 +42,47 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         {
             this.PersistDocument();
         }
+
+        [TestMethod(DisplayName = nameof(AddStorageLocationTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public override void AddStorageLocationTest()
+        {
+            this.AddStorageLocation();
+        }
+
+        [TestMethod(DisplayName = nameof(AddFolderTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public override void AddFolderTest()
+        {
+            this.AddFolder();
+        }
+
+        [TestMethod(DisplayName = nameof(RenameStorageLocationTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public override void RenameStorageLocationTest()
+        {
+            this.RenameStorageLocation();
+        }
+
+        [TestMethod(DisplayName = nameof(RenameFolderTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public override void RenameFolderTest()
+        {
+            this.RenameFolder();
+        }
+
+        [TestMethod(DisplayName = nameof(CreateTagTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public override void CreateTagTest()
+        {
+            this.CreateTag();
+        }
+
+        [TestMethod(DisplayName = nameof(GetAllDocumentIdsTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public override void GetAllDocumentIdsTest()
+        {
+            this.GetAllDocumentIds();
+        }
     }
 }

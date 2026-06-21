@@ -8,8 +8,8 @@ services:
       POSTGRES_PASSWORD: pa55w0rd
       POSTGRES_DB: OpenDMSDatabase
       PGDATA: /var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
       - ./Volumes/OpenDMSPostgreSQLData:/var/lib/postgresql/data
     networks:
@@ -20,8 +20,8 @@ services:
   opendms_database_administration:
     image: ${image_adminer}
     container_name: "opendms_database_administration"
-    ports:
-      - 8080:8080
+    expose:
+      - "8080"
     depends_on:
       - opendms_database
     networks:

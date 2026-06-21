@@ -135,7 +135,7 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public TagDTO[] GetAllTags()
         {
-            throw new NotImplementedException();
+            return this._Tags.Values.Select(t => t.ToDTO()).ToArray();
         }
 
         /// <inheritdoc />

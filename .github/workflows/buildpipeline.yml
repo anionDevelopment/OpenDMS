@@ -1,0 +1,30 @@
+name: buildpipeline
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  run-script:
+    runs-on: [self-hosted, scriptcollection]
+    container:
+      image: commonapplicationimageregistry.aniondev.de/scbuilder:v1.1.0
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare build-pipeline
+        run: scpreparebuildpipelineforgitlab
+      - name: Build codeunits
+        run: scbuildcodeunits -v 4
+      - name: Upload artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts
+          path: |
+            OpenDMS/Other/Artifacts
+            OpenDMSBackend/Other/Artifacts
+            OpenDMSFrontend/Other/Artifacts
+          if-no-files-found: error
