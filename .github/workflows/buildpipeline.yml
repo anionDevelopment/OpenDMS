@@ -6,7 +6,7 @@ jobs:
   run-script:
     runs-on: [self-hosted, scriptcollection]
     container:
-      image: commonapplicationimageregistry.aniondev.de/scbuilder:v1.1.0
+      image: aniondev/scbuilder:v1.1.0
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
     steps:
