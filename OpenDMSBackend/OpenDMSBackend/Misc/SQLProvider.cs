@@ -34,6 +34,12 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptSoftDeleteDocument()
+        {
+            return this.LoadSQLScript("SoftDeleteDocument");
+        }
+
+        /// <inheritdoc />
         public string GetScriptAddRole()
         {
             return this.LoadSQLScript("AddRole");

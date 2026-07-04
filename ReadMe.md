@@ -24,6 +24,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 - [x] Allow moving documents to another folder.
 - [ ] Allow defining external folder where documents will be pulled from.
 - [ ] Allow actions (web requests for example) to be done when a specific event occurs (e. g. when a document will be moved to a specific folder).
+- [] Document-summary-generation by AI.
 
 ### GOBD conformity
 
@@ -38,7 +39,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 - [ ] Set and manage retention periods. `DeleteIsNotAllowedBefore` and `MustBeHardDeletedAfter` exist in the model, but there is no API to set them.
 - [ ] Technically enforce a deletion lock during the retention period (prevent hard-delete before the retention period ends).
 - [ ] Perform regulated deletion after the retention period expires (deletion concept/housekeeping). `Housekeeping()` currently throws `NotImplementedException`.
-- [ ] Support soft-delete (marking instead of physical removal). The method currently throws `NotImplementedException`.
+- [x] Support soft-delete (marking instead of physical removal).
 - [x] Log traceable deletion with a stated reason (hard-delete with `reason`).
 - [ ] Fully enforce an authorization and access-protection concept. Many operations still contain `//TODO check permission`.
 - [x] Authenticate users (login and registration with access token).

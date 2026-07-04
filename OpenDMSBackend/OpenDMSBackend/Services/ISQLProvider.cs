@@ -8,6 +8,7 @@
         string GetScriptGetAllRoles();
         string GetScriptAddDocument();
         string GetScriptUpdateDocument();
+        string GetScriptSoftDeleteDocument();
         string GetScriptDeleteInheritedRoles();
         string GetScriptAddInheritedRole();
         string GetScriptGetRoleByName();

@@ -134,6 +134,56 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Assert.IsTrue(actualIds.ToHashSet().SetEquals(expectedIds));
         }
 
+        [TestMethod(DisplayName = nameof(SoftDeleteDocumentTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SoftDeleteDocumentTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(testDocument);
+            persistence.SetParentOfContainee(testDocument, storageLocationId);
+            Assert.IsFalse(persistence.GetDocument(testDocument.Id).IsSoftDeleted);
+
+            //act
+            businessLogicService.SoftDelete(userId, testDocument.Id, "obsolete");
+
+            //assert
+            Assert.IsTrue(persistence.GetDocument(testDocument.Id).IsSoftDeleted, "The document should be marked as soft-deleted.");
+            Assert.IsTrue(persistence.IsDocument(testDocument.Id), "A soft-deleted document must not be removed physically.");
+        }
+
+        [TestMethod(DisplayName = nameof(SoftDeleteStorageLocationSoftDeletesContainedDocumentsTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SoftDeleteStorageLocationSoftDeletesContainedDocumentsTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document testDocument1 = new Document(Guid.NewGuid().ToString(), OneLineString.From("title1"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            Document testDocument2 = new Document(Guid.NewGuid().ToString(), OneLineString.From("title2"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 02, 00, TimeSpan.Zero), default, 2, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(testDocument1);
+            persistence.SetParentOfContainee(testDocument1, storageLocationId);
+            persistence.CreateDocument(testDocument2);
+            persistence.SetParentOfContainee(testDocument2, storageLocationId);
+
+            //act
+            businessLogicService.SoftDelete(userId, storageLocationId, "obsolete");
+
+            //assert
+            Assert.IsTrue(persistence.GetDocument(testDocument1.Id).IsSoftDeleted);
+            Assert.IsTrue(persistence.GetDocument(testDocument2.Id).IsSoftDeleted);
+        }
+
         //TODO write testcases for the things which are not allowed to verify the user is really not able to do certain things
     }
 }

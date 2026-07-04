@@ -1286,7 +1286,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SoftDelete(string documentId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(SoftDelete), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSoftDeleteDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsSoftDeleted", true));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />

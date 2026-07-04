@@ -466,7 +466,24 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+
+            //mark content as soft-deleted (documents are only marked, containers are handled recursively)
+            Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId,
+                (storageLocationId) => this.SoftDeleteEntireContent(requesterUserId, storageLocationId, reason),
+                (folderId) => this.SoftDeleteEntireContent(requesterUserId, folderId, reason),
+                (documentId) => this._Persistence.SoftDelete(documentId));
+
+            this._AuditLog.Logger.Log($"Soft-deleted {containerOrContaineeId}. Reason: {reason}");
+        }
+
+        private void SoftDeleteEntireContent(string? requesterUserId, string containerId, string reason)
+        {
+            IContainer container = this._Persistence.GetContainerById(containerId);
+            foreach (IContainee child in container.Content)
+            {
+                this.SoftDelete(requesterUserId, child.Id, reason);
+            }
         }
 
         /// <inheritdoc />

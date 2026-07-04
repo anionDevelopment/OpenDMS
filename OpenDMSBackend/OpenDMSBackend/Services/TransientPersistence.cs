@@ -560,7 +560,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SoftDelete(string documentId)
         {
-            throw new NotImplementedException();
+            Document document = this.GetDocument(documentId);
+            document.IsSoftDeleted = true;
         }
 
         /// <inheritdoc />
