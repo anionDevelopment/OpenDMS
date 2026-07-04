@@ -55,6 +55,36 @@ namespace OpenDMSBackend.Core.Controller
             }
         }
 
+        /// <summary>Uploads a new version of an existing document. The new version is stored as a regular document in the same folder and is linked to the old document.</summary>
+        /// <param name="content">The raw binary content of the new version.</param>
+        /// <param name="oldDocumentId">The ID of the document a new version is uploaded for.</param>
+        /// <param name="filename">The file name for the uploaded document.</param>
+        /// <param name="title">An optional display title for the document.</param>
+        /// <param name="additionalOCRLanguages">Additional languages to use during OCR processing.</param>
+        /// <returns>The ID of the newly created document (the new version).</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(UploadNewVersion)}/{{{nameof(oldDocumentId)}}}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public IActionResult UploadNewVersion([FromBody] byte[] content, [FromRoute] string oldDocumentId, [FromQuery] string filename, [FromQuery] string? title, [FromQuery] IEnumerable<string> additionalOCRLanguages)
+        {
+            return this.Ok(this._BusinessLogicService.UploadNewVersion(this.GetUser().Id, oldDocumentId, title, filename, content, this._AuthenticationService.GetBaseRoleOfAllUser(), new HashSet<string>(additionalOCRLanguages)));
+        }
+
+        /// <summary>Returns the complete version-history (from oldest to newest) of the document's version-chain.</summary>
+        /// <param name="documentId">The ID of a document in the version-chain.</param>
+        /// <returns>The versions as <see cref="DocumentPreviewDTO"/> objects, ordered from oldest to newest.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpGet]
+        [ProducesResponseType(typeof(DocumentPreviewDTO[]), StatusCodes.Status200OK)]
+        [Route(nameof(GetVersionHistory))]
+        public IActionResult GetVersionHistory([FromQuery] string documentId)
+        {
+            return this.Ok(this._BusinessLogicService.GetVersionHistory(this.GetUser().Id, documentId).Select(preview => preview.ToDTO()));
+        }
+
         /// <summary>Updates the display title of an existing document.</summary>
         /// <param name="documentId">The ID of the document whose title should be updated.</param>
         /// <param name="newTitle">The new title value to assign to the document.</param>
@@ -305,6 +335,46 @@ namespace OpenDMSBackend.Core.Controller
         public IActionResult SoftDelete(string containerOrContaineeId, [FromBody] string reason)
         {
             this._BusinessLogicService.SoftDelete(this.GetUser().Id, containerOrContaineeId, reason);
+            return this.Ok();
+        }
+
+        /// <summary>Generates the short and the long AI-summary of the specified document and returns the updated document.</summary>
+        /// <param name="documentId">The id of the document to summarize.</param>
+        /// <returns>The updated document as a <see cref="DocumentDTO"/>.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPost]
+        [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
+        [Route($"{nameof(GenerateAISummary)}/{{{nameof(documentId)}}}")]
+        public IActionResult GenerateAISummary([FromRoute] string documentId)
+        {
+            this._BusinessLogicService.GenerateAISummary(this.GetUser().Id, documentId);
+            return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, documentId).ToDTO());
+        }
+
+        /// <summary>Returns the general (admin-configurable) OpenDMS-settings.</summary>
+        /// <returns>The general settings as a <see cref="GeneralSettingsDTO"/>.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpGet]
+        [ProducesResponseType(typeof(GeneralSettingsDTO), StatusCodes.Status200OK)]
+        [Route(nameof(GetGeneralSettings))]
+        public IActionResult GetGeneralSettings()
+        {
+            return this.Ok(new GeneralSettingsDTO(this._BusinessLogicService.GetAutoGenerateAISummary()));
+        }
+
+        /// <summary>Updates the general (admin-configurable) OpenDMS-settings. Only administrators are allowed to call this.</summary>
+        /// <param name="settings">The new settings-values.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpPut]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route(nameof(SetGeneralSettings))]
+        public IActionResult SetGeneralSettings([FromBody] GeneralSettingsDTO settings)
+        {
+            this._BusinessLogicService.SetAutoGenerateAISummary(this.GetUser().Id, settings.AutoGenerateAISummary);
             return this.Ok();
         }
 

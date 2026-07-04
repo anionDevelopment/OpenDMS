@@ -42,7 +42,24 @@ CREATE TABLE "Documents" (
     "Version" varchar(255) not null,
     "AssignedLanguages" varchar(255) null,
     "AddedByUserId" varchar(255) null,
+    "AISummaryShort" text null,
+    "AISummaryLong" text null,
     CONSTRAINT "PK_Documents" PRIMARY KEY ("Id")
+);
+
+CREATE TABLE "Settings" (
+    "Key" varchar(255) not null,
+    "Value" text not null,
+    CONSTRAINT "PK_Settings" PRIMARY KEY ("Key")
+);
+
+CREATE TABLE "DocumentVersionLink" (
+    "OldDocumentId" varchar(255) not null,
+    "NewDocumentId" varchar(255) not null,
+    CONSTRAINT "PK_DocumentVersionLink" PRIMARY KEY ("NewDocumentId"),
+    CONSTRAINT "UQ_DocumentVersionLink_OldDocumentId" UNIQUE ("OldDocumentId"),
+    CONSTRAINT "FK_DocumentVersionLink_OldDocumentId" FOREIGN KEY ("OldDocumentId") REFERENCES "Documents"("Id"),
+    CONSTRAINT "FK_DocumentVersionLink_NewDocumentId" FOREIGN KEY ("NewDocumentId") REFERENCES "Documents"("Id")
 );
 
 CREATE TABLE "Tags" (

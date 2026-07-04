@@ -43,7 +43,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             IAuthenticationService<User> authenticationService = new PersistentAuthenticationService(timeService, persistence, logger, constants);
             IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
             Mock<IOCRServiceClient> ocrServiceClientMock = new Mock<IOCRServiceClient>(MockBehavior.Strict);
-            businessLogicService = new BusinessLogicService(persistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceClientMock.Object, idGenerator, generalResourceLoader, auditLog);
+            businessLogicService = new BusinessLogicService(persistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceClientMock.Object, new OpenDMSBackend.Core.Services.AISummaryServiceClientMock(), idGenerator, generalResourceLoader, auditLog);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService, authenticationService);
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, persistence, idGenerator);
         }
@@ -132,6 +132,176 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             // assert
             List<string> actualIds = actualDocuments.Select(prev => prev.Id).ToList();
             Assert.IsTrue(actualIds.ToHashSet().SetEquals(expectedIds));
+        }
+
+        [TestMethod(DisplayName = nameof(SoftDeleteDocumentTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SoftDeleteDocumentTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(testDocument);
+            persistence.SetParentOfContainee(testDocument, storageLocationId);
+            Assert.IsFalse(persistence.GetDocument(testDocument.Id).IsSoftDeleted);
+
+            //act
+            businessLogicService.SoftDelete(userId, testDocument.Id, "obsolete");
+
+            //assert
+            Assert.IsTrue(persistence.GetDocument(testDocument.Id).IsSoftDeleted, "The document should be marked as soft-deleted.");
+            Assert.IsTrue(persistence.IsDocument(testDocument.Id), "A soft-deleted document must not be removed physically.");
+        }
+
+        [TestMethod(DisplayName = nameof(SoftDeleteStorageLocationSoftDeletesContainedDocumentsTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SoftDeleteStorageLocationSoftDeletesContainedDocumentsTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document testDocument1 = new Document(Guid.NewGuid().ToString(), OneLineString.From("title1"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            Document testDocument2 = new Document(Guid.NewGuid().ToString(), OneLineString.From("title2"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 02, 00, TimeSpan.Zero), default, 2, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(testDocument1);
+            persistence.SetParentOfContainee(testDocument1, storageLocationId);
+            persistence.CreateDocument(testDocument2);
+            persistence.SetParentOfContainee(testDocument2, storageLocationId);
+
+            //act
+            businessLogicService.SoftDelete(userId, storageLocationId, "obsolete");
+
+            //assert
+            Assert.IsTrue(persistence.GetDocument(testDocument1.Id).IsSoftDeleted);
+            Assert.IsTrue(persistence.GetDocument(testDocument2.Id).IsSoftDeleted);
+        }
+
+        [TestMethod(DisplayName = nameof(GenerateAISummaryTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void GenerateAISummaryTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, "some ocr content", new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(testDocument);
+            persistence.SetParentOfContainee(testDocument, storageLocationId);
+            Assert.IsNull(persistence.GetDocument(testDocument.Id).AISummaryShort);
+
+            //act
+            businessLogicService.GenerateAISummary(userId, testDocument.Id);
+
+            //assert
+            Document reloaded = persistence.GetDocument(testDocument.Id);
+            Assert.IsFalse(string.IsNullOrEmpty(reloaded.AISummaryShort), "The short AI-summary should be generated.");
+            Assert.IsFalse(string.IsNullOrEmpty(reloaded.AISummaryLong), "The long AI-summary should be generated.");
+        }
+
+        [TestMethod(DisplayName = nameof(AutoGenerateAISummarySettingTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void AutoGenerateAISummarySettingTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+
+            //act & assert
+            Assert.IsFalse(businessLogicService.GetAutoGenerateAISummary(), "The setting must default to false.");
+            persistence.SetSetting(CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary, true.ToString());
+            Assert.IsTrue(businessLogicService.GetAutoGenerateAISummary(), "The setting must reflect the stored value.");
+        }
+
+        [TestMethod(DisplayName = nameof(SetAutoGenerateAISummaryRequiresAdminTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SetAutoGenerateAISummaryRequiresAdminTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string nonAdminUserId = "nonAdminUserId";
+            persistence.AddUser(new User() { Id = nonAdminUserId, });
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.SetAutoGenerateAISummary(nonAdminUserId, true);
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A non-admin-user must not be allowed to change general settings.");
+        }
+
+        [TestMethod(DisplayName = nameof(VersionHistoryAndSupersededFilteringTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void VersionHistoryAndSupersededFilteringTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document oldVersion = new Document(Guid.NewGuid().ToString(), OneLineString.From("title-v1"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            Document newVersion = new Document(Guid.NewGuid().ToString(), OneLineString.From("title-v2"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 02, 00, TimeSpan.Zero), default, 2, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(oldVersion);
+            persistence.SetParentOfContainee(oldVersion, storageLocationId);
+            persistence.CreateDocument(newVersion);
+            persistence.SetParentOfContainee(newVersion, storageLocationId);
+            persistence.AddDocumentVersionLink(oldVersion.Id, newVersion.Id);
+
+            //act
+            List<DocumentPreview> history = businessLogicService.GetVersionHistory(userId, newVersion.Id).ToList();
+            List<string> latestIds = businessLogicService.GetLatestDocuments(userId).Select(document => document.Id).ToList();
+
+            //assert
+            Assert.AreEqual(2, history.Count, "The version-history must contain both versions.");
+            Assert.AreEqual(oldVersion.Id, history[0].Id, "The history must start with the oldest version.");
+            Assert.AreEqual(newVersion.Id, history[1].Id, "The history must end with the newest version.");
+            Assert.IsFalse(latestIds.Contains(oldVersion.Id), "A superseded version must not appear in the latest-documents-list.");
+            Assert.IsTrue(latestIds.Contains(newVersion.Id), "The newest version must appear in the latest-documents-list.");
+        }
+
+        [TestMethod(DisplayName = nameof(UploadNewVersionTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void UploadNewVersionTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document oldVersion = new Document(Guid.NewGuid().ToString(), OneLineString.From("title-v1"), OneLineString.From("file.txt"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.txt"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("text/plain"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(oldVersion);
+            persistence.SetParentOfContainee(oldVersion, storageLocationId);
+
+            //act
+            string newVersionId = businessLogicService.UploadNewVersion(userId, oldVersion.Id, "title-v2", "file.txt", new byte[] { 5, 6, 7 }, CodeUnitSpecificConstants.RolenameUsers, new HashSet<string>());
+
+            //assert
+            Assert.AreNotEqual(oldVersion.Id, newVersionId, "The new version must be a new document.");
+            Assert.IsTrue(persistence.GetSupersededDocumentIds().Contains(oldVersion.Id), "The old version must be marked as superseded.");
+            Assert.AreEqual(storageLocationId, persistence.GetParentIdOfContainee(newVersionId), "The new version must be stored in the same folder as the old version.");
+            List<string> historyIds = businessLogicService.GetVersionHistory(userId, oldVersion.Id).Select(document => document.Id).ToList();
+            CollectionAssert.Contains(historyIds, oldVersion.Id);
+            CollectionAssert.Contains(historyIds, newVersionId);
         }
 
         //TODO write testcases for the things which are not allowed to verify the user is really not able to do certain things

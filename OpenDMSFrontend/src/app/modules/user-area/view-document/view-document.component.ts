@@ -12,7 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class ViewDocumentComponent {
   doc: DocumentDTO | null = null;
   documentPreview: DocumentPreviewDTO | null = null;
-  constructor(storageService: StorageService, openDMSBackendService: OpenDMSBackendService, route: ActivatedRoute, private router: Router) {
+  aiSummaryIsGenerating: boolean = false;
+  constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, route: ActivatedRoute, private router: Router) {
     route.params.subscribe(params => {
       const readableId = params['readableId'];
       openDMSBackendService.aPIV3OpenDMSBackendGetDocumentFromReadableIdGet(storageService.getAccessToken(), readableId).subscribe(document => {
@@ -21,6 +22,26 @@ export class ViewDocumentComponent {
           this.documentPreview = documentPreview;
         });
       });
+    });
+  }
+
+  aiSummaryIsAvailable(): boolean {
+    return !!(this.doc && (this.doc.aiSummaryShort || this.doc.aiSummaryLong));
+  }
+
+  generateAISummary(): void {
+    if (!this.doc || this.aiSummaryIsGenerating) {
+      return;
+    }
+    this.aiSummaryIsGenerating = true;
+    this.openDMSBackendService.aPIV3OpenDMSBackendGenerateAISummaryDocumentIdPost(this.doc.id!, this.storageService.getAccessToken()).subscribe({
+      next: updatedDocument => {
+        this.doc = updatedDocument;
+        this.aiSummaryIsGenerating = false;
+      },
+      error: () => {
+        this.aiSummaryIsGenerating = false;
+      }
     });
   }
 

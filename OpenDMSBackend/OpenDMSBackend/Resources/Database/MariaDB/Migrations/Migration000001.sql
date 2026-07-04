@@ -42,7 +42,24 @@ CREATE TABLE `Documents` (
     `Version` varchar(255) not null,
     `AssignedLanguages` varchar(255) null,
     `AddedByUserId` varchar(255) null,
+    `AISummaryShort` longtext null COLLATE utf8mb4_unicode_ci,
+    `AISummaryLong` longtext null COLLATE utf8mb4_unicode_ci,
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `Settings` (
+    `Key` varchar(255) not null,
+    `Value` longtext not null COLLATE utf8mb4_unicode_ci,
+    CONSTRAINT `PK_Settings` PRIMARY KEY (`Key`)
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `DocumentVersionLink` (
+    `OldDocumentId` varchar(255) not null,
+    `NewDocumentId` varchar(255) not null,
+    CONSTRAINT `PK_DocumentVersionLink` PRIMARY KEY (`NewDocumentId`),
+    CONSTRAINT `UQ_DocumentVersionLink_OldDocumentId` UNIQUE (`OldDocumentId`),
+    CONSTRAINT `FK_DocumentVersionLink_OldDocumentId` FOREIGN KEY (`OldDocumentId`) REFERENCES `Documents`(`Id`),
+    CONSTRAINT `FK_DocumentVersionLink_NewDocumentId` FOREIGN KEY (`NewDocumentId`) REFERENCES `Documents`(`Id`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `Tags` (

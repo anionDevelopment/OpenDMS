@@ -1,5 +1,10 @@
 <app-frame-work>
   <app-admin-area-container>
-    <span i18n="@@settings">settings</span>
+    <h2 i18n="@@settings">settings</h2>
+    <div class="setting-row">
+      <mat-slide-toggle [checked]="autoGenerateAISummary" (change)="onAutoGenerateAISummaryChanged($event.checked)" i18n="@@setting_auto_generate_ai_summary">
+        Automatically generate an AI-summary whenever a document is added or changed
+      </mat-slide-toggle>
+    </div>
   </app-admin-area-container>
 </app-frame-work>

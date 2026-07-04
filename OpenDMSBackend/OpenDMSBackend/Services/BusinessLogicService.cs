@@ -33,6 +33,7 @@ namespace OpenDMSBackend.Core.Services
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
         private readonly IOCRServiceClient _OCRService;
+        private readonly IAISummaryServiceClient _AISummaryService;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
         private readonly IAuditLog _AuditLog;
@@ -44,10 +45,11 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="logger">The general-purpose logger.</param>
         /// <param name="configuration">The persisted server configuration.</param>
         /// <param name="oCRService">The OCR service client.</param>
+        /// <param name="aISummaryService">The AI-summary service client.</param>
         /// <param name="idGenerator">Generator for unique numeric identifiers.</param>
         /// <param name="generalResourceLoader">Loader for embedded general resources.</param>
         /// <param name="auditLog">The audit log service.</param>
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IServerLog logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader, IAuditLog auditLog)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IServerLog logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IAISummaryServiceClient aISummaryService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader, IAuditLog auditLog)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -56,6 +58,7 @@ namespace OpenDMSBackend.Core.Services
             this._Logger = logger.Logger;
             this._Configuration = configuration;
             this._OCRService = oCRService;
+            this._AISummaryService = aISummaryService;
             this._IdGenerator = idGenerator;
             this._GeneralResourceLoader = generalResourceLoader;
             this._AuditLog = auditLog;
@@ -70,7 +73,7 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="groupOfBusinessOwner">The business-owner group associated with the document.</param>
         /// <param name="additionalOCRLanguages">Additional ISO-639-1 language codes to use during OCR analysis.</param>
         /// <returns>The id of the newly created document.</returns>
-        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
+        public string AddDocument(string? requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
             lock (_LockObject)
             {
@@ -80,8 +83,45 @@ namespace OpenDMSBackend.Core.Services
                 this._Persistence.CreateDocument(document);
                 this._Persistence.SetParentOfContainee(document, containerId);
                 this._Logger.Log($"Document '{document.ReadableId}' added. (Technical-id: {document.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
+                this.GenerateAISummaryIfAutoGenerationIsEnabled(document);
                 return document.Id;
             }
+        }
+
+        /// <inheritdoc />
+        public string UploadNewVersion(string? requesterUserId, string oldDocumentId, string? title, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
+        {
+            //TODO check permission
+            string parentContainerId = this._Persistence.GetParentIdOfContainee(oldDocumentId);
+            string newDocumentId = this.AddDocument(requesterUserId, title, parentContainerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
+            this._Persistence.AddDocumentVersionLink(oldDocumentId, newDocumentId);
+            this._AuditLog.Logger.Log($"New version '{newDocumentId}' of document '{oldDocumentId}' uploaded.", Microsoft.Extensions.Logging.LogLevel.Information);
+            return newDocumentId;
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<DocumentPreview> GetVersionHistory(string requesterUserId, string documentId)
+        {
+            //determine the oldest version of the chain the given document belongs to.
+            string oldestVersionId = documentId;
+            string? previousVersionId = this._Persistence.GetPreviousVersionId(oldestVersionId);
+            while (previousVersionId != null)
+            {
+                oldestVersionId = previousVersionId;
+                previousVersionId = this._Persistence.GetPreviousVersionId(oldestVersionId);
+            }
+            //collect all versions from the oldest to the newest.
+            List<DocumentPreview> result = new List<DocumentPreview>();
+            string? currentVersionId = oldestVersionId;
+            while (currentVersionId != null)
+            {
+                if (this.UserIsAllowedToViewContent(requesterUserId, currentVersionId))
+                {
+                    result.Add(this._Persistence.GetDocumentPreview(currentVersionId));
+                }
+                currentVersionId = this._Persistence.GetNextVersionId(currentVersionId);
+            }
+            return result;
         }
 
         private void Validate(Document document)
@@ -162,7 +202,9 @@ namespace OpenDMSBackend.Core.Services
             {
                 searchResults = this._Persistence.Search(searchTerm.ToLower());
             }
+            ISet<string> supersededDocumentIds = this._Persistence.GetSupersededDocumentIds();
             return searchResults
+                .Where(documentId => !supersededDocumentIds.Contains(documentId))
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(this._Persistence.GetDocumentPreview)
                 .ToList();
@@ -261,8 +303,10 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId)
         {
+            ISet<string> supersededDocumentIds = this._Persistence.GetSupersededDocumentIds();
             List<DocumentPreview> result = this._Persistence
                 .GetAllDocumentIds()
+                .Where(documentId => !supersededDocumentIds.Contains(documentId))
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
                 .OrderByDescending(document => document.GetNewestDate(document))
@@ -292,6 +336,60 @@ namespace OpenDMSBackend.Core.Services
             }
             this.Validate(updatedDocument);
             this._Persistence.Update(requesterUserId, updatedDocument);
+            this.GenerateAISummaryIfAutoGenerationIsEnabled(updatedDocument);
+        }
+
+        /// <summary>Generates and stores the AI-summary of the given document if the corresponding setting is enabled. Failures are logged but never propagated so that adding or updating a document is not affected by an unavailable summary-service.</summary>
+        /// <param name="document">The document to summarize.</param>
+        private void GenerateAISummaryIfAutoGenerationIsEnabled(Document document)
+        {
+            if (!this.GetAutoGenerateAISummary())
+            {
+                return;
+            }
+            try
+            {
+                this.GenerateAndStoreAISummary(document);
+            }
+            catch (Exception exception)
+            {
+                this._Logger.Log($"Automatic generation of the AI-summary for document '{document.Id}' failed.", exception);
+            }
+        }
+
+        /// <inheritdoc />
+        public void GenerateAISummary(string requesterUserId, string documentId)
+        {
+            //TODO check permission
+            Document document = this._Persistence.GetDocument(documentId);
+            this.GenerateAndStoreAISummary(document);
+        }
+
+        private void GenerateAndStoreAISummary(Document document)
+        {
+            Model.BusinessTypes.AISummary summary = this._AISummaryService.GenerateSummary(document.Title.Value, document.OCRContent);
+            document.AISummaryShort = summary.Short;
+            document.AISummaryLong = summary.Long;
+            this._Persistence.SetAISummary(document.Id, summary.Short, summary.Long);
+            this._Logger.Log($"AI-summary for document '{document.Id}' generated.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public bool GetAutoGenerateAISummary()
+        {
+            string? value = this._Persistence.GetSetting(CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary);
+            return value != null && bool.TryParse(value, out bool result) && result;
+        }
+
+        /// <inheritdoc />
+        public void SetAutoGenerateAISummary(string requesterUserId, bool enabled)
+        {
+            if (!this.UserIsAdministrator(requesterUserId))
+            {
+                throw new NotAuthorizedException("Only administrators are allowed to change general settings.");
+            }
+            this._Persistence.SetSetting(CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary, enabled.ToString());
+            this._AuditLog.Logger.Log($"Setting '{CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary}' set to '{enabled}' by user '{requesterUserId}'.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         private void AnalyseDocument(Document document)
@@ -466,7 +564,24 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
-            throw new NotImplementedException();
+            //TODO check permission
+
+            //mark content as soft-deleted (documents are only marked, containers are handled recursively)
+            Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId,
+                (storageLocationId) => this.SoftDeleteEntireContent(requesterUserId, storageLocationId, reason),
+                (folderId) => this.SoftDeleteEntireContent(requesterUserId, folderId, reason),
+                (documentId) => this._Persistence.SoftDelete(documentId));
+
+            this._AuditLog.Logger.Log($"Soft-deleted {containerOrContaineeId}. Reason: {reason}");
+        }
+
+        private void SoftDeleteEntireContent(string? requesterUserId, string containerId, string reason)
+        {
+            IContainer container = this._Persistence.GetContainerById(containerId);
+            foreach (IContainee child in container.Content)
+            {
+                this.SoftDelete(requesterUserId, child.Id, reason);
+            }
         }
 
         /// <inheritdoc />

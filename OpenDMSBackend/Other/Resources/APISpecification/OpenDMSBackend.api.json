@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v3.1.0 API documentation",
+    "title": "OpenDMSBackend v3.0.6 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v3.1.0"
+    "version": "v3.0.6"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
@@ -74,174 +74,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          }
-        }
-      }
-    },
-    "/API/v3/OIDCController/GetOIDCProviders": {
-      "get": {
-        "tags": [
-          "OIDC"
-        ],
-        "summary": "Returns the list of configured OIDC providers. An empty list means OIDC login is not available.",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OIDCProviderDTO"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OIDCProviderDTO"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OIDCProviderDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/API/v3/OIDCController/InitiateOIDCLogin": {
-      "get": {
-        "tags": [
-          "OIDC"
-        ],
-        "summary": "Initiates an OIDC login for the specified provider. Returns the authorization URL to redirect the user to.",
-        "parameters": [
-          {
-            "name": "providerId",
-            "in": "query",
-            "description": "The id of the OIDC provider (e.g. \"keycloak-1\").",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/OIDCInitiationDTO"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OIDCInitiationDTO"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OIDCInitiationDTO"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/API/v3/OIDCController/ExchangeOIDCCode": {
-      "post": {
-        "tags": [
-          "OIDC"
-        ],
-        "summary": "Exchanges the OIDC authorization code for an OpenDMS access token.\r\nCreates a new OpenDMS account for the user on their first login via this provider.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OIDCCallbackRequestDTO"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OIDCCallbackRequestDTO"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/OIDCCallbackRequestDTO"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccessToken"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccessToken"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccessToken"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
           }
         }
       }
@@ -345,6 +177,170 @@
               "text/json": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/UploadNewVersion/{oldDocumentId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Uploads a new version of an existing document. The new version is stored as a regular document in the same folder and is linked to the old document.",
+        "parameters": [
+          {
+            "name": "oldDocumentId",
+            "in": "path",
+            "description": "The ID of the document a new version is uploaded for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "query",
+            "description": "The file name for the uploaded document.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "An optional display title for the document.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "additionalOCRLanguages",
+            "in": "query",
+            "description": "Additional languages to use during OCR processing.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The raw binary content of the new version.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetVersionHistory": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns the complete version-history (from oldest to newest) of the document's version-chain.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "query",
+            "description": "The ID of a document in the version-chain.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
                 }
               }
             }
@@ -1261,6 +1257,141 @@
         }
       }
     },
+    "/API/v3/OpenDMSBackend/GenerateAISummary/{documentId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Generates the short and the long AI-summary of the specified document and returns the updated document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document to summarize.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetGeneralSettings": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns the general (admin-configurable) OpenDMS-settings.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/SetGeneralSettings": {
+      "put": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Updates the general (admin-configurable) OpenDMS-settings. Only administrators are allowed to call this.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The new settings-values.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/API/v3/UserController/Login": {
       "put": {
         "tags": [
@@ -1605,6 +1736,16 @@
           "addedByUserId": {
             "type": "string",
             "nullable": true
+          },
+          "aiSummaryShort": {
+            "type": "string",
+            "description": "A very short AI-generated summary (at most three sentences), or null if none has been generated yet.",
+            "nullable": true
+          },
+          "aiSummaryLong": {
+            "type": "string",
+            "description": "A regular AI-generated summary, or null if none has been generated yet.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -1678,6 +1819,11 @@
           "addedByUserId": {
             "type": "string",
             "nullable": true
+          },
+          "aiSummaryShort": {
+            "type": "string",
+            "description": "A very short AI-generated summary (at most three sentences) shown as a hint in listings, or null if none has been generated yet.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -1711,88 +1857,16 @@
         },
         "additionalProperties": false
       },
-      "OIDCCallbackRequestDTO": {
+      "GeneralSettingsDTO": {
         "type": "object",
         "properties": {
-          "providerId": {
-            "type": "string",
-            "description": "The provider id that initiated the flow (e.g. \"keycloak-1\").",
-            "nullable": true
-          },
-          "code": {
-            "type": "string",
-            "description": "The authorization code received from the OIDC provider callback.",
-            "nullable": true
-          },
-          "state": {
-            "type": "string",
-            "description": "The state value from the callback, used to look up the stored code verifier.",
-            "nullable": true
+          "autoGenerateAISummary": {
+            "type": "boolean",
+            "description": "Whether an AI-summary is generated automatically whenever a document is added or changed."
           }
         },
         "additionalProperties": false,
-        "description": "Sent by the frontend to exchange an OIDC authorization code for an OpenDMS access token."
-      },
-      "OIDCInitiationDTO": {
-        "type": "object",
-        "properties": {
-          "authorizationUrl": {
-            "type": "string",
-            "description": "The full URL to redirect the user's browser to at the OIDC provider.",
-            "nullable": true
-          },
-          "state": {
-            "type": "string",
-            "description": "The OIDC state value. The frontend must store this and verify it matches what comes back\r\nin the callback query parameter before calling ExchangeOIDCCode.",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Returned when initiating an OIDC login; the frontend redirects the user to OpenDMSBackend.Core.Model.DTOs.OIDCInitiationDTO.AuthorizationUrl."
-      },
-      "OIDCProviderDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "The unique provider id (e.g. \"keycloak-1\").",
-            "nullable": true
-          },
-          "displayName": {
-            "type": "string",
-            "description": "The human-readable label for the login button.",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false,
-        "description": "Public representation of a configured OIDC provider, returned to the frontend."
-      },
-      "ProblemDetails": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": { }
+        "description": "Data transfer object for the general (admin-configurable) OpenDMS-settings."
       },
       "StorageLocationDTO": {
         "type": "object",
@@ -1890,9 +1964,6 @@
   "tags": [
     {
       "name": "MaintenanceRoutes"
-    },
-    {
-      "name": "OIDC"
     },
     {
       "name": "OpenDMSBackend"

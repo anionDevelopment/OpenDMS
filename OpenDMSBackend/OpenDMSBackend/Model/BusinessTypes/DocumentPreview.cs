@@ -29,6 +29,10 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
         public string? AddedByUserId { get; set; }
+        /// <summary>
+        /// A very short (at most three sentences) AI-generated summary of the document, or <see langword="null"/> if none has been generated yet.
+        /// </summary>
+        public string? AISummaryShort { get; set; }
 
         public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ISet<Tag> tags, ulong readableId, OneLineString mIMEType, byte[] preview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string? addedByUserId)
         {
@@ -78,7 +82,10 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         /// <returns>A <see cref="DocumentPreviewDTO"/> populated from this instance.</returns>
         public DocumentPreviewDTO ToDTO()
         {
-            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, GUtilities.FormatTimestamp(this.ImportDate, false), GUtilities.FormatTimestampNullable(this.LastEditDate, false), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore, false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter, false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages,this.AddedByUserId);
+            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, GUtilities.FormatTimestamp(this.ImportDate, false), GUtilities.FormatTimestampNullable(this.LastEditDate, false), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore, false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter, false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages,this.AddedByUserId)
+            {
+                AISummaryShort = this.AISummaryShort
+            };
         }
 
         /// <summary>Returns the most recent date of the document — last-edit date if available, otherwise import date.</summary>

@@ -565,6 +565,8 @@ namespace OpenDMSBackend.Core.Services
                                 Core.Misc.Utilities.StringToLanguagesList(reader.GetString(13)),//languages
                                 reader.GetString(14)//userid
                             );
+                            document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 15);
+                            document.AISummaryLong = DBUtilities.GetNullableValue<string>(reader, 16);
                             return document;
                         }
                         else
@@ -945,6 +947,7 @@ namespace OpenDMSBackend.Core.Services
                         Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), //languages
                         reader.GetString(13)//creator-user-is
                     );
+                    document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 14);
                     //TODO load tags
                     return document;
                 }
@@ -1292,7 +1295,120 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SoftDelete(string documentId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(SoftDelete), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSoftDeleteDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsSoftDeleted", true));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void SetAISummary(string documentId, string? shortSummary, string? longSummary)
+        {
+            this.RunTransaction(nameof(SetAISummary), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetAISummary();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AISummaryShort", shortSummary, typeof(string)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AISummaryLong", longSummary, typeof(string)));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public string? GetSetting(string key)
+        {
+            return this.RunTransaction(nameof(GetSetting), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptGetSetting();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Key", key));
+                using DbDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return reader.GetString(0);
+                }
+                else
+                {
+                    return null;
+                }
+            })[0];
+        }
+
+        /// <inheritdoc />
+        public void SetSetting(string key, string value)
+        {
+            this.RunTransaction(nameof(SetSetting), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetSetting();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Key", key));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", value));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void AddDocumentVersionLink(string oldDocumentId, string newDocumentId)
+        {
+            this.RunTransaction(nameof(AddDocumentVersionLink), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddDocumentVersionLink();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OldDocumentId", oldDocumentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("NewDocumentId", newDocumentId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public ISet<string> GetSupersededDocumentIds()
+        {
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetSupersededDocumentIds), true, (command) =>
+            {
+                ISet<string> result = new HashSet<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetSupersededDocumentIds();
+                using (DbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result.Add(reader.GetString(0));
+                    }
+                    reader.Close();
+                }
+                return result;
+            })[0]);
+        }
+
+        /// <inheritdoc />
+        public string? GetPreviousVersionId(string documentId)
+        {
+            return this.GetSingleVersionId(nameof(GetPreviousVersionId), this._SQLProvider.GetScriptGetPreviousVersionId(), documentId);
+        }
+
+        /// <inheritdoc />
+        public string? GetNextVersionId(string documentId)
+        {
+            return this.GetSingleVersionId(nameof(GetNextVersionId), this._SQLProvider.GetScriptGetNextVersionId(), documentId);
+        }
+
+        private string? GetSingleVersionId(string actionName, string script, string documentId)
+        {
+            return this.RunTransaction(actionName, true, (command) =>
+            {
+                command.CommandText = script;
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                using DbDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return reader.GetString(0);
+                }
+                else
+                {
+                    return null;
+                }
+            })[0];
         }
 
         /// <inheritdoc />

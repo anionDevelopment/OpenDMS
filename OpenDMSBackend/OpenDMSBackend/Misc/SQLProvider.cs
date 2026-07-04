@@ -34,6 +34,54 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptSoftDeleteDocument()
+        {
+            return this.LoadSQLScript("SoftDeleteDocument");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptSetAISummary()
+        {
+            return this.LoadSQLScript("SetAISummary");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetSetting()
+        {
+            return this.LoadSQLScript("GetSetting");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptSetSetting()
+        {
+            return this.LoadSQLScript("SetSetting");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptAddDocumentVersionLink()
+        {
+            return this.LoadSQLScript("AddDocumentVersionLink");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetSupersededDocumentIds()
+        {
+            return this.LoadSQLScript("GetSupersededDocumentIds");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetPreviousVersionId()
+        {
+            return this.LoadSQLScript("GetPreviousVersionId");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetNextVersionId()
+        {
+            return this.LoadSQLScript("GetNextVersionId");
+        }
+
+        /// <inheritdoc />
         public string GetScriptAddRole()
         {
             return this.LoadSQLScript("AddRole");

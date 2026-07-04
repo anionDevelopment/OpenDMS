@@ -26,6 +26,11 @@ namespace OpenDMSBackend.Core.Model.DTOs
 
         public string? AddedByUserId { get; set; }
 
+        /// <summary>A very short AI-generated summary (at most three sentences), or <see langword="null"/> if none has been generated yet.</summary>
+        public string? AISummaryShort { get; set; }
+        /// <summary>A regular AI-generated summary, or <see langword="null"/> if none has been generated yet.</summary>
+        public string? AISummaryLong { get; set; }
+
         /// <summary>Initializes a new instance of <see cref="DocumentDTO"/>.</summary>
         /// <param name="id">The unique identifier of the document.</param>
         /// <param name="title">The display title of the document.</param>

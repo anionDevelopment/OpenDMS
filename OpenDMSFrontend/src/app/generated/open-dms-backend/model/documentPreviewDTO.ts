@@ -30,5 +30,9 @@ export interface DocumentPreviewDTO {
     version?: Version3;
     assignedLanguages?: Set<string> | null;
     addedByUserId?: string | null;
+    /**
+     * A very short AI-generated summary (at most three sentences) shown as a hint in listings, or null if none has been generated yet.
+     */
+    aiSummaryShort?: string | null;
 }
 

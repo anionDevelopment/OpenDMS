@@ -1,0 +1,3 @@
+
+select "OldDocumentId"
+	from "DocumentVersionLink";

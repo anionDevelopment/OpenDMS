@@ -33,6 +33,16 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
         public string? AddedByUserId { get; set; }
+        /// <summary>
+        /// A very short (at most three sentences) AI-generated summary of the document which allows the user to quickly grasp what kind of document this is and its most concrete data (for example sender or customer-number).
+        /// <see langword="null"/> if no AI-summary has been generated yet.
+        /// </summary>
+        public string? AISummaryShort { get; set; }
+        /// <summary>
+        /// A regular (potentially up to about one A4-page long) AI-generated summary of the document.
+        /// <see langword="null"/> if no AI-summary has been generated yet.
+        /// </summary>
+        public string? AISummaryLong { get; set; }
         //TODO add list of old versions
         /// <summary>
         /// Initializes a new instance of <see cref="Document"/>.
@@ -128,7 +138,10 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         /// <returns>A <see cref="DocumentPreview"/> for this document.</returns>
         public DocumentPreview GetPreview()
         {
-            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.Tags, this.ReadableId, this.MIMEType, this.Preview, this.IsSoftDeleted, this.DeleteIsNotAllowedBefore, this.MustBeHardDeletedAfter, this.GroupOfBusinessOwner, this.Version,this.AssignedLanguages, this.AddedByUserId);
+            return new DocumentPreview(this.Id, this.Title, this.Filename, this.OriginalFilename, this.ImportDate, this.LastEditDate, this.Tags, this.ReadableId, this.MIMEType, this.Preview, this.IsSoftDeleted, this.DeleteIsNotAllowedBefore, this.MustBeHardDeletedAfter, this.GroupOfBusinessOwner, this.Version,this.AssignedLanguages, this.AddedByUserId)
+            {
+                AISummaryShort = this.AISummaryShort
+            };
         }
 
         /// <summary>
@@ -137,7 +150,11 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         /// <returns>A <see cref="DocumentDTO"/> populated from this instance.</returns>
         public DocumentDTO ToDTO()
         {
-            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value,GUtilities.FormatTimestamp( this.ImportDate,false), GUtilities.FormatTimestampNullable(this.LastEditDate,false), this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore,false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter,false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages, this.AddedByUserId);
+            return new DocumentDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value,GUtilities.FormatTimestamp( this.ImportDate,false), GUtilities.FormatTimestampNullable(this.LastEditDate,false), this.Tags.Select(tag => tag.ToDTO()).ToHashSet(), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Content), Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore,false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter,false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages, this.AddedByUserId)
+            {
+                AISummaryShort = this.AISummaryShort,
+                AISummaryLong = this.AISummaryLong
+            };
         }
         public override string ToString()
         {

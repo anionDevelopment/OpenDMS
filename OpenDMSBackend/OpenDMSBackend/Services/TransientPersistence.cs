@@ -18,6 +18,8 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*id*/, Tag> _Tags;
         private readonly IDictionary<string/*containee-id*/, string/*container-id*/> _ContaineeContainerAssignments;
         private readonly IDictionary<string/*storagelocation-id*/, string/*user-id*/> _StorageLocationOwnerAssignments;
+        private readonly IDictionary<string/*key*/, string/*value*/> _Settings;
+        private readonly IDictionary<string/*old-document-id*/, string/*new-document-id*/> _DocumentVersionSuccessors;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly ITimeService _TimeService;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
@@ -35,6 +37,8 @@ namespace OpenDMSBackend.Core.Services
             this._Documents = new Dictionary<string, Document>();
             this._ContaineeContainerAssignments = new Dictionary<string, string>();
             this._StorageLocationOwnerAssignments = new Dictionary<string, string>();
+            this._Settings = new Dictionary<string, string>();
+            this._DocumentVersionSuccessors = new Dictionary<string, string>();
             this._Tags = new Dictionary<string, Tag>();
             this._IdGenerator = idGenerator;
             this._TimeService = timeService;
@@ -55,6 +59,8 @@ namespace OpenDMSBackend.Core.Services
             this._Documents.Clear();
             this._ContaineeContainerAssignments.Clear();
             this._StorageLocationOwnerAssignments.Clear();
+            this._Settings.Clear();
+            this._DocumentVersionSuccessors.Clear();
             this._Tags.Clear();
             this._IdGenerator.Reset();
         }
@@ -560,7 +566,77 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SoftDelete(string documentId)
         {
-            throw new NotImplementedException();
+            Document document = this.GetDocument(documentId);
+            document.IsSoftDeleted = true;
+        }
+
+        /// <inheritdoc />
+        public void SetAISummary(string documentId, string? shortSummary, string? longSummary)
+        {
+            Document document = this.GetDocument(documentId);
+            document.AISummaryShort = shortSummary;
+            document.AISummaryLong = longSummary;
+        }
+
+        /// <inheritdoc />
+        public void AddDocumentVersionLink(string oldDocumentId, string newDocumentId)
+        {
+            lock (_Lock)
+            {
+                this._DocumentVersionSuccessors[oldDocumentId] = newDocumentId;
+            }
+        }
+
+        /// <inheritdoc />
+        public ISet<string> GetSupersededDocumentIds()
+        {
+            lock (_Lock)
+            {
+                return this._DocumentVersionSuccessors.Keys.ToHashSet();
+            }
+        }
+
+        /// <inheritdoc />
+        public string? GetPreviousVersionId(string documentId)
+        {
+            lock (_Lock)
+            {
+                foreach (KeyValuePair<string, string> link in this._DocumentVersionSuccessors)
+                {
+                    if (link.Value == documentId)
+                    {
+                        return link.Key;
+                    }
+                }
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public string? GetNextVersionId(string documentId)
+        {
+            lock (_Lock)
+            {
+                return this._DocumentVersionSuccessors.TryGetValue(documentId, out string? newDocumentId) ? newDocumentId : null;
+            }
+        }
+
+        /// <inheritdoc />
+        public string? GetSetting(string key)
+        {
+            lock (_Lock)
+            {
+                return this._Settings.TryGetValue(key, out string? value) ? value : null;
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetSetting(string key, string value)
+        {
+            lock (_Lock)
+            {
+                this._Settings[key] = value;
+            }
         }
 
         /// <inheritdoc />

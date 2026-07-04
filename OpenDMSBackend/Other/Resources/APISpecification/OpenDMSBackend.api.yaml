@@ -21,6 +21,16 @@ components:
         addedByUserId:
           nullable: true
           type: string
+        aiSummaryLong:
+          description: A regular AI-generated summary, or null if none has been generated
+            yet.
+          nullable: true
+          type: string
+        aiSummaryShort:
+          description: A very short AI-generated summary (at most three sentences),
+            or null if none has been generated yet.
+          nullable: true
+          type: string
         assignedLanguages:
           items:
             type: string
@@ -83,6 +93,11 @@ components:
         the full document content.
       properties:
         addedByUserId:
+          nullable: true
+          type: string
+        aiSummaryShort:
+          description: A very short AI-generated summary (at most three sentences)
+            shown as a hint in listings, or null if none has been generated yet.
           nullable: true
           type: string
         assignedLanguages:
@@ -152,75 +167,14 @@ components:
           nullable: true
           type: string
       type: object
-    OIDCCallbackRequestDTO:
+    GeneralSettingsDTO:
       additionalProperties: false
-      description: Sent by the frontend to exchange an OIDC authorization code for
-        an OpenDMS access token.
+      description: Data transfer object for the general (admin-configurable) OpenDMS-settings.
       properties:
-        code:
-          description: The authorization code received from the OIDC provider callback.
-          nullable: true
-          type: string
-        providerId:
-          description: The provider id that initiated the flow (e.g. "keycloak-1").
-          nullable: true
-          type: string
-        state:
-          description: The state value from the callback, used to look up the stored
-            code verifier.
-          nullable: true
-          type: string
-      type: object
-    OIDCInitiationDTO:
-      additionalProperties: false
-      description: Returned when initiating an OIDC login; the frontend redirects
-        the user to OpenDMSBackend.Core.Model.DTOs.OIDCInitiationDTO.AuthorizationUrl.
-      properties:
-        authorizationUrl:
-          description: The full URL to redirect the user's browser to at the OIDC
-            provider.
-          nullable: true
-          type: string
-        state:
-          description: "The OIDC state value. The frontend must store this and verify\
-            \ it matches what comes back\r\nin the callback query parameter before\
-            \ calling ExchangeOIDCCode."
-          nullable: true
-          type: string
-      type: object
-    OIDCProviderDTO:
-      additionalProperties: false
-      description: Public representation of a configured OIDC provider, returned to
-        the frontend.
-      properties:
-        displayName:
-          description: The human-readable label for the login button.
-          nullable: true
-          type: string
-        id:
-          description: The unique provider id (e.g. "keycloak-1").
-          nullable: true
-          type: string
-      type: object
-    ProblemDetails:
-      additionalProperties: {}
-      properties:
-        detail:
-          nullable: true
-          type: string
-        instance:
-          nullable: true
-          type: string
-        status:
-          format: int32
-          nullable: true
-          type: integer
-        title:
-          nullable: true
-          type: string
-        type:
-          nullable: true
-          type: string
+        autoGenerateAISummary:
+          description: Whether an AI-summary is generated automatically whenever a
+            document is added or changed.
+          type: boolean
       type: object
     StorageLocationDTO:
       additionalProperties: false
@@ -289,8 +243,8 @@ components:
       type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
-  title: OpenDMSBackend v3.1.0 API documentation
-  version: v3.1.0
+  title: OpenDMSBackend v3.0.6 API documentation
+  version: v3.0.6
 openapi: 3.0.4
 paths:
   /API/Other/Maintenance/AvailabilityCheck:
@@ -335,111 +289,6 @@ paths:
           description: OK
       tags:
       - MaintenanceRoutes
-  /API/v3/OIDCController/ExchangeOIDCCode:
-    post:
-      requestBody:
-        content:
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/OIDCCallbackRequestDTO'
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OIDCCallbackRequestDTO'
-          text/json:
-            schema:
-              $ref: '#/components/schemas/OIDCCallbackRequestDTO'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AccessToken'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/AccessToken'
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/AccessToken'
-          description: OK
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-          description: Bad Request
-      summary: "Exchanges the OIDC authorization code for an OpenDMS access token.\r\
-        \nCreates a new OpenDMS account for the user on their first login via this\
-        \ provider."
-      tags:
-      - OIDC
-  /API/v3/OIDCController/GetOIDCProviders:
-    get:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/OIDCProviderDTO'
-                type: array
-            text/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/OIDCProviderDTO'
-                type: array
-            text/plain:
-              schema:
-                items:
-                  $ref: '#/components/schemas/OIDCProviderDTO'
-                type: array
-          description: OK
-      summary: Returns the list of configured OIDC providers. An empty list means
-        OIDC login is not available.
-      tags:
-      - OIDC
-  /API/v3/OIDCController/InitiateOIDCLogin:
-    get:
-      parameters:
-      - description: The id of the OIDC provider (e.g. "keycloak-1").
-        in: query
-        name: providerId
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OIDCInitiationDTO'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/OIDCInitiationDTO'
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/OIDCInitiationDTO'
-          description: OK
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-            text/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-            text/plain:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-          description: Not Found
-      summary: Initiates an OIDC login for the specified provider. Returns the authorization
-        URL to redirect the user to.
-      tags:
-      - OIDC
   /API/v3/OpenDMSBackend/AddDocument/{containerId}:
     post:
       parameters:
@@ -603,6 +452,38 @@ paths:
           description: OK
       summary: Grants the specified user permission to view the specified storage
         location.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GenerateAISummary/{documentId}:
+    post:
+      parameters:
+      - description: The id of the document to summarize.
+        in: path
+        name: documentId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+          description: OK
+      summary: Generates the short and the long AI-summary of the specified document
+        and returns the updated document.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetAllTags:
@@ -791,6 +672,31 @@ paths:
       summary: Returns the folder with the specified id.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GetGeneralSettings:
+    get:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralSettingsDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GeneralSettingsDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GeneralSettingsDTO'
+          description: OK
+      summary: Returns the general (admin-configurable) OpenDMS-settings.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetLatestDocuments:
     get:
       parameters:
@@ -851,6 +757,43 @@ paths:
                 $ref: '#/components/schemas/StorageLocationDTO'
           description: OK
       summary: Returns the storage location with the specified id.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GetVersionHistory:
+    get:
+      parameters:
+      - description: The ID of a document in the version-chain.
+        in: query
+        name: documentId
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+          description: OK
+      summary: Returns the complete version-history (from oldest to newest) of the
+        document's version-chain.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/HardDelete/{containerOrContaineeId}:
@@ -979,6 +922,34 @@ paths:
         search term.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/SetGeneralSettings:
+    put:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/GeneralSettingsDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralSettingsDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/GeneralSettingsDTO'
+        description: The new settings-values.
+      responses:
+        '200':
+          description: OK
+      summary: Updates the general (admin-configurable) OpenDMS-settings. Only administrators
+        are allowed to call this.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/SoftDelete/{containerOrContaineeId}:
     delete:
       parameters:
@@ -1082,6 +1053,74 @@ paths:
                 type: string
           description: OK
       summary: Updates the display title of an existing document.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/UploadNewVersion/{oldDocumentId}:
+    post:
+      parameters:
+      - description: The ID of the document a new version is uploaded for.
+        in: path
+        name: oldDocumentId
+        required: true
+        schema:
+          type: string
+      - description: The file name for the uploaded document.
+        in: query
+        name: filename
+        schema:
+          type: string
+      - description: An optional display title for the document.
+        in: query
+        name: title
+        schema:
+          type: string
+      - description: Additional languages to use during OCR processing.
+        in: query
+        name: additionalOCRLanguages
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              format: byte
+              type: string
+          application/json:
+            schema:
+              format: byte
+              type: string
+          application/octet-stream:
+            schema:
+              format: byte
+              type: string
+          text/json:
+            schema:
+              format: byte
+              type: string
+        description: The raw binary content of the new version.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+          description: OK
+      summary: Uploads a new version of an existing document. The new version is stored
+        as a regular document in the same folder and is linked to the old document.
       tags:
       - OpenDMSBackend
   /API/v3/UserController/GetRoles:
@@ -1236,6 +1275,5 @@ paths:
       - User
 tags:
 - name: MaintenanceRoutes
-- name: OIDC
 - name: OpenDMSBackend
 - name: User
