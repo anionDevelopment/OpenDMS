@@ -88,6 +88,42 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <inheritdoc />
+        public string UploadNewVersion(string? requesterUserId, string oldDocumentId, string? title, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
+        {
+            //TODO check permission
+            string parentContainerId = this._Persistence.GetParentIdOfContainee(oldDocumentId);
+            string newDocumentId = this.AddDocument(requesterUserId, title, parentContainerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
+            this._Persistence.AddDocumentVersionLink(oldDocumentId, newDocumentId);
+            this._AuditLog.Logger.Log($"New version '{newDocumentId}' of document '{oldDocumentId}' uploaded.", Microsoft.Extensions.Logging.LogLevel.Information);
+            return newDocumentId;
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<DocumentPreview> GetVersionHistory(string requesterUserId, string documentId)
+        {
+            //determine the oldest version of the chain the given document belongs to.
+            string oldestVersionId = documentId;
+            string? previousVersionId = this._Persistence.GetPreviousVersionId(oldestVersionId);
+            while (previousVersionId != null)
+            {
+                oldestVersionId = previousVersionId;
+                previousVersionId = this._Persistence.GetPreviousVersionId(oldestVersionId);
+            }
+            //collect all versions from the oldest to the newest.
+            List<DocumentPreview> result = new List<DocumentPreview>();
+            string? currentVersionId = oldestVersionId;
+            while (currentVersionId != null)
+            {
+                if (this.UserIsAllowedToViewContent(requesterUserId, currentVersionId))
+                {
+                    result.Add(this._Persistence.GetDocumentPreview(currentVersionId));
+                }
+                currentVersionId = this._Persistence.GetNextVersionId(currentVersionId);
+            }
+            return result;
+        }
+
         private void Validate(Document document)
         {
             if (!this.IsValid(document, out IList<string> errorMessages))
@@ -166,7 +202,9 @@ namespace OpenDMSBackend.Core.Services
             {
                 searchResults = this._Persistence.Search(searchTerm.ToLower());
             }
+            ISet<string> supersededDocumentIds = this._Persistence.GetSupersededDocumentIds();
             return searchResults
+                .Where(documentId => !supersededDocumentIds.Contains(documentId))
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(this._Persistence.GetDocumentPreview)
                 .ToList();
@@ -265,8 +303,10 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId)
         {
+            ISet<string> supersededDocumentIds = this._Persistence.GetSupersededDocumentIds();
             List<DocumentPreview> result = this._Persistence
                 .GetAllDocumentIds()
+                .Where(documentId => !supersededDocumentIds.Contains(documentId))
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
                 .OrderByDescending(document => document.GetNewestDate(document))

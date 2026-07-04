@@ -130,6 +130,25 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="value">The value to store.</param>
         public void SetSetting(string key, string value);
 
+        /// <summary>Records that <paramref name="newDocumentId"/> is a new version of <paramref name="oldDocumentId"/>. Both documents keep existing unchanged; only the version-relationship is stored.</summary>
+        /// <param name="oldDocumentId">The id of the predecessor-document which is superseded by the new version.</param>
+        /// <param name="newDocumentId">The id of the new version.</param>
+        public void AddDocumentVersionLink(string oldDocumentId, string newDocumentId);
+
+        /// <summary>Returns the ids of all documents which have been superseded by a newer version.</summary>
+        /// <returns>The set of superseded document-ids.</returns>
+        public ISet<string> GetSupersededDocumentIds();
+
+        /// <summary>Returns the id of the document which is the direct predecessor (previous version) of the given document, or <see langword="null"/> if there is none.</summary>
+        /// <param name="documentId">The id of the document whose predecessor is requested.</param>
+        /// <returns>The predecessor-document-id, or <see langword="null"/>.</returns>
+        public string? GetPreviousVersionId(string documentId);
+
+        /// <summary>Returns the id of the document which is the direct successor (next version) of the given document, or <see langword="null"/> if there is none.</summary>
+        /// <param name="documentId">The id of the document whose successor is requested.</param>
+        /// <returns>The successor-document-id, or <see langword="null"/>.</returns>
+        public string? GetNextVersionId(string documentId);
+
         /// <summary>Permanently removes the specified container or containee and all associated data from the store.</summary>
         /// <param name="containerOrContaineeId">The id of the container or containee to delete.</param>
         public void HardDelete(string containerOrContaineeId);

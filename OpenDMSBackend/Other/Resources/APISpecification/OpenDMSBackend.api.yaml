@@ -759,6 +759,43 @@ paths:
       summary: Returns the storage location with the specified id.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GetVersionHistory:
+    get:
+      parameters:
+      - description: The ID of a document in the version-chain.
+        in: query
+        name: documentId
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DocumentPreviewDTO'
+                type: array
+          description: OK
+      summary: Returns the complete version-history (from oldest to newest) of the
+        document's version-chain.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/HardDelete/{containerOrContaineeId}:
     delete:
       parameters:
@@ -1016,6 +1053,74 @@ paths:
                 type: string
           description: OK
       summary: Updates the display title of an existing document.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/UploadNewVersion/{oldDocumentId}:
+    post:
+      parameters:
+      - description: The ID of the document a new version is uploaded for.
+        in: path
+        name: oldDocumentId
+        required: true
+        schema:
+          type: string
+      - description: The file name for the uploaded document.
+        in: query
+        name: filename
+        schema:
+          type: string
+      - description: An optional display title for the document.
+        in: query
+        name: title
+        schema:
+          type: string
+      - description: Additional languages to use during OCR processing.
+        in: query
+        name: additionalOCRLanguages
+        schema:
+          items:
+            type: string
+          type: array
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              format: byte
+              type: string
+          application/json:
+            schema:
+              format: byte
+              type: string
+          application/octet-stream:
+            schema:
+              format: byte
+              type: string
+          text/json:
+            schema:
+              format: byte
+              type: string
+        description: The raw binary content of the new version.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+          description: OK
+      summary: Uploads a new version of an existing document. The new version is stored
+        as a regular document in the same folder and is linked to the old document.
       tags:
       - OpenDMSBackend
   /API/v3/UserController/GetRoles:

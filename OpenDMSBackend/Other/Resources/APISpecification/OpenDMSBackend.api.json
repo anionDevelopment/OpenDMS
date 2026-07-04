@@ -184,6 +184,170 @@
         }
       }
     },
+    "/API/v3/OpenDMSBackend/UploadNewVersion/{oldDocumentId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Uploads a new version of an existing document. The new version is stored as a regular document in the same folder and is linked to the old document.",
+        "parameters": [
+          {
+            "name": "oldDocumentId",
+            "in": "path",
+            "description": "The ID of the document a new version is uploaded for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "query",
+            "description": "The file name for the uploaded document.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "An optional display title for the document.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "additionalOCRLanguages",
+            "in": "query",
+            "description": "Additional languages to use during OCR processing.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The raw binary content of the new version.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetVersionHistory": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns the complete version-history (from oldest to newest) of the document's version-chain.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "query",
+            "description": "The ID of a document in the version-chain.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/API/v3/OpenDMSBackend/UpdateDocumentTitle/{documentId}": {
       "put": {
         "tags": [

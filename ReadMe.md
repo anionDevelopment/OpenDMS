@@ -31,7 +31,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 ### GOBD conformity
 
 - ❌ Ensure immutability of archived documents (WORM principle: once captured, content can no longer be overwritten).
-- ❌ Maintain a version history (create a new version on every change and keep old versions immutably). `Version` exists in the model, but the list of old versions is still a `TODO`.
+- ✅ Maintain a version history (upload a new version of a document; the new version is stored as a regular, immutable document and linked to the old one, which is hidden from the normal listings but remains retrievable via the version-history).
 - ❌ Log all changes completely (who, when, what - including rename, move, update and metadata changes). Currently only partial (only add and hard-delete are logged, many operations are not).
 - ❌ Provide a tamper-proof audit log (the log itself must be immutable and protected against subsequent modification).
 - ✅ Record the immutable capture timestamp of every document (`ImportDate`).

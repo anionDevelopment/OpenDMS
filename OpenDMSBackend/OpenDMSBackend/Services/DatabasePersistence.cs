@@ -1344,6 +1344,68 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
+        public void AddDocumentVersionLink(string oldDocumentId, string newDocumentId)
+        {
+            this.RunTransaction(nameof(AddDocumentVersionLink), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAddDocumentVersionLink();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OldDocumentId", oldDocumentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("NewDocumentId", newDocumentId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public ISet<string> GetSupersededDocumentIds()
+        {
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetSupersededDocumentIds), true, (command) =>
+            {
+                ISet<string> result = new HashSet<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetSupersededDocumentIds();
+                using (DbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result.Add(reader.GetString(0));
+                    }
+                    reader.Close();
+                }
+                return result;
+            })[0]);
+        }
+
+        /// <inheritdoc />
+        public string? GetPreviousVersionId(string documentId)
+        {
+            return this.GetSingleVersionId(nameof(GetPreviousVersionId), this._SQLProvider.GetScriptGetPreviousVersionId(), documentId);
+        }
+
+        /// <inheritdoc />
+        public string? GetNextVersionId(string documentId)
+        {
+            return this.GetSingleVersionId(nameof(GetNextVersionId), this._SQLProvider.GetScriptGetNextVersionId(), documentId);
+        }
+
+        private string? GetSingleVersionId(string actionName, string script, string documentId)
+        {
+            return this.RunTransaction(actionName, true, (command) =>
+            {
+                command.CommandText = script;
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                using DbDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return reader.GetString(0);
+                }
+                else
+                {
+                    return null;
+                }
+            })[0];
+        }
+
+        /// <inheritdoc />
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
             throw new NotImplementedException();

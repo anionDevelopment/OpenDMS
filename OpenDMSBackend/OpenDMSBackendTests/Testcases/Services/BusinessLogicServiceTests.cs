@@ -246,6 +246,64 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Assert.IsTrue(threw, "A non-admin-user must not be allowed to change general settings.");
         }
 
+        [TestMethod(DisplayName = nameof(VersionHistoryAndSupersededFilteringTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void VersionHistoryAndSupersededFilteringTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document oldVersion = new Document(Guid.NewGuid().ToString(), OneLineString.From("title-v1"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            Document newVersion = new Document(Guid.NewGuid().ToString(), OneLineString.From("title-v2"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 02, 00, TimeSpan.Zero), default, 2, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(oldVersion);
+            persistence.SetParentOfContainee(oldVersion, storageLocationId);
+            persistence.CreateDocument(newVersion);
+            persistence.SetParentOfContainee(newVersion, storageLocationId);
+            persistence.AddDocumentVersionLink(oldVersion.Id, newVersion.Id);
+
+            //act
+            List<DocumentPreview> history = businessLogicService.GetVersionHistory(userId, newVersion.Id).ToList();
+            List<string> latestIds = businessLogicService.GetLatestDocuments(userId).Select(document => document.Id).ToList();
+
+            //assert
+            Assert.AreEqual(2, history.Count, "The version-history must contain both versions.");
+            Assert.AreEqual(oldVersion.Id, history[0].Id, "The history must start with the oldest version.");
+            Assert.AreEqual(newVersion.Id, history[1].Id, "The history must end with the newest version.");
+            Assert.IsFalse(latestIds.Contains(oldVersion.Id), "A superseded version must not appear in the latest-documents-list.");
+            Assert.IsTrue(latestIds.Contains(newVersion.Id), "The newest version must appear in the latest-documents-list.");
+        }
+
+        [TestMethod(DisplayName = nameof(UploadNewVersionTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void UploadNewVersionTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document oldVersion = new Document(Guid.NewGuid().ToString(), OneLineString.From("title-v1"), OneLineString.From("file.txt"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.txt"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("text/plain"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(oldVersion);
+            persistence.SetParentOfContainee(oldVersion, storageLocationId);
+
+            //act
+            string newVersionId = businessLogicService.UploadNewVersion(userId, oldVersion.Id, "title-v2", "file.txt", new byte[] { 5, 6, 7 }, CodeUnitSpecificConstants.RolenameUsers, new HashSet<string>());
+
+            //assert
+            Assert.AreNotEqual(oldVersion.Id, newVersionId, "The new version must be a new document.");
+            Assert.IsTrue(persistence.GetSupersededDocumentIds().Contains(oldVersion.Id), "The old version must be marked as superseded.");
+            Assert.AreEqual(storageLocationId, persistence.GetParentIdOfContainee(newVersionId), "The new version must be stored in the same folder as the old version.");
+            List<string> historyIds = businessLogicService.GetVersionHistory(userId, oldVersion.Id).Select(document => document.Id).ToList();
+            CollectionAssert.Contains(historyIds, oldVersion.Id);
+            CollectionAssert.Contains(historyIds, newVersionId);
+        }
+
         //TODO write testcases for the things which are not allowed to verify the user is really not able to do certain things
     }
 }

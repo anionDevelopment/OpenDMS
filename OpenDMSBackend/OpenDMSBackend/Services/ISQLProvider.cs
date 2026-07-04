@@ -12,6 +12,10 @@
         string GetScriptSetAISummary();
         string GetScriptGetSetting();
         string GetScriptSetSetting();
+        string GetScriptAddDocumentVersionLink();
+        string GetScriptGetSupersededDocumentIds();
+        string GetScriptGetPreviousVersionId();
+        string GetScriptGetNextVersionId();
         string GetScriptDeleteInheritedRoles();
         string GetScriptAddInheritedRole();
         string GetScriptGetRoleByName();
