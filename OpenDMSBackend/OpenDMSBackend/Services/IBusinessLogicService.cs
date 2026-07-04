@@ -28,7 +28,7 @@ namespace OpenDMSBackend.Core.Services
 
         #region Document
         /// <returns>Returns the id of the created document.</returns>
-        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content,  string groupOfBusinessOwner, ISet<string> additionalOCRLanguages);
+        public string AddDocument(string? requesterUserId, string? title, string containerId, string originalFilename, byte[] content,  string groupOfBusinessOwner, ISet<string> additionalOCRLanguages);
         public void Update(string requesterUserId, Document updatedDocument);
         public Document GetDocument(string requesterUserId, string id);
         public IList<DocumentPreview> Search(string requesterUserId, string searchTerm);

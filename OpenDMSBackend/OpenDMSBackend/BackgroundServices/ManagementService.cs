@@ -9,6 +9,7 @@ using GRYLibrary.Core.ExecutePrograms.WaitingStates;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.ClearScript.V8;
 using OpenDMSBackend.Core.Configuration;
+using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Misc.Logger;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Services;
@@ -26,6 +27,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
         private readonly IPersistence _Persistence;
         private readonly IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> _PersistedAPIServerConfiguration;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
+        private readonly IBusinessLogicService _BusinessLogicService;
         /// <summary>Initializes a new instance of <see cref="ManagementService"/>.</summary>
         /// <param name="logger">The logger used for diagnostic output.</param>
         /// <param name="auditLog">The audit-log service.</param>
@@ -33,7 +35,8 @@ namespace OpenDMSBackend.Core.BackgroundServices
         /// <param name="persistence">The persistence service.</param>
         /// <param name="applicationConstants">Application-wide constants, including the execution mode.</param>
         /// <param name="generalResourceLoader">Loader for embedded general resources.</param>
-        public ManagementService(IManagementServiceLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence, IApplicationConstants applicationConstants, IGeneralResourceLoader generalResourceLoader) : base(applicationConstants.ExecutionMode, logger.Logger)
+        /// <param name="businessLogicService">The business-logic service used to create imported documents.</param>
+        public ManagementService(IManagementServiceLog logger, IAuditLog auditLog, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration, IPersistence persistence, IApplicationConstants applicationConstants, IGeneralResourceLoader generalResourceLoader, IBusinessLogicService businessLogicService) : base(applicationConstants.ExecutionMode, logger.Logger)
         {
             this.Enabled = true;
             this._GeneralResourceLoader = generalResourceLoader;
@@ -41,6 +44,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
             this._AuditLog = auditLog;
             this._PersistedAPIServerConfiguration = persistedAPIServerConfiguration;
             this._Persistence = persistence;
+            this._BusinessLogicService = businessLogicService;
         }
         protected override void Run()
         {
@@ -79,20 +83,24 @@ namespace OpenDMSBackend.Core.BackgroundServices
         {
         }
 
-        private void ImportNewDocuments()
+        internal void ImportNewDocuments()
         {
             foreach (Configuration.ImportDefinition importDefinition in this._PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ImportDefinitions)
             {
+                if (!importDefinition.IsActive)
+                {
+                    continue;
+                }
                 try
                 {
                     foreach (ExternalFile externalFile in this.GetDocuments(importDefinition))
                     {
                         try
                         {
-                            Model.BusinessTypes.Document document = null;//TODO create document from externalFile
-                            this.RunAdaptScript(document);
-                            this._Persistence.CreateDocument(document);
-                            //TODO delete document from import source
+                            //the imported document has no requesting user; the AI-analysis, preview-generation and parent-assignment is done by the business-logic-service.
+                            this._BusinessLogicService.AddDocument(null, null, importDefinition.TargetFolderId, externalFile.Name, externalFile.Content, CodeUnitSpecificConstants.RolenameUsers, this.GetDefaultOCRLanguages());
+                            //remove the file from the import-source so that it is not imported again on the next iteration.
+                            File.Delete(externalFile.SourcePath);
                         }
                         catch
                         {
@@ -105,6 +113,12 @@ namespace OpenDMSBackend.Core.BackgroundServices
                     //TODO log exception
                 }
             }
+        }
+
+        private ISet<string> GetDefaultOCRLanguages()
+        {
+            ISet<string>? defaultOCRLanguages = this._PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.DefaultOCRLanguages;
+            return defaultOCRLanguages == null ? new HashSet<string>() : new HashSet<string>(defaultOCRLanguages);
         }
 
         /// <summary>Runs the TypeScript adapt-script defined in the import definition to mutate document metadata.</summary>
@@ -235,9 +249,27 @@ namespace OpenDMSBackend.Core.BackgroundServices
             return $"\"{escaped}\"";
         }
 
+        /// <summary>Reads all files which are currently located in the import-source (a folder in the file-system) of the given import-definition.</summary>
+        /// <param name="importDefinition">The import-definition whose <see cref="Configuration.ImportDefinition.SourceLocationURL"/> is interpreted as a file-system-folder-path.</param>
+        /// <returns>The files found in the source-folder. Empty if the folder is not configured or does not exist.</returns>
         private IEnumerable<ExternalFile> GetDocuments(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition)
         {
-            return new List<ExternalFile>();
+            List<ExternalFile> result = new List<ExternalFile>();
+            string? sourceFolder = importDefinition.SourceLocationURL;
+            if (string.IsNullOrWhiteSpace(sourceFolder) || !Directory.Exists(sourceFolder))
+            {
+                return result;
+            }
+            foreach (string filePath in Directory.EnumerateFiles(sourceFolder))
+            {
+                result.Add(new ExternalFile()
+                {
+                    Name = Path.GetFileName(filePath),
+                    Content = File.ReadAllBytes(filePath),
+                    SourcePath = filePath,
+                });
+            }
+            return result;
         }
         protected override void Dispose(bool disposing)
         {
@@ -252,6 +284,8 @@ namespace OpenDMSBackend.Core.BackgroundServices
         {
             public string Name { get; set; }
             public byte[] Content { get; set; }
+            /// <summary>The absolute path of the file in the import-source, used to remove it after a successful import.</summary>
+            public string SourcePath { get; set; }
         }
     }
 }

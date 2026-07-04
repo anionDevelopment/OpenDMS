@@ -22,7 +22,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 
 - ✅ Show and download existing documents.
 - ✅ Allow moving documents to another folder.
-- ❌ Allow defining external folder where documents will be pulled from. (Reads file from file-system)
+- ✅ Allow defining external folder where documents will be pulled from. (Reads file from file-system)
 - ❌ Allow actions (web requests for example) to be done when a specific event occurs (e. g. when a document will be moved to a specific folder).
 - ✅ Document-summary-generation by AI. (the admin must provide an openai-api-compatible-api-endpoint and its credentials)
 - ❌ Allow creating custom document-attributes which every document optionally has. Supported attribute-types: bool (for example "tax-relevant" yes/no), double, timestamp (for example a deadline) and string (free-text).

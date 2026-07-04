@@ -73,7 +73,7 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="groupOfBusinessOwner">The business-owner group associated with the document.</param>
         /// <param name="additionalOCRLanguages">Additional ISO-639-1 language codes to use during OCR analysis.</param>
         /// <returns>The id of the newly created document.</returns>
-        public string AddDocument(string requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
+        public string AddDocument(string? requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
             lock (_LockObject)
             {
