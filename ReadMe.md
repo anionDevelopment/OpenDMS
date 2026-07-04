@@ -25,6 +25,8 @@ See the general [product reference](./Other/Reference/Reference.md).
 - ❌ Allow defining external folder where documents will be pulled from. (Reads file from file-system)
 - ❌ Allow actions (web requests for example) to be done when a specific event occurs (e. g. when a document will be moved to a specific folder).
 - ❌ Document-summary-generation by AI. (the admin must provide an openai-api-compatible-api-endpoint and its credentials)
+- ❌ Allow creating custom document-attributes which every document optionally has. Supported attribute-types: bool (for example "tax-relevant" yes/no), double, timestamp (for example a deadline) and string (free-text).
+- ❌ Allow assigning a document to a person in the sense of personal data of the GDPR.
 
 ### GOBD conformity
 
@@ -42,6 +44,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 - ✅ Support soft-delete (marking instead of physical removal).
 - ✅ Log traceable deletion with a stated reason (hard-delete with `reason`).
 - ❌ Fully enforce an authorization and access-protection concept. Many operations still contain `//TODO check permission`.
+- ❌ Provide role- and permission-management. Admins only have administrative access; they are not automatically allowed to change everything. Per-folder moderators decide who may retrieve and change the contents of a folder. By default nobody (not even admins) may retrieve or change folder-contents via the API except those a folder-moderator has explicitly allowed.
 - ✅ Authenticate users (login and registration with access token).
 - ❌ Provide tagging and indexing with metadata (document type, contact/sender, retention date and arbitrary metadata).
 - ❌ Provide full-text and metadata search for machine evaluability. A search endpoint exists but is not yet complete.
@@ -58,6 +61,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 ### Non functional requirements
 
 - ❌ Allow login with OpenID.
+- ❌ Export and import of all data (technical requirement for migrating everything from one server to another; really all data is exported and imported).
 
 ## Getting Started
 
