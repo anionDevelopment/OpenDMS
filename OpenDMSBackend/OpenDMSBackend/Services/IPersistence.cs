@@ -114,6 +114,22 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="documentId">The id of the document to soft-delete.</param>
         public void SoftDelete(string documentId);
 
+        /// <summary>Stores the AI-generated summaries of the specified document.</summary>
+        /// <param name="documentId">The id of the document whose summaries should be stored.</param>
+        /// <param name="shortSummary">The short summary, or <see langword="null"/>.</param>
+        /// <param name="longSummary">The long summary, or <see langword="null"/>.</param>
+        public void SetAISummary(string documentId, string? shortSummary, string? longSummary);
+
+        /// <summary>Returns the value of the setting with the given key, or <see langword="null"/> if the setting is not set.</summary>
+        /// <param name="key">The key of the setting.</param>
+        /// <returns>The stored value, or <see langword="null"/> if no value is stored for the key.</returns>
+        public string? GetSetting(string key);
+
+        /// <summary>Stores (inserts or updates) the value of the setting with the given key.</summary>
+        /// <param name="key">The key of the setting.</param>
+        /// <param name="value">The value to store.</param>
+        public void SetSetting(string key, string value);
+
         /// <summary>Permanently removes the specified container or containee and all associated data from the store.</summary>
         /// <param name="containerOrContaineeId">The id of the container or containee to delete.</param>
         public void HardDelete(string containerOrContaineeId);

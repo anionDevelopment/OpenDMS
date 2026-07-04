@@ -43,7 +43,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             IAuthenticationService<User> authenticationService = new PersistentAuthenticationService(timeService, persistence, logger, constants);
             IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
             Mock<IOCRServiceClient> ocrServiceClientMock = new Mock<IOCRServiceClient>(MockBehavior.Strict);
-            businessLogicService = new BusinessLogicService(persistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceClientMock.Object, idGenerator, generalResourceLoader, auditLog);
+            businessLogicService = new BusinessLogicService(persistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceClientMock.Object, new OpenDMSBackend.Core.Services.AISummaryServiceClientMock(), idGenerator, generalResourceLoader, auditLog);
             IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService, authenticationService);
             initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, persistence, idGenerator);
         }
@@ -182,6 +182,68 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             //assert
             Assert.IsTrue(persistence.GetDocument(testDocument1.Id).IsSoftDeleted);
             Assert.IsTrue(persistence.GetDocument(testDocument2.Id).IsSoftDeleted);
+        }
+
+        [TestMethod(DisplayName = nameof(GenerateAISummaryTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void GenerateAISummaryTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "user1Id";
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation1");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), default, 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, "some ocr content", new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new GRYLibrary.Core.Misc.Version3(1, 0, 0), new HashSet<string>(), userId);
+            persistence.CreateDocument(testDocument);
+            persistence.SetParentOfContainee(testDocument, storageLocationId);
+            Assert.IsNull(persistence.GetDocument(testDocument.Id).AISummaryShort);
+
+            //act
+            businessLogicService.GenerateAISummary(userId, testDocument.Id);
+
+            //assert
+            Document reloaded = persistence.GetDocument(testDocument.Id);
+            Assert.IsFalse(string.IsNullOrEmpty(reloaded.AISummaryShort), "The short AI-summary should be generated.");
+            Assert.IsFalse(string.IsNullOrEmpty(reloaded.AISummaryLong), "The long AI-summary should be generated.");
+        }
+
+        [TestMethod(DisplayName = nameof(AutoGenerateAISummarySettingTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void AutoGenerateAISummarySettingTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+
+            //act & assert
+            Assert.IsFalse(businessLogicService.GetAutoGenerateAISummary(), "The setting must default to false.");
+            persistence.SetSetting(CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary, true.ToString());
+            Assert.IsTrue(businessLogicService.GetAutoGenerateAISummary(), "The setting must reflect the stored value.");
+        }
+
+        [TestMethod(DisplayName = nameof(SetAutoGenerateAISummaryRequiresAdminTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SetAutoGenerateAISummaryRequiresAdminTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string nonAdminUserId = "nonAdminUserId";
+            persistence.AddUser(new User() { Id = nonAdminUserId, });
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.SetAutoGenerateAISummary(nonAdminUserId, true);
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A non-admin-user must not be allowed to change general settings.");
         }
 
         //TODO write testcases for the things which are not allowed to verify the user is really not able to do certain things

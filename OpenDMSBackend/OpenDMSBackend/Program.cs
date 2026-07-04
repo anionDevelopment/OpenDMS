@@ -234,10 +234,12 @@ namespace OpenDMSBackend.Core
                         if (functionalInformation.InitializationInformation.CommandlineParameter.UseMockOCRService)
                         {
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClientMock>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAISummaryServiceClient, AISummaryServiceClientMock>();
                         }
                         else
                         {
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClient>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAISummaryServiceClient, AISummaryServiceClient>();
                         }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());

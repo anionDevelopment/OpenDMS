@@ -308,6 +308,46 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Generates the short and the long AI-summary of the specified document and returns the updated document.</summary>
+        /// <param name="documentId">The id of the document to summarize.</param>
+        /// <returns>The updated document as a <see cref="DocumentDTO"/>.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPost]
+        [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
+        [Route($"{nameof(GenerateAISummary)}/{{{nameof(documentId)}}}")]
+        public IActionResult GenerateAISummary([FromRoute] string documentId)
+        {
+            this._BusinessLogicService.GenerateAISummary(this.GetUser().Id, documentId);
+            return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, documentId).ToDTO());
+        }
+
+        /// <summary>Returns the general (admin-configurable) OpenDMS-settings.</summary>
+        /// <returns>The general settings as a <see cref="GeneralSettingsDTO"/>.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpGet]
+        [ProducesResponseType(typeof(GeneralSettingsDTO), StatusCodes.Status200OK)]
+        [Route(nameof(GetGeneralSettings))]
+        public IActionResult GetGeneralSettings()
+        {
+            return this.Ok(new GeneralSettingsDTO(this._BusinessLogicService.GetAutoGenerateAISummary()));
+        }
+
+        /// <summary>Updates the general (admin-configurable) OpenDMS-settings. Only administrators are allowed to call this.</summary>
+        /// <param name="settings">The new settings-values.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpPut]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route(nameof(SetGeneralSettings))]
+        public IActionResult SetGeneralSettings([FromBody] GeneralSettingsDTO settings)
+        {
+            this._BusinessLogicService.SetAutoGenerateAISummary(this.GetUser().Id, settings.AutoGenerateAISummary);
+            return this.Ok();
+        }
+
         private GRYLibrary.Core.APIServer.CommonDBTypes.User GetUser()
         {
             return Tools.GetUser(this.User, this._AuthenticationService);

@@ -559,6 +559,8 @@ namespace OpenDMSBackend.Core.Services
                                 Core.Misc.Utilities.StringToLanguagesList(reader.GetString(13)),//languages
                                 reader.GetString(14)//userid
                             );
+                            document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 15);
+                            document.AISummaryLong = DBUtilities.GetNullableValue<string>(reader, 16);
                             return document;
                         }
                         else
@@ -939,6 +941,7 @@ namespace OpenDMSBackend.Core.Services
                         Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), //languages
                         reader.GetString(13)//creator-user-is
                     );
+                    document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 14);
                     //TODO load tags
                     return document;
                 }
@@ -1291,6 +1294,51 @@ namespace OpenDMSBackend.Core.Services
                 command.CommandText = this._SQLProvider.GetScriptSoftDeleteDocument();
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsSoftDeleted", true));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void SetAISummary(string documentId, string? shortSummary, string? longSummary)
+        {
+            this.RunTransaction(nameof(SetAISummary), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetAISummary();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AISummaryShort", shortSummary, typeof(string)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AISummaryLong", longSummary, typeof(string)));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public string? GetSetting(string key)
+        {
+            return this.RunTransaction(nameof(GetSetting), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptGetSetting();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Key", key));
+                using DbDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return reader.GetString(0);
+                }
+                else
+                {
+                    return null;
+                }
+            })[0];
+        }
+
+        /// <inheritdoc />
+        public void SetSetting(string key, string value)
+        {
+            this.RunTransaction(nameof(SetSetting), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetSetting();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Key", key));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", value));
                 command.ExecuteNonQuery();
             });
         }

@@ -21,6 +21,16 @@ components:
         addedByUserId:
           nullable: true
           type: string
+        aiSummaryLong:
+          description: A regular AI-generated summary, or null if none has been generated
+            yet.
+          nullable: true
+          type: string
+        aiSummaryShort:
+          description: A very short AI-generated summary (at most three sentences),
+            or null if none has been generated yet.
+          nullable: true
+          type: string
         assignedLanguages:
           items:
             type: string
@@ -83,6 +93,11 @@ components:
         the full document content.
       properties:
         addedByUserId:
+          nullable: true
+          type: string
+        aiSummaryShort:
+          description: A very short AI-generated summary (at most three sentences)
+            shown as a hint in listings, or null if none has been generated yet.
           nullable: true
           type: string
         assignedLanguages:
@@ -151,6 +166,15 @@ components:
         name:
           nullable: true
           type: string
+      type: object
+    GeneralSettingsDTO:
+      additionalProperties: false
+      description: Data transfer object for the general (admin-configurable) OpenDMS-settings.
+      properties:
+        autoGenerateAISummary:
+          description: Whether an AI-summary is generated automatically whenever a
+            document is added or changed.
+          type: boolean
       type: object
     StorageLocationDTO:
       additionalProperties: false
@@ -430,6 +454,38 @@ paths:
         location.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GenerateAISummary/{documentId}:
+    post:
+      parameters:
+      - description: The id of the document to summarize.
+        in: path
+        name: documentId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/DocumentDTO'
+          description: OK
+      summary: Generates the short and the long AI-summary of the specified document
+        and returns the updated document.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetAllTags:
     put:
       parameters:
@@ -614,6 +670,31 @@ paths:
                 $ref: '#/components/schemas/FolderDTO'
           description: OK
       summary: Returns the folder with the specified id.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GetGeneralSettings:
+    get:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneralSettingsDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GeneralSettingsDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GeneralSettingsDTO'
+          description: OK
+      summary: Returns the general (admin-configurable) OpenDMS-settings.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetLatestDocuments:
@@ -802,6 +883,34 @@ paths:
           description: OK
       summary: Searches for documents visible to the current user that match the given
         search term.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/SetGeneralSettings:
+    put:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/GeneralSettingsDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralSettingsDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/GeneralSettingsDTO'
+        description: The new settings-values.
+      responses:
+        '200':
+          description: OK
+      summary: Updates the general (admin-configurable) OpenDMS-settings. Only administrators
+        are allowed to call this.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/SoftDelete/{containerOrContaineeId}:

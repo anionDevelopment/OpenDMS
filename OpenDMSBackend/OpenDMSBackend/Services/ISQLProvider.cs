@@ -9,6 +9,9 @@
         string GetScriptAddDocument();
         string GetScriptUpdateDocument();
         string GetScriptSoftDeleteDocument();
+        string GetScriptSetAISummary();
+        string GetScriptGetSetting();
+        string GetScriptSetSetting();
         string GetScriptDeleteInheritedRoles();
         string GetScriptAddInheritedRole();
         string GetScriptGetRoleByName();

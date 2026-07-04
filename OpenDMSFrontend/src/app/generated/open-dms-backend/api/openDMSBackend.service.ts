@@ -23,6 +23,8 @@ import { DocumentPreviewDTO } from '../model/documentPreviewDTO';
 // @ts-ignore
 import { FolderDTO } from '../model/folderDTO';
 // @ts-ignore
+import { GeneralSettingsDTO } from '../model/generalSettingsDTO';
+// @ts-ignore
 import { StorageLocationDTO } from '../model/storageLocationDTO';
 // @ts-ignore
 import { StringValueDTO } from '../model/stringValueDTO';
@@ -320,6 +322,69 @@ export class OpenDMSBackendService extends BaseService {
         let localVarPath = `/API/v3/OpenDMSBackend/AuthorizeUserToViewStorageLocation/${this.configuration.encodeParam({name: "storageLocationId", value: storageLocationId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/${this.configuration.encodeParam({name: "sharedWithUserId", value: sharedWithUserId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Generates the short and the long AI-summary of the specified document and returns the updated document.
+     * @param documentId The id of the document to summarize.
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV3OpenDMSBackendGenerateAISummaryDocumentIdPost(documentId: string, xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<DocumentDTO>;
+    public aPIV3OpenDMSBackendGenerateAISummaryDocumentIdPost(documentId: string, xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<DocumentDTO>>;
+    public aPIV3OpenDMSBackendGenerateAISummaryDocumentIdPost(documentId: string, xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<DocumentDTO>>;
+    public aPIV3OpenDMSBackendGenerateAISummaryDocumentIdPost(documentId: string, xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (documentId === null || documentId === undefined) {
+            throw new Error('Required parameter documentId was null or undefined when calling aPIV3OpenDMSBackendGenerateAISummaryDocumentIdPost.');
+        }
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV3OpenDMSBackendGenerateAISummaryDocumentIdPost.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v3/OpenDMSBackend/GenerateAISummary/${this.configuration.encodeParam({name: "documentId", value: documentId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<DocumentDTO>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -696,6 +761,65 @@ export class OpenDMSBackendService extends BaseService {
         let localVarPath = `/API/v3/OpenDMSBackend/GetFolder/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<FolderDTO>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Returns the general (admin-configurable) OpenDMS-settings.
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV3OpenDMSBackendGetGeneralSettingsGet(xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<GeneralSettingsDTO>;
+    public aPIV3OpenDMSBackendGetGeneralSettingsGet(xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<GeneralSettingsDTO>>;
+    public aPIV3OpenDMSBackendGetGeneralSettingsGet(xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<GeneralSettingsDTO>>;
+    public aPIV3OpenDMSBackendGetGeneralSettingsGet(xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV3OpenDMSBackendGetGeneralSettingsGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v3/OpenDMSBackend/GetGeneralSettings`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<GeneralSettingsDTO>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -1086,6 +1210,75 @@ export class OpenDMSBackendService extends BaseService {
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Updates the general (admin-configurable) OpenDMS-settings. Only administrators are allowed to call this.
+     * @param xAccessToken Access Token
+     * @param generalSettingsDTO The new settings-values.
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV3OpenDMSBackendSetGeneralSettingsPut(xAccessToken: string, generalSettingsDTO?: GeneralSettingsDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV3OpenDMSBackendSetGeneralSettingsPut(xAccessToken: string, generalSettingsDTO?: GeneralSettingsDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV3OpenDMSBackendSetGeneralSettingsPut(xAccessToken: string, generalSettingsDTO?: GeneralSettingsDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV3OpenDMSBackendSetGeneralSettingsPut(xAccessToken: string, generalSettingsDTO?: GeneralSettingsDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV3OpenDMSBackendSetGeneralSettingsPut.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v3/OpenDMSBackend/SetGeneralSettings`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('put', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: generalSettingsDTO,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

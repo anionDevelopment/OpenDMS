@@ -33,6 +33,7 @@ namespace OpenDMSBackend.Core.Services
         private readonly IApplicationConstants<CodeUnitSpecificConstants> _Constants;
         private readonly IGeneralLogger _Logger;
         private readonly IOCRServiceClient _OCRService;
+        private readonly IAISummaryServiceClient _AISummaryService;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly IGeneralResourceLoader _GeneralResourceLoader;
         private readonly IAuditLog _AuditLog;
@@ -44,10 +45,11 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="logger">The general-purpose logger.</param>
         /// <param name="configuration">The persisted server configuration.</param>
         /// <param name="oCRService">The OCR service client.</param>
+        /// <param name="aISummaryService">The AI-summary service client.</param>
         /// <param name="idGenerator">Generator for unique numeric identifiers.</param>
         /// <param name="generalResourceLoader">Loader for embedded general resources.</param>
         /// <param name="auditLog">The audit log service.</param>
-        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IServerLog logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader, IAuditLog auditLog)
+        public BusinessLogicService(IPersistence persistence, IAuthenticationService<Model.BusinessTypes.User> authenticationService, ITimeService timeService, IApplicationConstants<CodeUnitSpecificConstants> constants, IServerLog logger, IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> configuration, IOCRServiceClient oCRService, IAISummaryServiceClient aISummaryService, IIdGenerator<ulong> idGenerator, IGeneralResourceLoader generalResourceLoader, IAuditLog auditLog)
         {
             this._Persistence = persistence;
             this._AuthenticationService = authenticationService;
@@ -56,6 +58,7 @@ namespace OpenDMSBackend.Core.Services
             this._Logger = logger.Logger;
             this._Configuration = configuration;
             this._OCRService = oCRService;
+            this._AISummaryService = aISummaryService;
             this._IdGenerator = idGenerator;
             this._GeneralResourceLoader = generalResourceLoader;
             this._AuditLog = auditLog;
@@ -80,6 +83,7 @@ namespace OpenDMSBackend.Core.Services
                 this._Persistence.CreateDocument(document);
                 this._Persistence.SetParentOfContainee(document, containerId);
                 this._Logger.Log($"Document '{document.ReadableId}' added. (Technical-id: {document.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
+                this.GenerateAISummaryIfAutoGenerationIsEnabled(document);
                 return document.Id;
             }
         }
@@ -292,6 +296,60 @@ namespace OpenDMSBackend.Core.Services
             }
             this.Validate(updatedDocument);
             this._Persistence.Update(requesterUserId, updatedDocument);
+            this.GenerateAISummaryIfAutoGenerationIsEnabled(updatedDocument);
+        }
+
+        /// <summary>Generates and stores the AI-summary of the given document if the corresponding setting is enabled. Failures are logged but never propagated so that adding or updating a document is not affected by an unavailable summary-service.</summary>
+        /// <param name="document">The document to summarize.</param>
+        private void GenerateAISummaryIfAutoGenerationIsEnabled(Document document)
+        {
+            if (!this.GetAutoGenerateAISummary())
+            {
+                return;
+            }
+            try
+            {
+                this.GenerateAndStoreAISummary(document);
+            }
+            catch (Exception exception)
+            {
+                this._Logger.Log($"Automatic generation of the AI-summary for document '{document.Id}' failed.", exception);
+            }
+        }
+
+        /// <inheritdoc />
+        public void GenerateAISummary(string requesterUserId, string documentId)
+        {
+            //TODO check permission
+            Document document = this._Persistence.GetDocument(documentId);
+            this.GenerateAndStoreAISummary(document);
+        }
+
+        private void GenerateAndStoreAISummary(Document document)
+        {
+            Model.BusinessTypes.AISummary summary = this._AISummaryService.GenerateSummary(document.Title.Value, document.OCRContent);
+            document.AISummaryShort = summary.Short;
+            document.AISummaryLong = summary.Long;
+            this._Persistence.SetAISummary(document.Id, summary.Short, summary.Long);
+            this._Logger.Log($"AI-summary for document '{document.Id}' generated.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public bool GetAutoGenerateAISummary()
+        {
+            string? value = this._Persistence.GetSetting(CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary);
+            return value != null && bool.TryParse(value, out bool result) && result;
+        }
+
+        /// <inheritdoc />
+        public void SetAutoGenerateAISummary(string requesterUserId, bool enabled)
+        {
+            if (!this.UserIsAdministrator(requesterUserId))
+            {
+                throw new NotAuthorizedException("Only administrators are allowed to change general settings.");
+            }
+            this._Persistence.SetSetting(CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary, enabled.ToString());
+            this._AuditLog.Logger.Log($"Setting '{CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary}' set to '{enabled}' by user '{requesterUserId}'.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         private void AnalyseDocument(Document document)

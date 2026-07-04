@@ -1093,6 +1093,141 @@
         }
       }
     },
+    "/API/v3/OpenDMSBackend/GenerateAISummary/{documentId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Generates the short and the long AI-summary of the specified document and returns the updated document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document to summarize.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetGeneralSettings": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns the general (admin-configurable) OpenDMS-settings.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/SetGeneralSettings": {
+      "put": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Updates the general (admin-configurable) OpenDMS-settings. Only administrators are allowed to call this.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The new settings-values.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/API/v3/UserController/Login": {
       "put": {
         "tags": [
@@ -1437,6 +1572,16 @@
           "addedByUserId": {
             "type": "string",
             "nullable": true
+          },
+          "aiSummaryShort": {
+            "type": "string",
+            "description": "A very short AI-generated summary (at most three sentences), or null if none has been generated yet.",
+            "nullable": true
+          },
+          "aiSummaryLong": {
+            "type": "string",
+            "description": "A regular AI-generated summary, or null if none has been generated yet.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -1510,6 +1655,11 @@
           "addedByUserId": {
             "type": "string",
             "nullable": true
+          },
+          "aiSummaryShort": {
+            "type": "string",
+            "description": "A very short AI-generated summary (at most three sentences) shown as a hint in listings, or null if none has been generated yet.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -1542,6 +1692,17 @@
           }
         },
         "additionalProperties": false
+      },
+      "GeneralSettingsDTO": {
+        "type": "object",
+        "properties": {
+          "autoGenerateAISummary": {
+            "type": "boolean",
+            "description": "Whether an AI-summary is generated automatically whenever a document is added or changed."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object for the general (admin-configurable) OpenDMS-settings."
       },
       "StorageLocationDTO": {
         "type": "object",

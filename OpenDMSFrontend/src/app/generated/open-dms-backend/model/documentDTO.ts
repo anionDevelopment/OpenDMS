@@ -33,5 +33,13 @@ export interface DocumentDTO {
     version?: Version3;
     assignedLanguages?: Set<string> | null;
     addedByUserId?: string | null;
+    /**
+     * A very short AI-generated summary (at most three sentences), or null if none has been generated yet.
+     */
+    aiSummaryShort?: string | null;
+    /**
+     * A regular AI-generated summary, or null if none has been generated yet.
+     */
+    aiSummaryLong?: string | null;
 }
 

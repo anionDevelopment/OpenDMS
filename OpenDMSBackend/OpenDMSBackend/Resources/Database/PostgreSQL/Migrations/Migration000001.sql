@@ -42,7 +42,15 @@ CREATE TABLE "Documents" (
     "Version" varchar(255) not null,
     "AssignedLanguages" varchar(255) null,
     "AddedByUserId" varchar(255) null,
+    "AISummaryShort" text null,
+    "AISummaryLong" text null,
     CONSTRAINT "PK_Documents" PRIMARY KEY ("Id")
+);
+
+CREATE TABLE "Settings" (
+    "Key" varchar(255) not null,
+    "Value" text not null,
+    CONSTRAINT "PK_Settings" PRIMARY KEY ("Key")
 );
 
 CREATE TABLE "Tags" (

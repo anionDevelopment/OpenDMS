@@ -42,7 +42,15 @@ CREATE TABLE `Documents` (
     `Version` varchar(255) not null,
     `AssignedLanguages` varchar(255) null,
     `AddedByUserId` varchar(255) null,
+    `AISummaryShort` longtext null COLLATE utf8mb4_unicode_ci,
+    `AISummaryLong` longtext null COLLATE utf8mb4_unicode_ci,
     CONSTRAINT `PK_Documents` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `Settings` (
+    `Key` varchar(255) not null,
+    `Value` longtext not null COLLATE utf8mb4_unicode_ci,
+    CONSTRAINT `PK_Settings` PRIMARY KEY (`Key`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `Tags` (

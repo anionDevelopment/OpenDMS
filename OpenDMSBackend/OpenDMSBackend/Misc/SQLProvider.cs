@@ -40,6 +40,24 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptSetAISummary()
+        {
+            return this.LoadSQLScript("SetAISummary");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetSetting()
+        {
+            return this.LoadSQLScript("GetSetting");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptSetSetting()
+        {
+            return this.LoadSQLScript("SetSetting");
+        }
+
+        /// <inheritdoc />
         public string GetScriptAddRole()
         {
             return this.LoadSQLScript("AddRole");

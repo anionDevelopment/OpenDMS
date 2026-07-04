@@ -44,6 +44,19 @@ namespace OpenDMSBackend.Core.Services
         public TagDTO[] GetAllTags();
         IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId);
         public DocumentPreview GetDocumentPreview(string requesterUserId, string documentId);
+        /// <summary>Generates the short and the long AI-summary of the specified document and stores them.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="documentId">The id of the document to summarize.</param>
+        public void GenerateAISummary(string requesterUserId, string documentId);
+        #endregion
+
+        #region Settings
+        /// <summary>Returns whether an AI-summary is generated automatically whenever a document is added or changed.</summary>
+        public bool GetAutoGenerateAISummary();
+        /// <summary>Sets whether an AI-summary is generated automatically whenever a document is added or changed. Only administrators are allowed to change this setting.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="enabled">Whether the automatic generation should be enabled.</param>
+        public void SetAutoGenerateAISummary(string requesterUserId, bool enabled);
         #endregion
 
         #region Storage

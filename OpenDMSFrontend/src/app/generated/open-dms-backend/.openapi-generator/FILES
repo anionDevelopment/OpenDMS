@@ -15,6 +15,7 @@ model/accessToken.ts
 model/documentDTO.ts
 model/documentPreviewDTO.ts
 model/folderDTO.ts
+model/generalSettingsDTO.ts
 model/models.ts
 model/storageLocationDTO.ts
 model/stringValueDTO.ts

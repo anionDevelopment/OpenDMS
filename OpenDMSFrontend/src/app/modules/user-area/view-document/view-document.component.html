@@ -28,6 +28,20 @@
       {{doc?.tags?.size ? formatTags(doc!.tags!) : ''}}
       <br>
     </p>
+    <div class="ai-summary-section">
+      <span i18n="@@doc_ai_summary_heading">AI-summary:</span>
+      <br>
+      <ng-container *ngIf="aiSummaryIsAvailable(); else noAiSummary">
+        <div *ngIf="doc?.aiSummaryShort" class="ai-summary-short">{{doc?.aiSummaryShort}}</div>
+        <div *ngIf="doc?.aiSummaryLong" class="ai-summary-long">{{doc?.aiSummaryLong}}</div>
+      </ng-container>
+      <ng-template #noAiSummary>
+        <button type="button" (click)="generateAISummary()" [disabled]="aiSummaryIsGenerating">
+          <span *ngIf="!aiSummaryIsGenerating" i18n="@@doc_ai_summary_generate_button">Generate AI-summary</span>
+          <span *ngIf="aiSummaryIsGenerating" i18n="@@doc_ai_summary_generating_label">Generating AI-summary…</span>
+        </button>
+      </ng-template>
+    </div>
     <app-document-preview *ngIf="documentPreview" [documentPreview]="documentPreview"></app-document-preview>
     <app-edit-document-menu [documentPreview]="documentPreview" (documentRemoved)="onDocumentRemoved()"></app-edit-document-menu>
   </app-user-area-container>
