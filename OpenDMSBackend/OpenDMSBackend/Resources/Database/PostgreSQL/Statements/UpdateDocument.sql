@@ -2,7 +2,6 @@
 update "Documents"
 	set "Title"=@Title,
 		"Filename"=@Filename,
-		"LastEditDate"=@LastEditDate,
 		"MIMEType"=@MIMEType,
 		"DocumentContent"=@DocumentContent,
 		"OCRContent"=@OCRContent,

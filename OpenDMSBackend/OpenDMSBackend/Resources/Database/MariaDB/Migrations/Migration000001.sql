@@ -31,11 +31,11 @@ CREATE TABLE `Documents` (
     `Filename` varchar(255) not null,
     `OriginalFilename` varchar(255) not null,
     `ImportDate` datetime(6) not null,
-    `LastEditDate` datetime(6) null,
     `ReadableId` BIGINT unsigned not null,
     `MIMEType` varchar(255) not null,
     `OCRContent` longtext not null COLLATE utf8mb4_unicode_ci,
     `IsSoftDeleted` tinyint(1) not null,
+    `IsLatestVersion` tinyint(1) not null,
     `DeleteIsNotAllowedBefore` datetime(6) null,
     `MustBeHardDeletedAfter` datetime(6) null,
     `GroupOfBusinessOwner` varchar(255) not null,
@@ -53,13 +53,13 @@ CREATE TABLE `Settings` (
     CONSTRAINT `PK_Settings` PRIMARY KEY (`Key`)
 ) CHARACTER SET=utf8mb4;
 
-CREATE TABLE `DocumentVersionLink` (
-    `OldDocumentId` varchar(255) not null,
-    `NewDocumentId` varchar(255) not null,
-    CONSTRAINT `PK_DocumentVersionLink` PRIMARY KEY (`NewDocumentId`),
-    CONSTRAINT `UQ_DocumentVersionLink_OldDocumentId` UNIQUE (`OldDocumentId`),
-    CONSTRAINT `FK_DocumentVersionLink_OldDocumentId` FOREIGN KEY (`OldDocumentId`) REFERENCES `Documents`(`Id`),
-    CONSTRAINT `FK_DocumentVersionLink_NewDocumentId` FOREIGN KEY (`NewDocumentId`) REFERENCES `Documents`(`Id`)
+CREATE TABLE `DocumentVersion` (
+    `DocumentId` varchar(255) not null,
+    `ContentId` varchar(255) not null,
+    `Version` int not null,
+    `Timestamp` datetime(6) not null,
+    CONSTRAINT `PK_DocumentVersion` PRIMARY KEY (`ContentId`),
+    CONSTRAINT `FK_DocumentVersion_ContentId` FOREIGN KEY (`ContentId`) REFERENCES `Documents`(`Id`)
 ) CHARACTER SET=utf8mb4;
 
 CREATE TABLE `Tags` (

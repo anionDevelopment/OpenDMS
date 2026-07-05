@@ -114,7 +114,7 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Filename", document.Filename.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OriginalFilename", document.OriginalFilename.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ImportDate", this.ToDateTime(document.ImportDate), typeof(DateTime)));
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("LastEditDate", this.ToDateTime(document.LastEditDate), typeof(DateTime)));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsLatestVersion", document.IsLatestVersion));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ReadableId", document.ReadableId));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MIMEType", document.MIMEType.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OCRContent", document.OCRContent));
@@ -544,7 +544,6 @@ namespace OpenDMSBackend.Core.Services
                                 OneLineString.From(reader.GetString(1)),//filename
                                 OneLineString.From(reader.GetString(2)),//original filename
                                 this.ToDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 3)),//importdate
-                                this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)),//lasteditdate
                                 (uint)reader.GetInt32(5),//readableid
                                 new HashSet<Tag>(),//tags
                                 OneLineString.From(reader.GetString(6)),//mimetype
@@ -559,6 +558,7 @@ namespace OpenDMSBackend.Core.Services
                                 Core.Misc.Utilities.StringToLanguagesList(reader.GetString(13)),//languages
                                 reader.GetString(14)//userid
                             );
+                            document.IsLatestVersion = reader.GetBoolean(4);//is latest version
                             document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 15);
                             document.AISummaryLong = DBUtilities.GetNullableValue<string>(reader, 16);
                             return document;
@@ -574,10 +574,20 @@ namespace OpenDMSBackend.Core.Services
                     }
                 })[0]);
                 this.EnrichWithTags(result);
+                this.EnrichWithVersionInfo(result);
                 return result;
             }
         }
 
+        private void EnrichWithVersionInfo(Document document)
+        {
+            DocumentVersionEntry? versionEntry = this.GetVersionByContentId(document.Id);
+            if (versionEntry != null)
+            {
+                document.VersionNumber = versionEntry.Version;
+                document.VersionTimestamp = versionEntry.Timestamp;
+            }
+        }
 
         private void EnrichWithTags(Document document)
         {
@@ -821,7 +831,6 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", document.Id));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Title", document.Title.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Filename", document.Filename.Value));
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("LastEditDate", this.ToDateTime(document.LastEditDate), typeof(DateTime)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MIMEType", document.MIMEType.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OCRContent", document.OCRContent));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsSoftDeleted", document.IsSoftDeleted));
@@ -912,7 +921,7 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public DocumentPreview GetDocumentPreview(string id)
         {
-            return GUtilities.GetValue(this.RunTransaction(nameof(GetDocumentPreview), true, (cmd) =>
+            DocumentPreview result = GUtilities.GetValue(this.RunTransaction(nameof(GetDocumentPreview), true, (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetDocumentPreview();
                 cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", id));
@@ -928,9 +937,8 @@ namespace OpenDMSBackend.Core.Services
                         OneLineString.From(reader.GetString(1)),//filename
                         OneLineString.From(reader.GetString(2)),//originalfilename
                         this.ToDateTimeOffset(reader.GetDateTime(3)),//import time
-                        this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 4)),//updatetime
                         new HashSet<Tag>(),
-                        (uint)reader.GetInt32(5),//readable id 
+                        (uint)reader.GetInt32(5),//readable id
                         OneLineString.From(reader.GetString(6)),//mimetype
                         this.LoadDocumentPreview(id),
                         reader.GetBoolean(7),//isdeleted
@@ -941,6 +949,7 @@ namespace OpenDMSBackend.Core.Services
                         Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), //languages
                         reader.GetString(13)//creator-user-is
                     );
+                    document.IsLatestVersion = reader.GetBoolean(4);//is latest version
                     document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 14);
                     //TODO load tags
                     return document;
@@ -950,6 +959,13 @@ namespace OpenDMSBackend.Core.Services
                     throw new KeyNotFoundException($"No document found with document '{id}'");
                 }
             })[0]);
+            DocumentVersionEntry? versionEntry = this.GetVersionByContentId(id);
+            if (versionEntry != null)
+            {
+                result.VersionNumber = versionEntry.Version;
+                result.VersionTimestamp = versionEntry.Timestamp;
+            }
+            return result;
         }
 
         /// <inheritdoc />
@@ -1344,65 +1360,69 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public void AddDocumentVersionLink(string oldDocumentId, string newDocumentId)
+        public void AddDocumentVersion(DocumentVersionEntry versionEntry)
         {
-            this.RunTransaction(nameof(AddDocumentVersionLink), true, (command) =>
+            this.RunTransaction(nameof(AddDocumentVersion), true, (command) =>
             {
-                command.CommandText = this._SQLProvider.GetScriptAddDocumentVersionLink();
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OldDocumentId", oldDocumentId));
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("NewDocumentId", newDocumentId));
+                command.CommandText = this._SQLProvider.GetScriptAddDocumentVersion();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", versionEntry.DocumentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", versionEntry.ContentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Version", versionEntry.Version));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Timestamp", GUtilities.GetValue(this.ToDateTime(versionEntry.Timestamp)), typeof(DateTime)));
                 command.ExecuteNonQuery();
             });
         }
 
         /// <inheritdoc />
-        public ISet<string> GetSupersededDocumentIds()
+        public IReadOnlyList<DocumentVersionEntry> GetVersionsOfDocument(string documentId)
         {
-            return GUtilities.GetValue(this.RunTransaction(nameof(GetSupersededDocumentIds), true, (command) =>
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetVersionsOfDocument), true, (command) =>
             {
-                ISet<string> result = new HashSet<string>();
-                command.CommandText = this._SQLProvider.GetScriptGetSupersededDocumentIds();
+                List<DocumentVersionEntry> result = new List<DocumentVersionEntry>();
+                command.CommandText = this._SQLProvider.GetScriptGetVersionsOfDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
                 using (DbDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        result.Add(reader.GetString(0));
+                        result.Add(new DocumentVersionEntry(reader.GetString(0), reader.GetString(1), reader.GetInt32(2), this.ToDateTimeOffset(reader.GetDateTime(3))));
                     }
                     reader.Close();
                 }
-                return result;
+                return (IReadOnlyList<DocumentVersionEntry>)result;
             })[0]);
         }
 
         /// <inheritdoc />
-        public string? GetPreviousVersionId(string documentId)
+        public DocumentVersionEntry? GetVersionByContentId(string contentId)
         {
-            return this.GetSingleVersionId(nameof(GetPreviousVersionId), this._SQLProvider.GetScriptGetPreviousVersionId(), documentId);
-        }
-
-        /// <inheritdoc />
-        public string? GetNextVersionId(string documentId)
-        {
-            return this.GetSingleVersionId(nameof(GetNextVersionId), this._SQLProvider.GetScriptGetNextVersionId(), documentId);
-        }
-
-        private string? GetSingleVersionId(string actionName, string script, string documentId)
-        {
-            return this.RunTransaction(actionName, true, (command) =>
+            return this.RunTransaction(nameof(GetVersionByContentId), true, (command) =>
             {
-                command.CommandText = script;
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                command.CommandText = this._SQLProvider.GetScriptGetVersionByContentId();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", contentId));
                 using DbDataReader reader = command.ExecuteReader();
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    return reader.GetString(0);
+                    return new DocumentVersionEntry(reader.GetString(0), reader.GetString(1), reader.GetInt32(2), this.ToDateTimeOffset(reader.GetDateTime(3)));
                 }
                 else
                 {
                     return null;
                 }
             })[0];
+        }
+
+        /// <inheritdoc />
+        public void SetIsLatestVersion(string contentId, bool isLatestVersion)
+        {
+            this.RunTransaction(nameof(SetIsLatestVersion), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetIsLatestVersion();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", contentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsLatestVersion", isLatestVersion));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />

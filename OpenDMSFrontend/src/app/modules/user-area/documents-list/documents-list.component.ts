@@ -31,8 +31,8 @@ export class DocumentsListComponent {
   }
 
   private getNewestDate(a: DocumentPreviewDTO): Date {
-    if (a.lastEditDate !== null && a.lastEditDate !== undefined) {
-      return this.parseDate(a.lastEditDate!);
+    if (a.versionTimestamp !== null && a.versionTimestamp !== undefined) {
+      return this.parseDate(a.versionTimestamp!);
     } else {
       return this.parseDate(a.importDate!);
     }

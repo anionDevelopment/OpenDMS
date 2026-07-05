@@ -19,7 +19,7 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*containee-id*/, string/*container-id*/> _ContaineeContainerAssignments;
         private readonly IDictionary<string/*storagelocation-id*/, string/*user-id*/> _StorageLocationOwnerAssignments;
         private readonly IDictionary<string/*key*/, string/*value*/> _Settings;
-        private readonly IDictionary<string/*old-document-id*/, string/*new-document-id*/> _DocumentVersionSuccessors;
+        private readonly IList<DocumentVersionEntry> _DocumentVersions;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly ITimeService _TimeService;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
@@ -38,7 +38,7 @@ namespace OpenDMSBackend.Core.Services
             this._ContaineeContainerAssignments = new Dictionary<string, string>();
             this._StorageLocationOwnerAssignments = new Dictionary<string, string>();
             this._Settings = new Dictionary<string, string>();
-            this._DocumentVersionSuccessors = new Dictionary<string, string>();
+            this._DocumentVersions = new List<DocumentVersionEntry>();
             this._Tags = new Dictionary<string, Tag>();
             this._IdGenerator = idGenerator;
             this._TimeService = timeService;
@@ -60,7 +60,7 @@ namespace OpenDMSBackend.Core.Services
             this._ContaineeContainerAssignments.Clear();
             this._StorageLocationOwnerAssignments.Clear();
             this._Settings.Clear();
-            this._DocumentVersionSuccessors.Clear();
+            this._DocumentVersions.Clear();
             this._Tags.Clear();
             this._IdGenerator.Reset();
         }
@@ -579,45 +579,49 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public void AddDocumentVersionLink(string oldDocumentId, string newDocumentId)
+        public void AddDocumentVersion(DocumentVersionEntry versionEntry)
         {
             lock (_Lock)
             {
-                this._DocumentVersionSuccessors[oldDocumentId] = newDocumentId;
-            }
-        }
-
-        /// <inheritdoc />
-        public ISet<string> GetSupersededDocumentIds()
-        {
-            lock (_Lock)
-            {
-                return this._DocumentVersionSuccessors.Keys.ToHashSet();
-            }
-        }
-
-        /// <inheritdoc />
-        public string? GetPreviousVersionId(string documentId)
-        {
-            lock (_Lock)
-            {
-                foreach (KeyValuePair<string, string> link in this._DocumentVersionSuccessors)
+                this._DocumentVersions.Add(versionEntry);
+                if (this._Documents.TryGetValue(versionEntry.ContentId, out Document? document))
                 {
-                    if (link.Value == documentId)
-                    {
-                        return link.Key;
-                    }
+                    document.VersionNumber = versionEntry.Version;
+                    document.VersionTimestamp = versionEntry.Timestamp;
                 }
-                return null;
             }
         }
 
         /// <inheritdoc />
-        public string? GetNextVersionId(string documentId)
+        public IReadOnlyList<DocumentVersionEntry> GetVersionsOfDocument(string documentId)
         {
             lock (_Lock)
             {
-                return this._DocumentVersionSuccessors.TryGetValue(documentId, out string? newDocumentId) ? newDocumentId : null;
+                return this._DocumentVersions
+                    .Where(versionEntry => versionEntry.DocumentId == documentId)
+                    .OrderBy(versionEntry => versionEntry.Version)
+                    .ToList();
+            }
+        }
+
+        /// <inheritdoc />
+        public DocumentVersionEntry? GetVersionByContentId(string contentId)
+        {
+            lock (_Lock)
+            {
+                return this._DocumentVersions.FirstOrDefault(versionEntry => versionEntry.ContentId == contentId);
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetIsLatestVersion(string contentId, bool isLatestVersion)
+        {
+            lock (_Lock)
+            {
+                if (this._Documents.TryGetValue(contentId, out Document? document))
+                {
+                    document.IsLatestVersion = isLatestVersion;
+                }
             }
         }
 

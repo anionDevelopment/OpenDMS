@@ -58,27 +58,27 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
-        public string GetScriptAddDocumentVersionLink()
+        public string GetScriptAddDocumentVersion()
         {
-            return this.LoadSQLScript("AddDocumentVersionLink");
+            return this.LoadSQLScript("AddDocumentVersion");
         }
 
         /// <inheritdoc />
-        public string GetScriptGetSupersededDocumentIds()
+        public string GetScriptGetVersionsOfDocument()
         {
-            return this.LoadSQLScript("GetSupersededDocumentIds");
+            return this.LoadSQLScript("GetVersionsOfDocument");
         }
 
         /// <inheritdoc />
-        public string GetScriptGetPreviousVersionId()
+        public string GetScriptGetVersionByContentId()
         {
-            return this.LoadSQLScript("GetPreviousVersionId");
+            return this.LoadSQLScript("GetVersionByContentId");
         }
 
         /// <inheritdoc />
-        public string GetScriptGetNextVersionId()
+        public string GetScriptSetIsLatestVersion()
         {
-            return this.LoadSQLScript("GetNextVersionId");
+            return this.LoadSQLScript("SetIsLatestVersion");
         }
 
         /// <inheritdoc />

@@ -1679,10 +1679,6 @@
             "type": "string",
             "nullable": true
           },
-          "lastEditDate": {
-            "type": "string",
-            "nullable": true
-          },
           "tags": {
             "uniqueItems": true,
             "type": "array",
@@ -1746,6 +1742,16 @@
             "type": "string",
             "description": "A regular AI-generated summary, or null if none has been generated yet.",
             "nullable": true
+          },
+          "versionNumber": {
+            "type": "integer",
+            "description": "The incrementing version-number of this document within its version-chain (1-based).",
+            "format": "int32"
+          },
+          "versionTimestamp": {
+            "type": "string",
+            "description": "The moment this version was created, as a formatted string.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -1771,10 +1777,6 @@
             "nullable": true
           },
           "importDate": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastEditDate": {
             "type": "string",
             "nullable": true
           },
@@ -1823,6 +1825,16 @@
           "aiSummaryShort": {
             "type": "string",
             "description": "A very short AI-generated summary (at most three sentences) shown as a hint in listings, or null if none has been generated yet.",
+            "nullable": true
+          },
+          "versionNumber": {
+            "type": "integer",
+            "description": "The incrementing version-number of this document within its version-chain (1-based).",
+            "format": "int32"
+          },
+          "versionTimestamp": {
+            "type": "string",
+            "description": "The moment this version was created, as a formatted string.",
             "nullable": true
           }
         },

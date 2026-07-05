@@ -20,7 +20,6 @@ export interface DocumentDTO {
     filename?: string | null;
     originalFilename?: string | null;
     importDate?: string | null;
-    lastEditDate?: string | null;
     tags?: Set<TagDTO> | null;
     readableId?: number;
     mimeType?: string | null;
@@ -41,5 +40,13 @@ export interface DocumentDTO {
      * A regular AI-generated summary, or null if none has been generated yet.
      */
     aiSummaryLong?: string | null;
+    /**
+     * The incrementing version-number of this document within its version-chain (1-based).
+     */
+    versionNumber?: number;
+    /**
+     * The moment this version was created, as a formatted string.
+     */
+    versionTimestamp?: string | null;
 }
 

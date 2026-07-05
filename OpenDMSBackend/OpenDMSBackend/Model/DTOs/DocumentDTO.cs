@@ -11,7 +11,6 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public string Filename { get; set; }
         public string OriginalFilename { get; set; }
         public string ImportDate { get; set; }
-        public string? LastEditDate { get; set; }
         public ISet<TagDTO> Tags { get; set; }
         public ulong ReadableId { get; set; }
         public string MimeType { get; set; }
@@ -30,6 +29,10 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public string? AISummaryShort { get; set; }
         /// <summary>A regular AI-generated summary, or <see langword="null"/> if none has been generated yet.</summary>
         public string? AISummaryLong { get; set; }
+        /// <summary>The incrementing version-number of this document within its version-chain (1-based).</summary>
+        public int VersionNumber { get; set; }
+        /// <summary>The moment this version was created, as a formatted string.</summary>
+        public string? VersionTimestamp { get; set; }
 
         /// <summary>Initializes a new instance of <see cref="DocumentDTO"/>.</summary>
         /// <param name="id">The unique identifier of the document.</param>
@@ -37,7 +40,6 @@ namespace OpenDMSBackend.Core.Model.DTOs
         /// <param name="filename">The stored filename of the document.</param>
         /// <param name="originalFilename">The original filename as it was at import time.</param>
         /// <param name="importDate">The date the document was imported, as a formatted string.</param>
-        /// <param name="lastEditDate">The date of the last edit, or <see langword="null"/> if never edited.</param>
         /// <param name="tags">The set of tags assigned to the document.</param>
         /// <param name="readableId">The human-readable numeric identifier of the document.</param>
         /// <param name="mimeType">The MIME type of the document content.</param>
@@ -50,14 +52,13 @@ namespace OpenDMSBackend.Core.Model.DTOs
         /// <param name="version">The version of the document.</param>
         /// <param name="assignedLanguages">The set of language codes assigned to the document.</param>
         /// <param name="addedByUserId">The identifier of the user who added the document, or <see langword="null"/> if unknown.</param>
-        public DocumentDTO(string id, string title, string filename, string originalFilename, string importDate, string? lastEditDate, ISet<TagDTO> tags, ulong readableId, string mimeType, string documentContentAsBase64, string documentPreviewAsBase64, bool isSoftDeleted, string? deleteIsNotAllowedBefore, string? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string? addedByUserId)
+        public DocumentDTO(string id, string title, string filename, string originalFilename, string importDate, ISet<TagDTO> tags, ulong readableId, string mimeType, string documentContentAsBase64, string documentPreviewAsBase64, bool isSoftDeleted, string? deleteIsNotAllowedBefore, string? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string? addedByUserId)
         {
             this.Id = id;
             this.Title = title;
             this.Filename = filename;
             this.OriginalFilename = originalFilename;
             this.ImportDate = importDate;
-            this.LastEditDate = lastEditDate;
             this.Tags = tags;
             this.ReadableId = readableId;
             this.MimeType = mimeType;

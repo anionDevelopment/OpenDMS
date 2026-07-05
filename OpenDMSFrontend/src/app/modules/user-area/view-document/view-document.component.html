@@ -21,8 +21,11 @@
       <span i18n="@@doc_metadata_import_date_label">Import-date:</span>
       {{doc?.importDate | timestamp}}
       <br>
-      <span i18n="@@doc_metadata_last_edit_date_label">Last edit-date:</span>
-      {{doc?.lastEditDate ? (doc!.lastEditDate | timestamp) : '(not available)'}}
+      <span i18n="@@doc_metadata_version_label">Version:</span>
+      {{doc?.versionNumber}}
+      <br>
+      <span i18n="@@doc_metadata_version_date_label">Version-date:</span>
+      {{doc?.versionTimestamp ? (doc!.versionTimestamp | timestamp) : '(not available)'}}
       <br>
       <span i18n="@@doc_metadata_tags_label">Tags:</span>
       {{doc?.tags?.size ? formatTags(doc!.tags!) : ''}}
