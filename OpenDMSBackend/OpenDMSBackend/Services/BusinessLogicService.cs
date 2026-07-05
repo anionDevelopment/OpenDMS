@@ -613,19 +613,25 @@ namespace OpenDMSBackend.Core.Services
         public void HardDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
             //TODO check permission
-
-            //remove from parent container
-            if (this._Persistence.IsContaineeId(containerOrContaineeId))
+            try
             {
-                string parentId = this._Persistence.GetParentIdOfContainee(containerOrContaineeId);
-                this._Persistence.RemoveChild(parentId, containerOrContaineeId);
+                //remove from parent container
+                if (this._Persistence.IsContaineeId(containerOrContaineeId))
+                {
+                    string parentId = this._Persistence.GetParentIdOfContainee(containerOrContaineeId);
+                    this._Persistence.RemoveChild(parentId, containerOrContaineeId);
+                }
+
+                //remove content
+                Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId, reason), (folderId) => this.RemoveEntireContent(requesterUserId, folderId, reason), null);
+
+                this._Persistence.HardDelete(containerOrContaineeId);
+                this._AuditLog.Logger.Log($"Hard-deleted {containerOrContaineeId}. Reason: {reason}");
             }
-
-            //remove content
-            Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId, reason), (folderId) => this.RemoveEntireContent(requesterUserId, folderId, reason), null);
-
-            this._Persistence.HardDelete(containerOrContaineeId);
-            this._AuditLog.Logger.Log($"Hard-deleted {containerOrContaineeId}. Reason: {reason}");
+            catch (Exception exception)
+            {
+                this._Logger.Log($"Hard-deletion of '{containerOrContaineeId}' failed. Reason of the deletion-attempt: {reason}", exception);
+            }
         }
 
         /// <inheritdoc />

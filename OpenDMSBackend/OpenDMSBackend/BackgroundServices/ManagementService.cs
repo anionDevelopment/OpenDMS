@@ -65,18 +65,13 @@ namespace OpenDMSBackend.Core.BackgroundServices
             }
         }
 
-        private void DoScheduledHardDeletions()
+        /// <summary>Performs the regulated deletion of all documents whose retention-period has ended (see issue #11): every document whose <see cref="Document.MustBeHardDeletedAfter"/> has been reached is hard-deleted in a traceable way (audit-logged with a reason via the business-logic-service). This is an automatic housekeeping-operation and therefore has no requesting user.</summary>
+        internal void DoScheduledHardDeletions()
         {
             foreach (string documentId in this._Persistence.GetIdsOfDocumentsWhichMustBeHardDeletedNow())
             {
-                try
-                {
-                    this._Persistence.HardDelete(documentId);
-                }
-                catch (Exception exception)
-                {
-                    //TODO log exception
-                }
+                //the business-logic-service performs the hard-deletion in a traceable way and handles/logs any deletion-error internally, so that one failing deletion does not stop the housekeeping-run.
+                this._BusinessLogicService.HardDelete(null, documentId, "Regulated deletion: the retention-period ended (MustBeHardDeletedAfter reached).");
             }
         }
 

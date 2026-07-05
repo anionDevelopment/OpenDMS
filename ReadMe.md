@@ -40,7 +40,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 - ❌ [Provide a unique, sequential and traceable assignment for every document. A sequential `ReadableId` exists, but a guaranteed gap-free and immutable numbering is not yet ensured.](https://github.com/anionDevelopment/OpenDMS/issues/8)
 - ❌ [Set and manage retention periods. `DeleteIsNotAllowedBefore` and `MustBeHardDeletedAfter` exist in the model, but there is no API to set them.](https://github.com/anionDevelopment/OpenDMS/issues/9)
 - ❌ [Technically enforce a deletion lock during the retention period (prevent hard-delete before the retention period ends).](https://github.com/anionDevelopment/OpenDMS/issues/10)
-- ❌ [Perform regulated deletion after the retention period expires (deletion concept/housekeeping). `Housekeeping()` currently throws `NotImplementedException`.](https://github.com/anionDevelopment/OpenDMS/issues/11)
+- ✅ Perform regulated deletion after the retention period expires: a scheduled housekeeping-run (`DoScheduledHardDeletions` in the management-background-service) hard-deletes every document whose retention-deadline (`MustBeHardDeletedAfter`) has been reached, in a traceable way (audit-logged with a reason).
 - ✅ Support soft-delete (marking instead of physical removal).
 - ✅ Log traceable deletion with a stated reason (hard-delete with `reason`).
 - ❌ [Fully enforce an authorization and access-protection concept. Many operations still contain `//TODO check permission`.](https://github.com/anionDevelopment/OpenDMS/issues/12)

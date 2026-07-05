@@ -174,6 +174,34 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Assert.IsTrue(resolvedTagIds.Contains(tagId), "The tag resolved by name must be returned so that it can be assigned to the document.");
         }
 
+        [TestMethod(DisplayName = nameof(DoScheduledHardDeletionsDeletesOnlyDocumentsWithReachedRetentionDeadlineTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public void DoScheduledHardDeletionsDeletesOnlyDocumentsWithReachedRetentionDeadlineTest()
+        {
+            //arrange
+            ManagementService managementService = this.CreateManagementService(new HashSet<ImportDefinition>(), out Mock<IBusinessLogicService> businessLogicServiceMock, out IPersistence persistence);
+
+            Document expiredDocument = this.CreateTestDocument();
+            expiredDocument.MustBeHardDeletedAfter = new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero);
+            persistence.CreateDocument(expiredDocument);
+
+            Document notYetExpiredDocument = this.CreateTestDocument();
+            notYetExpiredDocument.MustBeHardDeletedAfter = new DateTimeOffset(2999, 1, 1, 0, 0, 0, TimeSpan.Zero);
+            persistence.CreateDocument(notYetExpiredDocument);
+
+            Document documentWithoutRetentionDeadline = this.CreateTestDocument();
+            documentWithoutRetentionDeadline.MustBeHardDeletedAfter = null;
+            persistence.CreateDocument(documentWithoutRetentionDeadline);
+
+            //act
+            managementService.DoScheduledHardDeletions();
+
+            //assert
+            businessLogicServiceMock.Verify(service => service.HardDelete(null, expiredDocument.Id, It.IsAny<string>()), Times.Once);
+            businessLogicServiceMock.Verify(service => service.HardDelete(It.IsAny<string?>(), notYetExpiredDocument.Id, It.IsAny<string>()), Times.Never);
+            businessLogicServiceMock.Verify(service => service.HardDelete(It.IsAny<string?>(), documentWithoutRetentionDeadline.Id, It.IsAny<string>()), Times.Never);
+        }
+
         private Document CreateTestDocument()
         {
             return new Document(Guid.NewGuid().ToString(), OneLineString.From("original-title"), OneLineString.From("file.pdf"), OneLineString.From("file.pdf"), new DateTimeOffset(2026, 01, 02, 03, 04, 05, TimeSpan.Zero), 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3 }, string.Empty, new byte[] { 1 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new HashSet<string>(), null);

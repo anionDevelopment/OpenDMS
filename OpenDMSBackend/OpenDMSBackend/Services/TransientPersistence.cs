@@ -646,8 +646,10 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
+            DateTimeOffset now = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset();
+            //a document must be hard-deleted now exactly if it has a retention-deadline (MustBeHardDeletedAfter) which has been reached; documents without a deadline are never deleted automatically.
             return this._Documents
-                   .Where(doc => this._TimeService.GetCurrentLocalTimeAsDateTimeOffset() < doc.Value.MustBeHardDeletedAfter)
+                   .Where(doc => doc.Value.MustBeHardDeletedAfter != null && doc.Value.MustBeHardDeletedAfter.Value <= now)
                    .Select(doc => doc.Value.Id)
                    .ToList();
         }
