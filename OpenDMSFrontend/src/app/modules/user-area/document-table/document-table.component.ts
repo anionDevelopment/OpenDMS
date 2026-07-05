@@ -38,7 +38,7 @@ export class DocumentTableComponent implements OnInit {
         case 'id': return item.readableId ?? '';
         case 'name': return item.title ?? '';
         case 'importdate': return item.importDate ?? '';
-        case 'lasteditdate': return item.lastEditDate ?? '';
+        case 'lasteditdate': return item.versionTimestamp ?? '';
         default: return '';
       }
     };

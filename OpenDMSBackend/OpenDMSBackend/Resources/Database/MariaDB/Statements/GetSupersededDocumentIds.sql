@@ -1,3 +1,0 @@
-
-select `OldDocumentId`
-	from DocumentVersionLink;

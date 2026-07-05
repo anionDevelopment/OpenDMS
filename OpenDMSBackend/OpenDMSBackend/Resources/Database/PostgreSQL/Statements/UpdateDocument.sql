@@ -2,7 +2,6 @@
 update "Documents"
 	set "Title"=@Title,
 		"Filename"=@Filename,
-		"LastEditDate"=@LastEditDate,
 		"MIMEType"=@MIMEType,
 		"DocumentContent"=@DocumentContent,
 		"OCRContent"=@OCRContent,
@@ -11,6 +10,5 @@ update "Documents"
 		"DeleteIsNotAllowedBefore"=@DeleteIsNotAllowedBefore,
 		"MustBeHardDeletedAfter"=@MustBeHardDeletedAfter,
 		"GroupOfBusinessOwner"=@GroupOfBusinessOwner,
-		"Version"=@Version,
 		"AssignedLanguages"=@AssignedLanguages
 	where "Id"=@Id;

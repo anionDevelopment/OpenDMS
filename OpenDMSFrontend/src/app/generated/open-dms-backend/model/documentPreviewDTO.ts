@@ -7,7 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Version3 } from './version3';
 
 
 /**
@@ -19,7 +18,6 @@ export interface DocumentPreviewDTO {
     filename?: string | null;
     originalFilename?: string | null;
     importDate?: string | null;
-    lastEditDate?: string | null;
     readableId?: number;
     mimeType?: string | null;
     previewAsBase64?: string | null;
@@ -27,12 +25,19 @@ export interface DocumentPreviewDTO {
     deleteIsNotAllowedBefore?: string | null;
     mustBeHardDeletedAfter?: string | null;
     groupOfBusinessOwner?: string | null;
-    version?: Version3;
     assignedLanguages?: Set<string> | null;
     addedByUserId?: string | null;
     /**
      * A very short AI-generated summary (at most three sentences) shown as a hint in listings, or null if none has been generated yet.
      */
     aiSummaryShort?: string | null;
+    /**
+     * The incrementing version-number of this document within its version-chain (1-based).
+     */
+    versionNumber?: number;
+    /**
+     * The moment this version was created, as a formatted string.
+     */
+    versionTimestamp?: string | null;
 }
 

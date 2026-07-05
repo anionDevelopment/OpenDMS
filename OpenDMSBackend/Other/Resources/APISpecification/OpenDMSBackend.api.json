@@ -1679,10 +1679,6 @@
             "type": "string",
             "nullable": true
           },
-          "lastEditDate": {
-            "type": "string",
-            "nullable": true
-          },
           "tags": {
             "uniqueItems": true,
             "type": "array",
@@ -1722,9 +1718,6 @@
             "type": "string",
             "nullable": true
           },
-          "version": {
-            "$ref": "#/components/schemas/Version3"
-          },
           "assignedLanguages": {
             "uniqueItems": true,
             "type": "array",
@@ -1745,6 +1738,16 @@
           "aiSummaryLong": {
             "type": "string",
             "description": "A regular AI-generated summary, or null if none has been generated yet.",
+            "nullable": true
+          },
+          "versionNumber": {
+            "type": "integer",
+            "description": "The incrementing version-number of this document within its version-chain (1-based).",
+            "format": "int32"
+          },
+          "versionTimestamp": {
+            "type": "string",
+            "description": "The moment this version was created, as a formatted string.",
             "nullable": true
           }
         },
@@ -1771,10 +1774,6 @@
             "nullable": true
           },
           "importDate": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastEditDate": {
             "type": "string",
             "nullable": true
           },
@@ -1805,9 +1804,6 @@
             "type": "string",
             "nullable": true
           },
-          "version": {
-            "$ref": "#/components/schemas/Version3"
-          },
           "assignedLanguages": {
             "uniqueItems": true,
             "type": "array",
@@ -1823,6 +1819,16 @@
           "aiSummaryShort": {
             "type": "string",
             "description": "A very short AI-generated summary (at most three sentences) shown as a hint in listings, or null if none has been generated yet.",
+            "nullable": true
+          },
+          "versionNumber": {
+            "type": "integer",
+            "description": "The incrementing version-number of this document within its version-chain (1-based).",
+            "format": "int32"
+          },
+          "versionTimestamp": {
+            "type": "string",
+            "description": "The moment this version was created, as a formatted string.",
             "nullable": true
           }
         },
@@ -1937,24 +1943,6 @@
           },
           "isAdmin": {
             "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Version3": {
-        "type": "object",
-        "properties": {
-          "major": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "minor": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "patch": {
-            "type": "integer",
-            "format": "int64"
           }
         },
         "additionalProperties": false

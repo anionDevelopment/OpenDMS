@@ -77,49 +77,85 @@ namespace OpenDMSBackend.Core.Services
         {
             lock (_LockObject)
             {
-                Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), null, this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(SimpleOCR.Library.Core.Misc.Utilities.GetMIMEType(originalFilename)), content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages, requesterUserId);
-                this.AnalyseDocument(document);
-                this.Validate(document);
-                this._Persistence.CreateDocument(document);
-                this._Persistence.SetParentOfContainee(document, containerId);
-                this._Logger.Log($"Document '{document.ReadableId}' added. (Technical-id: {document.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
+                Document document = this.CreateAndPersistAnalysedDocument(requesterUserId, title, containerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
+                this.RegisterAsNewVersion(document, null);
                 this.GenerateAISummaryIfAutoGenerationIsEnabled(document);
                 return document.Id;
             }
+        }
+
+        /// <summary>Creates, analyses and persists a single document-row (one version) in the given container, without registering it in the version-table.</summary>
+        private Document CreateAndPersistAnalysedDocument(string? requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
+        {
+            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(SimpleOCR.Library.Core.Misc.Utilities.GetMIMEType(originalFilename)), content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, false, default, default, groupOfBusinessOwner, additionalOCRLanguages, requesterUserId);
+            this.AnalyseDocument(document);
+            this.Validate(document);
+            this._Persistence.CreateDocument(document);
+            this._Persistence.SetParentOfContainee(document, containerId);
+            this._Logger.Log($"Document '{document.ReadableId}' added. (Technical-id: {document.Id})", Microsoft.Extensions.Logging.LogLevel.Information);
+            return document;
+        }
+
+        /// <summary>Registers the given document-row as a version. If <paramref name="currentLatestId"/> is given, the row becomes the next version of that version-chain and the previous latest-version is unmarked; otherwise a new version-chain (version 1) is started.</summary>
+        private void RegisterAsNewVersion(Document newVersionDocument, string? currentLatestId)
+        {
+            DateTimeOffset timestamp = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset();
+            string logicalDocumentId;
+            int versionNumber;
+            if (currentLatestId == null)
+            {
+                logicalDocumentId = Guid.NewGuid().ToString();
+                versionNumber = 1;
+            }
+            else
+            {
+                DocumentVersionEntry? currentEntry = this._Persistence.GetVersionByContentId(currentLatestId);
+                logicalDocumentId = currentEntry == null ? Guid.NewGuid().ToString() : currentEntry.DocumentId;
+                versionNumber = (currentEntry == null ? 1 : currentEntry.Version) + 1;
+                this._Persistence.SetIsLatestVersion(currentLatestId, false);
+            }
+            newVersionDocument.IsLatestVersion = true;
+            newVersionDocument.VersionNumber = versionNumber;
+            newVersionDocument.VersionTimestamp = timestamp;
+            this._Persistence.AddDocumentVersion(new DocumentVersionEntry(logicalDocumentId, newVersionDocument.Id, versionNumber, timestamp));
         }
 
         /// <inheritdoc />
         public string UploadNewVersion(string? requesterUserId, string oldDocumentId, string? title, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
             //TODO check permission
-            string parentContainerId = this._Persistence.GetParentIdOfContainee(oldDocumentId);
-            string newDocumentId = this.AddDocument(requesterUserId, title, parentContainerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
-            this._Persistence.AddDocumentVersionLink(oldDocumentId, newDocumentId);
-            this._AuditLog.Logger.Log($"New version '{newDocumentId}' of document '{oldDocumentId}' uploaded.", Microsoft.Extensions.Logging.LogLevel.Information);
-            return newDocumentId;
+            lock (_LockObject)
+            {
+                string parentContainerId = this._Persistence.GetParentIdOfContainee(oldDocumentId);
+                Document newVersion = this.CreateAndPersistAnalysedDocument(requesterUserId, title, parentContainerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
+                this.RegisterAsNewVersion(newVersion, oldDocumentId);
+                this.GenerateAISummaryIfAutoGenerationIsEnabled(newVersion);
+                this._AuditLog.Logger.Log($"New version '{newVersion.Id}' (version {newVersion.VersionNumber}) of document '{oldDocumentId}' uploaded.", Microsoft.Extensions.Logging.LogLevel.Information);
+                return newVersion.Id;
+            }
         }
 
         /// <inheritdoc />
         public IEnumerable<DocumentPreview> GetVersionHistory(string requesterUserId, string documentId)
         {
-            //determine the oldest version of the chain the given document belongs to.
-            string oldestVersionId = documentId;
-            string? previousVersionId = this._Persistence.GetPreviousVersionId(oldestVersionId);
-            while (previousVersionId != null)
+            DocumentVersionEntry? entry = this._Persistence.GetVersionByContentId(documentId);
+            if (entry == null)
             {
-                oldestVersionId = previousVersionId;
-                previousVersionId = this._Persistence.GetPreviousVersionId(oldestVersionId);
-            }
-            //collect all versions from the oldest to the newest.
-            List<DocumentPreview> result = new List<DocumentPreview>();
-            string? currentVersionId = oldestVersionId;
-            while (currentVersionId != null)
-            {
-                if (this.UserIsAllowedToViewContent(requesterUserId, currentVersionId))
+                //the document is not versioned: return only the document itself (if viewable).
+                List<DocumentPreview> single = new List<DocumentPreview>();
+                if (this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 {
-                    result.Add(this._Persistence.GetDocumentPreview(currentVersionId));
+                    single.Add(this._Persistence.GetDocumentPreview(documentId));
                 }
-                currentVersionId = this._Persistence.GetNextVersionId(currentVersionId);
+                return single;
+            }
+            List<DocumentPreview> result = new List<DocumentPreview>();
+            foreach (DocumentVersionEntry versionEntry in this._Persistence.GetVersionsOfDocument(entry.DocumentId))
+            {
+                if (this.UserIsAllowedToViewContent(requesterUserId, versionEntry.ContentId))
+                {
+                    result.Add(this._Persistence.GetDocumentPreview(versionEntry.ContentId));
+                }
             }
             return result;
         }
@@ -202,11 +238,10 @@ namespace OpenDMSBackend.Core.Services
             {
                 searchResults = this._Persistence.Search(searchTerm.ToLower());
             }
-            ISet<string> supersededDocumentIds = this._Persistence.GetSupersededDocumentIds();
             return searchResults
-                .Where(documentId => !supersededDocumentIds.Contains(documentId))
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(this._Persistence.GetDocumentPreview)
+                .Where(preview => preview.IsLatestVersion)
                 .ToList();
         }
 
@@ -303,12 +338,11 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId)
         {
-            ISet<string> supersededDocumentIds = this._Persistence.GetSupersededDocumentIds();
             List<DocumentPreview> result = this._Persistence
                 .GetAllDocumentIds()
-                .Where(documentId => !supersededDocumentIds.Contains(documentId))
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
+                .Where(document => document.IsLatestVersion)
                 .OrderByDescending(document => document.GetNewestDate(document))
                 .Take(5)
                 .ToList();
@@ -318,25 +352,58 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void UpdateDocumentTitle(string requesterUserId, string documentId, string newTitle)
         {
-            Document document = this.GetDocument(requesterUserId, documentId);
-            document.Title = OneLineString.From(newTitle);
-            this.Update(requesterUserId, document);
+            lock (_LockObject)
+            {
+                //a metadata-change creates a new version whose content, OCR-content and AI-summary are copied from the current version (they are not recomputed).
+                this.CreateMetadataVersion(requesterUserId, documentId, newVersion => newVersion.Title = OneLineString.From(newTitle));
+            }
+        }
+
+        /// <summary>Creates a new version of the given document in which only metadata is changed (via <paramref name="mutate"/>). Content, preview, OCR-content and AI-summary are copied unchanged from the current version.</summary>
+        private void CreateMetadataVersion(string requesterUserId, string currentDocumentId, Action<Document> mutate)
+        {
+            //TODO check permission
+            Document current = this._Persistence.GetDocument(currentDocumentId);
+            Document newVersion = new Document(Guid.NewGuid().ToString(), current.Title, current.Filename, current.OriginalFilename, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(current.Tags), current.MIMEType, current.Content, current.OCRContent, current.Preview, current.IsSoftDeleted, current.DeleteIsNotAllowedBefore, current.MustBeHardDeletedAfter, current.GroupOfBusinessOwner, new HashSet<string>(current.AssignedLanguages), current.AddedByUserId)
+            {
+                AISummaryShort = current.AISummaryShort,
+                AISummaryLong = current.AISummaryLong,
+            };
+            mutate(newVersion);
+            this.Validate(newVersion);
+            this._Persistence.CreateDocument(newVersion);
+            this._Persistence.SetParentOfContainee(newVersion, this._Persistence.GetParentIdOfContainee(currentDocumentId));
+            this.RegisterAsNewVersion(newVersion, currentDocumentId);
         }
 
         /// <inheritdoc />
         public void Update(string requesterUserId, Document updatedDocument)
         {
-            Document existingDocument = this._Persistence.GetDocument(updatedDocument.Id);
             //TODO check permission (remember: a user can change the name, the content, etc. dependent on his permissions, but only if the user is in GroupOfBusinessOwner he is allowed to do a hard-delete or to change the DeleteIsNotAllowedBefore- or MustBeHardDeletedAfter-value.)
-            //TODO check validity, for example: content must not be null, DeleteIsNotAllowedBefore must be lower or equal to MustBeHardDeletedAfter, version is greater than the old version, etc.
-            if ((existingDocument.MIMEType != updatedDocument.MIMEType) || (existingDocument.Content != updatedDocument.Content) || (!existingDocument.AssignedLanguages.SetEquals(updatedDocument.AssignedLanguages)))
+            //TODO check validity, for example: content must not be null, DeleteIsNotAllowedBefore must be lower or equal to MustBeHardDeletedAfter, etc.
+            lock (_LockObject)
             {
-                //TODO analyse is only necessary if assignedlanguage was added but not if it was removed
-                this.AnalyseDocument(updatedDocument);
+                Document current = this._Persistence.GetDocument(updatedDocument.Id);
+                bool contentChanged = !current.Content.SequenceEqual(updatedDocument.Content) || (current.MIMEType != updatedDocument.MIMEType) || (!current.AssignedLanguages.SetEquals(updatedDocument.AssignedLanguages));
+                Document newVersion = new Document(Guid.NewGuid().ToString(), updatedDocument.Title, updatedDocument.Filename, updatedDocument.OriginalFilename, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(updatedDocument.Tags), updatedDocument.MIMEType, updatedDocument.Content, default!/*set below*/, default!/*set below*/, updatedDocument.IsSoftDeleted, updatedDocument.DeleteIsNotAllowedBefore, updatedDocument.MustBeHardDeletedAfter, updatedDocument.GroupOfBusinessOwner, new HashSet<string>(updatedDocument.AssignedLanguages), updatedDocument.AddedByUserId);
+                if (contentChanged)
+                {
+                    //the content changed: OCR-content and preview are recomputed and the (now stale) AI-summary is dropped.
+                    this.AnalyseDocument(newVersion);
+                }
+                else
+                {
+                    newVersion.OCRContent = current.OCRContent;
+                    newVersion.Preview = current.Preview;
+                    newVersion.AISummaryShort = current.AISummaryShort;
+                    newVersion.AISummaryLong = current.AISummaryLong;
+                }
+                this.Validate(newVersion);
+                this._Persistence.CreateDocument(newVersion);
+                this._Persistence.SetParentOfContainee(newVersion, this._Persistence.GetParentIdOfContainee(updatedDocument.Id));
+                this.RegisterAsNewVersion(newVersion, updatedDocument.Id);
+                this.GenerateAISummaryIfAutoGenerationIsEnabled(newVersion);
             }
-            this.Validate(updatedDocument);
-            this._Persistence.Update(requesterUserId, updatedDocument);
-            this.GenerateAISummaryIfAutoGenerationIsEnabled(updatedDocument);
         }
 
         /// <summary>Generates and stores the AI-summary of the given document if the corresponding setting is enabled. Failures are logged but never propagated so that adding or updating a document is not affected by an unavailable summary-service.</summary>

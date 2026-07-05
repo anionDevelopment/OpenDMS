@@ -14,7 +14,6 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public OneLineString Filename { get; set; }
         public OneLineString OriginalFilename { get; set; }
         public DateTimeOffset ImportDate { get; set; }
-        public DateTimeOffset? LastEditDate { get; set; }
         public ISet<Tag> Tags { get; set; }
         public ulong ReadableId { get; set; }
         public OneLineString MIMEType { get; set; }
@@ -26,22 +25,26 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         /// <see cref="Document.GroupOfBusinessOwner"/>
         /// </summary>
         public string GroupOfBusinessOwner { get; set; }
-        public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
         public string? AddedByUserId { get; set; }
         /// <summary>
         /// A very short (at most three sentences) AI-generated summary of the document, or <see langword="null"/> if none has been generated yet.
         /// </summary>
         public string? AISummaryShort { get; set; }
+        /// <summary><see cref="Document.IsLatestVersion"/></summary>
+        public bool IsLatestVersion { get; set; } = true;
+        /// <summary><see cref="Document.VersionNumber"/></summary>
+        public int VersionNumber { get; set; } = 1;
+        /// <summary><see cref="Document.VersionTimestamp"/></summary>
+        public DateTimeOffset VersionTimestamp { get; set; }
 
-        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, DateTimeOffset? lastEditDate, ISet<Tag> tags, ulong readableId, OneLineString mIMEType, byte[] preview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string? addedByUserId)
+        public DocumentPreview(string id, OneLineString title, OneLineString filename, OneLineString originalFilename, DateTimeOffset importDate, ISet<Tag> tags, ulong readableId, OneLineString mIMEType, byte[] preview, bool isSoftDeleted, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter, string groupOfBusinessOwner, ISet<string> assignedLanguages, string? addedByUserId)
         {
             this.Id = id;
             this.Title = title;
             this.Filename = filename;
             this.OriginalFilename = originalFilename;
             this.ImportDate = importDate;
-            this.LastEditDate = lastEditDate;
             this.Tags = tags;
             this.ReadableId = readableId;
             this.MIMEType = mIMEType;
@@ -50,7 +53,6 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             this.DeleteIsNotAllowedBefore = deleteIsNotAllowedBefore;
             this.MustBeHardDeletedAfter = mustBeHardDeletedAfter;
             this.GroupOfBusinessOwner = groupOfBusinessOwner;
-            this.Version = version;
             this.AssignedLanguages = assignedLanguages;
             this.AddedByUserId = addedByUserId;
         }
@@ -82,24 +84,26 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         /// <returns>A <see cref="DocumentPreviewDTO"/> populated from this instance.</returns>
         public DocumentPreviewDTO ToDTO()
         {
-            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, GUtilities.FormatTimestamp(this.ImportDate, false), GUtilities.FormatTimestampNullable(this.LastEditDate, false), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore, false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter, false), this.GroupOfBusinessOwner, this.Version, this.AssignedLanguages,this.AddedByUserId)
+            return new DocumentPreviewDTO(this.Id, this.Title.Value, this.Filename.Value, this.OriginalFilename.Value, GUtilities.FormatTimestamp(this.ImportDate, false), this.ReadableId, this.MIMEType.Value, Misc.Utilities.ToBase64(this.Preview), this.IsSoftDeleted, GUtilities.FormatTimestampNullable(this.DeleteIsNotAllowedBefore, false), GUtilities.FormatTimestampNullable(this.MustBeHardDeletedAfter, false), this.GroupOfBusinessOwner, this.AssignedLanguages,this.AddedByUserId)
             {
-                AISummaryShort = this.AISummaryShort
+                AISummaryShort = this.AISummaryShort,
+                VersionNumber = this.VersionNumber,
+                VersionTimestamp = GUtilities.FormatTimestamp(this.VersionTimestamp, false)
             };
         }
 
-        /// <summary>Returns the most recent date of the document — last-edit date if available, otherwise import date.</summary>
+        /// <summary>Returns the most recent date of this version — the version-timestamp if set, otherwise the import date.</summary>
         /// <param name="document">The document preview to inspect.</param>
-        /// <returns>The last-edit date if set, otherwise the import date.</returns>
+        /// <returns>The version-timestamp if set, otherwise the import date.</returns>
         public DateTimeOffset GetNewestDate(DocumentPreview document)
         {
-            if (document.LastEditDate == default)
+            if (document.VersionTimestamp == default)
             {
                 return document.ImportDate;
             }
             else
             {
-                return document.LastEditDate!.Value;
+                return document.VersionTimestamp;
             }
         }
         public override string ToString()
