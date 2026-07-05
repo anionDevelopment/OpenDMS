@@ -7,7 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Version3 } from './version3';
 import { TagDTO } from './tagDTO';
 
 
@@ -29,7 +28,6 @@ export interface DocumentDTO {
     deleteIsNotAllowedBefore?: string | null;
     mustBeHardDeletedAfter?: string | null;
     groupOfBusinessOwner?: string | null;
-    version?: Version3;
     assignedLanguages?: Set<string> | null;
     addedByUserId?: string | null;
     /**

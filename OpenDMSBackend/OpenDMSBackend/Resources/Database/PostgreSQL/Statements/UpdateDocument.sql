@@ -10,6 +10,5 @@ update "Documents"
 		"DeleteIsNotAllowedBefore"=@DeleteIsNotAllowedBefore,
 		"MustBeHardDeletedAfter"=@MustBeHardDeletedAfter,
 		"GroupOfBusinessOwner"=@GroupOfBusinessOwner,
-		"Version"=@Version,
 		"AssignedLanguages"=@AssignedLanguages
 	where "Id"=@Id;

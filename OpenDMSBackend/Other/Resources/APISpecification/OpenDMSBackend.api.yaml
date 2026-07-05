@@ -81,8 +81,6 @@ components:
         title:
           nullable: true
           type: string
-        version:
-          $ref: '#/components/schemas/Version3'
         versionNumber:
           description: The incrementing version-number of this document within its
             version-chain (1-based).
@@ -147,8 +145,6 @@ components:
         title:
           nullable: true
           type: string
-        version:
-          $ref: '#/components/schemas/Version3'
         versionNumber:
           description: The incrementing version-number of this document within its
             version-chain (1-based).
@@ -239,19 +235,6 @@ components:
         name:
           nullable: true
           type: string
-      type: object
-    Version3:
-      additionalProperties: false
-      properties:
-        major:
-          format: int64
-          type: integer
-        minor:
-          format: int64
-          type: integer
-        patch:
-          format: int64
-          type: integer
       type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.

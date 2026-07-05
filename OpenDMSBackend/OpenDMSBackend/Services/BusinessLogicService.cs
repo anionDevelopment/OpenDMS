@@ -87,7 +87,7 @@ namespace OpenDMSBackend.Core.Services
         /// <summary>Creates, analyses and persists a single document-row (one version) in the given container, without registering it in the version-table.</summary>
         private Document CreateAndPersistAnalysedDocument(string? requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
-            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(SimpleOCR.Library.Core.Misc.Utilities.GetMIMEType(originalFilename)), content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, false, default, default, groupOfBusinessOwner, new Version3(1, 0, 0), additionalOCRLanguages, requesterUserId);
+            Document document = new Document(Guid.NewGuid().ToString(), title == null ? OneLineString.From(originalFilename) : OneLineString.From(title), OneLineString.From(originalFilename), OneLineString.From(originalFilename), this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(), OneLineString.From(SimpleOCR.Library.Core.Misc.Utilities.GetMIMEType(originalFilename)), content, default!/*property will be set by AnalyseDocument(...)*/, default!/*property will be set by AnalyseDocument(...)*/, false, default, default, groupOfBusinessOwner, additionalOCRLanguages, requesterUserId);
             this.AnalyseDocument(document);
             this.Validate(document);
             this._Persistence.CreateDocument(document);
@@ -364,7 +364,7 @@ namespace OpenDMSBackend.Core.Services
         {
             //TODO check permission
             Document current = this._Persistence.GetDocument(currentDocumentId);
-            Document newVersion = new Document(Guid.NewGuid().ToString(), current.Title, current.Filename, current.OriginalFilename, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(current.Tags), current.MIMEType, current.Content, current.OCRContent, current.Preview, current.IsSoftDeleted, current.DeleteIsNotAllowedBefore, current.MustBeHardDeletedAfter, current.GroupOfBusinessOwner, current.Version, new HashSet<string>(current.AssignedLanguages), current.AddedByUserId)
+            Document newVersion = new Document(Guid.NewGuid().ToString(), current.Title, current.Filename, current.OriginalFilename, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(current.Tags), current.MIMEType, current.Content, current.OCRContent, current.Preview, current.IsSoftDeleted, current.DeleteIsNotAllowedBefore, current.MustBeHardDeletedAfter, current.GroupOfBusinessOwner, new HashSet<string>(current.AssignedLanguages), current.AddedByUserId)
             {
                 AISummaryShort = current.AISummaryShort,
                 AISummaryLong = current.AISummaryLong,
@@ -385,7 +385,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 Document current = this._Persistence.GetDocument(updatedDocument.Id);
                 bool contentChanged = !current.Content.SequenceEqual(updatedDocument.Content) || (current.MIMEType != updatedDocument.MIMEType) || (!current.AssignedLanguages.SetEquals(updatedDocument.AssignedLanguages));
-                Document newVersion = new Document(Guid.NewGuid().ToString(), updatedDocument.Title, updatedDocument.Filename, updatedDocument.OriginalFilename, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(updatedDocument.Tags), updatedDocument.MIMEType, updatedDocument.Content, default!/*set below*/, default!/*set below*/, updatedDocument.IsSoftDeleted, updatedDocument.DeleteIsNotAllowedBefore, updatedDocument.MustBeHardDeletedAfter, updatedDocument.GroupOfBusinessOwner, updatedDocument.Version, new HashSet<string>(updatedDocument.AssignedLanguages), updatedDocument.AddedByUserId);
+                Document newVersion = new Document(Guid.NewGuid().ToString(), updatedDocument.Title, updatedDocument.Filename, updatedDocument.OriginalFilename, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(updatedDocument.Tags), updatedDocument.MIMEType, updatedDocument.Content, default!/*set below*/, default!/*set below*/, updatedDocument.IsSoftDeleted, updatedDocument.DeleteIsNotAllowedBefore, updatedDocument.MustBeHardDeletedAfter, updatedDocument.GroupOfBusinessOwner, new HashSet<string>(updatedDocument.AssignedLanguages), updatedDocument.AddedByUserId);
                 if (contentChanged)
                 {
                     //the content changed: OCR-content and preview are recomputed and the (now stale) AI-summary is dropped.

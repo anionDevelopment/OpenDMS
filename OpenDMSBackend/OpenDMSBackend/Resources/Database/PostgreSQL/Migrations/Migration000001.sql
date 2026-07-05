@@ -39,7 +39,6 @@ CREATE TABLE "Documents" (
     "DeleteIsNotAllowedBefore" timestamp null,
     "MustBeHardDeletedAfter" timestamp null,
     "GroupOfBusinessOwner" varchar(255) not null,
-    "Version" varchar(255) not null,
     "AssignedLanguages" varchar(255) null,
     "AddedByUserId" varchar(255) null,
     "AISummaryShort" text null,

@@ -39,7 +39,6 @@ CREATE TABLE `Documents` (
     `DeleteIsNotAllowedBefore` datetime(6) null,
     `MustBeHardDeletedAfter` datetime(6) null,
     `GroupOfBusinessOwner` varchar(255) not null,
-    `Version` varchar(255) not null,
     `AssignedLanguages` varchar(255) null,
     `AddedByUserId` varchar(255) null,
     `AISummaryShort` longtext null COLLATE utf8mb4_unicode_ci,

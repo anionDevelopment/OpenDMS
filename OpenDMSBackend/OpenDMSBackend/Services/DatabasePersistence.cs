@@ -122,7 +122,6 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DeleteIsNotAllowedBefore", this.ToDateTime(document.DeleteIsNotAllowedBefore), typeof(DateTime)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MustBeHardDeletedAfter", this.ToDateTime(document.MustBeHardDeletedAfter), typeof(DateTime)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("GroupOfBusinessOwner", document.GroupOfBusinessOwner));
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Version", document.Version.ToString()));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AssignedLanguages", Core.Misc.Utilities.LanguagesListToString(document.AssignedLanguages)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AddedByUserId", document.AddedByUserId, typeof(string)));
                 command.ExecuteNonQuery();
@@ -554,13 +553,12 @@ namespace OpenDMSBackend.Core.Services
                                 this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//delete is not allowed before
                                  this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)),//must be deleted after
                                 reader.GetString(11),//businessowner
-                                Version3.Parse(reader.GetString(12)),//version
-                                Core.Misc.Utilities.StringToLanguagesList(reader.GetString(13)),//languages
-                                reader.GetString(14)//userid
+                                Core.Misc.Utilities.StringToLanguagesList(reader.GetString(12)),//languages
+                                reader.GetString(13)//userid
                             );
                             document.IsLatestVersion = reader.GetBoolean(4);//is latest version
-                            document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 15);
-                            document.AISummaryLong = DBUtilities.GetNullableValue<string>(reader, 16);
+                            document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 14);
+                            document.AISummaryLong = DBUtilities.GetNullableValue<string>(reader, 15);
                             return document;
                         }
                         else
@@ -837,7 +835,6 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DeleteIsNotAllowedBefore", this.ToDateTime(document.DeleteIsNotAllowedBefore), typeof(DateTime)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MustBeHardDeletedAfter", this.ToDateTime(document.MustBeHardDeletedAfter), typeof(DateTime)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("GroupOfBusinessOwner", document.GroupOfBusinessOwner));
-                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Version", document.Version.ToString()));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AssignedLanguages", Core.Misc.Utilities.LanguagesListToString(document.AssignedLanguages)));
                 command.ExecuteNonQuery();
             });
@@ -945,12 +942,11 @@ namespace OpenDMSBackend.Core.Services
                         this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 8)),//delete is not allowed before
                         this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//must be deleted after
                         reader.GetString(10),//business owner
-                        Version3.Parse(reader.GetString(11)),//version
-                        Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 12))), //languages
-                        reader.GetString(13)//creator-user-is
+                        Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 11))), //languages
+                        reader.GetString(12)//creator-user-is
                     );
                     document.IsLatestVersion = reader.GetBoolean(4);//is latest version
-                    document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 14);
+                    document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 13);
                     //TODO load tags
                     return document;
                 }

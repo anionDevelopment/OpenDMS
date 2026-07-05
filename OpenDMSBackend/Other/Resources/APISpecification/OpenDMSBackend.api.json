@@ -1718,9 +1718,6 @@
             "type": "string",
             "nullable": true
           },
-          "version": {
-            "$ref": "#/components/schemas/Version3"
-          },
           "assignedLanguages": {
             "uniqueItems": true,
             "type": "array",
@@ -1806,9 +1803,6 @@
           "groupOfBusinessOwner": {
             "type": "string",
             "nullable": true
-          },
-          "version": {
-            "$ref": "#/components/schemas/Version3"
           },
           "assignedLanguages": {
             "uniqueItems": true,
@@ -1949,24 +1943,6 @@
           },
           "isAdmin": {
             "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Version3": {
-        "type": "object",
-        "properties": {
-          "major": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "minor": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "patch": {
-            "type": "integer",
-            "format": "int64"
           }
         },
         "additionalProperties": false

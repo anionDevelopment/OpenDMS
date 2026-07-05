@@ -18,7 +18,6 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public string? DeleteIsNotAllowedBefore { get; set; }
         public string? MustBeHardDeletedAfter { get; set; }
         public string GroupOfBusinessOwner { get; set; }
-        public Version3 Version { get; set; }
         public ISet<string> AssignedLanguages { get; set; }
 
         public string? AddedByUserId { get; set; }
@@ -43,10 +42,9 @@ namespace OpenDMSBackend.Core.Model.DTOs
         /// <param name="deleteIsNotAllowedBefore">The earliest date on which deletion is permitted, or <see langword="null"/> if unrestricted.</param>
         /// <param name="mustBeHardDeletedAfter">The date after which the document must be hard-deleted, or <see langword="null"/> if not set.</param>
         /// <param name="groupOfBusinessOwner">The business-owner group associated with the document.</param>
-        /// <param name="version">The version of the document.</param>
         /// <param name="assignedLanguages">The set of language codes assigned to the document.</param>
         /// <param name="addedByUserId">The identifier of the user who added the document, or <see langword="null"/> if unknown.</param>
-        public DocumentPreviewDTO(string id, string title, string filename, string originalFilename, string importDate, ulong readableId, string mimeType, string previewAsBase64, bool isSoftDeleted, string? deleteIsNotAllowedBefore, string? mustBeHardDeletedAfter, string groupOfBusinessOwner, Version3 version, ISet<string> assignedLanguages, string? addedByUserId)
+        public DocumentPreviewDTO(string id, string title, string filename, string originalFilename, string importDate, ulong readableId, string mimeType, string previewAsBase64, bool isSoftDeleted, string? deleteIsNotAllowedBefore, string? mustBeHardDeletedAfter, string groupOfBusinessOwner, ISet<string> assignedLanguages, string? addedByUserId)
         {
             this.Id = id;
             this.Title = title;
@@ -60,7 +58,6 @@ namespace OpenDMSBackend.Core.Model.DTOs
             this.DeleteIsNotAllowedBefore = deleteIsNotAllowedBefore;
             this.MustBeHardDeletedAfter = mustBeHardDeletedAfter;
             this.GroupOfBusinessOwner = groupOfBusinessOwner;
-            this.Version = version;
             this.AssignedLanguages = assignedLanguages;
             this.AddedByUserId = addedByUserId;
         }
