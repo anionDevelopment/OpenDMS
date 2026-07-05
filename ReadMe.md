@@ -48,7 +48,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 - ✅ Authenticate users (login and registration with access token).
 - ❌ [Provide tagging and indexing with metadata (document type, contact/sender, retention date and arbitrary metadata).](https://github.com/anionDevelopment/OpenDMS/issues/14)
 - ❌ [Provide full-text and metadata search for machine evaluability. A search endpoint exists but is not yet complete.](https://github.com/anionDevelopment/OpenDMS/issues/15)
-- ❌ [Provide OCR for machine readability and evaluability of scanned documents. A client exists but is not fully implemented yet.](https://github.com/anionDevelopment/OpenDMS/issues/16)
+- ✅ Provide OCR for machine readability and evaluability of scanned documents: the OCR-service-client fully calls the SimpleOCR-service (extract OCR-text, convert a document to a picture, query the supported languages and wait until the service is available). When no OCR-service is configured a mock is used instead.
 - ❌ [Link related documents (for example the relationship between a voucher and its posting).](https://github.com/anionDevelopment/OpenDMS/issues/17)
 - ❌ [Provide a GoBD-compliant data export for the tax authority (Z1/Z2/Z3 access or export in an evaluable format including index and description standard).](https://github.com/anionDevelopment/OpenDMS/issues/18)
 - ❌ [Ensure readability and reproduction throughout the entire retention period (reproduce in the original format).](https://github.com/anionDevelopment/OpenDMS/issues/19)

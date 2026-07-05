@@ -9,6 +9,7 @@ using OpenDMSBackend.Core.Configuration;
 using SimpleOCR.Library.Core.Other;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -68,8 +69,11 @@ namespace OpenDMSBackend.Core.Services
 
             ByteArrayContent fileContent2 = new ByteArrayContent(fileContent);
             fileContent2.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            content.Add(fileContent2, "name", "fileName");
-            HttpResponseMessage response = httpClient.PutAsync(this.GetAPIBasePath() + $"/GetOCRContent?mimeType={languages}", content).WaitAndGetResult();
+            //the form-field-name must match the 'fileContent'-parameter of the SimpleOCR-service's GetOCRContent-endpoint.
+            content.Add(fileContent2, "fileContent", "fileContent");
+            string languagesQuery = string.Concat(languages.Select(language => $"&languages={Uri.EscapeDataString(language)}"));
+            string url = this.GetAPIBasePath() + $"/GetOCRContent?mimeType={Uri.EscapeDataString(mimeType)}{languagesQuery}";
+            HttpResponseMessage response = httpClient.PutAsync(url, content).WaitAndGetResult();
             response.EnsureSuccessStatusCode();
             return response.Content.ReadAsStringAsync().WaitAndGetResult();
         }
@@ -82,8 +86,9 @@ namespace OpenDMSBackend.Core.Services
 
             ByteArrayContent fileContent2 = new ByteArrayContent(fileContent);
             fileContent2.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            content.Add(fileContent2, "name", "fileName");
-            HttpResponseMessage response = httpClient.PutAsync(this.GetAPIBasePath() + $"/ToPicture?mimeType={mimeType}", content).WaitAndGetResult();
+            //the form-field-name must match the 'file'-parameter of the SimpleOCR-service's ToPicture-endpoint.
+            content.Add(fileContent2, "file", "file");
+            HttpResponseMessage response = httpClient.PutAsync(this.GetAPIBasePath() + $"/ToPicture?mimeType={Uri.EscapeDataString(mimeType)}", content).WaitAndGetResult();
             response.EnsureSuccessStatusCode();
             return response.Content.ReadAsByteArrayAsync().WaitAndGetResult();
         }
@@ -119,7 +124,20 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void WaitUntilAvailable(TimeSpan timeSpan)
         {
-            throw new NotImplementedException();
+            DateTime deadline = DateTime.UtcNow.Add(timeSpan);
+            while (true)
+            {
+                (bool available, Exception? error) = this.IsAvailable();
+                if (available)
+                {
+                    return;
+                }
+                if (DateTime.UtcNow >= deadline)
+                {
+                    throw new TimeoutException($"The OCR-service did not become available within {timeSpan}.", error);
+                }
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
         }
     }
 }
