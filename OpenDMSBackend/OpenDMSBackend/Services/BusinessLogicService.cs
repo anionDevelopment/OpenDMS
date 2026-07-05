@@ -241,7 +241,7 @@ namespace OpenDMSBackend.Core.Services
             return searchResults
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(this._Persistence.GetDocumentPreview)
-                .Where(preview => preview.IsLatestVersion)
+                .Where(preview => preview.IsLatestVersion && !preview.IsHardDeleted)
                 .ToList();
         }
 
@@ -342,7 +342,7 @@ namespace OpenDMSBackend.Core.Services
                 .GetAllDocumentIds()
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
-                .Where(document => document.IsLatestVersion)
+                .Where(document => document.IsLatestVersion && !document.IsHardDeleted)
                 .OrderByDescending(document => document.GetNewestDate(document))
                 .Take(5)
                 .ToList();
@@ -615,8 +615,8 @@ namespace OpenDMSBackend.Core.Services
             //TODO check permission
             try
             {
-                //remove from parent container
-                if (this._Persistence.IsContaineeId(containerOrContaineeId))
+                //remove from parent container. A hard-deleted document keeps its place in the containment-tree (its row is kept for traceability and it is only hidden from the listings), so only containers (folders/storage-locations) are unlinked from their parent.
+                if (this._Persistence.IsContaineeId(containerOrContaineeId) && !this._Persistence.IsDocument(containerOrContaineeId))
                 {
                     string parentId = this._Persistence.GetParentIdOfContainee(containerOrContaineeId);
                     this._Persistence.RemoveChild(parentId, containerOrContaineeId);

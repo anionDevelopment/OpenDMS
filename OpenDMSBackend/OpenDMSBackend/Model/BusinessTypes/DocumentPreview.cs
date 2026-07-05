@@ -19,6 +19,8 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public OneLineString MIMEType { get; set; }
         public byte[] Preview { get; set; }
         public bool IsSoftDeleted { get; set; }
+        /// <summary><see cref="Document.IsHardDeleted"/></summary>
+        public bool IsHardDeleted { get; set; } = false;
         public DateTimeOffset? DeleteIsNotAllowedBefore { get; set; }
         public DateTimeOffset? MustBeHardDeletedAfter { get; set; }
         /// <summary>

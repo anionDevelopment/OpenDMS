@@ -22,6 +22,10 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public byte[] Preview { get; set; }
         public string OCRContent { get; set; }
         public bool IsSoftDeleted { get; set; }
+        /// <summary>
+        /// Whether this document has been hard-deleted (regulated deletion): its binary-content and preview are removed, its <see cref="OCRContent"/> and AI-summaries are cleared and its tags are unassigned, but the row itself is kept for traceability. Hard-deleted documents are excluded from the normal listings (together with the <see cref="IsLatestVersion"/>-filter).
+        /// </summary>
+        public bool IsHardDeleted { get; set; } = false;
         public DateTimeOffset? DeleteIsNotAllowedBefore { get; set; }
         public DateTimeOffset? MustBeHardDeletedAfter { get; set; }
         /// <summary>
@@ -147,6 +151,7 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
             {
                 AISummaryShort = this.AISummaryShort,
                 IsLatestVersion = this.IsLatestVersion,
+                IsHardDeleted = this.IsHardDeleted,
                 VersionNumber = this.VersionNumber,
                 VersionTimestamp = this.VersionTimestamp
             };

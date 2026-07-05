@@ -115,6 +115,7 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OriginalFilename", document.OriginalFilename.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ImportDate", this.ToDateTime(document.ImportDate), typeof(DateTime)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsLatestVersion", document.IsLatestVersion));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsHardDeleted", document.IsHardDeleted));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ReadableId", document.ReadableId));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MIMEType", document.MIMEType.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OCRContent", document.OCRContent));
@@ -538,6 +539,8 @@ namespace OpenDMSBackend.Core.Services
                         if (reader.HasRows)
                         {
                             reader.Read();
+                            //a hard-deleted document has its binary-content and preview removed from the file-system, so they are not loaded (they would no longer exist).
+                            bool isHardDeleted = reader.GetBoolean(16);
                             Document document = new Document(id,
                                 OneLineString.From(reader.GetString(0)),//title
                                 OneLineString.From(reader.GetString(1)),//filename
@@ -546,9 +549,9 @@ namespace OpenDMSBackend.Core.Services
                                 (uint)reader.GetInt32(5),//readableid
                                 new HashSet<Tag>(),//tags
                                 OneLineString.From(reader.GetString(6)),//mimetype
-                                this.LoadDocument(id),//content
+                                isHardDeleted ? Array.Empty<byte>() : this.LoadDocument(id),//content
                                 reader.GetString(7),//ocrcontent
-                                this.LoadDocumentPreview(id),//preview
+                                isHardDeleted ? Array.Empty<byte>() : this.LoadDocumentPreview(id),//preview
                                 reader.GetBoolean(8),//is soft deleted
                                 this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//delete is not allowed before
                                  this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)),//must be deleted after
@@ -557,6 +560,7 @@ namespace OpenDMSBackend.Core.Services
                                 reader.GetString(13)//userid
                             );
                             document.IsLatestVersion = reader.GetBoolean(4);//is latest version
+                            document.IsHardDeleted = isHardDeleted;
                             document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 14);
                             document.AISummaryLong = DBUtilities.GetNullableValue<string>(reader, 15);
                             return document;
@@ -612,7 +616,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void AssignTag(string documentId, string tagId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(AssignTag), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAssignTag();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TagId", tagId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />
@@ -789,7 +799,46 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void HardDelete(string containerOrContaineeId)
         {
-            throw new NotImplementedException();
+            if (this.IsDocument(containerOrContaineeId))
+            {
+                this.HardDeleteDocument(containerOrContaineeId);
+            }
+            else
+            {
+                //hard-deleting containers (folders/storage-locations) is a separate concern and not part of the regulated document-deletion (issue #11).
+                throw new NotImplementedException("Hard-deleting containers (folders/storage-locations) is not implemented; only documents can be hard-deleted.");
+            }
+        }
+
+        /// <summary>Hard-deletes a document: its binary-content and preview are removed from the file-system, its OCR-content and AI-summaries are cleared, its tags are unassigned and it is marked as hard-deleted. The metadata-row and version-entry are kept for traceability and no new version is created.</summary>
+        private void HardDeleteDocument(string documentId)
+        {
+            this.DeleteDocumentFiles(documentId);
+            this.RunTransaction(nameof(HardDeleteDocument), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptHardDeleteDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
+                command.ExecuteNonQuery();
+            }, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptUnassignAllTagsOfDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        private void DeleteDocumentFiles(string documentId)
+        {
+            string contentFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + documentId + ".content.dat");
+            string previewFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + documentId + ".preview.dat");
+            if (File.Exists(contentFilePath))
+            {
+                File.Delete(contentFilePath);
+            }
+            if (File.Exists(previewFilePath))
+            {
+                File.Delete(previewFilePath);
+            }
         }
 
         /// <inheritdoc />
@@ -926,8 +975,9 @@ namespace OpenDMSBackend.Core.Services
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    //select "Title", "Filename", "OriginalFilename", "ImportDate", "LastEditDate", "ReadableId", "MIMEType", "DocumentPreview","IsSoftDeleted","DeleteIsNotAllowedBefore","MustBeHardDeletedAfter","GroupOfBusinessOwner","Version", "AssignedLanguages","AddedByUserId"
-
+                    //select "Title", "Filename", "OriginalFilename", "ImportDate", "IsLatestVersion", "ReadableId", "MIMEType", "IsSoftDeleted","DeleteIsNotAllowedBefore","MustBeHardDeletedAfter","GroupOfBusinessOwner", "AssignedLanguages","AddedByUserId","AISummaryShort","IsHardDeleted"
+                    //a hard-deleted document has its preview removed from the file-system, so it is not loaded (it would no longer exist).
+                    bool isHardDeleted = reader.GetBoolean(14);
                     DocumentPreview document = new DocumentPreview(
                         id,//id
                         OneLineString.From(reader.GetString(0)),//title
@@ -937,7 +987,7 @@ namespace OpenDMSBackend.Core.Services
                         new HashSet<Tag>(),
                         (uint)reader.GetInt32(5),//readable id
                         OneLineString.From(reader.GetString(6)),//mimetype
-                        this.LoadDocumentPreview(id),
+                        isHardDeleted ? Array.Empty<byte>() : this.LoadDocumentPreview(id),
                         reader.GetBoolean(7),//isdeleted
                         this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 8)),//delete is not allowed before
                         this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//must be deleted after
@@ -946,6 +996,7 @@ namespace OpenDMSBackend.Core.Services
                         reader.GetString(12)//creator-user-is
                     );
                     document.IsLatestVersion = reader.GetBoolean(4);//is latest version
+                    document.IsHardDeleted = isHardDeleted;
                     document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 13);
                     //TODO load tags
                     return document;
@@ -1194,7 +1245,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void RemoveChild(string parentId, string childId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(RemoveChild), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptRemoveChild();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ParentId", parentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ChildId", childId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />
@@ -1424,7 +1481,19 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
-            throw new NotImplementedException();
+            return this.RunTransaction(nameof(GetIdsOfDocumentsWhichMustBeHardDeletedNow), true, (command) =>
+            {
+                List<string> result = new List<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Now", this.ToDateTime(this._TimeService.GetCurrentLocalTimeAsDateTimeOffset()), typeof(DateTime)));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(reader.GetString(0));
+                }
+                reader.Close();
+                return result;
+            })[0]!;
         }
 
         /// <inheritdoc />

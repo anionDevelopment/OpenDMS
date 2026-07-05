@@ -36,6 +36,7 @@ CREATE TABLE "Documents" (
     "OCRContent" text not null,
     "IsSoftDeleted" boolean not null,
     "IsLatestVersion" boolean not null,
+    "IsHardDeleted" boolean not null,
     "DeleteIsNotAllowedBefore" timestamp null,
     "MustBeHardDeletedAfter" timestamp null,
     "GroupOfBusinessOwner" varchar(255) not null,

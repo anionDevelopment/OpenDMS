@@ -374,5 +374,35 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("RenameStorageLocation");
         }
+
+        /// <inheritdoc />
+        public string GetScriptAssignTag()
+        {
+            return this.LoadSQLScript("AssignTag");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptHardDeleteDocument()
+        {
+            return this.LoadSQLScript("HardDeleteDocument");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptUnassignAllTagsOfDocument()
+        {
+            return this.LoadSQLScript("UnassignAllTagsOfDocument");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow()
+        {
+            return this.LoadSQLScript("GetIdsOfDocumentsWhichMustBeHardDeletedNow");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRemoveChild()
+        {
+            return this.LoadSQLScript("RemoveChild");
+        }
     }
 }

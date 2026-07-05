@@ -36,6 +36,7 @@ CREATE TABLE `Documents` (
     `OCRContent` longtext not null COLLATE utf8mb4_unicode_ci,
     `IsSoftDeleted` tinyint(1) not null,
     `IsLatestVersion` tinyint(1) not null,
+    `IsHardDeleted` tinyint(1) not null,
     `DeleteIsNotAllowedBefore` datetime(6) null,
     `MustBeHardDeletedAfter` datetime(6) null,
     `GroupOfBusinessOwner` varchar(255) not null,

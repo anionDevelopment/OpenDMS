@@ -250,8 +250,15 @@ namespace OpenDMSBackend.Core.Services
                 },
                 (documentId) =>
                 {
-                    //TODO remove all related stuff from _ContaineeContainerAssignments
-                    this._Documents.Remove(documentId);
+                    //hard-deleting a document does not remove its row: the binary-content and preview are cleared, the OCR-content and AI-summaries are cleared, the tags are unassigned and it is marked as hard-deleted. The row and version-entry are kept for traceability and no new version is created.
+                    Document document = this._Documents[documentId];
+                    document.Content = System.Array.Empty<byte>();
+                    document.Preview = System.Array.Empty<byte>();
+                    document.OCRContent = string.Empty;
+                    document.AISummaryShort = null;
+                    document.AISummaryLong = null;
+                    document.Tags.Clear();
+                    document.IsHardDeleted = true;
                 });
         }
 
@@ -647,9 +654,9 @@ namespace OpenDMSBackend.Core.Services
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
             DateTimeOffset now = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset();
-            //a document must be hard-deleted now exactly if it has a retention-deadline (MustBeHardDeletedAfter) which has been reached; documents without a deadline are never deleted automatically.
+            //a document must be hard-deleted now exactly if it has a retention-deadline (MustBeHardDeletedAfter) which has been reached and it is not already hard-deleted; documents without a deadline are never deleted automatically.
             return this._Documents
-                   .Where(doc => doc.Value.MustBeHardDeletedAfter != null && doc.Value.MustBeHardDeletedAfter.Value <= now)
+                   .Where(doc => !doc.Value.IsHardDeleted && doc.Value.MustBeHardDeletedAfter != null && doc.Value.MustBeHardDeletedAfter.Value <= now)
                    .Select(doc => doc.Value.Id)
                    .ToList();
         }
