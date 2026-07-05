@@ -85,6 +85,7 @@ namespace OpenDMSBackend.Core.Services
                 Document document = this.CreateAndPersistAnalysedDocument(requesterUserId, title, containerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
                 this.RegisterAsNewVersion(document, null);
                 this.GenerateAISummaryIfAutoGenerationIsEnabled(document);
+                this._AuditLog.Logger.Log($"Document '{document.Id}' (readable-id {document.ReadableId}) added to container '{containerId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
                 return document.Id;
             }
         }
@@ -139,7 +140,7 @@ namespace OpenDMSBackend.Core.Services
                 Document newVersion = this.CreateAndPersistAnalysedDocument(requesterUserId, title, parentContainerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
                 this.RegisterAsNewVersion(newVersion, oldDocumentId);
                 this.GenerateAISummaryIfAutoGenerationIsEnabled(newVersion);
-                this._AuditLog.Logger.Log($"New version '{newVersion.Id}' (version {newVersion.VersionNumber}) of document '{oldDocumentId}' uploaded.", Microsoft.Extensions.Logging.LogLevel.Information);
+                this._AuditLog.Logger.Log($"New version '{newVersion.Id}' (version {newVersion.VersionNumber}) of document '{oldDocumentId}' uploaded by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
                 return newVersion.Id;
             }
         }
@@ -286,6 +287,12 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
+        /// <summary>Describes the initiator of an operation for audit-log-entries. Operations without a requesting user are automatic system-operations (for example imports or the scheduled hard-deletion).</summary>
+        private static string DescribeRequester(string? requesterUserId)
+        {
+            return string.IsNullOrEmpty(requesterUserId) ? "an automatic system-operation" : $"user '{requesterUserId}'";
+        }
+
         /// <inheritdoc />
         public IList<DocumentPreview> Search(string requesterUserId, string searchTerm)
         {
@@ -312,7 +319,9 @@ namespace OpenDMSBackend.Core.Services
         {
             //creating a (globally usable) tag is allowed for any authenticated user.
             this.EnsureAuthenticated(requesterUserId);
-            this._Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(), tagName, tagColor));
+            Tag tag = new Tag(Guid.NewGuid().ToString(), tagName, tagColor);
+            this._Persistence.CreateTag(tag);
+            this._AuditLog.Logger.Log($"Tag '{tagName}' (id '{tag.Id}') created by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <summary>Assigns an existing tag to an existing document. The requesting user must be allowed to change the document.</summary>
@@ -323,6 +332,7 @@ namespace OpenDMSBackend.Core.Services
         {
             this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             this._Persistence.AssignTag(documentId, tagId);
+            this._AuditLog.Logger.Log($"Tag '{tagId}' assigned to document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <summary>Removes a tag assignment from an existing document. The requesting user must be allowed to change the document.</summary>
@@ -333,6 +343,7 @@ namespace OpenDMSBackend.Core.Services
         {
             this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             this._Persistence.UnassignTag(documentId, tagId);
+            this._AuditLog.Logger.Log($"Tag '{tagId}' unassigned from document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
@@ -415,6 +426,7 @@ namespace OpenDMSBackend.Core.Services
             {
                 //a metadata-change creates a new version whose content, OCR-content and AI-summary are copied from the current version (they are not recomputed).
                 this.CreateMetadataVersion(requesterUserId, documentId, newVersion => newVersion.Title = OneLineString.From(newTitle));
+                this._AuditLog.Logger.Log($"Title of document '{documentId}' changed to '{newTitle}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
             }
         }
 
@@ -463,6 +475,7 @@ namespace OpenDMSBackend.Core.Services
                 this._Persistence.SetParentOfContainee(newVersion, this._Persistence.GetParentIdOfContainee(updatedDocument.Id));
                 this.RegisterAsNewVersion(newVersion, updatedDocument.Id);
                 this.GenerateAISummaryIfAutoGenerationIsEnabled(newVersion);
+                this._AuditLog.Logger.Log($"Document '{updatedDocument.Id}' updated (new version '{newVersion.Id}', version {newVersion.VersionNumber}) by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
             }
         }
 
@@ -490,6 +503,7 @@ namespace OpenDMSBackend.Core.Services
             this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             Document document = this._Persistence.GetDocument(documentId);
             this.GenerateAndStoreAISummary(document);
+            this._AuditLog.Logger.Log($"AI-summary of document '{documentId}' (re)generated by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         private void GenerateAndStoreAISummary(Document document)
@@ -655,6 +669,7 @@ namespace OpenDMSBackend.Core.Services
         {
             this.EnsureUserIsAllowedToEditContent(requesterUserId, containerId);
             this._Persistence.Rename(containerId, newName);
+            this._AuditLog.Logger.Log($"Container '{containerId}' renamed to '{newName}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
@@ -663,6 +678,7 @@ namespace OpenDMSBackend.Core.Services
             //only an administrator or the owner of the storage-location may manage who it is shared with.
             this.EnsureUserIsAllowedToEditContent(requesterUserId, storageLocationId);
             this._Persistence.AuthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
+            this._AuditLog.Logger.Log($"Storage-location '{storageLocationId}' shared for viewing with user '{sharedWithUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
@@ -671,6 +687,7 @@ namespace OpenDMSBackend.Core.Services
             //only an administrator or the owner of the storage-location may manage who it is shared with.
             this.EnsureUserIsAllowedToEditContent(requesterUserId, storageLocationId);
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
+            this._AuditLog.Logger.Log($"View-permission for storage-location '{storageLocationId}' revoked from user '{sharedWithUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
@@ -694,7 +711,7 @@ namespace OpenDMSBackend.Core.Services
                 Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId, reason), (folderId) => this.RemoveEntireContent(requesterUserId, folderId, reason), null);
 
                 this._Persistence.HardDelete(containerOrContaineeId);
-                this._AuditLog.Logger.Log($"Hard-deleted {containerOrContaineeId}. Reason: {reason}");
+                this._AuditLog.Logger.Log($"Hard-deleted '{containerOrContaineeId}' by {DescribeRequester(requesterUserId)}. Reason: {reason}");
             }
             catch (Exception exception)
             {
@@ -717,7 +734,7 @@ namespace OpenDMSBackend.Core.Services
                 (folderId) => this.SoftDeleteEntireContent(requesterUserId, folderId, reason),
                 (documentId) => this._Persistence.SoftDelete(documentId));
 
-            this._AuditLog.Logger.Log($"Soft-deleted {containerOrContaineeId}. Reason: {reason}");
+            this._AuditLog.Logger.Log($"Soft-deleted '{containerOrContaineeId}' by {DescribeRequester(requesterUserId)}. Reason: {reason}");
         }
 
         private void SoftDeleteEntireContent(string? requesterUserId, string containerId, string reason)
@@ -737,6 +754,7 @@ namespace OpenDMSBackend.Core.Services
             this.EnsureUserIsAllowedToEditContent(requesterUserId, targetContainerId);
             //TODO remove containeeToMove from previous parent
             this._Persistence.SetParentOfContainee(this.GetContainee(containeeIdToMove), targetContainerId);
+            this._AuditLog.Logger.Log($"Containee '{containeeIdToMove}' moved into container '{targetContainerId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         private IContainee GetContainee(string containeeId)

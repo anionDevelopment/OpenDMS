@@ -32,7 +32,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 
 - ❌ [Ensure immutability of archived documents (WORM principle: once captured, content can no longer be overwritten).](https://github.com/anionDevelopment/OpenDMS/issues/4)
 - ✅ Maintain a version history (upload a new version of a document; the new version is stored as a regular, immutable document and linked to the old one, which is hidden from the normal listings but remains retrievable via the version-history).
-- ❌ [Log all changes completely (who, when, what - including rename, move, update and metadata changes). Currently only partial (only add and hard-delete are logged, many operations are not).](https://github.com/anionDevelopment/OpenDMS/issues/5)
+- ✅ Log all changes completely (who, when, what): every change-operation (add, update, title- and metadata-changes, tag changes, version-upload, rename, move, storage-location sharing, soft- and hard-delete) writes an audit-log-entry recording the acting user (or that it was an automatic system-operation) and the affected object.
 - ❌ [Provide a tamper-proof audit log (the log itself must be immutable and protected against subsequent modification).](https://github.com/anionDevelopment/OpenDMS/issues/6)
 - ✅ Record the immutable capture timestamp of every document (`ImportDate`).
 - ✅ Store documents unchanged in their original format (`Content`, `OriginalFilename` and `MIMEType`).
