@@ -7,6 +7,7 @@ using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.ExecutePrograms;
 using GRYLibrary.Core.ExecutePrograms.WaitingStates;
 using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Misc.Strings;
 using Microsoft.ClearScript.V8;
 using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
@@ -79,10 +80,6 @@ namespace OpenDMSBackend.Core.BackgroundServices
             }
         }
 
-        private void RunAdaptScript(Model.BusinessTypes.Document document)
-        {
-        }
-
         internal void ImportNewDocuments()
         {
             foreach (Configuration.ImportDefinition importDefinition in this._PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ImportDefinitions)
@@ -98,7 +95,16 @@ namespace OpenDMSBackend.Core.BackgroundServices
                         try
                         {
                             //the imported document has no requesting user; the AI-analysis, preview-generation and parent-assignment is done by the business-logic-service.
-                            this._BusinessLogicService.AddDocument(null, null, importDefinition.TargetFolderId, externalFile.Name, externalFile.Content, CodeUnitSpecificConstants.RolenameUsers, this.GetDefaultOCRLanguages());
+                            string documentId = this._BusinessLogicService.AddDocument(null, null, importDefinition.TargetFolderId, externalFile.Name, externalFile.Content, CodeUnitSpecificConstants.RolenameUsers, this.GetDefaultOCRLanguages());
+                            try
+                            {
+                                //run the optional TypeScript adapt-script to let the import-definition mutate the metadata of the just-imported document.
+                                this.ApplyAdaptScript(importDefinition, documentId);
+                            }
+                            catch
+                            {
+                                //TODO log adapt-script-exception; the document is kept with its default metadata on purpose so that the import is not retried endlessly for a broken script.
+                            }
                             //remove the file from the import-source so that it is not imported again on the next iteration.
                             File.Delete(externalFile.SourcePath);
                         }
@@ -121,44 +127,84 @@ namespace OpenDMSBackend.Core.BackgroundServices
             return defaultOCRLanguages == null ? new HashSet<string>() : new HashSet<string>(defaultOCRLanguages);
         }
 
-        /// <summary>Runs the TypeScript adapt-script defined in the import definition to mutate document metadata.</summary>
-        /// <param name="importDefinition">The import definition that optionally carries a TypeScript script body.</param>
-        /// <param name="document">The document whose metadata will be modified by the script.</param>
-        public void RunAdaptScript(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition, Model.BusinessTypes.Document document)
+        /// <summary>Loads the just-imported document, runs the import-definition's TypeScript adapt-script against it and persists the resulting metadata-changes (scalar metadata via <see cref="IPersistence.Update"/> and the assigned tags via <see cref="IPersistence.AssignTag"/>).</summary>
+        /// <param name="importDefinition">The import-definition that optionally carries a TypeScript script-body.</param>
+        /// <param name="documentId">The id of the freshly imported document whose metadata should be adapted.</param>
+        private void ApplyAdaptScript(Configuration.ImportDefinition importDefinition, string documentId)
         {
-            if (importDefinition.AdaptDocumentScriptBody != null)
+            if (importDefinition.AdaptDocumentScriptBody == null)
             {
-                string[] scriptTemplateLines = "\n".Split(this._GeneralResourceLoader.GetResourceAsString("Typescript/AdaptDocument.ts"));
-                List<string> entireScriptLines = new List<string>();
-                foreach (string line in scriptTemplateLines)
+                return;
+            }
+            Document document = this._Persistence.GetDocument(documentId);
+            ISet<string> alreadyAssignedTagIds = document.Tags.Select(tag => tag.Id).ToHashSet();
+            ISet<string> resolvedTagIds = this.RunAdaptScript(importDefinition, document);
+            this._Persistence.Update(document.AddedByUserId ?? CodeUnitSpecificConstants.RolenameUsers, document);
+            foreach (string tagId in resolvedTagIds.Where(tagId => !alreadyAssignedTagIds.Contains(tagId)))
+            {
+                this._Persistence.AssignTag(documentId, tagId);
+            }
+        }
+
+        /// <summary>Runs the TypeScript adapt-script defined in the import-definition to mutate the given document's scalar metadata (title, filename, retention-dates and business-owner-group) in-memory.</summary>
+        /// <param name="importDefinition">The import-definition that optionally carries a TypeScript script-body.</param>
+        /// <param name="document">The document whose scalar metadata will be modified in-memory by the script.</param>
+        /// <returns>The ids of the tags the script assigned to the document (to be persisted by the caller); empty if no script is defined or the script assigned no tags.</returns>
+        public ISet<string> RunAdaptScript(OpenDMSBackend.Core.Configuration.ImportDefinition importDefinition, Model.BusinessTypes.Document document)
+        {
+            if (importDefinition.AdaptDocumentScriptBody == null)
+            {
+                return new HashSet<string>();
+            }
+            string[] scriptTemplateLines = this._GeneralResourceLoader.GetResourceAsString("Typescript.AdaptDocument.ts").Replace("\r\n", "\n").Split('\n');
+            List<string> entireScriptLines = new List<string>();
+            foreach (string line in scriptTemplateLines)
+            {
+                if (line.Contains("<custom-script>"))
                 {
-                    if (line.Contains("<custom-script>"))
+                    entireScriptLines.AddRange(importDefinition.AdaptDocumentScriptBody.Replace("\r\n", "\n").Split('\n'));
+                }
+                else if (line.Contains("<tag-definitions>"))
+                {
+                    foreach (Model.DTOs.TagDTO tag in this._Persistence.GetAllTags())
                     {
-                        entireScriptLines.AddRange(importDefinition.AdaptDocumentScriptBody.Split("\n"));
-                    }
-                    else if (line.Contains("<tag-definitions>"))
-                    {
-                        foreach (Model.DTOs.TagDTO tag in this._Persistence.GetAllTags())
-                        {
-                            entireScriptLines.Add($"if(name==\"{tag}\"){{return new Tag(\"{tag.Id}\", \"{tag.Name}\");}}");//TODO escape literals
-                        }
-                    }
-                    else
-                    {
-                        entireScriptLines.Add(line);
+                        entireScriptLines.Add($"if (name === {this.ToTSStringLiteral(tag.Name)}) {{ return new Tag({this.ToTSStringLiteral(tag.Id)}, {this.ToTSStringLiteral(tag.Name)}); }}");
                     }
                 }
-                entireScriptLines.AddRange(this.GetScriptPart4(document));
-                string typeScript = string.Join("\n", entireScriptLines);
-                string javaScript = this.ConvertTypeScriptToJavaScript(typeScript);
-                using V8ScriptEngine engine = new V8ScriptEngine();
-                engine.Execute(javaScript);
-                dynamic result = engine.Script.document;
-                document.Title = result.title;
-                document.DeleteIsNotAllowedBefore = result.DeleteIsNotAllowedBefore;
-                document.MustBeHardDeletedAfter = result.MustBeHardDeletedAfter;
-                document.GroupOfBusinessOwner = result.GroupOfBusinessOwner;
+                else
+                {
+                    entireScriptLines.Add(line);
+                }
             }
+            entireScriptLines.AddRange(this.GetScriptEpilogue(document));
+            string typeScript = string.Join("\n", entireScriptLines);
+            string javaScript = this.ConvertTypeScriptToJavaScript(typeScript);
+            using V8ScriptEngine engine = new V8ScriptEngine();
+            engine.Execute(javaScript);
+            document.Title = OneLineString.From((string)engine.Script.__title);
+            document.Filename = OneLineString.From((string)engine.Script.__filename);
+            document.GroupOfBusinessOwner = (string)engine.Script.__groupOfBusinessOwner;
+            document.DeleteIsNotAllowedBefore = this.ParseNullableDateTime(engine.Script.__deleteIsNotAllowedBefore);
+            document.MustBeHardDeletedAfter = this.ParseNullableDateTime(engine.Script.__mustBeHardDeletedAfter);
+            return this.ParseTagIds((string)engine.Script.__tagIds);
+        }
+
+        private ISet<string> ParseTagIds(string commaSeparatedTagIds)
+        {
+            if (string.IsNullOrEmpty(commaSeparatedTagIds))
+            {
+                return new HashSet<string>();
+            }
+            return commaSeparatedTagIds.Split(',').Where(tagId => !string.IsNullOrEmpty(tagId)).ToHashSet();
+        }
+
+        private DateTimeOffset? ParseNullableDateTime(object? value)
+        {
+            if (value == null || value is Microsoft.ClearScript.Undefined)
+            {
+                return null;
+            }
+            return DateTimeOffset.Parse((string)value, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind);
         }
 
         private string ConvertTypeScriptToJavaScript(string typeScript)
@@ -169,10 +215,13 @@ namespace OpenDMSBackend.Core.BackgroundServices
             {
                 string tsScriptFile = Path.Combine(tempPath, "script.ts");
                 string jsScriptFile = Path.Combine(tempPath, "script.js");
+                string tsConfigFile = Path.Combine(tempPath, "tsconfig.json");
                 GRYLibrary.Core.Misc.Utilities.EnsureFileExists(tsScriptFile);
                 File.WriteAllText(tsScriptFile, typeScript);
+                //compile in an isolated project-context: a DOM-free standard-library so that the generated 'Document'-class and 'document'-variable do not collide with the built-in DOM-declarations, and empty type-roots so that no unrelated @types-packages from the surrounding file-system are picked up.
+                File.WriteAllText(tsConfigFile, this.GetTSConfigContent());
 
-                this.RunTSC($"\"{tsScriptFile}\" --outFile \"{jsScriptFile}\"");
+                this.RunTSC("--project \"tsconfig.json\"", tempPath);
 
                 return File.ReadAllText(jsScriptFile);
             }
@@ -182,7 +231,24 @@ namespace OpenDMSBackend.Core.BackgroundServices
             }
         }
 
-        private void RunTSC(string args)
+        private string GetTSConfigContent()
+        {
+            return @"{
+  ""compilerOptions"": {
+    ""target"": ""ES2020"",
+    ""lib"": [""ES2020""],
+    ""module"": ""none"",
+    ""outDir"": ""."",
+    ""types"": [],
+    ""typeRoots"": [],
+    ""skipLibCheck"": true,
+    ""noEmitOnError"": false
+  },
+  ""files"": [""script.ts""]
+}";
+        }
+
+        private void RunTSC(string args, string workingDirectory)
         {
             bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
@@ -204,6 +270,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
             {
                 Program = fileName,
                 Argument = arguments,
+                WorkingDirectory = workingDirectory,
                 WaitingState = new RunSynchronously(),
             });
             e.Run();
@@ -213,11 +280,18 @@ namespace OpenDMSBackend.Core.BackgroundServices
             }
         }
 
-        private List<string> GetScriptPart4(Document document)
+        private List<string> GetScriptEpilogue(Document document)
         {
             List<string> result = new List<string>();
-
-            result.Add($@"const document = new Document({this.ToTSStringLiteral(document.Id)}, {this.ToTSStringLiteral(document.Title.Value)}, {this.ToTSStringLiteral(document.Filename.Value)}, {this.ToTSStringLiteral(document.OriginalFilename.Value)}, {this.ToTSDateTimeLiteral(document.ImportDate)},{this.ToTSTagList(document.Tags)}, {this.ToTSIntLiteral(document.ReadableId)}, {this.ToTSStringLiteral(document.MIMEType.Value)}, {this.ToTSStringLiteral(document.OCRContent)}, {this.ToTSDateTimeLiteral(document.DeleteIsNotAllowedBefore)}, {this.ToTSDateTimeLiteral(document.MustBeHardDeletedAfter)}, {this.ToTSStringLiteral(document.GroupOfBusinessOwner)}, {this.ToTSStringLiteral(document.AddedByUserId)});new Runner(new Tools(document)).adapt();");
+            //instantiate the document with its current values, let the script adapt it and expose the (possibly changed) values as primitive global variables so that they can be read back reliably from C#.
+            result.Add($"var document = new Document({this.ToTSStringLiteral(document.Id)}, {this.ToTSStringLiteral(document.Title.Value)}, {this.ToTSStringLiteral(document.Filename.Value)}, {this.ToTSStringLiteral(document.OriginalFilename.Value)}, {this.ToTSDateTimeLiteral(document.ImportDate)}, {this.ToTSTagList(document.Tags)}, {this.ToTSIntLiteral(document.ReadableId)}, {this.ToTSStringLiteral(document.MIMEType.Value)}, {this.ToTSStringLiteral(document.OCRContent ?? string.Empty)}, {this.ToTSDateTimeLiteral(document.DeleteIsNotAllowedBefore)}, {this.ToTSDateTimeLiteral(document.MustBeHardDeletedAfter)}, {this.ToTSStringLiteral(document.GroupOfBusinessOwner)}, {this.ToTSStringLiteral(document.AddedByUserId ?? string.Empty)});");
+            result.Add("new Runner(new Tools()).adapt(document);");
+            result.Add("var __title = document.Title;");
+            result.Add("var __filename = document.Filename;");
+            result.Add("var __groupOfBusinessOwner = document.GroupOfBusinessOwner;");
+            result.Add("var __deleteIsNotAllowedBefore = (document.DeleteIsNotAllowedBefore === null || document.DeleteIsNotAllowedBefore === undefined) ? null : document.DeleteIsNotAllowedBefore.toISOString();");
+            result.Add("var __mustBeHardDeletedAfter = (document.MustBeHardDeletedAfter === null || document.MustBeHardDeletedAfter === undefined) ? null : document.MustBeHardDeletedAfter.toISOString();");
+            result.Add("var __tagIds = document.Tags.map(function (tag) { return tag.Id; }).join(\",\");");
             return result;
         }
 
@@ -245,7 +319,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
 
         private string ToTSStringLiteral(string value)
         {
-            string escaped = value.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n");
+            string escaped = value.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n");
             return $"\"{escaped}\"";
         }
 
