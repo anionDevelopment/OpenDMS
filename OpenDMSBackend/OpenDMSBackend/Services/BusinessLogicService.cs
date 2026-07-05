@@ -75,6 +75,11 @@ namespace OpenDMSBackend.Core.Services
         /// <returns>The id of the newly created document.</returns>
         public string AddDocument(string? requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
+            //adding a document changes the target-container, so the requesting user must be allowed to change it. Automatic imports (see issue #11 / ManagementService) pass no requesting user and are always allowed.
+            if (requesterUserId != null)
+            {
+                this.EnsureUserIsAllowedToEditContent(requesterUserId, containerId);
+            }
             lock (_LockObject)
             {
                 Document document = this.CreateAndPersistAnalysedDocument(requesterUserId, title, containerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
@@ -123,7 +128,11 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public string UploadNewVersion(string? requesterUserId, string oldDocumentId, string? title, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
-            //TODO check permission
+            //uploading a new version changes the existing document, so the requesting user must be allowed to change it. Automatic imports pass no requesting user and are always allowed.
+            if (requesterUserId != null)
+            {
+                this.EnsureUserIsAllowedToEditContent(requesterUserId, oldDocumentId);
+            }
             lock (_LockObject)
             {
                 string parentContainerId = this._Persistence.GetParentIdOfContainee(oldDocumentId);
@@ -225,9 +234,56 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public bool UserIsAllowedToEditContent(string userId, string documentId)
+        public bool UserIsAllowedToEditContent(string userId, string contentId)
         {
-            throw new NotImplementedException();
+            return Core.Misc.Utilities.DoForContentObject(this._Persistence, contentId,
+                (storageLocationId) => this.UserIsAllowedToEditStorageLocation(userId, storageLocationId),
+                (folderId) => this.UserIsAllowedToEditFolder(userId, folderId),
+                (documentId) => this.UserIsAllowedToEditDocument(userId, documentId)
+            );
+        }
+
+        /// <summary>Determines whether the given user may change the given storage-location and its contents. In contrast to merely viewing it, a storage-location may only be changed by an administrator or its owner; users it was only shared with (view-permission) may not change it.</summary>
+        private bool UserIsAllowedToEditStorageLocation(string userId, string storageLocationId)
+        {
+            if (this.UserIsAdministrator(userId))
+            {
+                return true;
+            }
+            if (this._Persistence.UserIsOwnerOfStorageLocation(userId, storageLocationId))
+            {
+                return true;
+            }
+            //add more possibilities if desired
+            return false;
+        }
+
+        private bool UserIsAllowedToEditFolder(string userId, string folderId)
+        {
+            return this.UserIsAllowedToEditStorageLocation(userId, this._Persistence.GetIdOfStorageLocationContainedIn(folderId));
+        }
+
+        private bool UserIsAllowedToEditDocument(string userId, string documentId)
+        {
+            return this.UserIsAllowedToEditStorageLocation(userId, this._Persistence.GetIdOfStorageLocationContainedIn(documentId));
+        }
+
+        /// <summary>Ensures the given user is allowed to change the given content and throws a <see cref="NotAuthorizedException"/> otherwise.</summary>
+        private void EnsureUserIsAllowedToEditContent(string requesterUserId, string contentId)
+        {
+            if (!this.UserIsAllowedToEditContent(requesterUserId, contentId))
+            {
+                throw new NotAuthorizedException($"No permission to change '{contentId}'.");
+            }
+        }
+
+        /// <summary>Ensures the operation is performed by an authenticated user and throws a <see cref="NotAuthorizedException"/> otherwise.</summary>
+        private void EnsureAuthenticated(string? requesterUserId)
+        {
+            if (string.IsNullOrEmpty(requesterUserId))
+            {
+                throw new NotAuthorizedException("This operation requires an authenticated user.");
+            }
         }
 
         /// <inheritdoc />
@@ -252,27 +308,30 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public void CreateTag(string tagName, ExtendedColor tagColor)
+        public void CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor)
         {
-            //TODO do permission check
+            //creating a (globally usable) tag is allowed for any authenticated user.
+            this.EnsureAuthenticated(requesterUserId);
             this._Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(), tagName, tagColor));
         }
 
-        /// <summary>Assigns an existing tag to an existing document.</summary>
+        /// <summary>Assigns an existing tag to an existing document. The requesting user must be allowed to change the document.</summary>
+        /// <param name="requesterUserId">The id of the user performing the operation.</param>
         /// <param name="documentId">The id of the document.</param>
         /// <param name="tagId">The id of the tag to assign.</param>
-        public void AssignTag(string documentId, string tagId)
+        public void AssignTag(string requesterUserId, string documentId, string tagId)
         {
-            //TODO do permission check
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             this._Persistence.AssignTag(documentId, tagId);
         }
 
-        /// <summary>Removes a tag assignment from an existing document.</summary>
+        /// <summary>Removes a tag assignment from an existing document. The requesting user must be allowed to change the document.</summary>
+        /// <param name="requesterUserId">The id of the user performing the operation.</param>
         /// <param name="documentId">The id of the document.</param>
         /// <param name="tagId">The id of the tag to unassign.</param>
-        public void UnassignTag(string documentId, string tagId)
+        public void UnassignTag(string requesterUserId, string documentId, string tagId)
         {
-            //TODO do permission check
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             this._Persistence.UnassignTag(documentId, tagId);
         }
 
@@ -362,7 +421,7 @@ namespace OpenDMSBackend.Core.Services
         /// <summary>Creates a new version of the given document in which only metadata is changed (via <paramref name="mutate"/>). Content, preview, OCR-content and AI-summary are copied unchanged from the current version.</summary>
         private void CreateMetadataVersion(string requesterUserId, string currentDocumentId, Action<Document> mutate)
         {
-            //TODO check permission
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, currentDocumentId);
             Document current = this._Persistence.GetDocument(currentDocumentId);
             Document newVersion = new Document(Guid.NewGuid().ToString(), current.Title, current.Filename, current.OriginalFilename, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(current.Tags), current.MIMEType, current.Content, current.OCRContent, current.Preview, current.IsSoftDeleted, current.DeleteIsNotAllowedBefore, current.MustBeHardDeletedAfter, current.GroupOfBusinessOwner, new HashSet<string>(current.AssignedLanguages), current.AddedByUserId)
             {
@@ -379,7 +438,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void Update(string requesterUserId, Document updatedDocument)
         {
-            //TODO check permission (remember: a user can change the name, the content, etc. dependent on his permissions, but only if the user is in GroupOfBusinessOwner he is allowed to do a hard-delete or to change the DeleteIsNotAllowedBefore- or MustBeHardDeletedAfter-value.)
+            //the requesting user must be allowed to change the document. (Future refinement: only members of the GroupOfBusinessOwner may change the retention-dates DeleteIsNotAllowedBefore/MustBeHardDeletedAfter or hard-delete; see issue #13.)
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, updatedDocument.Id);
             //TODO check validity, for example: content must not be null, DeleteIsNotAllowedBefore must be lower or equal to MustBeHardDeletedAfter, etc.
             lock (_LockObject)
             {
@@ -427,7 +487,7 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void GenerateAISummary(string requesterUserId, string documentId)
         {
-            //TODO check permission
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             Document document = this._Persistence.GetDocument(documentId);
             this.GenerateAndStoreAISummary(document);
         }
@@ -571,7 +631,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public string AddStorageLocation(string requesterUserId, string name)
         {
-            //TODO check permission
+            //any authenticated user may create a storage-location; the creator becomes its owner.
+            this.EnsureAuthenticated(requesterUserId);
             string id = this._Persistence.AddStoragLocation(name);
             this._Persistence.SetOwnerOfStorageLocation(id, requesterUserId);
             this._AuditLog.Logger.Log($"Storage-location '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
@@ -581,7 +642,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public string AddFolder(string requesterUserId, string name, string parentContainerId)
         {
-            //TODO check permission
+            //adding a folder changes the parent-container, so the user must be allowed to change it.
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, parentContainerId);
             string id = this._Persistence.AddFolder(name);
             this._Persistence.SetParentOfContainee(this.GetContainee(id), parentContainerId);
             this._AuditLog.Logger.Log($"Folder '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
@@ -591,28 +653,34 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void Rename(string requesterUserId, string containerId, string newName)
         {
-            //TODO check permission
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, containerId);
             this._Persistence.Rename(containerId, newName);
         }
 
         /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
-            //TODO check permission
+            //only an administrator or the owner of the storage-location may manage who it is shared with.
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, storageLocationId);
             this._Persistence.AuthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
         /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
-            //TODO check permission
+            //only an administrator or the owner of the storage-location may manage who it is shared with.
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, storageLocationId);
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
         }
 
         /// <inheritdoc />
         public void HardDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
-            //TODO check permission
+            //when a user triggers the deletion, verify they may change the content. Automatic housekeeping (see issue #11) passes no requesting user and is always allowed. The check is done outside of the try-block on purpose so that a permission-error is reported to the caller instead of being swallowed by the error-logging.
+            if (requesterUserId != null)
+            {
+                this.EnsureUserIsAllowedToEditContent(requesterUserId, containerOrContaineeId);
+            }
             try
             {
                 //remove from parent container. A hard-deleted document keeps its place in the containment-tree (its row is kept for traceability and it is only hidden from the listings), so only containers (folders/storage-locations) are unlinked from their parent.
@@ -637,7 +705,11 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
-            //TODO check permission
+            //when a user triggers the soft-deletion, verify they may change the content. Automatic operations pass no requesting user and are always allowed.
+            if (requesterUserId != null)
+            {
+                this.EnsureUserIsAllowedToEditContent(requesterUserId, containerOrContaineeId);
+            }
 
             //mark content as soft-deleted (documents are only marked, containers are handled recursively)
             Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId,
@@ -660,7 +732,9 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)
         {
-            //TODO check permission
+            //moving requires the permission to change both the moved containee (its current location) and the target-container it is moved into.
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, containeeIdToMove);
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, targetContainerId);
             //TODO remove containeeToMove from previous parent
             this._Persistence.SetParentOfContainee(this.GetContainee(containeeIdToMove), targetContainerId);
         }
