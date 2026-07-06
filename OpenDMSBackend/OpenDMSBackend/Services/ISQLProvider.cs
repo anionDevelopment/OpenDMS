@@ -63,6 +63,8 @@
         string GetScriptGetDirectlyInheritedRoleIds();
         string GetScriptRenameFolder();
         string GetScriptRenameStorageLocation();
+        string GetScriptGetAllUsers();
+        string GetScriptRemoveRoleFromUser();
         string GetScriptAssignTag();
         string GetScriptHardDeleteDocument();
         string GetScriptUnassignAllTagsOfDocument();

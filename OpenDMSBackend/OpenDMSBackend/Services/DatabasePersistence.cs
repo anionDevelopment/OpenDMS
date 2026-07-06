@@ -168,7 +168,33 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public IDictionary<string, User> GetAllUsers()
         {
-            throw new NotImplementedException();
+            List<User> users = this.RunTransaction(nameof(GetAllUsers), true, (cmd) =>
+            {
+                List<User> result = new List<User>();
+                cmd.CommandText = this._SQLProvider.GetScriptGetAllUsers();
+                using DbDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    User user = new User();
+                    user.Id = reader.GetString(0);
+                    user.Name = reader.GetString(1);
+                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
+                    user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
+                    user.UserIsActivated = reader.GetBoolean(4);
+                    user.UserIsLocked = reader.GetBoolean(5);
+                    user.RegistrationMoment = reader.GetDateTime(6);
+                    result.Add(user);
+                }
+                reader.Close();
+                return result;
+            })[0]!;
+            Dictionary<string, User> usersById = new Dictionary<string, User>();
+            foreach (User user in users)
+            {
+                this.EnrichWithRoles(user);
+                usersById[user.Id] = user;
+            }
+            return usersById;
         }
 
         /// <inheritdoc />
@@ -466,7 +492,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void RemoveRoleFromUser(string userId, string roleId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(RemoveRoleFromUser), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptRemoveRoleFromUser();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", roleId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />

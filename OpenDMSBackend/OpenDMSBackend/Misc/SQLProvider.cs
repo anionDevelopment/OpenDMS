@@ -376,6 +376,18 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptGetAllUsers()
+        {
+            return this.LoadSQLScript("GetAllUsers");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRemoveRoleFromUser()
+        {
+            return this.LoadSQLScript("RemoveRoleFromUser");
+        }
+
+        /// <inheritdoc />
         public string GetScriptAssignTag()
         {
             return this.LoadSQLScript("AssignTag");

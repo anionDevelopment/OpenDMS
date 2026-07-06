@@ -13,6 +13,9 @@ namespace OpenDMSBackend.Core.Services
         public string Register(string username, string password);
         public bool UserWithNameExists(string username);
         public bool UserIsAdministrator(string userId);
+        public System.Collections.Generic.IEnumerable<UserOverviewDTO> GetAllUsersWithRoles(string requesterUserId);
+        public System.Collections.Generic.IEnumerable<string> GetAllRoleNames(string requesterUserId);
+        public void SetRolesOfUser(string requesterUserId, string targetUserId, System.Collections.Generic.ISet<string> roleNames);
         public User GetUser(string userId);
         public AccessToken Login(string username, string password);
         #endregion

@@ -293,6 +293,15 @@ namespace OpenDMSBackend.Core.Services
             return string.IsNullOrEmpty(requesterUserId) ? "an automatic system-operation" : $"user '{requesterUserId}'";
         }
 
+        /// <summary>Ensures the given user has administrator-privileges and throws a <see cref="NotAuthorizedException"/> otherwise.</summary>
+        private void EnsureAdministrator(string requesterUserId)
+        {
+            if (!this.UserIsAdministrator(requesterUserId))
+            {
+                throw new NotAuthorizedException("This operation requires administrator-privileges.");
+            }
+        }
+
         /// <inheritdoc />
         public IList<DocumentPreview> Search(string requesterUserId, string searchTerm)
         {
@@ -770,6 +779,49 @@ namespace OpenDMSBackend.Core.Services
         public bool UserIsAdministrator(string userId)
         {
             return this._AuthenticationService.GetUser(userId).GetAllRoles().Where(role => role.Name == CodeUnitSpecificConstants.RolenameAdmins).Any();
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<UserOverviewDTO> GetAllUsersWithRoles(string requesterUserId)
+        {
+            this.EnsureAdministrator(requesterUserId);
+            ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> allRoles = this._Persistence.GetAllRoles();
+            List<UserOverviewDTO> result = new List<UserOverviewDTO>();
+            foreach (Model.BusinessTypes.User user in this._Persistence.GetAllUsers().Values)
+            {
+                ISet<string> roleNames = allRoles.Where(role => this._Persistence.UserHasRole(user.Id, role.Id)).Select(role => role.Name).ToHashSet();
+                result.Add(new UserOverviewDTO(user.Id, user.Name, roleNames));
+            }
+            return result;
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<string> GetAllRoleNames(string requesterUserId)
+        {
+            this.EnsureAdministrator(requesterUserId);
+            return this._Persistence.GetAllRoles().Select(role => role.Name).ToList();
+        }
+
+        /// <inheritdoc />
+        public void SetRolesOfUser(string requesterUserId, string targetUserId, ISet<string> roleNames)
+        {
+            this.EnsureAdministrator(requesterUserId);
+            //resolve the requested role-names to roles first (GetRoleByName throws for an unknown role-name, so invalid input is rejected before any change is made).
+            ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> targetRoles = roleNames.Select(this._Persistence.GetRoleByName).ToHashSet();
+            foreach (GRYLibrary.Core.APIServer.CommonDBTypes.Role role in this._Persistence.GetAllRoles())
+            {
+                bool shouldHaveRole = targetRoles.Any(targetRole => targetRole.Id == role.Id);
+                bool hasRole = this._Persistence.UserHasRole(targetUserId, role.Id);
+                if (shouldHaveRole && !hasRole)
+                {
+                    this._Persistence.AddRoleToUser(targetUserId, role.Id);
+                }
+                else if (!shouldHaveRole && hasRole)
+                {
+                    this._Persistence.RemoveRoleFromUser(targetUserId, role.Id);
+                }
+            }
+            this._AuditLog.Logger.Log($"Roles of user '{targetUserId}' set to [{string.Join(", ", roleNames)}] by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
