@@ -7,3 +7,4 @@ export * from './storageLocationDTO';
 export * from './stringValueDTO';
 export * from './tagDTO';
 export * from './userInformationDTO';
+export * from './userOverviewDTO';

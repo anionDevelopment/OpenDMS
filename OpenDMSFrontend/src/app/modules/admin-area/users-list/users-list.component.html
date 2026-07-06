@@ -1,5 +1,21 @@
 <app-frame-work>
   <app-admin-area-container>
-    <span i18n="@@users">users</span>
+    <h2 i18n="@@users">Users</h2>
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th i18n="@@users_col_name">Name</th>
+          <th *ngFor="let role of allRoles">{{role}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{user.name}}</td>
+          <td *ngFor="let role of allRoles" class="role-cell">
+            <input type="checkbox" [checked]="userHasRole(user, role)" (change)="onRoleToggled(user, role, $any($event.target).checked)">
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </app-admin-area-container>
 </app-frame-work>
