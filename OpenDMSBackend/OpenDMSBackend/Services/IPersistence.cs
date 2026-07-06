@@ -81,10 +81,20 @@ namespace OpenDMSBackend.Core.Services
         /// <returns>The id of the newly created storage location.</returns>
         public string AddStoragLocation(string name);
 
-        /// <summary>Sets the owner of the specified storage location to the specified user.</summary>
-        /// <param name="storageLocationId">The id of the storage location.</param>
-        /// <param name="userId">The id of the user who should become the owner.</param>
+        /// <summary>Adds the specified user as a moderator ("owner") of the specified content-object (storage-location, folder or document). A content-object can have several moderators.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <param name="userId">The id of the user who should become a moderator.</param>
         public void SetOwnerOfStorageLocation(string storageLocationId, string userId);
+
+        /// <summary>Returns the ids of all users which are moderators ("owners") of the specified content-object.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <returns>The ids of the moderators; empty if none.</returns>
+        public System.Collections.Generic.ISet<string> GetOwnersOfStorageLocation(string storageLocationId);
+
+        /// <summary>Removes the specified user from the moderators ("owners") of the specified content-object.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <param name="userId">The id of the user to remove from the moderators.</param>
+        public void RemoveOwnerOfStorageLocation(string storageLocationId, string userId);
 
         /// <summary>Creates a new folder with the given name and returns its generated id.</summary>
         /// <param name="name">The display name of the new folder.</param>

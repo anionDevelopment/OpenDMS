@@ -388,6 +388,18 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptGetOwnersOfStorageLocation()
+        {
+            return this.LoadSQLScript("GetOwnersOfStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRemoveOwnerOfStorageLocation()
+        {
+            return this.LoadSQLScript("RemoveOwnerOfStorageLocation");
+        }
+
+        /// <inheritdoc />
         public string GetScriptStorageLocationIsSharedWithUser()
         {
             return this.LoadSQLScript("StorageLocationIsSharedWithUser");

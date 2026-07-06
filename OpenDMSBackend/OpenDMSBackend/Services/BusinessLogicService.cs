@@ -237,36 +237,7 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool UserIsAllowedToEditContent(string userId, string contentId)
         {
-            return Core.Misc.Utilities.DoForContentObject(this._Persistence, contentId,
-                (storageLocationId) => this.UserIsAllowedToEditStorageLocation(userId, storageLocationId),
-                (folderId) => this.UserIsAllowedToEditFolder(userId, folderId),
-                (documentId) => this.UserIsAllowedToEditDocument(userId, documentId)
-            );
-        }
-
-        /// <summary>Determines whether the given user may change the given storage-location and its contents. In contrast to merely viewing it, a storage-location may only be changed by an administrator or its owner; users it was only shared with (view-permission) may not change it.</summary>
-        private bool UserIsAllowedToEditStorageLocation(string userId, string storageLocationId)
-        {
-            //default-deny (see issue #13): being an administrator does NOT grant the permission to change content. Only the moderator (owner) and users a moderator granted edit-permission may change the contents.
-            if (this._Persistence.UserIsOwnerOfStorageLocation(userId, storageLocationId))
-            {
-                return true;
-            }
-            if (this._Persistence.StorageLocationIsEditableByUser(storageLocationId, userId))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private bool UserIsAllowedToEditFolder(string userId, string folderId)
-        {
-            return this.UserIsAllowedToEditStorageLocation(userId, this._Persistence.GetIdOfStorageLocationContainedIn(folderId));
-        }
-
-        private bool UserIsAllowedToEditDocument(string userId, string documentId)
-        {
-            return this.UserIsAllowedToEditStorageLocation(userId, this._Persistence.GetIdOfStorageLocationContainedIn(documentId));
+            return this.UserHasPermissionInHierarchy(userId, contentId, RequiredPermission.Edit);
         }
 
         /// <summary>Ensures the given user is allowed to change the given content and throws a <see cref="NotAuthorizedException"/> otherwise.</summary>
@@ -302,13 +273,45 @@ namespace OpenDMSBackend.Core.Services
             }
         }
 
-        /// <summary>Ensures the given user is a moderator of the storage-location and throws a <see cref="NotAuthorizedException"/> otherwise. A moderator (currently the owner) is the only one who may manage a storage-location's permissions (see issue #13).</summary>
-        private void EnsureUserIsModeratorOfStorageLocation(string requesterUserId, string storageLocationId)
+        /// <summary>Ensures the given user is a moderator of the content-object (or of one of its ancestors) and throws a <see cref="NotAuthorizedException"/> otherwise. Only a moderator may manage a content-object's permissions and moderators (see issue #13).</summary>
+        private void EnsureUserIsModeratorOfStorageLocation(string requesterUserId, string contentId)
         {
-            if (!this._Persistence.UserIsOwnerOfStorageLocation(requesterUserId, storageLocationId))
+            if (!this.UserHasPermissionInHierarchy(requesterUserId, contentId, RequiredPermission.Moderate))
             {
-                throw new NotAuthorizedException($"Only a moderator (owner) of storage-location '{storageLocationId}' may manage its permissions.");
+                throw new NotAuthorizedException($"Only a moderator of '{contentId}' may manage its permissions.");
             }
+        }
+
+        /// <inheritdoc />
+        public void AddModerator(string requesterUserId, string contentId, string newModeratorUserId)
+        {
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, contentId);
+            this._Persistence.SetOwnerOfStorageLocation(contentId, newModeratorUserId);
+            this._AuditLog.Logger.Log($"User '{newModeratorUserId}' added as moderator of '{contentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public void RemoveModerator(string requesterUserId, string contentId, string moderatorUserId)
+        {
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, contentId);
+            //a container (storage-location or folder) must always keep at least one moderator; the last moderator can not be removed.
+            if (!this._Persistence.IsDocument(contentId))
+            {
+                ISet<string> moderators = this._Persistence.GetOwnersOfStorageLocation(contentId);
+                if (moderators.Contains(moderatorUserId) && moderators.Count <= 1)
+                {
+                    throw new BadRequestException($"A folder or storage-location must always have at least one moderator; the last moderator of '{contentId}' can not be removed.");
+                }
+            }
+            this._Persistence.RemoveOwnerOfStorageLocation(contentId, moderatorUserId);
+            this._AuditLog.Logger.Log($"User '{moderatorUserId}' removed as moderator of '{contentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<string> GetModerators(string requesterUserId, string contentId)
+        {
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, contentId);
+            return this._Persistence.GetOwnersOfStorageLocation(contentId);
         }
 
         /// <inheritdoc />
@@ -367,49 +370,61 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
-            return Core.Misc.Utilities.DoForContentObject(this._Persistence, contentId,
-                (storageLocationId) => this.UserIsAllowedToViewStorageLocation(userId, storageLocationId),
-                (folderId) => this.UserIsAllowedToViewFolder(userId, folderId),
-                (documentId) => this.UserIsAllowedToViewDocument(userId, documentId)
-            );
+            return this.UserHasPermissionInHierarchy(userId, contentId, RequiredPermission.View);
         }
 
         /// <inheritdoc />
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
         {
-            //access-protection follows a default-deny concept (see issue #13): being an administrator does NOT grant access to content. Only the moderator (owner) of the storage-location and the users a moderator has explicitly granted view- or edit-permission may retrieve its contents.
-            if (this._Persistence.UserIsOwnerOfStorageLocation(userId, storageLocationId))
-            {
-                return true;
-            }
-            if (this._Persistence.StorageLocationIsSharedWithUser(storageLocationId, userId))
-            {
-                return true;
-            }
-            return false;
+            return this.UserIsAllowedToViewContent(userId, storageLocationId);
         }
 
         /// <inheritdoc />
         public bool UserIsAllowedToViewFolder(string userId, string contentId)
         {
-            string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(contentId);
-            if (this.UserIsAllowedToViewStorageLocation(userId, storageLocationId))
-            {
-                return true;
-            }
-            //add more possibilities if desired
-            return false;
+            return this.UserIsAllowedToViewContent(userId, contentId);
         }
 
         /// <inheritdoc />
         public bool UserIsAllowedToViewDocument(string userId, string contentId)
         {
-            string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(contentId);
-            if (this.UserIsAllowedToViewStorageLocation(userId, storageLocationId))
+            return this.UserIsAllowedToViewContent(userId, contentId);
+        }
+
+        /// <summary>The kind of permission required for an operation. Moderation (managing a content-object's permissions/moderators) requires being a moderator; a mere view- or edit-grant is not sufficient for it.</summary>
+        private enum RequiredPermission
+        {
+            View,
+            Edit,
+            Moderate
+        }
+
+        /// <summary>Determines whether the given user has the required permission on the given content-object. Access-protection follows a default-deny concept with inheritance (see issue #13): every content-object (storage-location, folder or document) can have its own moderators ("owners") and view-/edit-grants, and a user is allowed if - at the content-object itself or at any of its ancestors up to the containing storage-location - the user is a moderator or has the required grant. Being an administrator does NOT grant access to content.</summary>
+        private bool UserHasPermissionInHierarchy(string userId, string contentId, RequiredPermission required)
+        {
+            string currentId = contentId;
+            while (true)
             {
-                return true;
+                //a moderator ("owner") at any level of the hierarchy has all permissions on the content-object and its contents.
+                if (this._Persistence.UserIsOwnerOfStorageLocation(userId, currentId))
+                {
+                    return true;
+                }
+                if (required == RequiredPermission.View && this._Persistence.StorageLocationIsSharedWithUser(currentId, userId))
+                {
+                    return true;
+                }
+                if (required == RequiredPermission.Edit && this._Persistence.StorageLocationIsEditableByUser(currentId, userId))
+                {
+                    return true;
+                }
+                if (this._Persistence.IsStorageLocation(currentId))
+                {
+                    //reached the root of the containment-hierarchy.
+                    break;
+                }
+                currentId = this._Persistence.GetParentIdOfContainee(currentId);
             }
-            //add more possibilities if desired
             return false;
         }
 
@@ -674,6 +689,8 @@ namespace OpenDMSBackend.Core.Services
             this.EnsureUserIsAllowedToEditContent(requesterUserId, parentContainerId);
             string id = this._Persistence.AddFolder(name);
             this._Persistence.SetParentOfContainee(this.GetContainee(id), parentContainerId);
+            //every folder must have at least one moderator ("owner"); the creator becomes its first moderator.
+            this._Persistence.SetOwnerOfStorageLocation(id, requesterUserId);
             this._AuditLog.Logger.Log($"Folder '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
             return id;
         }

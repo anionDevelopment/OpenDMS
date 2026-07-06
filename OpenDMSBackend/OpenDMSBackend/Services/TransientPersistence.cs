@@ -17,7 +17,7 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*id*/, Document> _Documents;
         private readonly IDictionary<string/*id*/, Tag> _Tags;
         private readonly IDictionary<string/*containee-id*/, string/*container-id*/> _ContaineeContainerAssignments;
-        private readonly IDictionary<string/*storagelocation-id*/, string/*user-id*/> _StorageLocationOwnerAssignments;
+        private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationOwnerAssignments;
         private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationViewGrants;
         private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationEditGrants;
         private readonly IDictionary<string/*key*/, string/*value*/> _Settings;
@@ -38,7 +38,7 @@ namespace OpenDMSBackend.Core.Services
             this._Folders = new Dictionary<string, Folder>();
             this._Documents = new Dictionary<string, Document>();
             this._ContaineeContainerAssignments = new Dictionary<string, string>();
-            this._StorageLocationOwnerAssignments = new Dictionary<string, string>();
+            this._StorageLocationOwnerAssignments = new Dictionary<string, ISet<string>>();
             this._StorageLocationViewGrants = new Dictionary<string, ISet<string>>();
             this._StorageLocationEditGrants = new Dictionary<string, ISet<string>>();
             this._Settings = new Dictionary<string, string>();
@@ -176,14 +176,20 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
         {
-            if (this._StorageLocations.ContainsKey(storageLocationId))
-            {
-                return this._StorageLocationOwnerAssignments[storageLocationId] == userId;
-            }
-            else
-            {
-                return false;
-            }
+            //the "owner"-concept is a moderator of a content-object (storage-location, folder or document); a content-object can have several moderators.
+            return this.HasGrant(this._StorageLocationOwnerAssignments, storageLocationId, userId);
+        }
+
+        /// <inheritdoc />
+        public ISet<string> GetOwnersOfStorageLocation(string storageLocationId)
+        {
+            return this._StorageLocationOwnerAssignments.TryGetValue(storageLocationId, out ISet<string>? owners) ? new HashSet<string>(owners) : new HashSet<string>();
+        }
+
+        /// <inheritdoc />
+        public void RemoveOwnerOfStorageLocation(string storageLocationId, string userId)
+        {
+            this.RemoveGrant(this._StorageLocationOwnerAssignments, storageLocationId, userId);
         }
 
         /// <inheritdoc />
@@ -235,7 +241,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SetOwnerOfStorageLocation(string storageLocationId, string userId)
         {
-            this._StorageLocationOwnerAssignments[storageLocationId] = userId;
+            //adds the user as a moderator ("owner") of the content-object; a content-object can have several moderators.
+            this.AddGrant(this._StorageLocationOwnerAssignments, storageLocationId, userId);
         }
 
         /// <inheritdoc />

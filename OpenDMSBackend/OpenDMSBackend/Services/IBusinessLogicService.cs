@@ -81,6 +81,9 @@ namespace OpenDMSBackend.Core.Services
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId);
         public void AuthorizeUserToEditStorageLocation(string requesterUserId, string storageLocationId, string editUserId);
         public void UnauthorizeUserToEditStorageLocation(string requesterUserId, string storageLocationId, string editUserId);
+        public void AddModerator(string requesterUserId, string contentId, string newModeratorUserId);
+        public void RemoveModerator(string requesterUserId, string contentId, string moderatorUserId);
+        public System.Collections.Generic.IEnumerable<string> GetModerators(string requesterUserId, string contentId);
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId);
         public Folder GetFolder(string requesterUserId, string folderId);
         public Document GetDocumentFromReadableId(string requesterUserId, uint readableDocumentId);

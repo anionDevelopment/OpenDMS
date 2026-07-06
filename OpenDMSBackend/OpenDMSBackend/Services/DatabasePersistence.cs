@@ -806,6 +806,30 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
+        public ISet<string> GetOwnersOfStorageLocation(string storageLocationId)
+        {
+            return this.RunTransaction(nameof(GetOwnersOfStorageLocation), true, (command) =>
+            {
+                HashSet<string> result = new HashSet<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetOwnersOfStorageLocation();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(reader.GetString(0));
+                }
+                reader.Close();
+                return (ISet<string>)result;
+            })[0]!;
+        }
+
+        /// <inheritdoc />
+        public void RemoveOwnerOfStorageLocation(string storageLocationId, string userId)
+        {
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptRemoveOwnerOfStorageLocation(), storageLocationId, userId);
+        }
+
+        /// <inheritdoc />
         public string AddStoragLocation(string name)
         {
             string id = Guid.NewGuid().ToString();

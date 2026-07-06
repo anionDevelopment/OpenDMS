@@ -211,6 +211,49 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Adds the specified user as a moderator of the specified content-object (storage-location, folder or document). Only a moderator may do this. A content-object can have several moderators.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <param name="newModeratorUserId">The id of the user to add as a moderator.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AddModerator)}/{{{nameof(contentId)}}}/{{{nameof(newModeratorUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AddModerator([FromRoute] string contentId, [FromRoute] string newModeratorUserId)
+        {
+            this._BusinessLogicService.AddModerator(this.GetUser().Id, contentId, newModeratorUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Removes the specified user from the moderators of the specified content-object. Only a moderator may do this. A folder or storage-location must always keep at least one moderator.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <param name="moderatorUserId">The id of the moderator to remove.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveModerator)}/{{{nameof(contentId)}}}/{{{nameof(moderatorUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveModerator([FromRoute] string contentId, [FromRoute] string moderatorUserId)
+        {
+            this._BusinessLogicService.RemoveModerator(this.GetUser().Id, contentId, moderatorUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Returns the ids of all moderators of the specified content-object. Only a moderator may query this.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <returns>The ids of the moderators.</returns>
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetModerators)}/{{{nameof(contentId)}}}")]
+        [ProducesResponseType(typeof(string[]), StatusCodes.Status200OK)]
+        public IActionResult GetModerators([FromRoute] string contentId)
+        {
+            return this.Ok(this._BusinessLogicService.GetModerators(this.GetUser().Id, contentId));
+        }
+
         /// <summary>Creates a new storage location with the given name owned by the current user.</summary>
         /// <param name="name">The display name of the new storage location.</param>
         /// <returns>The id of the newly created storage location.</returns>

@@ -65,6 +65,8 @@
         string GetScriptRenameStorageLocation();
         string GetScriptGetAllUsers();
         string GetScriptIsUserOwnerOfStorageLocation();
+        string GetScriptGetOwnersOfStorageLocation();
+        string GetScriptRemoveOwnerOfStorageLocation();
         string GetScriptStorageLocationIsSharedWithUser();
         string GetScriptStorageLocationIsEditableByUser();
         string GetScriptAuthorizeUserToViewStorageLocation();
