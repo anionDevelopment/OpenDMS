@@ -18,6 +18,8 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*id*/, Tag> _Tags;
         private readonly IDictionary<string/*containee-id*/, string/*container-id*/> _ContaineeContainerAssignments;
         private readonly IDictionary<string/*storagelocation-id*/, string/*user-id*/> _StorageLocationOwnerAssignments;
+        private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationViewGrants;
+        private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationEditGrants;
         private readonly IDictionary<string/*key*/, string/*value*/> _Settings;
         private readonly IList<DocumentVersionEntry> _DocumentVersions;
         private readonly IIdGenerator<ulong> _IdGenerator;
@@ -37,6 +39,8 @@ namespace OpenDMSBackend.Core.Services
             this._Documents = new Dictionary<string, Document>();
             this._ContaineeContainerAssignments = new Dictionary<string, string>();
             this._StorageLocationOwnerAssignments = new Dictionary<string, string>();
+            this._StorageLocationViewGrants = new Dictionary<string, ISet<string>>();
+            this._StorageLocationEditGrants = new Dictionary<string, ISet<string>>();
             this._Settings = new Dictionary<string, string>();
             this._DocumentVersions = new List<DocumentVersionEntry>();
             this._Tags = new Dictionary<string, Tag>();
@@ -59,6 +63,8 @@ namespace OpenDMSBackend.Core.Services
             this._Documents.Clear();
             this._ContaineeContainerAssignments.Clear();
             this._StorageLocationOwnerAssignments.Clear();
+            this._StorageLocationViewGrants.Clear();
+            this._StorageLocationEditGrants.Clear();
             this._Settings.Clear();
             this._DocumentVersions.Clear();
             this._Tags.Clear();
@@ -183,7 +189,37 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
         {
-            return false;//TODO
+            //an edit-grant implies a view-grant.
+            return this.HasGrant(this._StorageLocationViewGrants, storageLocationId, userId) || this.HasGrant(this._StorageLocationEditGrants, storageLocationId, userId);
+        }
+
+        /// <inheritdoc />
+        public bool StorageLocationIsEditableByUser(string storageLocationId, string userId)
+        {
+            return this.HasGrant(this._StorageLocationEditGrants, storageLocationId, userId);
+        }
+
+        private bool HasGrant(IDictionary<string, ISet<string>> grants, string storageLocationId, string userId)
+        {
+            return grants.TryGetValue(storageLocationId, out ISet<string>? userIds) && userIds.Contains(userId);
+        }
+
+        private void AddGrant(IDictionary<string, ISet<string>> grants, string storageLocationId, string userId)
+        {
+            if (!grants.TryGetValue(storageLocationId, out ISet<string>? userIds))
+            {
+                userIds = new HashSet<string>();
+                grants[storageLocationId] = userIds;
+            }
+            userIds.Add(userId);
+        }
+
+        private void RemoveGrant(IDictionary<string, ISet<string>> grants, string storageLocationId, string userId)
+        {
+            if (grants.TryGetValue(storageLocationId, out ISet<string>? userIds))
+            {
+                userIds.Remove(userId);
+            }
         }
 
         /// <inheritdoc />
@@ -265,13 +301,30 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            this.AddGrant(this._StorageLocationViewGrants, storageLocationId, sharedWithUserId);
         }
 
         /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            //revoking the view-permission also revokes the (stronger) edit-permission.
+            this.RemoveGrant(this._StorageLocationViewGrants, storageLocationId, sharedWithUserId);
+            this.RemoveGrant(this._StorageLocationEditGrants, storageLocationId, sharedWithUserId);
+        }
+
+        /// <inheritdoc />
+        public void AuthorizeUserToEditStorageLocation(string storageLocationId, string editUserId)
+        {
+            //an edit-grant implies a view-grant; both are stored so that the view-check succeeds too.
+            this.AddGrant(this._StorageLocationViewGrants, storageLocationId, editUserId);
+            this.AddGrant(this._StorageLocationEditGrants, storageLocationId, editUserId);
+        }
+
+        /// <inheritdoc />
+        public void UnauthorizeUserToEditStorageLocation(string storageLocationId, string editUserId)
+        {
+            //revoking the edit-permission keeps the view-permission.
+            this.RemoveGrant(this._StorageLocationEditGrants, storageLocationId, editUserId);
         }
 
         /// <inheritdoc />

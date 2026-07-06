@@ -127,3 +127,12 @@ CREATE TABLE `StorageLocations_User` (
     CONSTRAINT `FK_User_StorageLocations_UsersId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`),
     CONSTRAINT `PK_User_StorageLocations` PRIMARY KEY (`UserId`, `StorageLocationId`)
 ) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `StorageLocation_UserPermission` (
+    `StorageLocationId` varchar(255) not null,
+    `UserId` varchar(255) not null,
+    `CanEdit` tinyint(1) not null,
+    CONSTRAINT `FK_SLUP_StorageLocationId` FOREIGN KEY (`StorageLocationId`) REFERENCES `StorageLocations`(`Id`),
+    CONSTRAINT `FK_SLUP_UserId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`),
+    CONSTRAINT `PK_StorageLocation_UserPermission` PRIMARY KEY (`StorageLocationId`, `UserId`)
+) CHARACTER SET=utf8mb4;

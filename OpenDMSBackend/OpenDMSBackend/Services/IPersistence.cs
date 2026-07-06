@@ -70,6 +70,12 @@ namespace OpenDMSBackend.Core.Services
         /// <returns><see langword="true"/> if the storage location is shared with the user; otherwise <see langword="false"/>.</returns>
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId);
 
+        /// <summary>Returns whether the specified user has been granted the permission to change (edit) the specified storage location and its contents.</summary>
+        /// <param name="storageLocationId">The id of the storage location to check.</param>
+        /// <param name="userId">The id of the user to check.</param>
+        /// <returns><see langword="true"/> if the user may edit the storage location; otherwise <see langword="false"/>.</returns>
+        public bool StorageLocationIsEditableByUser(string storageLocationId, string userId);
+
         /// <summary>Creates a new storage location with the given name and returns its generated id.</summary>
         /// <param name="name">The display name of the new storage location.</param>
         /// <returns>The id of the newly created storage location.</returns>
@@ -162,6 +168,16 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="storageLocationId">The id of the storage location.</param>
         /// <param name="sharedWithUserId">The id of the user whose access should be revoked.</param>
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId);
+
+        /// <summary>Grants the specified user the permission to change (edit) the specified storage location and its contents (which also implies the permission to view it).</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user to grant the edit-permission to.</param>
+        public void AuthorizeUserToEditStorageLocation(string storageLocationId, string editUserId);
+
+        /// <summary>Revokes the specified user's permission to change (edit) the specified storage location. The view-permission (if granted) is kept.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user whose edit-permission should be revoked.</param>
+        public void UnauthorizeUserToEditStorageLocation(string storageLocationId, string editUserId);
 
         /// <summary>Renames the specified container to the given new name.</summary>
         /// <param name="containerId">The id of the container to rename.</param>

@@ -247,15 +247,15 @@ namespace OpenDMSBackend.Core.Services
         /// <summary>Determines whether the given user may change the given storage-location and its contents. In contrast to merely viewing it, a storage-location may only be changed by an administrator or its owner; users it was only shared with (view-permission) may not change it.</summary>
         private bool UserIsAllowedToEditStorageLocation(string userId, string storageLocationId)
         {
-            if (this.UserIsAdministrator(userId))
-            {
-                return true;
-            }
+            //default-deny (see issue #13): being an administrator does NOT grant the permission to change content. Only the moderator (owner) and users a moderator granted edit-permission may change the contents.
             if (this._Persistence.UserIsOwnerOfStorageLocation(userId, storageLocationId))
             {
                 return true;
             }
-            //add more possibilities if desired
+            if (this._Persistence.StorageLocationIsEditableByUser(storageLocationId, userId))
+            {
+                return true;
+            }
             return false;
         }
 
@@ -299,6 +299,15 @@ namespace OpenDMSBackend.Core.Services
             if (!this.UserIsAdministrator(requesterUserId))
             {
                 throw new NotAuthorizedException("This operation requires administrator-privileges.");
+            }
+        }
+
+        /// <summary>Ensures the given user is a moderator of the storage-location and throws a <see cref="NotAuthorizedException"/> otherwise. A moderator (currently the owner) is the only one who may manage a storage-location's permissions (see issue #13).</summary>
+        private void EnsureUserIsModeratorOfStorageLocation(string requesterUserId, string storageLocationId)
+        {
+            if (!this._Persistence.UserIsOwnerOfStorageLocation(requesterUserId, storageLocationId))
+            {
+                throw new NotAuthorizedException($"Only a moderator (owner) of storage-location '{storageLocationId}' may manage its permissions.");
             }
         }
 
@@ -368,10 +377,7 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
         {
-            if (this.UserIsAdministrator(userId))
-            {
-                return true;
-            }
+            //access-protection follows a default-deny concept (see issue #13): being an administrator does NOT grant access to content. Only the moderator (owner) of the storage-location and the users a moderator has explicitly granted view- or edit-permission may retrieve its contents.
             if (this._Persistence.UserIsOwnerOfStorageLocation(userId, storageLocationId))
             {
                 return true;
@@ -380,7 +386,6 @@ namespace OpenDMSBackend.Core.Services
             {
                 return true;
             }
-            //add more possibilities if desired
             return false;
         }
 
@@ -684,17 +689,35 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
-            //only an administrator or the owner of the storage-location may manage who it is shared with.
-            this.EnsureUserIsAllowedToEditContent(requesterUserId, storageLocationId);
+            //only a moderator (owner) of the storage-location may manage who it is shared with.
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
             this._Persistence.AuthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
             this._AuditLog.Logger.Log($"Storage-location '{storageLocationId}' shared for viewing with user '{sharedWithUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
+        public void AuthorizeUserToEditStorageLocation(string requesterUserId, string storageLocationId, string editUserId)
+        {
+            //only a moderator (owner) of the storage-location may grant the permission to change its contents.
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
+            this._Persistence.AuthorizeUserToEditStorageLocation(storageLocationId, editUserId);
+            this._AuditLog.Logger.Log($"Storage-location '{storageLocationId}' shared for editing with user '{editUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public void UnauthorizeUserToEditStorageLocation(string requesterUserId, string storageLocationId, string editUserId)
+        {
+            //only a moderator (owner) of the storage-location may revoke the permission to change its contents.
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
+            this._Persistence.UnauthorizeUserToEditStorageLocation(storageLocationId, editUserId);
+            this._AuditLog.Logger.Log($"Edit-permission for storage-location '{storageLocationId}' revoked from user '{editUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
-            //only an administrator or the owner of the storage-location may manage who it is shared with.
-            this.EnsureUserIsAllowedToEditContent(requesterUserId, storageLocationId);
+            //only a moderator (owner) of the storage-location may manage who it is shared with.
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
             this._AuditLog.Logger.Log($"View-permission for storage-location '{storageLocationId}' revoked from user '{sharedWithUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }

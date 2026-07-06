@@ -767,13 +767,42 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
         {
-            throw new NotImplementedException();
+            return this.RunStorageLocationUserExistsQuery(this._SQLProvider.GetScriptIsUserOwnerOfStorageLocation(), storageLocationId, userId);
+        }
+
+        private bool RunStorageLocationUserExistsQuery(string script, string storageLocationId, string userId)
+        {
+            return this.RunTransaction(nameof(RunStorageLocationUserExistsQuery), true, (command) =>
+            {
+                command.CommandText = script;
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                using DbDataReader reader = command.ExecuteReader();
+                return reader.HasRows;
+            })[0];
+        }
+
+        private void RunStorageLocationUserCommand(string script, string storageLocationId, string userId)
+        {
+            this.RunTransaction(nameof(RunStorageLocationUserCommand), true, (command) =>
+            {
+                command.CommandText = script;
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
         {
-            throw new NotImplementedException();
+            return this.RunStorageLocationUserExistsQuery(this._SQLProvider.GetScriptStorageLocationIsSharedWithUser(), storageLocationId, userId);
+        }
+
+        /// <inheritdoc />
+        public bool StorageLocationIsEditableByUser(string storageLocationId, string userId)
+        {
+            return this.RunStorageLocationUserExistsQuery(this._SQLProvider.GetScriptStorageLocationIsEditableByUser(), storageLocationId, userId);
         }
 
         /// <inheritdoc />
@@ -876,13 +905,25 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptAuthorizeUserToViewStorageLocation(), storageLocationId, sharedWithUserId);
         }
 
         /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptUnauthorizeUserToViewStorageLocation(), storageLocationId, sharedWithUserId);
+        }
+
+        /// <inheritdoc />
+        public void AuthorizeUserToEditStorageLocation(string storageLocationId, string editUserId)
+        {
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptAuthorizeUserToEditStorageLocation(), storageLocationId, editUserId);
+        }
+
+        /// <inheritdoc />
+        public void UnauthorizeUserToEditStorageLocation(string storageLocationId, string editUserId)
+        {
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptUnauthorizeUserToEditStorageLocation(), storageLocationId, editUserId);
         }
 
         /// <inheritdoc />

@@ -181,6 +181,36 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Grants the specified user permission to change (edit) the specified storage location and its contents. Only a moderator (owner) of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user to grant the edit-permission to.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AuthorizeUserToEditStorageLocation)}/{{{nameof(storageLocationId)}}}/{{{nameof(editUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AuthorizeUserToEditStorageLocation([FromRoute] string storageLocationId, [FromRoute] string editUserId)
+        {
+            this._BusinessLogicService.AuthorizeUserToEditStorageLocation(this.GetUser().Id, storageLocationId, editUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Revokes the specified user's permission to change (edit) the specified storage location. Only a moderator (owner) of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user whose edit-permission should be revoked.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(UnauthorizeUserToEditStorageLocation)}/{{{nameof(storageLocationId)}}}/{{{nameof(editUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult UnauthorizeUserToEditStorageLocation([FromRoute] string storageLocationId, [FromRoute] string editUserId)
+        {
+            this._BusinessLogicService.UnauthorizeUserToEditStorageLocation(this.GetUser().Id, storageLocationId, editUserId);
+            return this.Ok();
+        }
+
         /// <summary>Creates a new storage location with the given name owned by the current user.</summary>
         /// <param name="name">The display name of the new storage location.</param>
         /// <returns>The id of the newly created storage location.</returns>

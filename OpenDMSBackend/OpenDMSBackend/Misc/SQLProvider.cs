@@ -382,6 +382,48 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptIsUserOwnerOfStorageLocation()
+        {
+            return this.LoadSQLScript("IsUserOwnerOfStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptStorageLocationIsSharedWithUser()
+        {
+            return this.LoadSQLScript("StorageLocationIsSharedWithUser");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptStorageLocationIsEditableByUser()
+        {
+            return this.LoadSQLScript("StorageLocationIsEditableByUser");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptAuthorizeUserToViewStorageLocation()
+        {
+            return this.LoadSQLScript("AuthorizeUserToViewStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptAuthorizeUserToEditStorageLocation()
+        {
+            return this.LoadSQLScript("AuthorizeUserToEditStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptUnauthorizeUserToViewStorageLocation()
+        {
+            return this.LoadSQLScript("UnauthorizeUserToViewStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptUnauthorizeUserToEditStorageLocation()
+        {
+            return this.LoadSQLScript("UnauthorizeUserToEditStorageLocation");
+        }
+
+        /// <inheritdoc />
         public string GetScriptRemoveRoleFromUser()
         {
             return this.LoadSQLScript("RemoveRoleFromUser");

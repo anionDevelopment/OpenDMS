@@ -79,6 +79,8 @@ namespace OpenDMSBackend.Core.Services
         public void Rename(string requesterUserId, string containerId, string newName);
         public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId);
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId);
+        public void AuthorizeUserToEditStorageLocation(string requesterUserId, string storageLocationId, string editUserId);
+        public void UnauthorizeUserToEditStorageLocation(string requesterUserId, string storageLocationId, string editUserId);
         public IEnumerable<StorageLocation> GetAllViewableStorageLocations(string requesterUserId);
         public Folder GetFolder(string requesterUserId, string folderId);
         public Document GetDocumentFromReadableId(string requesterUserId, uint readableDocumentId);

@@ -64,6 +64,13 @@
         string GetScriptRenameFolder();
         string GetScriptRenameStorageLocation();
         string GetScriptGetAllUsers();
+        string GetScriptIsUserOwnerOfStorageLocation();
+        string GetScriptStorageLocationIsSharedWithUser();
+        string GetScriptStorageLocationIsEditableByUser();
+        string GetScriptAuthorizeUserToViewStorageLocation();
+        string GetScriptAuthorizeUserToEditStorageLocation();
+        string GetScriptUnauthorizeUserToViewStorageLocation();
+        string GetScriptUnauthorizeUserToEditStorageLocation();
         string GetScriptRemoveRoleFromUser();
         string GetScriptAssignTag();
         string GetScriptHardDeleteDocument();

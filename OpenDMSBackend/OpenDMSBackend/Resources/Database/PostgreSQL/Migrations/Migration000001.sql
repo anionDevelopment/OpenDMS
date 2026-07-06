@@ -127,3 +127,12 @@ CREATE TABLE "StorageLocations_User" (
     CONSTRAINT "FK_User_StorageLocations_UsersId" FOREIGN KEY ("UserId") REFERENCES "Users"("Id"),
     CONSTRAINT "PK_User_StorageLocations" PRIMARY KEY ("UserId", "StorageLocationId")
 );
+
+CREATE TABLE "StorageLocation_UserPermission" (
+    "StorageLocationId" varchar(255) not null,
+    "UserId" varchar(255) not null,
+    "CanEdit" boolean not null,
+    CONSTRAINT "FK_SLUP_StorageLocationId" FOREIGN KEY ("StorageLocationId") REFERENCES "StorageLocations"("Id"),
+    CONSTRAINT "FK_SLUP_UserId" FOREIGN KEY ("UserId") REFERENCES "Users"("Id"),
+    CONSTRAINT "PK_StorageLocation_UserPermission" PRIMARY KEY ("StorageLocationId", "UserId")
+);
