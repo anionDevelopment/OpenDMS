@@ -264,5 +264,43 @@ namespace OpenDMSBackend.Core.Services
 
         /// <summary>Resets the persistence store to its initial empty state.</summary>
         public void Reset();
+
+        #region Metadata-fields
+
+        /// <summary>Persists a new storage-location-specific custom metadata-field-definition.</summary>
+        /// <param name="definition">The field-definition to create.</param>
+        public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition);
+
+        /// <summary>Deletes the metadata-field-definition with the given id together with all document-values stored for it.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to delete.</param>
+        public void DeleteMetadataFieldDefinition(string fieldDefinitionId);
+
+        /// <summary>Returns the metadata-field-definition with the given id.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to retrieve.</param>
+        /// <returns>The matching <see cref="MetadataFieldDefinition"/>.</returns>
+        public MetadataFieldDefinition GetMetadataFieldDefinition(string fieldDefinitionId);
+
+        /// <summary>Returns all metadata-field-definitions defined for the given storage-location.</summary>
+        /// <param name="storageLocationId">The id of the storage-location.</param>
+        /// <returns>The field-definitions of the storage-location; empty if none.</returns>
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldDefinitionsOfStorageLocation(string storageLocationId);
+
+        /// <summary>Sets (inserts or updates) the value the given document holds for the given metadata-field.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <param name="value">The value to store (a boolean-value is stored as "true"/"false").</param>
+        public void SetDocumentMetadataValue(string documentId, string fieldDefinitionId, string value);
+
+        /// <summary>Removes the value the given document holds for the given metadata-field (if any).</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        public void RemoveDocumentMetadataValue(string documentId, string fieldDefinitionId);
+
+        /// <summary>Returns all metadata-values the given document holds, keyed by the field-definition-id.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <returns>A dictionary of field-definition-id to value; empty if the document has no values.</returns>
+        public IDictionary<string, string> GetMetadataValuesOfDocument(string documentId);
+
+        #endregion
     }
 }

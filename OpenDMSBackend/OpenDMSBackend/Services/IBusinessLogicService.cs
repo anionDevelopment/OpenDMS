@@ -92,6 +92,31 @@ namespace OpenDMSBackend.Core.Services
 
         #endregion
 
+        #region Metadata-fields
+        /// <summary>Defines a new custom metadata-field for the given storage-location. Only a moderator of the storage-location may do this.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="storageLocationId">The id of the storage-location the field is defined for.</param>
+        /// <param name="name">The display-name of the field (must be unique within the storage-location).</param>
+        /// <param name="type">The value-type of the field (string or boolean).</param>
+        /// <returns>The id of the created field-definition.</returns>
+        public string DefineMetadataField(string requesterUserId, string storageLocationId, string name, MetadataFieldType type);
+        /// <summary>Removes the given custom metadata-field-definition together with all values documents hold for it. Only a moderator of the field's storage-location may do this.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="fieldDefinitionId">The id of the field-definition to remove.</param>
+        public void RemoveMetadataField(string requesterUserId, string fieldDefinitionId);
+        /// <summary>Returns all custom metadata-fields defined for the given storage-location. The requesting user must be allowed to view the storage-location.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="storageLocationId">The id of the storage-location.</param>
+        /// <returns>The field-definitions of the storage-location.</returns>
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFields(string requesterUserId, string storageLocationId);
+        /// <summary>Sets (or, when <paramref name="value"/> is <see langword="null"/>, clears) the value the given document holds for the given metadata-field. The requesting user must be allowed to change the document and the field must be defined for the document's storage-location.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <param name="value">The value to set, or <see langword="null"/> to clear the value. For a boolean-field the value must be parseable as a boolean.</param>
+        public void SetDocumentMetadataValue(string requesterUserId, string documentId, string fieldDefinitionId, string? value);
+        #endregion
+
         #endregion
     }
 }

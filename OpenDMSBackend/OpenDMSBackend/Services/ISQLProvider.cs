@@ -79,5 +79,13 @@
         string GetScriptUnassignAllTagsOfDocument();
         string GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow();
         string GetScriptRemoveChild();
+        string GetScriptCreateMetadataFieldDefinition();
+        string GetScriptDeleteMetadataFieldDefinition();
+        string GetScriptDeleteMetadataValuesOfField();
+        string GetScriptGetMetadataFieldDefinition();
+        string GetScriptGetMetadataFieldDefinitionsOfStorageLocation();
+        string GetScriptSetDocumentMetadataValue();
+        string GetScriptRemoveDocumentMetadataValue();
+        string GetScriptGetMetadataValuesOfDocument();
     }
 }

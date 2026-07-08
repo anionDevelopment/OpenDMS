@@ -16,6 +16,11 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public OneLineString OriginalFilename { get; set; }
         public DateTimeOffset ImportDate { get; set; }
         public ISet<Tag> Tags { get; set; }
+        /// <summary>
+        /// The values this document holds for the custom metadata-fields defined at its containing storage-location, keyed by the field-definition-id (see <see cref="MetadataFieldDefinition"/>).
+        /// A boolean-value is stored as its lower-case string-representation ("true"/"false"). A field for which the document has no value is simply absent from this dictionary.
+        /// </summary>
+        public IDictionary<string, string> MetadataValues { get; set; } = new Dictionary<string, string>();
         public ulong ReadableId { get; set; }
         public OneLineString MIMEType { get; set; }
         public byte[] Content { get; set; }
@@ -168,7 +173,8 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
                 AISummaryShort = this.AISummaryShort,
                 AISummaryLong = this.AISummaryLong,
                 VersionNumber = this.VersionNumber,
-                VersionTimestamp = GUtilities.FormatTimestamp(this.VersionTimestamp, false)
+                VersionTimestamp = GUtilities.FormatTimestamp(this.VersionTimestamp, false),
+                MetadataValues = new Dictionary<string, string>(this.MetadataValues)
             };
         }
         public override string ToString()

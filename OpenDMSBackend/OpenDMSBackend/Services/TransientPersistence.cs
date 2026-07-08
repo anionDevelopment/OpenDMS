@@ -21,6 +21,7 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationViewGrants;
         private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationEditGrants;
         private readonly IDictionary<string/*key*/, string/*value*/> _Settings;
+        private readonly IDictionary<string/*field-definition-id*/, MetadataFieldDefinition> _MetadataFieldDefinitions;
         private readonly IList<DocumentVersionEntry> _DocumentVersions;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly ITimeService _TimeService;
@@ -42,6 +43,7 @@ namespace OpenDMSBackend.Core.Services
             this._StorageLocationViewGrants = new Dictionary<string, ISet<string>>();
             this._StorageLocationEditGrants = new Dictionary<string, ISet<string>>();
             this._Settings = new Dictionary<string, string>();
+            this._MetadataFieldDefinitions = new Dictionary<string, MetadataFieldDefinition>();
             this._DocumentVersions = new List<DocumentVersionEntry>();
             this._Tags = new Dictionary<string, Tag>();
             this._IdGenerator = idGenerator;
@@ -66,6 +68,7 @@ namespace OpenDMSBackend.Core.Services
             this._StorageLocationViewGrants.Clear();
             this._StorageLocationEditGrants.Clear();
             this._Settings.Clear();
+            this._MetadataFieldDefinitions.Clear();
             this._DocumentVersions.Clear();
             this._Tags.Clear();
             this._IdGenerator.Reset();
@@ -741,6 +744,78 @@ namespace OpenDMSBackend.Core.Services
         public void AddAccessToken(AccessToken newAccessToken)
         {
             this._TransientAuthenticationServicePersistence.AddAccessToken(newAccessToken);
+        }
+
+        /// <inheritdoc />
+        public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition)
+        {
+            lock (_Lock)
+            {
+                this._MetadataFieldDefinitions[definition.Id] = definition;
+            }
+        }
+
+        /// <inheritdoc />
+        public void DeleteMetadataFieldDefinition(string fieldDefinitionId)
+        {
+            lock (_Lock)
+            {
+                this._MetadataFieldDefinitions.Remove(fieldDefinitionId);
+                //remove the value every document holds for the deleted field.
+                foreach (Document document in this._Documents.Values)
+                {
+                    document.MetadataValues.Remove(fieldDefinitionId);
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public MetadataFieldDefinition GetMetadataFieldDefinition(string fieldDefinitionId)
+        {
+            lock (_Lock)
+            {
+                if (this._MetadataFieldDefinitions.TryGetValue(fieldDefinitionId, out MetadataFieldDefinition? definition))
+                {
+                    return definition;
+                }
+                throw new KeyNotFoundException($"No metadata-field-definition found with id '{fieldDefinitionId}'.");
+            }
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldDefinitionsOfStorageLocation(string storageLocationId)
+        {
+            lock (_Lock)
+            {
+                return this._MetadataFieldDefinitions.Values.Where(definition => definition.StorageLocationId == storageLocationId).ToList();
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetDocumentMetadataValue(string documentId, string fieldDefinitionId, string value)
+        {
+            lock (_Lock)
+            {
+                this.GetDocument(documentId).MetadataValues[fieldDefinitionId] = value;
+            }
+        }
+
+        /// <inheritdoc />
+        public void RemoveDocumentMetadataValue(string documentId, string fieldDefinitionId)
+        {
+            lock (_Lock)
+            {
+                this.GetDocument(documentId).MetadataValues.Remove(fieldDefinitionId);
+            }
+        }
+
+        /// <inheritdoc />
+        public IDictionary<string, string> GetMetadataValuesOfDocument(string documentId)
+        {
+            lock (_Lock)
+            {
+                return new Dictionary<string, string>(this.GetDocument(documentId).MetadataValues);
+            }
         }
     }
 }

@@ -127,6 +127,11 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AddedByUserId", document.AddedByUserId, typeof(string)));
                 command.ExecuteNonQuery();
             });
+            //persist the metadata-values the document holds (usually empty for a fresh document; populated when a new version copies them over).
+            foreach (KeyValuePair<string, string> metadataValue in document.MetadataValues)
+            {
+                this.SetDocumentMetadataValue(document.Id, metadataValue.Key, metadataValue.Value);
+            }
         }
 
         private DateTime? ToDateTime(DateTimeOffset? value)
@@ -609,7 +614,16 @@ namespace OpenDMSBackend.Core.Services
                 })[0]);
                 this.EnrichWithTags(result);
                 this.EnrichWithVersionInfo(result);
+                this.EnrichWithMetadataValues(result);
                 return result;
+            }
+        }
+
+        private void EnrichWithMetadataValues(Document document)
+        {
+            foreach (KeyValuePair<string, string> metadataValue in this.GetMetadataValuesOfDocument(document.Id))
+            {
+                document.MetadataValues[metadataValue.Key] = metadataValue.Value;
             }
         }
 
@@ -1652,6 +1666,124 @@ namespace OpenDMSBackend.Core.Services
                 using DbDataReader reader = cmd.ExecuteReader();
                 return reader.HasRows;
             });
+        }
+
+        /// <inheritdoc />
+        public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition)
+        {
+            this.RunTransaction(nameof(CreateMetadataFieldDefinition), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptCreateMetadataFieldDefinition();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", definition.Id));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", definition.StorageLocationId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", definition.Name));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Type", definition.Type.ToString()));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void DeleteMetadataFieldDefinition(string fieldDefinitionId)
+        {
+            this.RunTransaction(nameof(DeleteMetadataFieldDefinition), true, (command) =>
+            {
+                //remove all document-values stored for the field first ...
+                command.CommandText = this._SQLProvider.GetScriptDeleteMetadataValuesOfField();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MetadataFieldDefinitionId", fieldDefinitionId));
+                command.ExecuteNonQuery();
+            }, (command) =>
+            {
+                //... then remove the definition itself.
+                command.CommandText = this._SQLProvider.GetScriptDeleteMetadataFieldDefinition();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", fieldDefinitionId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public MetadataFieldDefinition GetMetadataFieldDefinition(string fieldDefinitionId)
+        {
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetMetadataFieldDefinition), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptGetMetadataFieldDefinition();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", fieldDefinitionId));
+                using DbDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return new MetadataFieldDefinition(fieldDefinitionId, reader.GetString(0), reader.GetString(1), ParseMetadataFieldType(reader.GetString(2)));
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No metadata-field-definition found with id '{fieldDefinitionId}'.");
+                }
+            })[0]);
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldDefinitionsOfStorageLocation(string storageLocationId)
+        {
+            return this.RunTransaction(nameof(GetMetadataFieldDefinitionsOfStorageLocation), true, (command) =>
+            {
+                List<MetadataFieldDefinition> result = new List<MetadataFieldDefinition>();
+                command.CommandText = this._SQLProvider.GetScriptGetMetadataFieldDefinitionsOfStorageLocation();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(new MetadataFieldDefinition(reader.GetString(0), storageLocationId, reader.GetString(1), ParseMetadataFieldType(reader.GetString(2))));
+                }
+                reader.Close();
+                return (IEnumerable<MetadataFieldDefinition>)result;
+            })[0]!;
+        }
+
+        /// <inheritdoc />
+        public void SetDocumentMetadataValue(string documentId, string fieldDefinitionId, string value)
+        {
+            this.RunTransaction(nameof(SetDocumentMetadataValue), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetDocumentMetadataValue();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MetadataFieldDefinitionId", fieldDefinitionId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", value));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void RemoveDocumentMetadataValue(string documentId, string fieldDefinitionId)
+        {
+            this.RunTransaction(nameof(RemoveDocumentMetadataValue), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptRemoveDocumentMetadataValue();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MetadataFieldDefinitionId", fieldDefinitionId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public IDictionary<string, string> GetMetadataValuesOfDocument(string documentId)
+        {
+            return this.RunTransaction(nameof(GetMetadataValuesOfDocument), true, (command) =>
+            {
+                Dictionary<string, string> result = new Dictionary<string, string>();
+                command.CommandText = this._SQLProvider.GetScriptGetMetadataValuesOfDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result[reader.GetString(0)] = reader.GetString(1);
+                }
+                reader.Close();
+                return (IDictionary<string, string>)result;
+            })[0]!;
+        }
+
+        private static MetadataFieldType ParseMetadataFieldType(string value)
+        {
+            return (MetadataFieldType)Enum.Parse(typeof(MetadataFieldType), value);
         }
     }
 }

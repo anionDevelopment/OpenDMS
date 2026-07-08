@@ -470,5 +470,53 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("RemoveChild");
         }
+
+        /// <inheritdoc />
+        public string GetScriptCreateMetadataFieldDefinition()
+        {
+            return this.LoadSQLScript("CreateMetadataFieldDefinition");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptDeleteMetadataFieldDefinition()
+        {
+            return this.LoadSQLScript("DeleteMetadataFieldDefinition");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptDeleteMetadataValuesOfField()
+        {
+            return this.LoadSQLScript("DeleteMetadataValuesOfField");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetMetadataFieldDefinition()
+        {
+            return this.LoadSQLScript("GetMetadataFieldDefinition");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetMetadataFieldDefinitionsOfStorageLocation()
+        {
+            return this.LoadSQLScript("GetMetadataFieldDefinitionsOfStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptSetDocumentMetadataValue()
+        {
+            return this.LoadSQLScript("SetDocumentMetadataValue");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRemoveDocumentMetadataValue()
+        {
+            return this.LoadSQLScript("RemoveDocumentMetadataValue");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetMetadataValuesOfDocument()
+        {
+            return this.LoadSQLScript("GetMetadataValuesOfDocument");
+        }
     }
 }

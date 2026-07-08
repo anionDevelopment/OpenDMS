@@ -469,6 +469,7 @@ namespace OpenDMSBackend.Core.Services
                 AISummaryShort = current.AISummaryShort,
                 AISummaryLong = current.AISummaryLong,
             };
+            newVersion.MetadataValues = new Dictionary<string, string>(current.MetadataValues);
             mutate(newVersion);
             this.Validate(newVersion);
             this._Persistence.CreateDocument(newVersion);
@@ -898,6 +899,85 @@ namespace OpenDMSBackend.Core.Services
             foreach (IContainee child in container.Content)
             {
                 this.HardDelete(requesterUserId, child.Id, reason);
+            }
+        }
+
+        /// <inheritdoc />
+        public string DefineMetadataField(string requesterUserId, string storageLocationId, string name, MetadataFieldType type)
+        {
+            //custom metadata-fields are defined per storage-location and only a moderator of it may define them.
+            if (!this._Persistence.IsStorageLocation(storageLocationId))
+            {
+                throw new BadRequestException($"Custom metadata-fields can only be defined for a storage-location, but '{storageLocationId}' is not a storage-location.");
+            }
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new BadRequestException("The name of a metadata-field must not be empty.");
+            }
+            if (this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(storageLocationId).Any(existing => string.Equals(existing.Name, name, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new BadRequestException($"A metadata-field with the name '{name}' is already defined for storage-location '{storageLocationId}'.");
+            }
+            MetadataFieldDefinition definition = new MetadataFieldDefinition(Guid.NewGuid().ToString(), storageLocationId, name, type);
+            this._Persistence.CreateMetadataFieldDefinition(definition);
+            this._AuditLog.Logger.Log($"Metadata-field '{name}' (id '{definition.Id}', type {type}) defined for storage-location '{storageLocationId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+            return definition.Id;
+        }
+
+        /// <inheritdoc />
+        public void RemoveMetadataField(string requesterUserId, string fieldDefinitionId)
+        {
+            MetadataFieldDefinition definition = this._Persistence.GetMetadataFieldDefinition(fieldDefinitionId);
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, definition.StorageLocationId);
+            this._Persistence.DeleteMetadataFieldDefinition(fieldDefinitionId);
+            this._AuditLog.Logger.Log($"Metadata-field '{definition.Name}' (id '{fieldDefinitionId}') of storage-location '{definition.StorageLocationId}' removed by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFields(string requesterUserId, string storageLocationId)
+        {
+            this.EnsureUserIsAllowedToViewContent(requesterUserId, storageLocationId);
+            return this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(storageLocationId).ToList();
+        }
+
+        /// <inheritdoc />
+        public void SetDocumentMetadataValue(string requesterUserId, string documentId, string fieldDefinitionId, string? value)
+        {
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
+            MetadataFieldDefinition definition = this._Persistence.GetMetadataFieldDefinition(fieldDefinitionId);
+            //a metadata-field can only be set on a document contained in the storage-location the field was defined for.
+            string storageLocationIdOfDocument = this._Persistence.GetIdOfStorageLocationContainedIn(documentId);
+            if (definition.StorageLocationId != storageLocationIdOfDocument)
+            {
+                throw new BadRequestException($"The metadata-field '{fieldDefinitionId}' is not defined for the storage-location of document '{documentId}'.");
+            }
+            if (value == null)
+            {
+                this._Persistence.RemoveDocumentMetadataValue(documentId, fieldDefinitionId);
+                this._AuditLog.Logger.Log($"Metadata-value of field '{fieldDefinitionId}' on document '{documentId}' cleared by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+                return;
+            }
+            string normalizedValue = NormalizeMetadataValue(definition, value);
+            this._Persistence.SetDocumentMetadataValue(documentId, fieldDefinitionId, normalizedValue);
+            this._AuditLog.Logger.Log($"Metadata-value of field '{fieldDefinitionId}' on document '{documentId}' set to '{normalizedValue}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <summary>Validates the given raw value against the field's type and returns its normalized representation (a boolean is normalized to its lower-case string-representation).</summary>
+        private static string NormalizeMetadataValue(MetadataFieldDefinition definition, string value)
+        {
+            switch (definition.Type)
+            {
+                case MetadataFieldType.Boolean:
+                    if (!bool.TryParse(value, out bool booleanValue))
+                    {
+                        throw new BadRequestException($"The value '{value}' is not a valid boolean-value for the metadata-field '{definition.Name}'.");
+                    }
+                    return booleanValue.ToString().ToLowerInvariant();
+                case MetadataFieldType.String:
+                    return value;
+                default:
+                    throw new BadRequestException($"Unsupported metadata-field-type '{definition.Type}'.");
             }
         }
 

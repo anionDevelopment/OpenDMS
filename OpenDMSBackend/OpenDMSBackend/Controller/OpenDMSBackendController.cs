@@ -451,6 +451,88 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Defines a new custom metadata-field for the specified storage-location. Only a moderator of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage-location the field is defined for.</param>
+        /// <param name="field">The name and type ("String" or "Boolean") of the field to create.</param>
+        /// <returns>The id of the created field-definition.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(DefineMetadataField)}/{{{nameof(storageLocationId)}}}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public IActionResult DefineMetadataField([FromRoute] string storageLocationId, [FromBody] MetadataFieldDefinitionCreationDTO field)
+        {
+            return this.Ok(this._BusinessLogicService.DefineMetadataField(this.GetUser().Id, storageLocationId, field.Name, ParseMetadataFieldType(field.Type)));
+        }
+
+        /// <summary>Removes the specified custom metadata-field-definition together with all values documents hold for it. Only a moderator of the field's storage-location may do this.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to remove.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpDelete]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveMetadataField)}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveMetadataField([FromRoute] string fieldDefinitionId)
+        {
+            this._BusinessLogicService.RemoveMetadataField(this.GetUser().Id, fieldDefinitionId);
+            return this.Ok();
+        }
+
+        /// <summary>Returns all custom metadata-fields defined for the specified storage-location. The current user must be allowed to view the storage-location.</summary>
+        /// <param name="storageLocationId">The id of the storage-location.</param>
+        /// <returns>The field-definitions as <see cref="MetadataFieldDefinitionDTO"/> objects.</returns>
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetMetadataFields)}/{{{nameof(storageLocationId)}}}")]
+        [ProducesResponseType(typeof(MetadataFieldDefinitionDTO[]), StatusCodes.Status200OK)]
+        public IActionResult GetMetadataFields([FromRoute] string storageLocationId)
+        {
+            return this.Ok(this._BusinessLogicService.GetMetadataFields(this.GetUser().Id, storageLocationId).Select(field => field.ToDTO()));
+        }
+
+        /// <summary>Sets the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <param name="value">The value to set. For a boolean-field the value must be parseable as a boolean.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(SetDocumentMetadataValue)}/{{{nameof(documentId)}}}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult SetDocumentMetadataValue([FromRoute] string documentId, [FromRoute] string fieldDefinitionId, [FromBody] StringValueDTO value)
+        {
+            this._BusinessLogicService.SetDocumentMetadataValue(this.GetUser().Id, documentId, fieldDefinitionId, value.Value);
+            return this.Ok();
+        }
+
+        /// <summary>Clears the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpDelete]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveDocumentMetadataValue)}/{{{nameof(documentId)}}}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveDocumentMetadataValue([FromRoute] string documentId, [FromRoute] string fieldDefinitionId)
+        {
+            this._BusinessLogicService.SetDocumentMetadataValue(this.GetUser().Id, documentId, fieldDefinitionId, null);
+            return this.Ok();
+        }
+
+        /// <summary>Parses the given field-type-string into a <see cref="Model.BusinessTypes.MetadataFieldType"/>, rejecting unknown values with a <see cref="GRYLibrary.Core.Exceptions.BadRequestException"/>.</summary>
+        private static Model.BusinessTypes.MetadataFieldType ParseMetadataFieldType(string type)
+        {
+            if (System.Enum.TryParse(type, true, out Model.BusinessTypes.MetadataFieldType result) && System.Enum.IsDefined(typeof(Model.BusinessTypes.MetadataFieldType), result))
+            {
+                return result;
+            }
+            throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{type}' is not a valid metadata-field-type. Allowed values are '{nameof(Model.BusinessTypes.MetadataFieldType.String)}' and '{nameof(Model.BusinessTypes.MetadataFieldType.Boolean)}'.");
+        }
+
         private GRYLibrary.Core.APIServer.CommonDBTypes.User GetUser()
         {
             return Tools.GetUser(this.User, this._AuthenticationService);
