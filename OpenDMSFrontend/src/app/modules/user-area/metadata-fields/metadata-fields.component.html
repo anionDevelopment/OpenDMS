@@ -1,0 +1,38 @@
+<div class="metadata-fields">
+  <h4 i18n="@@metadata_fields_title">Custom metadata-fields</h4>
+
+  <p *ngIf="fields.length === 0" class="metadata-fields-empty" i18n="@@metadata_fields_none">
+    No custom metadata-fields are defined for this storage-location yet.
+  </p>
+
+  <ul class="metadata-fields-list" *ngIf="fields.length > 0">
+    <li *ngFor="let field of fields">
+      <span class="metadata-field-name">{{field.name}}</span>
+      <span class="metadata-field-type">({{field.type}})</span>
+      <button *ngIf="userIsModerator" mat-icon-button color="warn" (click)="removeField(field)"
+              aria-label="Remove metadata-field" i18n-aria-label="@@metadata_field_remove">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </li>
+  </ul>
+
+  <div class="metadata-fields-add" *ngIf="userIsModerator">
+    <mat-form-field appearance="outline">
+      <mat-label i18n="@@metadata_field_name_label">Field-name</mat-label>
+      <input matInput [(ngModel)]="newFieldName" (keyup.enter)="addField()">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label i18n="@@metadata_field_type_label">Type</mat-label>
+      <mat-select [(ngModel)]="newFieldType">
+        <mat-option value="String" i18n="@@metadata_field_type_string">Text</mat-option>
+        <mat-option value="Boolean" i18n="@@metadata_field_type_boolean">Yes/No</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-button color="primary" (click)="addField()" [disabled]="newFieldName.trim().length === 0"
+            i18n="@@metadata_field_add">Add field</button>
+  </div>
+
+  <p *ngIf="changeNotAllowed" class="metadata-fields-error" i18n="@@metadata_field_change_not_allowed">
+    Only a moderator of the storage-location may change its metadata-fields.
+  </p>
+</div>

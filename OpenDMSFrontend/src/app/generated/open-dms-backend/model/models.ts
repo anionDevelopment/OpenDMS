@@ -3,6 +3,8 @@ export * from './documentDTO';
 export * from './documentPreviewDTO';
 export * from './folderDTO';
 export * from './generalSettingsDTO';
+export * from './metadataFieldDefinitionCreationDTO';
+export * from './metadataFieldDefinitionDTO';
 export * from './storageLocationDTO';
 export * from './stringValueDTO';
 export * from './tagDTO';
