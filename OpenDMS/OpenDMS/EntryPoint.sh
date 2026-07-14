@@ -2,7 +2,7 @@
 
 export IsRunningInDockerContainer=true
 
-argument="Run --RealRun"
+argument="Run --RealRun true"
 
 if [[ -n "${InitialAdminPassword}" ]]; then
     argument+=" --InitialAdminPassword $InitialAdminPassword"
@@ -50,6 +50,10 @@ fi
 
 if [[ -n "${InitialEnableEndpointMetricsValue}" ]]; then
     argument+=" --InitialEnableEndpointMetricsValue $InitialEnableEndpointMetricsValue"
+fi
+
+if [[ "${EnforceVerbose}" == "true" ]]; then
+    argument+=" --EnforceVerbose true"
 fi
 
 { cd /Workspace/Application/Backend && dotnet ./OpenDMSBackend.dll $argument; } &

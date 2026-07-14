@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v3.0.6 API documentation",
+    "title": "OpenDMSBackend v3.1.0 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v3.0.6"
+    "version": "v3.1.0"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
@@ -641,6 +641,233 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/AuthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Grants the specified user permission to change (edit) the specified storage location and its contents. Only a moderator (owner) of the storage-location may do this.",
+        "parameters": [
+          {
+            "name": "storageLocationId",
+            "in": "path",
+            "description": "The id of the storage location.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "editUserId",
+            "in": "path",
+            "description": "The id of the user to grant the edit-permission to.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/UnauthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Revokes the specified user's permission to change (edit) the specified storage location. Only a moderator (owner) of the storage-location may do this.",
+        "parameters": [
+          {
+            "name": "storageLocationId",
+            "in": "path",
+            "description": "The id of the storage location.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "editUserId",
+            "in": "path",
+            "description": "The id of the user whose edit-permission should be revoked.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/AddModerator/{contentId}/{newModeratorUserId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Adds the specified user as a moderator of the specified content-object (storage-location, folder or document). Only a moderator may do this. A content-object can have several moderators.",
+        "parameters": [
+          {
+            "name": "contentId",
+            "in": "path",
+            "description": "The id of the content-object.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newModeratorUserId",
+            "in": "path",
+            "description": "The id of the user to add as a moderator.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/RemoveModerator/{contentId}/{moderatorUserId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Removes the specified user from the moderators of the specified content-object. Only a moderator may do this. A folder or storage-location must always keep at least one moderator.",
+        "parameters": [
+          {
+            "name": "contentId",
+            "in": "path",
+            "description": "The id of the content-object.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moderatorUserId",
+            "in": "path",
+            "description": "The id of the moderator to remove.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetModerators/{contentId}": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns the ids of all moderators of the specified content-object. Only a moderator may query this.",
+        "parameters": [
+          {
+            "name": "contentId",
+            "in": "path",
+            "description": "The id of the content-object.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1392,6 +1619,272 @@
         }
       }
     },
+    "/API/v3/OpenDMSBackend/DefineMetadataField/{storageLocationId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Defines a new custom metadata-field for the specified storage-location. Only a moderator of the storage-location may do this.",
+        "parameters": [
+          {
+            "name": "storageLocationId",
+            "in": "path",
+            "description": "The id of the storage-location the field is defined for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The name and type (\"String\" or \"Boolean\") of the field to create.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataFieldDefinitionCreationDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataFieldDefinitionCreationDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataFieldDefinitionCreationDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/RemoveMetadataField/{fieldDefinitionId}": {
+      "delete": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Removes the specified custom metadata-field-definition together with all values documents hold for it. Only a moderator of the field's storage-location may do this.",
+        "parameters": [
+          {
+            "name": "fieldDefinitionId",
+            "in": "path",
+            "description": "The id of the field-definition to remove.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetMetadataFields/{storageLocationId}": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns all custom metadata-fields defined for the specified storage-location. The current user must be allowed to view the storage-location.",
+        "parameters": [
+          {
+            "name": "storageLocationId",
+            "in": "path",
+            "description": "The id of the storage-location.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/SetDocumentMetadataValue/{documentId}/{fieldDefinitionId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Sets the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fieldDefinitionId",
+            "in": "path",
+            "description": "The id of the metadata-field-definition.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The value to set. For a boolean-field the value must be parseable as a boolean.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/RemoveDocumentMetadataValue/{documentId}/{fieldDefinitionId}": {
+      "delete": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Clears the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fieldDefinitionId",
+            "in": "path",
+            "description": "The id of the metadata-field-definition.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/API/v3/UserController/Login": {
       "put": {
         "tags": [
@@ -1634,6 +2127,167 @@
           }
         }
       }
+    },
+    "/API/v3/UserController/GetAllUsers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns all users together with the roles assigned to them. Requires administrator privileges.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserOverviewDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserOverviewDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserOverviewDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/UserController/GetAllRoles": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns the names of all roles that can be assigned to a user. Requires administrator privileges.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/UserController/SetRolesOfUser": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Sets the complete set of roles of the given user (roles not contained are removed, missing ones are added). Requires administrator privileges.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "header",
+            "description": "The id of the user whose roles should be set.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The names of the roles the user should have afterwards.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1748,6 +2402,14 @@
           "versionTimestamp": {
             "type": "string",
             "description": "The moment this version was created, as a formatted string.",
+            "nullable": true
+          },
+          "metadataValues": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The values this document holds for the custom metadata-fields defined at its containing storage-location, keyed by the field-definition-id.\nA boolean-value is represented as \"true\"/\"false\". A field for which the document has no value is absent from this dictionary.",
             "nullable": true
           }
         },
@@ -1874,6 +2536,47 @@
         "additionalProperties": false,
         "description": "Data transfer object for the general (admin-configurable) OpenDMS-settings."
       },
+      "MetadataFieldDefinitionCreationDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The display-name of the field to create.",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "description": "The value-type of the field (\"String\" or \"Boolean\").",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object used to create a new custom metadata-field-definition for a storage-location."
+      },
+      "MetadataFieldDefinitionDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "storageLocationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "description": "The value-type of the field (\"String\" or \"Boolean\").",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object for a storage-location-specific custom metadata-field-definition."
+      },
       "StorageLocationDTO": {
         "type": "object",
         "properties": {
@@ -1946,6 +2649,29 @@
           }
         },
         "additionalProperties": false
+      },
+      "UserOverviewDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "roles": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a user together with the names of the roles currently assigned to it. Used for the administrative user-overview."
       }
     }
   },

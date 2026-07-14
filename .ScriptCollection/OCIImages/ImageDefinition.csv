@@ -8,4 +8,4 @@ SimpleOCR;docker.io/aniondev/simpleocr;1.5.0
 Syft;docker.io/anchore/syft;v1.41.2
 Curl;docker.io/curlimages/curl;8.20.0
 Betterleaks;ghcr.io/betterleaks/betterleaks;v1.4.1
-SCBuilder;aniondev/scbuilder;v1.2.3
+SCBuilder;aniondev/scbuilder;v1.2.5

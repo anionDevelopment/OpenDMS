@@ -60,6 +60,16 @@ components:
           type: string
         isSoftDeleted:
           type: boolean
+        metadataValues:
+          additionalProperties:
+            type: string
+          description: 'The values this document holds for the custom metadata-fields
+            defined at its containing storage-location, keyed by the field-definition-id.
+
+            A boolean-value is represented as "true"/"false". A field for which the
+            document has no value is absent from this dictionary.'
+          nullable: true
+          type: object
         mimeType:
           nullable: true
           type: string
@@ -184,6 +194,38 @@ components:
             document is added or changed.
           type: boolean
       type: object
+    MetadataFieldDefinitionCreationDTO:
+      additionalProperties: false
+      description: Data transfer object used to create a new custom metadata-field-definition
+        for a storage-location.
+      properties:
+        name:
+          description: The display-name of the field to create.
+          nullable: true
+          type: string
+        type:
+          description: The value-type of the field ("String" or "Boolean").
+          nullable: true
+          type: string
+      type: object
+    MetadataFieldDefinitionDTO:
+      additionalProperties: false
+      description: Data transfer object for a storage-location-specific custom metadata-field-definition.
+      properties:
+        id:
+          nullable: true
+          type: string
+        name:
+          nullable: true
+          type: string
+        storageLocationId:
+          nullable: true
+          type: string
+        type:
+          description: The value-type of the field ("String" or "Boolean").
+          nullable: true
+          type: string
+      type: object
     StorageLocationDTO:
       additionalProperties: false
       properties:
@@ -236,10 +278,28 @@ components:
           nullable: true
           type: string
       type: object
+    UserOverviewDTO:
+      additionalProperties: false
+      description: Represents a user together with the names of the roles currently
+        assigned to it. Used for the administrative user-overview.
+      properties:
+        id:
+          nullable: true
+          type: string
+        name:
+          nullable: true
+          type: string
+        roles:
+          items:
+            type: string
+          nullable: true
+          type: array
+          uniqueItems: true
+      type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
-  title: OpenDMSBackend v3.0.6 API documentation
-  version: v3.0.6
+  title: OpenDMSBackend v3.1.0 API documentation
+  version: v3.1.0
 openapi: 3.0.4
 paths:
   /API/Other/Maintenance/AvailabilityCheck:
@@ -389,6 +449,35 @@ paths:
       summary: Creates a new folder inside the specified parent folder.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/AddModerator/{contentId}/{newModeratorUserId}:
+    post:
+      parameters:
+      - description: The id of the content-object.
+        in: path
+        name: contentId
+        required: true
+        schema:
+          type: string
+      - description: The id of the user to add as a moderator.
+        in: path
+        name: newModeratorUserId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Adds the specified user as a moderator of the specified content-object
+        (storage-location, folder or document). Only a moderator may do this. A content-object
+        can have several moderators.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/AddStorageLocation/{name}:
     post:
       parameters:
@@ -421,6 +510,35 @@ paths:
         user.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/AuthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}:
+    post:
+      parameters:
+      - description: The id of the storage location.
+        in: path
+        name: storageLocationId
+        required: true
+        schema:
+          type: string
+      - description: The id of the user to grant the edit-permission to.
+        in: path
+        name: editUserId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Grants the specified user permission to change (edit) the specified
+        storage location and its contents. Only a moderator (owner) of the storage-location
+        may do this.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
     post:
       parameters:
@@ -447,6 +565,50 @@ paths:
           description: OK
       summary: Grants the specified user permission to view the specified storage
         location.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/DefineMetadataField/{storageLocationId}:
+    post:
+      parameters:
+      - description: The id of the storage-location the field is defined for.
+        in: path
+        name: storageLocationId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/MetadataFieldDefinitionCreationDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataFieldDefinitionCreationDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/MetadataFieldDefinitionCreationDTO'
+        description: The name and type ("String" or "Boolean") of the field to create.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+            text/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+          description: OK
+      summary: Defines a new custom metadata-field for the specified storage-location.
+        Only a moderator of the storage-location may do this.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GenerateAISummary/{documentId}:
@@ -723,6 +885,82 @@ paths:
       summary: Returns the most recently added documents visible to the current user.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GetMetadataFields/{storageLocationId}:
+    get:
+      parameters:
+      - description: The id of the storage-location.
+        in: path
+        name: storageLocationId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/MetadataFieldDefinitionDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/MetadataFieldDefinitionDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/MetadataFieldDefinitionDTO'
+                type: array
+          description: OK
+      summary: Returns all custom metadata-fields defined for the specified storage-location.
+        The current user must be allowed to view the storage-location.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GetModerators/{contentId}:
+    get:
+      parameters:
+      - description: The id of the content-object.
+        in: path
+        name: contentId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+            text/json:
+              schema:
+                items:
+                  type: string
+                type: array
+            text/plain:
+              schema:
+                items:
+                  type: string
+                type: array
+          description: OK
+      summary: Returns the ids of all moderators of the specified content-object.
+        Only a moderator may query this.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetStorageLocation/{id}:
     get:
       parameters:
@@ -852,6 +1090,86 @@ paths:
       summary: Moves the specified containee into the target container.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/RemoveDocumentMetadataValue/{documentId}/{fieldDefinitionId}:
+    delete:
+      parameters:
+      - description: The id of the document.
+        in: path
+        name: documentId
+        required: true
+        schema:
+          type: string
+      - description: The id of the metadata-field-definition.
+        in: path
+        name: fieldDefinitionId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Clears the value the specified document holds for the specified metadata-field.
+        The current user must be allowed to change the document.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/RemoveMetadataField/{fieldDefinitionId}:
+    delete:
+      parameters:
+      - description: The id of the field-definition to remove.
+        in: path
+        name: fieldDefinitionId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Removes the specified custom metadata-field-definition together with
+        all values documents hold for it. Only a moderator of the field's storage-location
+        may do this.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/RemoveModerator/{contentId}/{moderatorUserId}:
+    post:
+      parameters:
+      - description: The id of the content-object.
+        in: path
+        name: contentId
+        required: true
+        schema:
+          type: string
+      - description: The id of the moderator to remove.
+        in: path
+        name: moderatorUserId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Removes the specified user from the moderators of the specified content-object.
+        Only a moderator may do this. A folder or storage-location must always keep
+        at least one moderator.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/Rename/{containerId}/{newName}:
     post:
       parameters:
@@ -917,6 +1235,47 @@ paths:
         search term.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/SetDocumentMetadataValue/{documentId}/{fieldDefinitionId}:
+    post:
+      parameters:
+      - description: The id of the document.
+        in: path
+        name: documentId
+        required: true
+        schema:
+          type: string
+      - description: The id of the metadata-field-definition.
+        in: path
+        name: fieldDefinitionId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+        description: The value to set. For a boolean-field the value must be parseable
+          as a boolean.
+      responses:
+        '200':
+          description: OK
+      summary: Sets the value the specified document holds for the specified metadata-field.
+        The current user must be allowed to change the document.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/SetGeneralSettings:
     put:
       parameters:
@@ -977,6 +1336,35 @@ paths:
           description: OK
       summary: Marks the specified container or document as soft-deleted without removing
         it from storage.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/UnauthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}:
+    post:
+      parameters:
+      - description: The id of the storage location.
+        in: path
+        name: storageLocationId
+        required: true
+        schema:
+          type: string
+      - description: The id of the user whose edit-permission should be revoked.
+        in: path
+        name: editUserId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Revokes the specified user's permission to change (edit) the specified
+        storage location. Only a moderator (owner) of the storage-location may do
+        this.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
@@ -1118,6 +1506,70 @@ paths:
         as a regular document in the same folder and is linked to the old document.
       tags:
       - OpenDMSBackend
+  /API/v3/UserController/GetAllRoles:
+    get:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+            text/json:
+              schema:
+                items:
+                  type: string
+                type: array
+            text/plain:
+              schema:
+                items:
+                  type: string
+                type: array
+          description: OK
+      summary: Returns the names of all roles that can be assigned to a user. Requires
+        administrator privileges.
+      tags:
+      - User
+  /API/v3/UserController/GetAllUsers:
+    get:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserOverviewDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserOverviewDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/UserOverviewDTO'
+                type: array
+          description: OK
+      summary: Returns all users together with the roles assigned to them. Requires
+        administrator privileges.
+      tags:
+      - User
   /API/v3/UserController/GetRoles:
     put:
       parameters:
@@ -1242,6 +1694,45 @@ paths:
         '200':
           description: OK
       summary: Registers a new user account. Requires administrator privileges.
+      tags:
+      - User
+  /API/v3/UserController/SetRolesOfUser:
+    put:
+      parameters:
+      - description: The id of the user whose roles should be set.
+        in: header
+        name: userId
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              items:
+                type: string
+              type: array
+          application/json:
+            schema:
+              items:
+                type: string
+              type: array
+          text/json:
+            schema:
+              items:
+                type: string
+              type: array
+        description: The names of the roles the user should have afterwards.
+      responses:
+        '200':
+          description: OK
+      summary: Sets the complete set of roles of the given user (roles not contained
+        are removed, missing ones are added). Requires administrator privileges.
       tags:
       - User
   /API/v3/UserController/TokenIsValid:
