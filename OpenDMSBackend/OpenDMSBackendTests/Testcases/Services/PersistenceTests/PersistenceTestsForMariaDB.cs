@@ -92,5 +92,12 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             this.GetAllDocumentIds();
         }
 
+        [TestMethod(DisplayName = nameof(HardDeleteDocumentTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        public override void HardDeleteDocumentTest()
+        {
+            this.HardDeleteDocument();
+        }
+
     }
 }

@@ -63,5 +63,29 @@
         string GetScriptGetDirectlyInheritedRoleIds();
         string GetScriptRenameFolder();
         string GetScriptRenameStorageLocation();
+        string GetScriptGetAllUsers();
+        string GetScriptIsUserOwnerOfStorageLocation();
+        string GetScriptGetOwnersOfStorageLocation();
+        string GetScriptRemoveOwnerOfStorageLocation();
+        string GetScriptStorageLocationIsSharedWithUser();
+        string GetScriptStorageLocationIsEditableByUser();
+        string GetScriptAuthorizeUserToViewStorageLocation();
+        string GetScriptAuthorizeUserToEditStorageLocation();
+        string GetScriptUnauthorizeUserToViewStorageLocation();
+        string GetScriptUnauthorizeUserToEditStorageLocation();
+        string GetScriptRemoveRoleFromUser();
+        string GetScriptAssignTag();
+        string GetScriptHardDeleteDocument();
+        string GetScriptUnassignAllTagsOfDocument();
+        string GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow();
+        string GetScriptRemoveChild();
+        string GetScriptCreateMetadataFieldDefinition();
+        string GetScriptDeleteMetadataFieldDefinition();
+        string GetScriptDeleteMetadataValuesOfField();
+        string GetScriptGetMetadataFieldDefinition();
+        string GetScriptGetMetadataFieldDefinitionsOfStorageLocation();
+        string GetScriptSetDocumentMetadataValue();
+        string GetScriptRemoveDocumentMetadataValue();
+        string GetScriptGetMetadataValuesOfDocument();
     }
 }

@@ -48,7 +48,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public byte[] ToPicture(byte[] fileContent, string mimeType)
         {
-            throw new NotImplementedException();
+            //the mock returns empty results for all OCR-calls.
+            return Array.Empty<byte>();
         }
 
         /// <inheritdoc />

@@ -46,5 +46,6 @@ export interface DocumentDTO {
      * The moment this version was created, as a formatted string.
      */
     versionTimestamp?: string | null;
+    metadataValues?: { [key: string]: string; } | null;
 }
 

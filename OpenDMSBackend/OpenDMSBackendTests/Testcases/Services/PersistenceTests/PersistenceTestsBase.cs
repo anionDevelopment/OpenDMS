@@ -192,6 +192,44 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             }
         }
 
+        public abstract void HardDeleteDocumentTest();
+        public void HardDeleteDocument()
+        {
+            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
+            {
+                //arrange
+                TimeService timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
+                Tag tag = new Tag(Guid.NewGuid().ToString(), $"tag-{Guid.NewGuid()}", new ExtendedColor(0xFF0000));
+                persistenceD.Persistence.CreateTag(tag);
+                Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 05, TimeSpan.Zero), 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, "some ocr content", new byte[] { 9, 8 }, false, default, new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero), CodeUnitSpecificConstants.RolenameUsers, new HashSet<string>(), "added-by-user-id")
+                {
+                    AISummaryShort = "short summary",
+                    AISummaryLong = "long summary"
+                };
+                persistenceD.Persistence.CreateDocument(testDocument);
+                persistenceD.Persistence.AssignTag(testDocument.Id, tag.Id);
+                //the retention-deadline is in the past, so the document is initially eligible for hard-deletion.
+                Assert.IsTrue(persistenceD.Persistence.GetIdsOfDocumentsWhichMustBeHardDeletedNow().Contains(testDocument.Id));
+
+                //act
+                persistenceD.Persistence.HardDelete(testDocument.Id);
+
+                //assert: the row is kept for traceability but the content is stripped and the document is marked as hard-deleted.
+                Assert.IsTrue(persistenceD.Persistence.IsDocument(testDocument.Id));
+                Document reloaded = persistenceD.Persistence.GetDocument(testDocument.Id);
+                Assert.IsTrue(reloaded.IsHardDeleted);
+                Assert.AreEqual(0, reloaded.Content.Length);
+                Assert.AreEqual(0, reloaded.Preview.Length);
+                Assert.AreEqual(string.Empty, reloaded.OCRContent);
+                Assert.IsNull(reloaded.AISummaryShort);
+                Assert.IsNull(reloaded.AISummaryLong);
+                Assert.AreEqual(0, reloaded.Tags.Count);
+                //a hard-deleted document is no longer eligible for hard-deletion so that the housekeeping does not run endlessly.
+                Assert.IsFalse(persistenceD.Persistence.GetIdsOfDocumentsWhichMustBeHardDeletedNow().Contains(testDocument.Id));
+            }
+        }
+
         public abstract void GetAllDocumentIdsTest();
         public void GetAllDocumentIds()
         {

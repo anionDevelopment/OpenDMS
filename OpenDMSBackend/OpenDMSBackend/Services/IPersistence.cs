@@ -70,15 +70,31 @@ namespace OpenDMSBackend.Core.Services
         /// <returns><see langword="true"/> if the storage location is shared with the user; otherwise <see langword="false"/>.</returns>
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId);
 
+        /// <summary>Returns whether the specified user has been granted the permission to change (edit) the specified storage location and its contents.</summary>
+        /// <param name="storageLocationId">The id of the storage location to check.</param>
+        /// <param name="userId">The id of the user to check.</param>
+        /// <returns><see langword="true"/> if the user may edit the storage location; otherwise <see langword="false"/>.</returns>
+        public bool StorageLocationIsEditableByUser(string storageLocationId, string userId);
+
         /// <summary>Creates a new storage location with the given name and returns its generated id.</summary>
         /// <param name="name">The display name of the new storage location.</param>
         /// <returns>The id of the newly created storage location.</returns>
         public string AddStoragLocation(string name);
 
-        /// <summary>Sets the owner of the specified storage location to the specified user.</summary>
-        /// <param name="storageLocationId">The id of the storage location.</param>
-        /// <param name="userId">The id of the user who should become the owner.</param>
+        /// <summary>Adds the specified user as a moderator ("owner") of the specified content-object (storage-location, folder or document). A content-object can have several moderators.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <param name="userId">The id of the user who should become a moderator.</param>
         public void SetOwnerOfStorageLocation(string storageLocationId, string userId);
+
+        /// <summary>Returns the ids of all users which are moderators ("owners") of the specified content-object.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <returns>The ids of the moderators; empty if none.</returns>
+        public System.Collections.Generic.ISet<string> GetOwnersOfStorageLocation(string storageLocationId);
+
+        /// <summary>Removes the specified user from the moderators ("owners") of the specified content-object.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <param name="userId">The id of the user to remove from the moderators.</param>
+        public void RemoveOwnerOfStorageLocation(string storageLocationId, string userId);
 
         /// <summary>Creates a new folder with the given name and returns its generated id.</summary>
         /// <param name="name">The display name of the new folder.</param>
@@ -162,6 +178,16 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="storageLocationId">The id of the storage location.</param>
         /// <param name="sharedWithUserId">The id of the user whose access should be revoked.</param>
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId);
+
+        /// <summary>Grants the specified user the permission to change (edit) the specified storage location and its contents (which also implies the permission to view it).</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user to grant the edit-permission to.</param>
+        public void AuthorizeUserToEditStorageLocation(string storageLocationId, string editUserId);
+
+        /// <summary>Revokes the specified user's permission to change (edit) the specified storage location. The view-permission (if granted) is kept.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user whose edit-permission should be revoked.</param>
+        public void UnauthorizeUserToEditStorageLocation(string storageLocationId, string editUserId);
 
         /// <summary>Renames the specified container to the given new name.</summary>
         /// <param name="containerId">The id of the container to rename.</param>
@@ -247,5 +273,43 @@ namespace OpenDMSBackend.Core.Services
 
         /// <summary>Returns whether a user with the given external login exists.</summary>
         public bool UserWithExternalLoginExists(string providerId, string subject);
+
+        #region Metadata-fields
+
+        /// <summary>Persists a new storage-location-specific custom metadata-field-definition.</summary>
+        /// <param name="definition">The field-definition to create.</param>
+        public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition);
+
+        /// <summary>Deletes the metadata-field-definition with the given id together with all document-values stored for it.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to delete.</param>
+        public void DeleteMetadataFieldDefinition(string fieldDefinitionId);
+
+        /// <summary>Returns the metadata-field-definition with the given id.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to retrieve.</param>
+        /// <returns>The matching <see cref="MetadataFieldDefinition"/>.</returns>
+        public MetadataFieldDefinition GetMetadataFieldDefinition(string fieldDefinitionId);
+
+        /// <summary>Returns all metadata-field-definitions defined for the given storage-location.</summary>
+        /// <param name="storageLocationId">The id of the storage-location.</param>
+        /// <returns>The field-definitions of the storage-location; empty if none.</returns>
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldDefinitionsOfStorageLocation(string storageLocationId);
+
+        /// <summary>Sets (inserts or updates) the value the given document holds for the given metadata-field.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <param name="value">The value to store (a boolean-value is stored as "true"/"false").</param>
+        public void SetDocumentMetadataValue(string documentId, string fieldDefinitionId, string value);
+
+        /// <summary>Removes the value the given document holds for the given metadata-field (if any).</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        public void RemoveDocumentMetadataValue(string documentId, string fieldDefinitionId);
+
+        /// <summary>Returns all metadata-values the given document holds, keyed by the field-definition-id.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <returns>A dictionary of field-definition-id to value; empty if the document has no values.</returns>
+        public IDictionary<string, string> GetMetadataValuesOfDocument(string documentId);
+
+        #endregion
     }
 }

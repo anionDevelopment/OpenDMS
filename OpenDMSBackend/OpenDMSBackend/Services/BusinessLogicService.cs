@@ -75,11 +75,17 @@ namespace OpenDMSBackend.Core.Services
         /// <returns>The id of the newly created document.</returns>
         public string AddDocument(string? requesterUserId, string? title, string containerId, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
+            //adding a document changes the target-container, so the requesting user must be allowed to change it. Automatic imports (see issue #11 / ManagementService) pass no requesting user and are always allowed.
+            if (requesterUserId != null)
+            {
+                this.EnsureUserIsAllowedToEditContent(requesterUserId, containerId);
+            }
             lock (_LockObject)
             {
                 Document document = this.CreateAndPersistAnalysedDocument(requesterUserId, title, containerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
                 this.RegisterAsNewVersion(document, null);
                 this.GenerateAISummaryIfAutoGenerationIsEnabled(document);
+                this._AuditLog.Logger.Log($"Document '{document.Id}' (readable-id {document.ReadableId}) added to container '{containerId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
                 return document.Id;
             }
         }
@@ -123,14 +129,18 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public string UploadNewVersion(string? requesterUserId, string oldDocumentId, string? title, string originalFilename, byte[] content, string groupOfBusinessOwner, ISet<string> additionalOCRLanguages)
         {
-            //TODO check permission
+            //uploading a new version changes the existing document, so the requesting user must be allowed to change it. Automatic imports pass no requesting user and are always allowed.
+            if (requesterUserId != null)
+            {
+                this.EnsureUserIsAllowedToEditContent(requesterUserId, oldDocumentId);
+            }
             lock (_LockObject)
             {
                 string parentContainerId = this._Persistence.GetParentIdOfContainee(oldDocumentId);
                 Document newVersion = this.CreateAndPersistAnalysedDocument(requesterUserId, title, parentContainerId, originalFilename, content, groupOfBusinessOwner, additionalOCRLanguages);
                 this.RegisterAsNewVersion(newVersion, oldDocumentId);
                 this.GenerateAISummaryIfAutoGenerationIsEnabled(newVersion);
-                this._AuditLog.Logger.Log($"New version '{newVersion.Id}' (version {newVersion.VersionNumber}) of document '{oldDocumentId}' uploaded.", Microsoft.Extensions.Logging.LogLevel.Information);
+                this._AuditLog.Logger.Log($"New version '{newVersion.Id}' (version {newVersion.VersionNumber}) of document '{oldDocumentId}' uploaded by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
                 return newVersion.Id;
             }
         }
@@ -225,9 +235,83 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public bool UserIsAllowedToEditContent(string userId, string documentId)
+        public bool UserIsAllowedToEditContent(string userId, string contentId)
         {
-            throw new NotImplementedException();
+            return this.UserHasPermissionInHierarchy(userId, contentId, RequiredPermission.Edit);
+        }
+
+        /// <summary>Ensures the given user is allowed to change the given content and throws a <see cref="NotAuthorizedException"/> otherwise.</summary>
+        private void EnsureUserIsAllowedToEditContent(string requesterUserId, string contentId)
+        {
+            if (!this.UserIsAllowedToEditContent(requesterUserId, contentId))
+            {
+                throw new NotAuthorizedException($"No permission to change '{contentId}'.");
+            }
+        }
+
+        /// <summary>Ensures the operation is performed by an authenticated user and throws a <see cref="NotAuthorizedException"/> otherwise.</summary>
+        private void EnsureAuthenticated(string? requesterUserId)
+        {
+            if (string.IsNullOrEmpty(requesterUserId))
+            {
+                throw new NotAuthorizedException("This operation requires an authenticated user.");
+            }
+        }
+
+        /// <summary>Describes the initiator of an operation for audit-log-entries. Operations without a requesting user are automatic system-operations (for example imports or the scheduled hard-deletion).</summary>
+        private static string DescribeRequester(string? requesterUserId)
+        {
+            return string.IsNullOrEmpty(requesterUserId) ? "an automatic system-operation" : $"user '{requesterUserId}'";
+        }
+
+        /// <summary>Ensures the given user has administrator-privileges and throws a <see cref="NotAuthorizedException"/> otherwise.</summary>
+        private void EnsureAdministrator(string requesterUserId)
+        {
+            if (!this.UserIsAdministrator(requesterUserId))
+            {
+                throw new NotAuthorizedException("This operation requires administrator-privileges.");
+            }
+        }
+
+        /// <summary>Ensures the given user is a moderator of the content-object (or of one of its ancestors) and throws a <see cref="NotAuthorizedException"/> otherwise. Only a moderator may manage a content-object's permissions and moderators (see issue #13).</summary>
+        private void EnsureUserIsModeratorOfStorageLocation(string requesterUserId, string contentId)
+        {
+            if (!this.UserHasPermissionInHierarchy(requesterUserId, contentId, RequiredPermission.Moderate))
+            {
+                throw new NotAuthorizedException($"Only a moderator of '{contentId}' may manage its permissions.");
+            }
+        }
+
+        /// <inheritdoc />
+        public void AddModerator(string requesterUserId, string contentId, string newModeratorUserId)
+        {
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, contentId);
+            this._Persistence.SetOwnerOfStorageLocation(contentId, newModeratorUserId);
+            this._AuditLog.Logger.Log($"User '{newModeratorUserId}' added as moderator of '{contentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public void RemoveModerator(string requesterUserId, string contentId, string moderatorUserId)
+        {
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, contentId);
+            //a container (storage-location or folder) must always keep at least one moderator; the last moderator can not be removed.
+            if (!this._Persistence.IsDocument(contentId))
+            {
+                ISet<string> moderators = this._Persistence.GetOwnersOfStorageLocation(contentId);
+                if (moderators.Contains(moderatorUserId) && moderators.Count <= 1)
+                {
+                    throw new BadRequestException($"A folder or storage-location must always have at least one moderator; the last moderator of '{contentId}' can not be removed.");
+                }
+            }
+            this._Persistence.RemoveOwnerOfStorageLocation(contentId, moderatorUserId);
+            this._AuditLog.Logger.Log($"User '{moderatorUserId}' removed as moderator of '{contentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<string> GetModerators(string requesterUserId, string contentId)
+        {
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, contentId);
+            return this._Persistence.GetOwnersOfStorageLocation(contentId);
         }
 
         /// <inheritdoc />
@@ -241,7 +325,7 @@ namespace OpenDMSBackend.Core.Services
             return searchResults
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(this._Persistence.GetDocumentPreview)
-                .Where(preview => preview.IsLatestVersion)
+                .Where(preview => preview.IsLatestVersion && !preview.IsHardDeleted)
                 .ToList();
         }
 
@@ -252,80 +336,95 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public void CreateTag(string tagName, ExtendedColor tagColor)
+        public void CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor)
         {
-            //TODO do permission check
-            this._Persistence.CreateTag(new Tag(Guid.NewGuid().ToString(), tagName, tagColor));
+            //creating a (globally usable) tag is allowed for any authenticated user.
+            this.EnsureAuthenticated(requesterUserId);
+            Tag tag = new Tag(Guid.NewGuid().ToString(), tagName, tagColor);
+            this._Persistence.CreateTag(tag);
+            this._AuditLog.Logger.Log($"Tag '{tagName}' (id '{tag.Id}') created by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
-        /// <summary>Assigns an existing tag to an existing document.</summary>
+        /// <summary>Assigns an existing tag to an existing document. The requesting user must be allowed to change the document.</summary>
+        /// <param name="requesterUserId">The id of the user performing the operation.</param>
         /// <param name="documentId">The id of the document.</param>
         /// <param name="tagId">The id of the tag to assign.</param>
-        public void AssignTag(string documentId, string tagId)
+        public void AssignTag(string requesterUserId, string documentId, string tagId)
         {
-            //TODO do permission check
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             this._Persistence.AssignTag(documentId, tagId);
+            this._AuditLog.Logger.Log($"Tag '{tagId}' assigned to document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
-        /// <summary>Removes a tag assignment from an existing document.</summary>
+        /// <summary>Removes a tag assignment from an existing document. The requesting user must be allowed to change the document.</summary>
+        /// <param name="requesterUserId">The id of the user performing the operation.</param>
         /// <param name="documentId">The id of the document.</param>
         /// <param name="tagId">The id of the tag to unassign.</param>
-        public void UnassignTag(string documentId, string tagId)
+        public void UnassignTag(string requesterUserId, string documentId, string tagId)
         {
-            //TODO do permission check
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             this._Persistence.UnassignTag(documentId, tagId);
+            this._AuditLog.Logger.Log($"Tag '{tagId}' unassigned from document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
         public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
-            return Core.Misc.Utilities.DoForContentObject(this._Persistence, contentId,
-                (storageLocationId) => this.UserIsAllowedToViewStorageLocation(userId, storageLocationId),
-                (folderId) => this.UserIsAllowedToViewFolder(userId, folderId),
-                (documentId) => this.UserIsAllowedToViewDocument(userId, documentId)
-            );
+            return this.UserHasPermissionInHierarchy(userId, contentId, RequiredPermission.View);
         }
 
         /// <inheritdoc />
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId)
         {
-            if (this.UserIsAdministrator(userId))
-            {
-                return true;
-            }
-            if (this._Persistence.UserIsOwnerOfStorageLocation(userId, storageLocationId))
-            {
-                return true;
-            }
-            if (this._Persistence.StorageLocationIsSharedWithUser(storageLocationId, userId))
-            {
-                return true;
-            }
-            //add more possibilities if desired
-            return false;
+            return this.UserIsAllowedToViewContent(userId, storageLocationId);
         }
 
         /// <inheritdoc />
         public bool UserIsAllowedToViewFolder(string userId, string contentId)
         {
-            string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(contentId);
-            if (this.UserIsAllowedToViewStorageLocation(userId, storageLocationId))
-            {
-                return true;
-            }
-            //add more possibilities if desired
-            return false;
+            return this.UserIsAllowedToViewContent(userId, contentId);
         }
 
         /// <inheritdoc />
         public bool UserIsAllowedToViewDocument(string userId, string contentId)
         {
-            string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(contentId);
-            if (this.UserIsAllowedToViewStorageLocation(userId, storageLocationId))
+            return this.UserIsAllowedToViewContent(userId, contentId);
+        }
+
+        /// <summary>The kind of permission required for an operation. Moderation (managing a content-object's permissions/moderators) requires being a moderator; a mere view- or edit-grant is not sufficient for it.</summary>
+        private enum RequiredPermission
+        {
+            View,
+            Edit,
+            Moderate
+        }
+
+        /// <summary>Determines whether the given user has the required permission on the given content-object. Access-protection follows a default-deny concept with inheritance (see issue #13): every content-object (storage-location, folder or document) can have its own moderators ("owners") and view-/edit-grants, and a user is allowed if - at the content-object itself or at any of its ancestors up to the containing storage-location - the user is a moderator or has the required grant. Being an administrator does NOT grant access to content.</summary>
+        private bool UserHasPermissionInHierarchy(string userId, string contentId, RequiredPermission required)
+        {
+            string currentId = contentId;
+            while (true)
             {
-                return true;
+                //a moderator ("owner") at any level of the hierarchy has all permissions on the content-object and its contents.
+                if (this._Persistence.UserIsOwnerOfStorageLocation(userId, currentId))
+                {
+                    return true;
+                }
+                if (required == RequiredPermission.View && this._Persistence.StorageLocationIsSharedWithUser(currentId, userId))
+                {
+                    return true;
+                }
+                if (required == RequiredPermission.Edit && this._Persistence.StorageLocationIsEditableByUser(currentId, userId))
+                {
+                    return true;
+                }
+                if (this._Persistence.IsStorageLocation(currentId))
+                {
+                    //reached the root of the containment-hierarchy.
+                    break;
+                }
+                currentId = this._Persistence.GetParentIdOfContainee(currentId);
             }
-            //add more possibilities if desired
             return false;
         }
 
@@ -342,7 +441,7 @@ namespace OpenDMSBackend.Core.Services
                 .GetAllDocumentIds()
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
-                .Where(document => document.IsLatestVersion)
+                .Where(document => document.IsLatestVersion && !document.IsHardDeleted)
                 .OrderByDescending(document => document.GetNewestDate(document))
                 .Take(5)
                 .ToList();
@@ -356,19 +455,21 @@ namespace OpenDMSBackend.Core.Services
             {
                 //a metadata-change creates a new version whose content, OCR-content and AI-summary are copied from the current version (they are not recomputed).
                 this.CreateMetadataVersion(requesterUserId, documentId, newVersion => newVersion.Title = OneLineString.From(newTitle));
+                this._AuditLog.Logger.Log($"Title of document '{documentId}' changed to '{newTitle}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
             }
         }
 
         /// <summary>Creates a new version of the given document in which only metadata is changed (via <paramref name="mutate"/>). Content, preview, OCR-content and AI-summary are copied unchanged from the current version.</summary>
         private void CreateMetadataVersion(string requesterUserId, string currentDocumentId, Action<Document> mutate)
         {
-            //TODO check permission
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, currentDocumentId);
             Document current = this._Persistence.GetDocument(currentDocumentId);
             Document newVersion = new Document(Guid.NewGuid().ToString(), current.Title, current.Filename, current.OriginalFilename, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset(), this._IdGenerator.GenerateNewId(), new HashSet<Tag>(current.Tags), current.MIMEType, current.Content, current.OCRContent, current.Preview, current.IsSoftDeleted, current.DeleteIsNotAllowedBefore, current.MustBeHardDeletedAfter, current.GroupOfBusinessOwner, new HashSet<string>(current.AssignedLanguages), current.AddedByUserId)
             {
                 AISummaryShort = current.AISummaryShort,
                 AISummaryLong = current.AISummaryLong,
             };
+            newVersion.MetadataValues = new Dictionary<string, string>(current.MetadataValues);
             mutate(newVersion);
             this.Validate(newVersion);
             this._Persistence.CreateDocument(newVersion);
@@ -379,7 +480,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void Update(string requesterUserId, Document updatedDocument)
         {
-            //TODO check permission (remember: a user can change the name, the content, etc. dependent on his permissions, but only if the user is in GroupOfBusinessOwner he is allowed to do a hard-delete or to change the DeleteIsNotAllowedBefore- or MustBeHardDeletedAfter-value.)
+            //the requesting user must be allowed to change the document. (Future refinement: only members of the GroupOfBusinessOwner may change the retention-dates DeleteIsNotAllowedBefore/MustBeHardDeletedAfter or hard-delete; see issue #13.)
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, updatedDocument.Id);
             //TODO check validity, for example: content must not be null, DeleteIsNotAllowedBefore must be lower or equal to MustBeHardDeletedAfter, etc.
             lock (_LockObject)
             {
@@ -403,6 +505,7 @@ namespace OpenDMSBackend.Core.Services
                 this._Persistence.SetParentOfContainee(newVersion, this._Persistence.GetParentIdOfContainee(updatedDocument.Id));
                 this.RegisterAsNewVersion(newVersion, updatedDocument.Id);
                 this.GenerateAISummaryIfAutoGenerationIsEnabled(newVersion);
+                this._AuditLog.Logger.Log($"Document '{updatedDocument.Id}' updated (new version '{newVersion.Id}', version {newVersion.VersionNumber}) by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
             }
         }
 
@@ -427,9 +530,10 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void GenerateAISummary(string requesterUserId, string documentId)
         {
-            //TODO check permission
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             Document document = this._Persistence.GetDocument(documentId);
             this.GenerateAndStoreAISummary(document);
+            this._AuditLog.Logger.Log($"AI-summary of document '{documentId}' (re)generated by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         private void GenerateAndStoreAISummary(Document document)
@@ -571,7 +675,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public string AddStorageLocation(string requesterUserId, string name)
         {
-            //TODO check permission
+            //any authenticated user may create a storage-location; the creator becomes its owner.
+            this.EnsureAuthenticated(requesterUserId);
             string id = this._Persistence.AddStoragLocation(name);
             this._Persistence.SetOwnerOfStorageLocation(id, requesterUserId);
             this._AuditLog.Logger.Log($"Storage-location '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
@@ -581,9 +686,12 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public string AddFolder(string requesterUserId, string name, string parentContainerId)
         {
-            //TODO check permission
+            //adding a folder changes the parent-container, so the user must be allowed to change it.
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, parentContainerId);
             string id = this._Persistence.AddFolder(name);
             this._Persistence.SetParentOfContainee(this.GetContainee(id), parentContainerId);
+            //every folder must have at least one moderator ("owner"); the creator becomes its first moderator.
+            this._Persistence.SetOwnerOfStorageLocation(id, requesterUserId);
             this._AuditLog.Logger.Log($"Folder '{name}' added. (Technical-id: {id}, requester-user-id: {requesterUserId})", Microsoft.Extensions.Logging.LogLevel.Information);
             return id;
         }
@@ -591,47 +699,84 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void Rename(string requesterUserId, string containerId, string newName)
         {
-            //TODO check permission
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, containerId);
             this._Persistence.Rename(containerId, newName);
+            this._AuditLog.Logger.Log($"Container '{containerId}' renamed to '{newName}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
-            //TODO check permission
+            //only a moderator (owner) of the storage-location may manage who it is shared with.
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
             this._Persistence.AuthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
+            this._AuditLog.Logger.Log($"Storage-location '{storageLocationId}' shared for viewing with user '{sharedWithUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public void AuthorizeUserToEditStorageLocation(string requesterUserId, string storageLocationId, string editUserId)
+        {
+            //only a moderator (owner) of the storage-location may grant the permission to change its contents.
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
+            this._Persistence.AuthorizeUserToEditStorageLocation(storageLocationId, editUserId);
+            this._AuditLog.Logger.Log($"Storage-location '{storageLocationId}' shared for editing with user '{editUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public void UnauthorizeUserToEditStorageLocation(string requesterUserId, string storageLocationId, string editUserId)
+        {
+            //only a moderator (owner) of the storage-location may revoke the permission to change its contents.
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
+            this._Persistence.UnauthorizeUserToEditStorageLocation(storageLocationId, editUserId);
+            this._AuditLog.Logger.Log($"Edit-permission for storage-location '{storageLocationId}' revoked from user '{editUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string requesterUserId, string storageLocationId, string sharedWithUserId)
         {
-            //TODO check permission
+            //only a moderator (owner) of the storage-location may manage who it is shared with.
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
             this._Persistence.UnauthorizeUserToViewStorageLocation(storageLocationId, sharedWithUserId);
+            this._AuditLog.Logger.Log($"View-permission for storage-location '{storageLocationId}' revoked from user '{sharedWithUserId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
         public void HardDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
-            //TODO check permission
-
-            //remove from parent container
-            if (this._Persistence.IsContaineeId(containerOrContaineeId))
+            //when a user triggers the deletion, verify they may change the content. Automatic housekeeping (see issue #11) passes no requesting user and is always allowed. The check is done outside of the try-block on purpose so that a permission-error is reported to the caller instead of being swallowed by the error-logging.
+            if (requesterUserId != null)
             {
-                string parentId = this._Persistence.GetParentIdOfContainee(containerOrContaineeId);
-                this._Persistence.RemoveChild(parentId, containerOrContaineeId);
+                this.EnsureUserIsAllowedToEditContent(requesterUserId, containerOrContaineeId);
             }
+            try
+            {
+                //remove from parent container. A hard-deleted document keeps its place in the containment-tree (its row is kept for traceability and it is only hidden from the listings), so only containers (folders/storage-locations) are unlinked from their parent.
+                if (this._Persistence.IsContaineeId(containerOrContaineeId) && !this._Persistence.IsDocument(containerOrContaineeId))
+                {
+                    string parentId = this._Persistence.GetParentIdOfContainee(containerOrContaineeId);
+                    this._Persistence.RemoveChild(parentId, containerOrContaineeId);
+                }
 
-            //remove content
-            Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId, reason), (folderId) => this.RemoveEntireContent(requesterUserId, folderId, reason), null);
+                //remove content
+                Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId, (storageLocationId) => this.RemoveEntireContent(requesterUserId, storageLocationId, reason), (folderId) => this.RemoveEntireContent(requesterUserId, folderId, reason), null);
 
-            this._Persistence.HardDelete(containerOrContaineeId);
-            this._AuditLog.Logger.Log($"Hard-deleted {containerOrContaineeId}. Reason: {reason}");
+                this._Persistence.HardDelete(containerOrContaineeId);
+                this._AuditLog.Logger.Log($"Hard-deleted '{containerOrContaineeId}' by {DescribeRequester(requesterUserId)}. Reason: {reason}");
+            }
+            catch (Exception exception)
+            {
+                this._Logger.Log($"Hard-deletion of '{containerOrContaineeId}' failed. Reason of the deletion-attempt: {reason}", exception);
+            }
         }
 
         /// <inheritdoc />
         public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason)
         {
-            //TODO check permission
+            //when a user triggers the soft-deletion, verify they may change the content. Automatic operations pass no requesting user and are always allowed.
+            if (requesterUserId != null)
+            {
+                this.EnsureUserIsAllowedToEditContent(requesterUserId, containerOrContaineeId);
+            }
 
             //mark content as soft-deleted (documents are only marked, containers are handled recursively)
             Core.Misc.Utilities.DoForContentObject(this._Persistence, containerOrContaineeId,
@@ -639,7 +784,7 @@ namespace OpenDMSBackend.Core.Services
                 (folderId) => this.SoftDeleteEntireContent(requesterUserId, folderId, reason),
                 (documentId) => this._Persistence.SoftDelete(documentId));
 
-            this._AuditLog.Logger.Log($"Soft-deleted {containerOrContaineeId}. Reason: {reason}");
+            this._AuditLog.Logger.Log($"Soft-deleted '{containerOrContaineeId}' by {DescribeRequester(requesterUserId)}. Reason: {reason}");
         }
 
         private void SoftDeleteEntireContent(string? requesterUserId, string containerId, string reason)
@@ -654,9 +799,12 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId)
         {
-            //TODO check permission
+            //moving requires the permission to change both the moved containee (its current location) and the target-container it is moved into.
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, containeeIdToMove);
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, targetContainerId);
             //TODO remove containeeToMove from previous parent
             this._Persistence.SetParentOfContainee(this.GetContainee(containeeIdToMove), targetContainerId);
+            this._AuditLog.Logger.Log($"Containee '{containeeIdToMove}' moved into container '{targetContainerId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         private IContainee GetContainee(string containeeId)
@@ -672,6 +820,49 @@ namespace OpenDMSBackend.Core.Services
         public bool UserIsAdministrator(string userId)
         {
             return this._AuthenticationService.GetUser(userId).GetAllRoles().Where(role => role.Name == CodeUnitSpecificConstants.RolenameAdmins).Any();
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<UserOverviewDTO> GetAllUsersWithRoles(string requesterUserId)
+        {
+            this.EnsureAdministrator(requesterUserId);
+            ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> allRoles = this._Persistence.GetAllRoles();
+            List<UserOverviewDTO> result = new List<UserOverviewDTO>();
+            foreach (Model.BusinessTypes.User user in this._Persistence.GetAllUsers().Values)
+            {
+                ISet<string> roleNames = allRoles.Where(role => this._Persistence.UserHasRole(user.Id, role.Id)).Select(role => role.Name).ToHashSet();
+                result.Add(new UserOverviewDTO(user.Id, user.Name, roleNames));
+            }
+            return result;
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<string> GetAllRoleNames(string requesterUserId)
+        {
+            this.EnsureAdministrator(requesterUserId);
+            return this._Persistence.GetAllRoles().Select(role => role.Name).ToList();
+        }
+
+        /// <inheritdoc />
+        public void SetRolesOfUser(string requesterUserId, string targetUserId, ISet<string> roleNames)
+        {
+            this.EnsureAdministrator(requesterUserId);
+            //resolve the requested role-names to roles first (GetRoleByName throws for an unknown role-name, so invalid input is rejected before any change is made).
+            ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> targetRoles = roleNames.Select(this._Persistence.GetRoleByName).ToHashSet();
+            foreach (GRYLibrary.Core.APIServer.CommonDBTypes.Role role in this._Persistence.GetAllRoles())
+            {
+                bool shouldHaveRole = targetRoles.Any(targetRole => targetRole.Id == role.Id);
+                bool hasRole = this._Persistence.UserHasRole(targetUserId, role.Id);
+                if (shouldHaveRole && !hasRole)
+                {
+                    this._Persistence.AddRoleToUser(targetUserId, role.Id);
+                }
+                else if (!shouldHaveRole && hasRole)
+                {
+                    this._Persistence.RemoveRoleFromUser(targetUserId, role.Id);
+                }
+            }
+            this._AuditLog.Logger.Log($"Roles of user '{targetUserId}' set to [{string.Join(", ", roleNames)}] by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
@@ -708,6 +899,85 @@ namespace OpenDMSBackend.Core.Services
             foreach (IContainee child in container.Content)
             {
                 this.HardDelete(requesterUserId, child.Id, reason);
+            }
+        }
+
+        /// <inheritdoc />
+        public string DefineMetadataField(string requesterUserId, string storageLocationId, string name, MetadataFieldType type)
+        {
+            //custom metadata-fields are defined per storage-location and only a moderator of it may define them.
+            if (!this._Persistence.IsStorageLocation(storageLocationId))
+            {
+                throw new BadRequestException($"Custom metadata-fields can only be defined for a storage-location, but '{storageLocationId}' is not a storage-location.");
+            }
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, storageLocationId);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new BadRequestException("The name of a metadata-field must not be empty.");
+            }
+            if (this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(storageLocationId).Any(existing => string.Equals(existing.Name, name, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new BadRequestException($"A metadata-field with the name '{name}' is already defined for storage-location '{storageLocationId}'.");
+            }
+            MetadataFieldDefinition definition = new MetadataFieldDefinition(Guid.NewGuid().ToString(), storageLocationId, name, type);
+            this._Persistence.CreateMetadataFieldDefinition(definition);
+            this._AuditLog.Logger.Log($"Metadata-field '{name}' (id '{definition.Id}', type {type}) defined for storage-location '{storageLocationId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+            return definition.Id;
+        }
+
+        /// <inheritdoc />
+        public void RemoveMetadataField(string requesterUserId, string fieldDefinitionId)
+        {
+            MetadataFieldDefinition definition = this._Persistence.GetMetadataFieldDefinition(fieldDefinitionId);
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, definition.StorageLocationId);
+            this._Persistence.DeleteMetadataFieldDefinition(fieldDefinitionId);
+            this._AuditLog.Logger.Log($"Metadata-field '{definition.Name}' (id '{fieldDefinitionId}') of storage-location '{definition.StorageLocationId}' removed by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFields(string requesterUserId, string storageLocationId)
+        {
+            this.EnsureUserIsAllowedToViewContent(requesterUserId, storageLocationId);
+            return this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(storageLocationId).ToList();
+        }
+
+        /// <inheritdoc />
+        public void SetDocumentMetadataValue(string requesterUserId, string documentId, string fieldDefinitionId, string? value)
+        {
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
+            MetadataFieldDefinition definition = this._Persistence.GetMetadataFieldDefinition(fieldDefinitionId);
+            //a metadata-field can only be set on a document contained in the storage-location the field was defined for.
+            string storageLocationIdOfDocument = this._Persistence.GetIdOfStorageLocationContainedIn(documentId);
+            if (definition.StorageLocationId != storageLocationIdOfDocument)
+            {
+                throw new BadRequestException($"The metadata-field '{fieldDefinitionId}' is not defined for the storage-location of document '{documentId}'.");
+            }
+            if (value == null)
+            {
+                this._Persistence.RemoveDocumentMetadataValue(documentId, fieldDefinitionId);
+                this._AuditLog.Logger.Log($"Metadata-value of field '{fieldDefinitionId}' on document '{documentId}' cleared by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+                return;
+            }
+            string normalizedValue = NormalizeMetadataValue(definition, value);
+            this._Persistence.SetDocumentMetadataValue(documentId, fieldDefinitionId, normalizedValue);
+            this._AuditLog.Logger.Log($"Metadata-value of field '{fieldDefinitionId}' on document '{documentId}' set to '{normalizedValue}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <summary>Validates the given raw value against the field's type and returns its normalized representation (a boolean is normalized to its lower-case string-representation).</summary>
+        private static string NormalizeMetadataValue(MetadataFieldDefinition definition, string value)
+        {
+            switch (definition.Type)
+            {
+                case MetadataFieldType.Boolean:
+                    if (!bool.TryParse(value, out bool booleanValue))
+                    {
+                        throw new BadRequestException($"The value '{value}' is not a valid boolean-value for the metadata-field '{definition.Name}'.");
+                    }
+                    return booleanValue.ToString().ToLowerInvariant();
+                case MetadataFieldType.String:
+                    return value;
+                default:
+                    throw new BadRequestException($"Unsupported metadata-field-type '{definition.Type}'.");
             }
         }
 

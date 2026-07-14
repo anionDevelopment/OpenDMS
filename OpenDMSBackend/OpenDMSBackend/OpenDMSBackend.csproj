@@ -62,6 +62,9 @@
     <PackageReference Include="ExtendedXmlSerializer" Version="3.10.0" />
     <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
     <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.5.0" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="7.5.0" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-arm64" Version="7.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.3" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />

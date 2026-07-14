@@ -309,6 +309,170 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             CollectionAssert.Contains(historyIds, newVersionId);
         }
 
+        /// <summary>Creates a user which is moderator of a new storage-location containing one document and returns the relevant ids.</summary>
+        private static void SetupModeratorWithDocument(IPersistence persistence, out string userId, out string storageLocationId, out string documentId)
+        {
+            userId = "metadata-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = userId, });
+            storageLocationId = persistence.AddStoragLocation("metadata-storageLocation");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            Document document = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 11, 17, 20, 01, 00, TimeSpan.Zero), 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new HashSet<string>(), userId);
+            persistence.CreateDocument(document);
+            persistence.SetParentOfContainee(document, storageLocationId);
+            documentId = document.Id;
+        }
+
+        [TestMethod(DisplayName = nameof(DefineAndGetMetadataFieldTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void DefineAndGetMetadataFieldTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string _);
+
+            //act
+            string fieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "tax-relevant", MetadataFieldType.Boolean);
+
+            //assert
+            List<MetadataFieldDefinition> fields = businessLogicService.GetMetadataFields(userId, storageLocationId).ToList();
+            Assert.AreEqual(1, fields.Count);
+            Assert.AreEqual(fieldId, fields[0].Id);
+            Assert.AreEqual("tax-relevant", fields[0].Name);
+            Assert.AreEqual(MetadataFieldType.Boolean, fields[0].Type);
+            Assert.AreEqual(storageLocationId, fields[0].StorageLocationId);
+        }
+
+        [TestMethod(DisplayName = nameof(DefineMetadataFieldRequiresModeratorTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void DefineMetadataFieldRequiresModeratorTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string _, out string storageLocationId, out string _);
+            string otherUserId = "other-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = otherUserId, });
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.DefineMetadataField(otherUserId, storageLocationId, "some-field", MetadataFieldType.String);
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A user which is not a moderator of the storage-location must not be allowed to define a metadata-field.");
+        }
+
+        [TestMethod(DisplayName = nameof(DefineDuplicateMetadataFieldNameTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void DefineDuplicateMetadataFieldNameTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string _);
+            businessLogicService.DefineMetadataField(userId, storageLocationId, "deadline", MetadataFieldType.String);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.DefineMetadataField(userId, storageLocationId, "DEADLINE", MetadataFieldType.Boolean);
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "Defining a second metadata-field with an already-used name (case-insensitive) must be rejected.");
+        }
+
+        [TestMethod(DisplayName = nameof(SetStringAndBooleanMetadataValueTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SetStringAndBooleanMetadataValueTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string stringFieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            string boolFieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "tax-relevant", MetadataFieldType.Boolean);
+
+            //act
+            businessLogicService.SetDocumentMetadataValue(userId, documentId, stringFieldId, "Some Company GmbH");
+            businessLogicService.SetDocumentMetadataValue(userId, documentId, boolFieldId, "True");
+
+            //assert
+            Document reloaded = businessLogicService.GetDocument(userId, documentId);
+            Assert.AreEqual("Some Company GmbH", reloaded.MetadataValues[stringFieldId]);
+            //a boolean-value is normalized to its lower-case representation.
+            Assert.AreEqual("true", reloaded.MetadataValues[boolFieldId]);
+        }
+
+        [TestMethod(DisplayName = nameof(SetInvalidBooleanMetadataValueTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SetInvalidBooleanMetadataValueTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string boolFieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "tax-relevant", MetadataFieldType.Boolean);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.SetDocumentMetadataValue(userId, documentId, boolFieldId, "maybe");
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "Setting a non-boolean value for a boolean-field must be rejected.");
+        }
+
+        [TestMethod(DisplayName = nameof(ClearMetadataValueTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void ClearMetadataValueTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string fieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            businessLogicService.SetDocumentMetadataValue(userId, documentId, fieldId, "value");
+            Assert.IsTrue(businessLogicService.GetDocument(userId, documentId).MetadataValues.ContainsKey(fieldId));
+
+            //act
+            businessLogicService.SetDocumentMetadataValue(userId, documentId, fieldId, null);
+
+            //assert
+            Assert.IsFalse(businessLogicService.GetDocument(userId, documentId).MetadataValues.ContainsKey(fieldId), "Clearing a metadata-value must remove it from the document.");
+        }
+
+        [TestMethod(DisplayName = nameof(RemoveMetadataFieldRemovesValuesTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void RemoveMetadataFieldRemovesValuesTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string fieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            businessLogicService.SetDocumentMetadataValue(userId, documentId, fieldId, "value");
+
+            //act
+            businessLogicService.RemoveMetadataField(userId, fieldId);
+
+            //assert
+            Assert.AreEqual(0, businessLogicService.GetMetadataFields(userId, storageLocationId).Count(), "The removed field must no longer be listed.");
+            Assert.IsFalse(businessLogicService.GetDocument(userId, documentId).MetadataValues.ContainsKey(fieldId), "The values of a removed field must be removed from the documents.");
+        }
+
         //TODO write testcases for the things which are not allowed to verify the user is really not able to do certain things
     }
 }

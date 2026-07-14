@@ -115,6 +115,7 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OriginalFilename", document.OriginalFilename.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ImportDate", this.ToDateTime(document.ImportDate), typeof(DateTime)));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsLatestVersion", document.IsLatestVersion));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("IsHardDeleted", document.IsHardDeleted));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ReadableId", document.ReadableId));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MIMEType", document.MIMEType.Value));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OCRContent", document.OCRContent));
@@ -126,6 +127,11 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("AddedByUserId", document.AddedByUserId, typeof(string)));
                 command.ExecuteNonQuery();
             });
+            //persist the metadata-values the document holds (usually empty for a fresh document; populated when a new version copies them over).
+            foreach (KeyValuePair<string, string> metadataValue in document.MetadataValues)
+            {
+                this.SetDocumentMetadataValue(document.Id, metadataValue.Key, metadataValue.Value);
+            }
         }
 
         private DateTime? ToDateTime(DateTimeOffset? value)
@@ -167,7 +173,33 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public IDictionary<string, User> GetAllUsers()
         {
-            throw new NotImplementedException();
+            List<User> users = this.RunTransaction(nameof(GetAllUsers), true, (cmd) =>
+            {
+                List<User> result = new List<User>();
+                cmd.CommandText = this._SQLProvider.GetScriptGetAllUsers();
+                using DbDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    User user = new User();
+                    user.Id = reader.GetString(0);
+                    user.Name = reader.GetString(1);
+                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
+                    user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
+                    user.UserIsActivated = reader.GetBoolean(4);
+                    user.UserIsLocked = reader.GetBoolean(5);
+                    user.RegistrationMoment = reader.GetDateTime(6);
+                    result.Add(user);
+                }
+                reader.Close();
+                return result;
+            })[0]!;
+            Dictionary<string, User> usersById = new Dictionary<string, User>();
+            foreach (User user in users)
+            {
+                this.EnrichWithRoles(user);
+                usersById[user.Id] = user;
+            }
+            return usersById;
         }
 
         /// <inheritdoc />
@@ -471,7 +503,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void RemoveRoleFromUser(string userId, string roleId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(RemoveRoleFromUser), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptRemoveRoleFromUser();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("RoleId", roleId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />
@@ -544,6 +582,8 @@ namespace OpenDMSBackend.Core.Services
                         if (reader.HasRows)
                         {
                             reader.Read();
+                            //a hard-deleted document has its binary-content and preview removed from the file-system, so they are not loaded (they would no longer exist).
+                            bool isHardDeleted = reader.GetBoolean(16);
                             Document document = new Document(id,
                                 OneLineString.From(reader.GetString(0)),//title
                                 OneLineString.From(reader.GetString(1)),//filename
@@ -552,9 +592,9 @@ namespace OpenDMSBackend.Core.Services
                                 (uint)reader.GetInt32(5),//readableid
                                 new HashSet<Tag>(),//tags
                                 OneLineString.From(reader.GetString(6)),//mimetype
-                                this.LoadDocument(id),//content
+                                isHardDeleted ? Array.Empty<byte>() : this.LoadDocument(id),//content
                                 reader.GetString(7),//ocrcontent
-                                this.LoadDocumentPreview(id),//preview
+                                isHardDeleted ? Array.Empty<byte>() : this.LoadDocumentPreview(id),//preview
                                 reader.GetBoolean(8),//is soft deleted
                                 this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//delete is not allowed before
                                  this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)),//must be deleted after
@@ -563,6 +603,7 @@ namespace OpenDMSBackend.Core.Services
                                 reader.GetString(13)//userid
                             );
                             document.IsLatestVersion = reader.GetBoolean(4);//is latest version
+                            document.IsHardDeleted = isHardDeleted;
                             document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 14);
                             document.AISummaryLong = DBUtilities.GetNullableValue<string>(reader, 15);
                             return document;
@@ -579,7 +620,16 @@ namespace OpenDMSBackend.Core.Services
                 })[0]);
                 this.EnrichWithTags(result);
                 this.EnrichWithVersionInfo(result);
+                this.EnrichWithMetadataValues(result);
                 return result;
+            }
+        }
+
+        private void EnrichWithMetadataValues(Document document)
+        {
+            foreach (KeyValuePair<string, string> metadataValue in this.GetMetadataValuesOfDocument(document.Id))
+            {
+                document.MetadataValues[metadataValue.Key] = metadataValue.Value;
             }
         }
 
@@ -618,7 +668,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void AssignTag(string documentId, string tagId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(AssignTag), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptAssignTag();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TagId", tagId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />
@@ -731,13 +787,66 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
         {
-            throw new NotImplementedException();
+            return this.RunStorageLocationUserExistsQuery(this._SQLProvider.GetScriptIsUserOwnerOfStorageLocation(), storageLocationId, userId);
+        }
+
+        private bool RunStorageLocationUserExistsQuery(string script, string storageLocationId, string userId)
+        {
+            return this.RunTransaction(nameof(RunStorageLocationUserExistsQuery), true, (command) =>
+            {
+                command.CommandText = script;
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                using DbDataReader reader = command.ExecuteReader();
+                return reader.HasRows;
+            })[0];
+        }
+
+        private void RunStorageLocationUserCommand(string script, string storageLocationId, string userId)
+        {
+            this.RunTransaction(nameof(RunStorageLocationUserCommand), true, (command) =>
+            {
+                command.CommandText = script;
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
         {
-            throw new NotImplementedException();
+            return this.RunStorageLocationUserExistsQuery(this._SQLProvider.GetScriptStorageLocationIsSharedWithUser(), storageLocationId, userId);
+        }
+
+        /// <inheritdoc />
+        public bool StorageLocationIsEditableByUser(string storageLocationId, string userId)
+        {
+            return this.RunStorageLocationUserExistsQuery(this._SQLProvider.GetScriptStorageLocationIsEditableByUser(), storageLocationId, userId);
+        }
+
+        /// <inheritdoc />
+        public ISet<string> GetOwnersOfStorageLocation(string storageLocationId)
+        {
+            return this.RunTransaction(nameof(GetOwnersOfStorageLocation), true, (command) =>
+            {
+                HashSet<string> result = new HashSet<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetOwnersOfStorageLocation();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(reader.GetString(0));
+                }
+                reader.Close();
+                return (ISet<string>)result;
+            })[0]!;
+        }
+
+        /// <inheritdoc />
+        public void RemoveOwnerOfStorageLocation(string storageLocationId, string userId)
+        {
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptRemoveOwnerOfStorageLocation(), storageLocationId, userId);
         }
 
         /// <inheritdoc />
@@ -795,19 +904,70 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void HardDelete(string containerOrContaineeId)
         {
-            throw new NotImplementedException();
+            if (this.IsDocument(containerOrContaineeId))
+            {
+                this.HardDeleteDocument(containerOrContaineeId);
+            }
+            else
+            {
+                //hard-deleting containers (folders/storage-locations) is a separate concern and not part of the regulated document-deletion (issue #11).
+                throw new NotImplementedException("Hard-deleting containers (folders/storage-locations) is not implemented; only documents can be hard-deleted.");
+            }
+        }
+
+        /// <summary>Hard-deletes a document: its binary-content and preview are removed from the file-system, its OCR-content and AI-summaries are cleared, its tags are unassigned and it is marked as hard-deleted. The metadata-row and version-entry are kept for traceability and no new version is created.</summary>
+        private void HardDeleteDocument(string documentId)
+        {
+            this.DeleteDocumentFiles(documentId);
+            this.RunTransaction(nameof(HardDeleteDocument), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptHardDeleteDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
+                command.ExecuteNonQuery();
+            }, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptUnassignAllTagsOfDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", documentId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        private void DeleteDocumentFiles(string documentId)
+        {
+            string contentFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + documentId + ".content.dat");
+            string previewFilePath = Path.Combine(this.GetDocumentsDataFolder(), "document_" + documentId + ".preview.dat");
+            if (File.Exists(contentFilePath))
+            {
+                File.Delete(contentFilePath);
+            }
+            if (File.Exists(previewFilePath))
+            {
+                File.Delete(previewFilePath);
+            }
         }
 
         /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptAuthorizeUserToViewStorageLocation(), storageLocationId, sharedWithUserId);
         }
 
         /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptUnauthorizeUserToViewStorageLocation(), storageLocationId, sharedWithUserId);
+        }
+
+        /// <inheritdoc />
+        public void AuthorizeUserToEditStorageLocation(string storageLocationId, string editUserId)
+        {
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptAuthorizeUserToEditStorageLocation(), storageLocationId, editUserId);
+        }
+
+        /// <inheritdoc />
+        public void UnauthorizeUserToEditStorageLocation(string storageLocationId, string editUserId)
+        {
+            this.RunStorageLocationUserCommand(this._SQLProvider.GetScriptUnauthorizeUserToEditStorageLocation(), storageLocationId, editUserId);
         }
 
         /// <inheritdoc />
@@ -932,8 +1092,9 @@ namespace OpenDMSBackend.Core.Services
                 if (reader.HasRows)
                 {
                     reader.Read();
-                    //select "Title", "Filename", "OriginalFilename", "ImportDate", "LastEditDate", "ReadableId", "MIMEType", "DocumentPreview","IsSoftDeleted","DeleteIsNotAllowedBefore","MustBeHardDeletedAfter","GroupOfBusinessOwner","Version", "AssignedLanguages","AddedByUserId"
-
+                    //select "Title", "Filename", "OriginalFilename", "ImportDate", "IsLatestVersion", "ReadableId", "MIMEType", "IsSoftDeleted","DeleteIsNotAllowedBefore","MustBeHardDeletedAfter","GroupOfBusinessOwner", "AssignedLanguages","AddedByUserId","AISummaryShort","IsHardDeleted"
+                    //a hard-deleted document has its preview removed from the file-system, so it is not loaded (it would no longer exist).
+                    bool isHardDeleted = reader.GetBoolean(14);
                     DocumentPreview document = new DocumentPreview(
                         id,//id
                         OneLineString.From(reader.GetString(0)),//title
@@ -943,7 +1104,7 @@ namespace OpenDMSBackend.Core.Services
                         new HashSet<Tag>(),
                         (uint)reader.GetInt32(5),//readable id
                         OneLineString.From(reader.GetString(6)),//mimetype
-                        this.LoadDocumentPreview(id),
+                        isHardDeleted ? Array.Empty<byte>() : this.LoadDocumentPreview(id),
                         reader.GetBoolean(7),//isdeleted
                         this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 8)),//delete is not allowed before
                         this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//must be deleted after
@@ -952,6 +1113,7 @@ namespace OpenDMSBackend.Core.Services
                         reader.GetString(12)//creator-user-is
                     );
                     document.IsLatestVersion = reader.GetBoolean(4);//is latest version
+                    document.IsHardDeleted = isHardDeleted;
                     document.AISummaryShort = DBUtilities.GetNullableValue<string>(reader, 13);
                     //TODO load tags
                     return document;
@@ -1200,7 +1362,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void RemoveChild(string parentId, string childId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(RemoveChild), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptRemoveChild();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ParentId", parentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ChildId", childId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />
@@ -1430,7 +1598,19 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
-            throw new NotImplementedException();
+            return this.RunTransaction(nameof(GetIdsOfDocumentsWhichMustBeHardDeletedNow), true, (command) =>
+            {
+                List<string> result = new List<string>();
+                command.CommandText = this._SQLProvider.GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Now", this.ToDateTime(this._TimeService.GetCurrentLocalTimeAsDateTimeOffset()), typeof(DateTime)));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(reader.GetString(0));
+                }
+                reader.Close();
+                return result;
+            })[0]!;
         }
 
         /// <inheritdoc />
@@ -1533,6 +1713,124 @@ namespace OpenDMSBackend.Core.Services
                 using DbDataReader reader = cmd.ExecuteReader();
                 return reader.HasRows;
             });
+        }
+
+        /// <inheritdoc />
+        public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition)
+        {
+            this.RunTransaction(nameof(CreateMetadataFieldDefinition), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptCreateMetadataFieldDefinition();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", definition.Id));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", definition.StorageLocationId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", definition.Name));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Type", definition.Type.ToString()));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void DeleteMetadataFieldDefinition(string fieldDefinitionId)
+        {
+            this.RunTransaction(nameof(DeleteMetadataFieldDefinition), true, (command) =>
+            {
+                //remove all document-values stored for the field first ...
+                command.CommandText = this._SQLProvider.GetScriptDeleteMetadataValuesOfField();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MetadataFieldDefinitionId", fieldDefinitionId));
+                command.ExecuteNonQuery();
+            }, (command) =>
+            {
+                //... then remove the definition itself.
+                command.CommandText = this._SQLProvider.GetScriptDeleteMetadataFieldDefinition();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", fieldDefinitionId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public MetadataFieldDefinition GetMetadataFieldDefinition(string fieldDefinitionId)
+        {
+            return GUtilities.GetValue(this.RunTransaction(nameof(GetMetadataFieldDefinition), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptGetMetadataFieldDefinition();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", fieldDefinitionId));
+                using DbDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return new MetadataFieldDefinition(fieldDefinitionId, reader.GetString(0), reader.GetString(1), ParseMetadataFieldType(reader.GetString(2)));
+                }
+                else
+                {
+                    throw new KeyNotFoundException($"No metadata-field-definition found with id '{fieldDefinitionId}'.");
+                }
+            })[0]);
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldDefinitionsOfStorageLocation(string storageLocationId)
+        {
+            return this.RunTransaction(nameof(GetMetadataFieldDefinitionsOfStorageLocation), true, (command) =>
+            {
+                List<MetadataFieldDefinition> result = new List<MetadataFieldDefinition>();
+                command.CommandText = this._SQLProvider.GetScriptGetMetadataFieldDefinitionsOfStorageLocation();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", storageLocationId));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(new MetadataFieldDefinition(reader.GetString(0), storageLocationId, reader.GetString(1), ParseMetadataFieldType(reader.GetString(2))));
+                }
+                reader.Close();
+                return (IEnumerable<MetadataFieldDefinition>)result;
+            })[0]!;
+        }
+
+        /// <inheritdoc />
+        public void SetDocumentMetadataValue(string documentId, string fieldDefinitionId, string value)
+        {
+            this.RunTransaction(nameof(SetDocumentMetadataValue), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetDocumentMetadataValue();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MetadataFieldDefinitionId", fieldDefinitionId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", value));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void RemoveDocumentMetadataValue(string documentId, string fieldDefinitionId)
+        {
+            this.RunTransaction(nameof(RemoveDocumentMetadataValue), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptRemoveDocumentMetadataValue();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("MetadataFieldDefinitionId", fieldDefinitionId));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public IDictionary<string, string> GetMetadataValuesOfDocument(string documentId)
+        {
+            return this.RunTransaction(nameof(GetMetadataValuesOfDocument), true, (command) =>
+            {
+                Dictionary<string, string> result = new Dictionary<string, string>();
+                command.CommandText = this._SQLProvider.GetScriptGetMetadataValuesOfDocument();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result[reader.GetString(0)] = reader.GetString(1);
+                }
+                reader.Close();
+                return (IDictionary<string, string>)result;
+            })[0]!;
+        }
+
+        private static MetadataFieldType ParseMetadataFieldType(string value)
+        {
+            return (MetadataFieldType)Enum.Parse(typeof(MetadataFieldType), value);
         }
     }
 }

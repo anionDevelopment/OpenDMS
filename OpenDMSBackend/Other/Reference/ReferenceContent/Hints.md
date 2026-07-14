@@ -35,3 +35,10 @@ Apart from the transient-mode the supported values for `DatabaseType` are:
 - `MariaDB`
 
 To reset all your local backend-configuration-values etc. to a plain state you can simply remove the entire `<repository-root>\OpenDMSBackend\Other\Workspace`-folder.
+
+## Custom metadata-fields
+
+Custom metadata-fields (see issue #2) are defined per storage-location: only a moderator of a storage-location may define a field (name + type `String` or `Boolean`), and every document contained in that storage-location (directly or in one of its folders) can optionally hold a value for each field.
+The value a document holds is a direct per-document-row association (analogous to tags) and is not versioned on its own; a metadata-only new version (for example a title-change) copies the values forward.
+A boolean-value is validated and stored in its normalized lower-case form (`true`/`false`).
+The types `double` and `timestamp` mentioned in issue #2 are not supported yet.

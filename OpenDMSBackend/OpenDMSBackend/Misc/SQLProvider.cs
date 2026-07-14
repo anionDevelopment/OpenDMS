@@ -380,5 +380,149 @@ namespace OpenDMSBackend.Core.Misc
         {
             return this.LoadSQLScript("RenameStorageLocation");
         }
+
+        /// <inheritdoc />
+        public string GetScriptGetAllUsers()
+        {
+            return this.LoadSQLScript("GetAllUsers");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptIsUserOwnerOfStorageLocation()
+        {
+            return this.LoadSQLScript("IsUserOwnerOfStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetOwnersOfStorageLocation()
+        {
+            return this.LoadSQLScript("GetOwnersOfStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRemoveOwnerOfStorageLocation()
+        {
+            return this.LoadSQLScript("RemoveOwnerOfStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptStorageLocationIsSharedWithUser()
+        {
+            return this.LoadSQLScript("StorageLocationIsSharedWithUser");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptStorageLocationIsEditableByUser()
+        {
+            return this.LoadSQLScript("StorageLocationIsEditableByUser");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptAuthorizeUserToViewStorageLocation()
+        {
+            return this.LoadSQLScript("AuthorizeUserToViewStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptAuthorizeUserToEditStorageLocation()
+        {
+            return this.LoadSQLScript("AuthorizeUserToEditStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptUnauthorizeUserToViewStorageLocation()
+        {
+            return this.LoadSQLScript("UnauthorizeUserToViewStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptUnauthorizeUserToEditStorageLocation()
+        {
+            return this.LoadSQLScript("UnauthorizeUserToEditStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRemoveRoleFromUser()
+        {
+            return this.LoadSQLScript("RemoveRoleFromUser");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptAssignTag()
+        {
+            return this.LoadSQLScript("AssignTag");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptHardDeleteDocument()
+        {
+            return this.LoadSQLScript("HardDeleteDocument");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptUnassignAllTagsOfDocument()
+        {
+            return this.LoadSQLScript("UnassignAllTagsOfDocument");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow()
+        {
+            return this.LoadSQLScript("GetIdsOfDocumentsWhichMustBeHardDeletedNow");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRemoveChild()
+        {
+            return this.LoadSQLScript("RemoveChild");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptCreateMetadataFieldDefinition()
+        {
+            return this.LoadSQLScript("CreateMetadataFieldDefinition");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptDeleteMetadataFieldDefinition()
+        {
+            return this.LoadSQLScript("DeleteMetadataFieldDefinition");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptDeleteMetadataValuesOfField()
+        {
+            return this.LoadSQLScript("DeleteMetadataValuesOfField");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetMetadataFieldDefinition()
+        {
+            return this.LoadSQLScript("GetMetadataFieldDefinition");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetMetadataFieldDefinitionsOfStorageLocation()
+        {
+            return this.LoadSQLScript("GetMetadataFieldDefinitionsOfStorageLocation");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptSetDocumentMetadataValue()
+        {
+            return this.LoadSQLScript("SetDocumentMetadataValue");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptRemoveDocumentMetadataValue()
+        {
+            return this.LoadSQLScript("RemoveDocumentMetadataValue");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptGetMetadataValuesOfDocument()
+        {
+            return this.LoadSQLScript("GetMetadataValuesOfDocument");
+        }
     }
 }

@@ -36,6 +36,7 @@ CREATE TABLE `Documents` (
     `OCRContent` longtext not null COLLATE utf8mb4_unicode_ci,
     `IsSoftDeleted` tinyint(1) not null,
     `IsLatestVersion` tinyint(1) not null,
+    `IsHardDeleted` tinyint(1) not null,
     `DeleteIsNotAllowedBefore` datetime(6) null,
     `MustBeHardDeletedAfter` datetime(6) null,
     `GroupOfBusinessOwner` varchar(255) not null,
@@ -119,10 +120,16 @@ CREATE TABLE `Role_InheritedRoles` (
     CONSTRAINT `PK_Role_InheritedRoles` PRIMARY KEY (`RoleId`, `InheritedRoleId`)
 ) CHARACTER SET=utf8mb4;
 
+-- the `StorageLocationId`-column of the following two permission-tables holds the id of any content-object (storage-location, folder or document), so it has no foreign-key to a single table. Every content-object can have several moderators (rows in StorageLocations_User) and several view-/edit-grants (rows in StorageLocation_UserPermission).
 CREATE TABLE `StorageLocations_User` (
     `StorageLocationId` varchar(255) not null,
     `UserId` varchar(255) not null,
-    CONSTRAINT `FK_User_StorageLocations_StorageLocationsId` FOREIGN KEY (`StorageLocationId`) REFERENCES `StorageLocations`(`Id`),
-    CONSTRAINT `FK_User_StorageLocations_UsersId` FOREIGN KEY (`UserId`) REFERENCES `Users`(`Id`),
-    CONSTRAINT `PK_User_StorageLocations` PRIMARY KEY (`UserId`, `StorageLocationId`)
+    CONSTRAINT `PK_User_StorageLocations` PRIMARY KEY (`StorageLocationId`, `UserId`)
+) CHARACTER SET=utf8mb4;
+
+CREATE TABLE `StorageLocation_UserPermission` (
+    `StorageLocationId` varchar(255) not null,
+    `UserId` varchar(255) not null,
+    `CanEdit` tinyint(1) not null,
+    CONSTRAINT `PK_StorageLocation_UserPermission` PRIMARY KEY (`StorageLocationId`, `UserId`)
 ) CHARACTER SET=utf8mb4;

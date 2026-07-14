@@ -12,6 +12,7 @@ using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
+using System.Linq;
 using IAuthenticationService = GRYLibrary.Core.APIServer.Services.Interfaces.IAuthenticationService;
 
 namespace OpenDMSBackend.Core.Controller
@@ -119,7 +120,44 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(Utilities.GetUserInformation(this.GetUser()));
         }
 
-        //TODO there must be functions for an admin to grant the read-right (=>role: user) or the update-right (=>role: moderator) to certain documents only.
+        /// <summary>Returns all users together with the roles assigned to them. Requires administrator privileges.</summary>
+        /// <returns>An array of <see cref="UserOverviewDTO"/>.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserOverviewDTO[]))]
+        [Route(nameof(GetAllUsers))]
+        public IActionResult GetAllUsers()
+        {
+            return this.Ok(this._BusinessLogicService.GetAllUsersWithRoles(this.GetUser().Id));
+        }
+
+        /// <summary>Returns the names of all roles that can be assigned to a user. Requires administrator privileges.</summary>
+        /// <returns>An array of role names.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string[]))]
+        [Route(nameof(GetAllRoles))]
+        public IActionResult GetAllRoles()
+        {
+            return this.Ok(this._BusinessLogicService.GetAllRoleNames(this.GetUser().Id));
+        }
+
+        /// <summary>Sets the complete set of roles of the given user (roles not contained are removed, missing ones are added). Requires administrator privileges.</summary>
+        /// <param name="userId">The id of the user whose roles should be set.</param>
+        /// <param name="roleNames">The names of the roles the user should have afterwards.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(void))]
+        [Route(nameof(SetRolesOfUser))]
+        public IActionResult SetRolesOfUser([FromHeader] string userId, [FromBody] string[] roleNames)
+        {
+            this._BusinessLogicService.SetRolesOfUser(this.GetUser().Id, userId, roleNames.ToHashSet());
+            return this.Ok();
+        }
 
         private User GetUser()
         {

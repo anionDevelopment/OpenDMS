@@ -32,6 +32,11 @@ namespace OpenDMSBackend.Core.Model.DTOs
         public int VersionNumber { get; set; }
         /// <summary>The moment this version was created, as a formatted string.</summary>
         public string? VersionTimestamp { get; set; }
+        /// <summary>
+        /// The values this document holds for the custom metadata-fields defined at its containing storage-location, keyed by the field-definition-id.
+        /// A boolean-value is represented as "true"/"false". A field for which the document has no value is absent from this dictionary.
+        /// </summary>
+        public IDictionary<string, string> MetadataValues { get; set; } = new Dictionary<string, string>();
 
         /// <summary>Initializes a new instance of <see cref="DocumentDTO"/>.</summary>
         /// <param name="id">The unique identifier of the document.</param>

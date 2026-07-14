@@ -181,6 +181,79 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok();
         }
 
+        /// <summary>Grants the specified user permission to change (edit) the specified storage location and its contents. Only a moderator (owner) of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user to grant the edit-permission to.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AuthorizeUserToEditStorageLocation)}/{{{nameof(storageLocationId)}}}/{{{nameof(editUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AuthorizeUserToEditStorageLocation([FromRoute] string storageLocationId, [FromRoute] string editUserId)
+        {
+            this._BusinessLogicService.AuthorizeUserToEditStorageLocation(this.GetUser().Id, storageLocationId, editUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Revokes the specified user's permission to change (edit) the specified storage location. Only a moderator (owner) of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user whose edit-permission should be revoked.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(UnauthorizeUserToEditStorageLocation)}/{{{nameof(storageLocationId)}}}/{{{nameof(editUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult UnauthorizeUserToEditStorageLocation([FromRoute] string storageLocationId, [FromRoute] string editUserId)
+        {
+            this._BusinessLogicService.UnauthorizeUserToEditStorageLocation(this.GetUser().Id, storageLocationId, editUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Adds the specified user as a moderator of the specified content-object (storage-location, folder or document). Only a moderator may do this. A content-object can have several moderators.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <param name="newModeratorUserId">The id of the user to add as a moderator.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AddModerator)}/{{{nameof(contentId)}}}/{{{nameof(newModeratorUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AddModerator([FromRoute] string contentId, [FromRoute] string newModeratorUserId)
+        {
+            this._BusinessLogicService.AddModerator(this.GetUser().Id, contentId, newModeratorUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Removes the specified user from the moderators of the specified content-object. Only a moderator may do this. A folder or storage-location must always keep at least one moderator.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <param name="moderatorUserId">The id of the moderator to remove.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveModerator)}/{{{nameof(contentId)}}}/{{{nameof(moderatorUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveModerator([FromRoute] string contentId, [FromRoute] string moderatorUserId)
+        {
+            this._BusinessLogicService.RemoveModerator(this.GetUser().Id, contentId, moderatorUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Returns the ids of all moderators of the specified content-object. Only a moderator may query this.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <returns>The ids of the moderators.</returns>
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetModerators)}/{{{nameof(contentId)}}}")]
+        [ProducesResponseType(typeof(string[]), StatusCodes.Status200OK)]
+        public IActionResult GetModerators([FromRoute] string contentId)
+        {
+            return this.Ok(this._BusinessLogicService.GetModerators(this.GetUser().Id, contentId));
+        }
+
         /// <summary>Creates a new storage location with the given name owned by the current user.</summary>
         /// <param name="name">The display name of the new storage location.</param>
         /// <returns>The id of the newly created storage location.</returns>
@@ -376,6 +449,88 @@ namespace OpenDMSBackend.Core.Controller
         {
             this._BusinessLogicService.SetAutoGenerateAISummary(this.GetUser().Id, settings.AutoGenerateAISummary);
             return this.Ok();
+        }
+
+        /// <summary>Defines a new custom metadata-field for the specified storage-location. Only a moderator of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage-location the field is defined for.</param>
+        /// <param name="field">The name and type ("String" or "Boolean") of the field to create.</param>
+        /// <returns>The id of the created field-definition.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(DefineMetadataField)}/{{{nameof(storageLocationId)}}}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public IActionResult DefineMetadataField([FromRoute] string storageLocationId, [FromBody] MetadataFieldDefinitionCreationDTO field)
+        {
+            return this.Ok(this._BusinessLogicService.DefineMetadataField(this.GetUser().Id, storageLocationId, field.Name, ParseMetadataFieldType(field.Type)));
+        }
+
+        /// <summary>Removes the specified custom metadata-field-definition together with all values documents hold for it. Only a moderator of the field's storage-location may do this.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to remove.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpDelete]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveMetadataField)}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveMetadataField([FromRoute] string fieldDefinitionId)
+        {
+            this._BusinessLogicService.RemoveMetadataField(this.GetUser().Id, fieldDefinitionId);
+            return this.Ok();
+        }
+
+        /// <summary>Returns all custom metadata-fields defined for the specified storage-location. The current user must be allowed to view the storage-location.</summary>
+        /// <param name="storageLocationId">The id of the storage-location.</param>
+        /// <returns>The field-definitions as <see cref="MetadataFieldDefinitionDTO"/> objects.</returns>
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetMetadataFields)}/{{{nameof(storageLocationId)}}}")]
+        [ProducesResponseType(typeof(MetadataFieldDefinitionDTO[]), StatusCodes.Status200OK)]
+        public IActionResult GetMetadataFields([FromRoute] string storageLocationId)
+        {
+            return this.Ok(this._BusinessLogicService.GetMetadataFields(this.GetUser().Id, storageLocationId).Select(field => field.ToDTO()));
+        }
+
+        /// <summary>Sets the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <param name="value">The value to set. For a boolean-field the value must be parseable as a boolean.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(SetDocumentMetadataValue)}/{{{nameof(documentId)}}}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult SetDocumentMetadataValue([FromRoute] string documentId, [FromRoute] string fieldDefinitionId, [FromBody] StringValueDTO value)
+        {
+            this._BusinessLogicService.SetDocumentMetadataValue(this.GetUser().Id, documentId, fieldDefinitionId, value.Value);
+            return this.Ok();
+        }
+
+        /// <summary>Clears the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpDelete]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveDocumentMetadataValue)}/{{{nameof(documentId)}}}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveDocumentMetadataValue([FromRoute] string documentId, [FromRoute] string fieldDefinitionId)
+        {
+            this._BusinessLogicService.SetDocumentMetadataValue(this.GetUser().Id, documentId, fieldDefinitionId, null);
+            return this.Ok();
+        }
+
+        /// <summary>Parses the given field-type-string into a <see cref="Model.BusinessTypes.MetadataFieldType"/>, rejecting unknown values with a <see cref="GRYLibrary.Core.Exceptions.BadRequestException"/>.</summary>
+        private static Model.BusinessTypes.MetadataFieldType ParseMetadataFieldType(string type)
+        {
+            if (System.Enum.TryParse(type, true, out Model.BusinessTypes.MetadataFieldType result) && System.Enum.IsDefined(typeof(Model.BusinessTypes.MetadataFieldType), result))
+            {
+                return result;
+            }
+            throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{type}' is not a valid metadata-field-type. Allowed values are '{nameof(Model.BusinessTypes.MetadataFieldType.String)}' and '{nameof(Model.BusinessTypes.MetadataFieldType.Boolean)}'.");
         }
 
         private GRYLibrary.Core.APIServer.CommonDBTypes.User GetUser()

@@ -20,6 +20,8 @@ import { Observable }                                        from 'rxjs';
 import { AccessToken } from '../model/accessToken';
 // @ts-ignore
 import { UserInformationDTO } from '../model/userInformationDTO';
+// @ts-ignore
+import { UserOverviewDTO } from '../model/userOverviewDTO';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -387,6 +389,71 @@ export class UserService extends BaseService {
                 observe: observe,
                 transferCache: localVarTransferCache,
                 reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Returns all users together with the roles assigned to them. Requires administrator privileges.
+     * @param xAccessToken Access Token
+     */
+    public aPIV3UserControllerGetAllUsersGet(xAccessToken: string): Observable<Array<UserOverviewDTO>> {
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<Array<UserOverviewDTO>>('get', `${basePath}/API/v3/UserController/GetAllUsers`,
+            {
+                responseType: 'json',
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+            }
+        );
+    }
+
+    /**
+     * Returns the names of all roles that can be assigned to a user. Requires administrator privileges.
+     * @param xAccessToken Access Token
+     */
+    public aPIV3UserControllerGetAllRolesGet(xAccessToken: string): Observable<Array<string>> {
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<Array<string>>('get', `${basePath}/API/v3/UserController/GetAllRoles`,
+            {
+                responseType: 'json',
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+            }
+        );
+    }
+
+    /**
+     * Sets the complete set of roles of the given user. Requires administrator privileges.
+     * @param xAccessToken Access Token
+     * @param userId The id of the user whose roles should be set.
+     * @param roleNames The names of the roles the user should have afterwards.
+     */
+    public aPIV3UserControllerSetRolesOfUserPut(xAccessToken: string, userId: string, roleNames: Array<string>): Observable<any> {
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+        if (userId !== undefined && userId !== null) {
+            localVarHeaders = localVarHeaders.set('userId', String(userId));
+        }
+        localVarHeaders = localVarHeaders.set('Content-Type', 'application/json');
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request('put', `${basePath}/API/v3/UserController/SetRolesOfUser`,
+            {
+                body: roleNames,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
             }
         );
     }

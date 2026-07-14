@@ -16,7 +16,7 @@ RUN mkdir /Workspace && \
     mkdir /Workspace/Other/Certificates && \
     mkdir /Workspace/Other/EntryPoint && \
     apt-get update && \
-    apt-get install -y curl nginx git libreoffice-core libreoffice-writer libreoffice-calc wget
+    apt-get install -y curl nginx git libreoffice-core libreoffice-writer libreoffice-calc wget nodejs npm
 
 WORKDIR /Workspace/Other/EntryPoint
 
@@ -25,6 +25,9 @@ RUN wget https://packages.microsoft.com/config/debian/13/packages-microsoft-prod
     rm packages-microsoft-prod.deb && \
     apt-get update && \
     apt-get install -y aspnetcore-runtime-10.0
+
+#the TypeScript-compiler (tsc) is required at runtime to compile the optional document-adapt-scripts of import-definitions (see ManagementService.RunAdaptScript).
+RUN npm install -g typescript@5.9.2
 
 RUN rm -rf /var/lib/apt/lists/*
 
