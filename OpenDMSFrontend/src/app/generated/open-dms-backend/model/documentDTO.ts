@@ -46,6 +46,9 @@ export interface DocumentDTO {
      * The moment this version was created, as a formatted string.
      */
     versionTimestamp?: string | null;
+    /**
+     * The values this document holds for the custom metadata-fields defined at its containing storage-location, keyed by the field-definition-id. A boolean-value is represented as \"true\"/\"false\". A field for which the document has no value is absent from this dictionary.
+     */
     metadataValues?: { [key: string]: string; } | null;
 }
 

@@ -9,7 +9,7 @@
     <IsPackable>false</IsPackable>
     <PreserveCompilationContext>false</PreserveCompilationContext>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <Copyright>Copyright © 2025 Marius Göcke</Copyright>
+    <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>OpenDMSBackend is the backend of OpenDMS.</Description>
     <PackageProjectUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend</PackageProjectUrl>
     <RepositoryUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend.git</RepositoryUrl>
@@ -89,7 +89,7 @@
     <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.3" />
     <PackageReference Include="System.Reactive" Version="6.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\**">

@@ -232,7 +232,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
   ""compilerOptions"": {
     ""target"": ""ES2020"",
     ""lib"": [""ES2020""],
-    ""module"": ""none"",
+    ""module"": ""commonjs"",
     ""outDir"": ""."",
     ""types"": [],
     ""typeRoots"": [],

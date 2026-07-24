@@ -473,6 +473,258 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Assert.IsFalse(businessLogicService.GetDocument(userId, documentId).MetadataValues.ContainsKey(fieldId), "The values of a removed field must be removed from the documents.");
         }
 
-        //TODO write testcases for the things which are not allowed to verify the user is really not able to do certain things
+        [TestMethod(DisplayName = nameof(RemoveMetadataFieldRequiresModeratorTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void RemoveMetadataFieldRequiresModeratorTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string _);
+            string fieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            string otherUserId = "other-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = otherUserId, });
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.RemoveMetadataField(otherUserId, fieldId);
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A user which is not a moderator of the storage-location must not be allowed to remove a metadata-field.");
+            Assert.AreEqual(1, businessLogicService.GetMetadataFields(userId, storageLocationId).Count(), "The field must still exist since the removal was rejected.");
+        }
+
+        [TestMethod(DisplayName = nameof(GetMetadataFieldsRequiresViewPermissionTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void GetMetadataFieldsRequiresViewPermissionTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string _);
+            businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            string otherUserId = "other-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = otherUserId, });
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.GetMetadataFields(otherUserId, storageLocationId);
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A user without view-permission on the storage-location must not be allowed to list its metadata-fields.");
+        }
+
+        [TestMethod(DisplayName = nameof(GetMetadataFieldsAllowedForSharedViewerTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void GetMetadataFieldsAllowedForSharedViewerTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string _);
+            string fieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            string viewerUserId = "viewer-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = viewerUserId, });
+            //grant view-only access; this must be sufficient to list the fields.
+            persistence.AuthorizeUserToViewStorageLocation(storageLocationId, viewerUserId);
+
+            //act
+            List<MetadataFieldDefinition> fields = businessLogicService.GetMetadataFields(viewerUserId, storageLocationId).ToList();
+
+            //assert
+            Assert.AreEqual(1, fields.Count);
+            Assert.AreEqual(fieldId, fields[0].Id);
+        }
+
+        [TestMethod(DisplayName = nameof(SetDocumentMetadataValueRequiresEditPermissionTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SetDocumentMetadataValueRequiresEditPermissionTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string fieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            string viewerUserId = "viewer-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = viewerUserId, });
+            //grant only view-permission, no edit-permission.
+            persistence.AuthorizeUserToViewStorageLocation(storageLocationId, viewerUserId);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.SetDocumentMetadataValue(viewerUserId, documentId, fieldId, "some value");
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A user with only view-permission must not be allowed to set a metadata-value.");
+            Assert.IsFalse(businessLogicService.GetDocument(userId, documentId).MetadataValues.ContainsKey(fieldId), "The value must not have been set.");
+        }
+
+        [TestMethod(DisplayName = nameof(DefineMetadataFieldOnNonStorageLocationTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void DefineMetadataFieldOnNonStorageLocationTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "folder-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("storageLocation");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            string folderId = businessLogicService.AddFolder(userId, "folder", storageLocationId);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.DefineMetadataField(userId, folderId, "some-field", MetadataFieldType.String);
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "Metadata-fields can only be defined for a storage-location, not for a folder.");
+        }
+
+        [TestMethod(DisplayName = nameof(DefineMetadataFieldWithEmptyNameTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void DefineMetadataFieldWithEmptyNameTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string _);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.DefineMetadataField(userId, storageLocationId, "   ", MetadataFieldType.String);
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A metadata-field with an empty (whitespace-only) name must be rejected.");
+        }
+
+        [TestMethod(DisplayName = nameof(SetDocumentMetadataValueForFieldOfDifferentStorageLocationTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SetDocumentMetadataValueForFieldOfDifferentStorageLocationTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string otherStorageLocationId = persistence.AddStoragLocation("otherStorageLocation");
+            persistence.SetOwnerOfStorageLocation(otherStorageLocationId, userId);
+            string fieldOfOtherStorageLocation = businessLogicService.DefineMetadataField(userId, otherStorageLocationId, "sender", MetadataFieldType.String);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.SetDocumentMetadataValue(userId, documentId, fieldOfOtherStorageLocation, "value");
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A metadata-value must not be settable using a field-definition of a different storage-location.");
+        }
+
+        [TestMethod(DisplayName = nameof(SoftDeleteRequiresEditPermissionTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void SoftDeleteRequiresEditPermissionTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string otherUserId = "other-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = otherUserId, });
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.SoftDelete(otherUserId, documentId, "not my document");
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A user without edit-permission must not be allowed to soft-delete a document.");
+            Assert.IsFalse(persistence.GetDocument(documentId).IsSoftDeleted, "The document must not have been soft-deleted.");
+        }
+
+        [TestMethod(DisplayName = nameof(HardDeleteRequiresEditPermissionTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void HardDeleteRequiresEditPermissionTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string otherUserId = "other-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = otherUserId, });
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.HardDelete(otherUserId, documentId, "not my document");
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A user without edit-permission must not be allowed to hard-delete a document.");
+            Assert.IsTrue(persistence.IsDocument(documentId), "The document must still exist.");
+            Assert.IsFalse(persistence.GetDocument(documentId).IsHardDeleted, "The document must not have been hard-deleted.");
+        }
+
+        [TestMethod(DisplayName = nameof(MoveRequiresEditPermissionOnTargetContainerTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void MoveRequiresEditPermissionOnTargetContainerTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string otherStorageLocationId = persistence.AddStoragLocation("otherStorageLocation");
+            string otherUserId = "other-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = otherUserId, });
+            persistence.SetOwnerOfStorageLocation(otherStorageLocationId, otherUserId);
+
+            //act & assert: the user may edit the document itself (moderator of its storage-location) but has no permission at all on the target container.
+            bool threw = false;
+            try
+            {
+                businessLogicService.Move(userId, documentId, otherStorageLocationId);
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "Moving into a container the user has no edit-permission for must be rejected even if the user may edit the moved document itself.");
+            Assert.AreEqual(storageLocationId, persistence.GetParentIdOfContainee(documentId), "The document must not have been moved.");
+        }
+
+        //TODO write more testcases for the things which are not allowed to verify the user is really not able to do certain things
     }
 }

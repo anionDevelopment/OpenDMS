@@ -9,7 +9,7 @@
     <IsPackable>false</IsPackable>
     <PreserveCompilationContext>false</PreserveCompilationContext>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <Copyright>Copyright © 2025 Marius Göcke</Copyright>
+    <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>OpenDMSBackendTests is the test-project for OpenDMSBackend.</Description>
     <PackageProjectUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend</PackageProjectUrl>
     <RepositoryUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend.git</RepositoryUrl>

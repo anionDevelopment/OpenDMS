@@ -17,6 +17,8 @@ model/documentDTO.ts
 model/documentPreviewDTO.ts
 model/folderDTO.ts
 model/generalSettingsDTO.ts
+model/metadataFieldDefinitionCreationDTO.ts
+model/metadataFieldDefinitionDTO.ts
 model/models.ts
 model/oIDCCallbackRequestDTO.ts
 model/oIDCInitiationDTO.ts
@@ -26,6 +28,7 @@ model/storageLocationDTO.ts
 model/stringValueDTO.ts
 model/tagDTO.ts
 model/userInformationDTO.ts
+model/userOverviewDTO.ts
 param.ts
 provide-api.ts
 variables.ts

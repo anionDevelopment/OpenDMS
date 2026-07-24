@@ -40,6 +40,124 @@ export class UserService extends BaseService {
     }
 
     /**
+     * Returns the names of all roles that can be assigned to a user. Requires administrator privileges.
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV3UserControllerGetAllRolesGet(xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<string>>;
+    public aPIV3UserControllerGetAllRolesGet(xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<string>>>;
+    public aPIV3UserControllerGetAllRolesGet(xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<string>>>;
+    public aPIV3UserControllerGetAllRolesGet(xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV3UserControllerGetAllRolesGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v3/UserController/GetAllRoles`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<Array<string>>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Returns all users together with the roles assigned to them. Requires administrator privileges.
+     * @param xAccessToken Access Token
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV3UserControllerGetAllUsersGet(xAccessToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<UserOverviewDTO>>;
+    public aPIV3UserControllerGetAllUsersGet(xAccessToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<UserOverviewDTO>>>;
+    public aPIV3UserControllerGetAllUsersGet(xAccessToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<UserOverviewDTO>>>;
+    public aPIV3UserControllerGetAllUsersGet(xAccessToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV3UserControllerGetAllUsersGet.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v3/UserController/GetAllUsers`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<Array<UserOverviewDTO>>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Returns the roles assigned to the currently authenticated user.
      * @param xAccessToken Access Token
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -338,6 +456,79 @@ export class UserService extends BaseService {
     }
 
     /**
+     * Sets the complete set of roles of the given user (roles not contained are removed, missing ones are added). Requires administrator privileges.
+     * @param xAccessToken Access Token
+     * @param userId The id of the user whose roles should be set.
+     * @param requestBody The names of the roles the user should have afterwards.
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public aPIV3UserControllerSetRolesOfUserPut(xAccessToken: string, userId?: string, requestBody?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public aPIV3UserControllerSetRolesOfUserPut(xAccessToken: string, userId?: string, requestBody?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public aPIV3UserControllerSetRolesOfUserPut(xAccessToken: string, userId?: string, requestBody?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public aPIV3UserControllerSetRolesOfUserPut(xAccessToken: string, userId?: string, requestBody?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (xAccessToken === null || xAccessToken === undefined) {
+            throw new Error('Required parameter xAccessToken was null or undefined when calling aPIV3UserControllerSetRolesOfUserPut.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+        if (userId !== undefined && userId !== null) {
+            localVarHeaders = localVarHeaders.set('userId', String(userId));
+        }
+        if (xAccessToken !== undefined && xAccessToken !== null) {
+            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
+        }
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/API/v3/UserController/SetRolesOfUser`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('put', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: requestBody,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Checks whether the given access token is currently valid.
      * @param accessToken The access token to validate.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -389,71 +580,6 @@ export class UserService extends BaseService {
                 observe: observe,
                 transferCache: localVarTransferCache,
                 reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * Returns all users together with the roles assigned to them. Requires administrator privileges.
-     * @param xAccessToken Access Token
-     */
-    public aPIV3UserControllerGetAllUsersGet(xAccessToken: string): Observable<Array<UserOverviewDTO>> {
-        let localVarHeaders = this.defaultHeaders;
-        if (xAccessToken !== undefined && xAccessToken !== null) {
-            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
-        }
-        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<UserOverviewDTO>>('get', `${basePath}/API/v3/UserController/GetAllUsers`,
-            {
-                responseType: 'json',
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-            }
-        );
-    }
-
-    /**
-     * Returns the names of all roles that can be assigned to a user. Requires administrator privileges.
-     * @param xAccessToken Access Token
-     */
-    public aPIV3UserControllerGetAllRolesGet(xAccessToken: string): Observable<Array<string>> {
-        let localVarHeaders = this.defaultHeaders;
-        if (xAccessToken !== undefined && xAccessToken !== null) {
-            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
-        }
-        localVarHeaders = localVarHeaders.set('Accept', 'application/json');
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<string>>('get', `${basePath}/API/v3/UserController/GetAllRoles`,
-            {
-                responseType: 'json',
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-            }
-        );
-    }
-
-    /**
-     * Sets the complete set of roles of the given user. Requires administrator privileges.
-     * @param xAccessToken Access Token
-     * @param userId The id of the user whose roles should be set.
-     * @param roleNames The names of the roles the user should have afterwards.
-     */
-    public aPIV3UserControllerSetRolesOfUserPut(xAccessToken: string, userId: string, roleNames: Array<string>): Observable<any> {
-        let localVarHeaders = this.defaultHeaders;
-        if (xAccessToken !== undefined && xAccessToken !== null) {
-            localVarHeaders = localVarHeaders.set('X-AccessToken', String(xAccessToken));
-        }
-        if (userId !== undefined && userId !== null) {
-            localVarHeaders = localVarHeaders.set('userId', String(userId));
-        }
-        localVarHeaders = localVarHeaders.set('Content-Type', 'application/json');
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('put', `${basePath}/API/v3/UserController/SetRolesOfUser`,
-            {
-                body: roleNames,
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
             }
         );
     }

@@ -1,5 +1,5 @@
 /**
- * OpenDMSBackend v3.0.6 API documentation
+ * OpenDMSBackend v3.1.0 API documentation
  *
  * 
  *
@@ -9,10 +9,16 @@
  */
 
 
+/**
+ * Data transfer object for a storage-location-specific custom metadata-field-definition.
+ */
 export interface MetadataFieldDefinitionDTO { 
     id?: string | null;
     storageLocationId?: string | null;
     name?: string | null;
+    /**
+     * The value-type of the field (\"String\" or \"Boolean\").
+     */
     type?: string | null;
 }
 

@@ -26,6 +26,14 @@
         <source>settings</source>
       </segment>
     </unit>
+    <unit id="setting_auto_generate_ai_summary">
+      <notes>
+        <note category="location">src/app/modules/admin-area/admin-settings/admin-settings.component.html:6,9</note>
+      </notes>
+      <segment>
+        <source>Automatically generate an AI-summary whenever a document is added or changed</source>
+      </segment>
+    </unit>
     <unit id="admin_user_placeholder">
       <notes>
         <note category="location">src/app/modules/admin-area/user/user.component.html:2,4</note>
@@ -40,6 +48,14 @@
       </notes>
       <segment>
         <source>users</source>
+      </segment>
+    </unit>
+    <unit id="users_col_name">
+      <notes>
+        <note category="location">src/app/modules/admin-area/users-list/users-list.component.html:7,8</note>
+      </notes>
+      <segment>
+        <source>Name</source>
       </segment>
     </unit>
     <unit id="hint_not_authenticated">
@@ -381,6 +397,78 @@
         <source>Add storage location</source>
       </segment>
     </unit>
+    <unit id="metadata_fields_title">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:2,4</note>
+      </notes>
+      <segment>
+        <source>Custom metadata-fields</source>
+      </segment>
+    </unit>
+    <unit id="metadata_fields_none">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:5,8</note>
+      </notes>
+      <segment>
+        <source>No custom metadata-fields are defined for this storage-location yet.</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_remove">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:13</note>
+      </notes>
+      <segment>
+        <source>Remove metadata-field</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_name_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:21,22</note>
+      </notes>
+      <segment>
+        <source>Field-name</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_type_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:25,26</note>
+      </notes>
+      <segment>
+        <source>Type</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_type_string">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:27,28</note>
+      </notes>
+      <segment>
+        <source>Text</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_type_boolean">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:28,30</note>
+      </notes>
+      <segment>
+        <source>Yes/No</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_add">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:32,35</note>
+      </notes>
+      <segment>
+        <source>Add field</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_change_not_allowed">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:36,39</note>
+      </notes>
+      <segment>
+        <source>Only a moderator of the storage-location may change its metadata-fields.</source>
+      </segment>
+    </unit>
     <unit id="search_term">
       <notes>
         <note category="location">src/app/modules/user-area/search/search.component.html:2,3</note>
@@ -471,12 +559,20 @@
         <source>Import-date:</source>
       </segment>
     </unit>
-    <unit id="doc_metadata_last_edit_date_label">
+    <unit id="doc_metadata_version_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:11</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:24,26</note>
       </notes>
       <segment>
-        <source>Last edit-date:</source>
+        <source>Version:</source>
+      </segment>
+    </unit>
+    <unit id="doc_metadata_version_date_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:27,28</note>
+      </notes>
+      <segment>
+        <source>Version-date:</source>
       </segment>
     </unit>
     <unit id="doc_metadata_tags_label">
@@ -485,6 +581,30 @@
       </notes>
       <segment>
         <source>Tags:</source>
+      </segment>
+    </unit>
+    <unit id="doc_ai_summary_heading">
+      <notes>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:35,37</note>
+      </notes>
+      <segment>
+        <source>AI-summary:</source>
+      </segment>
+    </unit>
+    <unit id="doc_ai_summary_generate_button">
+      <notes>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:43,44</note>
+      </notes>
+      <segment>
+        <source>Generate AI-summary</source>
+      </segment>
+    </unit>
+    <unit id="doc_ai_summary_generating_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:44,46</note>
+      </notes>
+      <segment>
+        <source>Generating AI-summary…</source>
       </segment>
     </unit>
   </file>
