@@ -23,7 +23,7 @@ export class UsersListComponent {
   }
 
   userHasRole(user: UserOverviewDTO, role: string): boolean {
-    return (user.roles ?? []).includes(role);
+    return (user.roles ?? new Set<string>()).has(role);
   }
 
   onRoleToggled(user: UserOverviewDTO, role: string, checked: boolean): void {
@@ -33,8 +33,8 @@ export class UsersListComponent {
     } else {
       roles.delete(role);
     }
-    user.roles = Array.from(roles);
+    user.roles = roles;
     const accessToken = this.storageService.getAccessToken();
-    this.userService.aPIV3UserControllerSetRolesOfUserPut(accessToken, user.id ?? '', user.roles).subscribe();
+    this.userService.aPIV3UserControllerSetRolesOfUserPut(accessToken, user.id ?? '', Array.from(roles)).subscribe();
   }
 }

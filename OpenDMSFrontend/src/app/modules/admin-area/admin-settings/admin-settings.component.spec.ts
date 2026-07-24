@@ -14,12 +14,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
 import { Router } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { StorageService } from '../../../services/storage.service';
 
 describe('AdminSettingsComponent', () => {
   let component: AdminSettingsComponent;
   let fixture: ComponentFixture<AdminSettingsComponent>;
 
   beforeEach(async () => {
+    new StorageService().setAccessToken('test-access-token');
     await TestBed.configureTestingModule({
       imports: [
         CommonModule,
@@ -45,13 +49,19 @@ describe('AdminSettingsComponent', () => {
           useValue: {
             url: "admin/dashboard",
           },
-        }
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    new StorageService().removeAccessToken();
   });
 
   it('should create', () => {

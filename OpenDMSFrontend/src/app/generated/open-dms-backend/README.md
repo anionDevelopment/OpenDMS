@@ -2,7 +2,7 @@
 
 OpenDMSBackend is the backend of OpenDMS.
 
-The version of the OpenAPI document: v3.0.6
+The version of the OpenAPI document: v3.1.0
 
 ## Building
 
