@@ -325,7 +325,8 @@ namespace OpenDMSBackend.Core.Services
             return searchResults
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(this._Persistence.GetDocumentPreview)
-                .Where(preview => preview.IsLatestVersion && !preview.IsHardDeleted)
+                //a deleted document (soft- or hard-deleted) and an outdated version are not part of the search-result. this filter defines the search-semantics for every persistence-implementation; the sql-based implementations additionally apply it in the query itself to avoid loading previews which would be dropped here anyway.
+                .Where(preview => preview.IsLatestVersion && !preview.IsHardDeleted && !preview.IsSoftDeleted)
                 .ToList();
         }
 
