@@ -12,6 +12,12 @@ services:
       - "5432"
     volumes:
       - ./Volumes/OpenDMSPostgreSQLData:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U user -d OpenDMSDatabase || exit 1"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
     networks:
       - opendms_net
     command: >

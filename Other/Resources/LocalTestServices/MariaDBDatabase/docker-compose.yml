@@ -12,6 +12,12 @@ services:
       MARIADB_DATABASE: OpenDMSDatabase
     volumes:
       - ./Volumes/OpenDMSMariaDBData:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u root -pR00tpa55w0rd || exit 1"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
     networks:
       - opendms_net
 
