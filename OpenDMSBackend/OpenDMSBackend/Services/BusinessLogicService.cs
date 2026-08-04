@@ -442,7 +442,8 @@ namespace OpenDMSBackend.Core.Services
                 .GetAllDocumentIds()
                 .Where(documentId => this.UserIsAllowedToViewContent(requesterUserId, documentId))
                 .Select(id => this.GetDocumentPreview(requesterUserId, id))
-                .Where(document => document.IsLatestVersion && !document.IsHardDeleted)
+                //a deleted document (soft- or hard-deleted) and an outdated version are not part of the latest-documents-list. this is the same filter the search applies.
+                .Where(document => document.IsLatestVersion && !document.IsHardDeleted && !document.IsSoftDeleted)
                 .OrderByDescending(document => document.GetNewestDate(document))
                 .Take(5)
                 .ToList();

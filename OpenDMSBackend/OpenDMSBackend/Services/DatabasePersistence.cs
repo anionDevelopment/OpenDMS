@@ -373,7 +373,7 @@ namespace OpenDMSBackend.Core.Services
                     User user = new User();
                     user.Id = userId;
                     user.Name = reader.GetString(1);
-                    user.PasswordHash = reader.GetString(2);
+                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);//null when the user uses an external authentication-provider
                     user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
@@ -594,7 +594,7 @@ namespace OpenDMSBackend.Core.Services
                                  this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)),//must be deleted after
                                 reader.GetString(11),//businessowner
                                 Core.Misc.Utilities.StringToLanguagesList(reader.GetString(12)),//languages
-                                reader.GetString(13)//userid
+                                DBUtilities.GetNullableValue<string>(reader, 13)//userid; null for a document which was added by an automatic operation (for example an import) instead of by a user
                             );
                             document.IsLatestVersion = reader.GetBoolean(4);//is latest version
                             document.IsHardDeleted = isHardDeleted;
@@ -1096,7 +1096,7 @@ namespace OpenDMSBackend.Core.Services
                         this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//must be deleted after
                         reader.GetString(10),//business owner
                         Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 11))), //languages
-                        reader.GetString(12)//creator-user-is
+                        DBUtilities.GetNullableValue<string>(reader, 12)//creator-user-id; null for a document which was added by an automatic operation (for example an import) instead of by a user
                     );
                     document.IsLatestVersion = reader.GetBoolean(4);//is latest version
                     document.IsHardDeleted = isHardDeleted;

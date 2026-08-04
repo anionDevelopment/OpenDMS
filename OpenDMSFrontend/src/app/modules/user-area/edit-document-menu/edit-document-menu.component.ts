@@ -51,7 +51,8 @@ export class EditDocumentMenuComponent {
       data: { documentDTO: this.documentPreview },
     });
     dialogRef.afterClosed().pipe(switchMap(result => {
-      if (result.save) {
+      //the result is undefined when the dialog was closed without using one of its buttons (for example by pressing escape or by clicking the backdrop).
+      if (result?.save) {
         const newTitle: string = result.data.documentTitle;
         return this.openDMSBackendService.aPIV3OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.documentPreview?.id!, this.storageService.getAccessToken(), { value: newTitle }).pipe(switchMap(() => of(newTitle)));
       } else {
