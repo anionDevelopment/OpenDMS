@@ -11,8 +11,8 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>OpenDMSBackend is the backend of OpenDMS.</Description>
-    <PackageProjectUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend</PackageProjectUrl>
-    <RepositoryUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/anionDevelopment/OpenDMS</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/anionDevelopment/OpenDMS.git</RepositoryUrl>
     <RootNamespace>OpenDMSBackend.Core</RootNamespace>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <Nullable>enable</Nullable>

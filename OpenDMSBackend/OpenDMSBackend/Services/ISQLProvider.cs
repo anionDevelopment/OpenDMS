@@ -28,6 +28,7 @@
         string GetScriptUserWithNameExists();
         string GetScriptGetAmountOfDocuments();
         string GetScriptGetUserByName();
+        string GetScriptGetUserByExternalLogin();
         string GetScriptAddAccessToken();
         string GetScriptGetAccessToken();
         string GetScriptGetDocument();

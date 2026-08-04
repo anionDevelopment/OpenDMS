@@ -1,4 +1,4 @@
 
 select
-	`Value`, `ExpiredMoment`, `UserId` 
+	`ExpiredMoment`, `UserId`
 	from AccessToken where `Value`=@Value;

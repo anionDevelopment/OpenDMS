@@ -1,4 +1,4 @@
 
 select 1 
     from "Users" 
-    where "Id"=@Id;
+    where "Id"=@UserId;

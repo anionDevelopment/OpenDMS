@@ -355,7 +355,7 @@ namespace OpenDMSBackend.Core.Services
             return this.RunTransaction(nameof(UserWithIdExists), true, (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptUserWithIdExists();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter(nameof(userId), userId));
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 return reader.HasRows;
             })[0];
@@ -375,7 +375,7 @@ namespace OpenDMSBackend.Core.Services
                     User user = new User();
                     user.Id = userId;
                     user.Name = reader.GetString(1);
-                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);
+                    user.PasswordHash = DBUtilities.GetNullableValue<string>(reader, 2);//null when the user uses an external authentication-provider
                     user.EMailAddress = DBUtilities.GetNullableValue<string>(reader, 3);
                     user.UserIsActivated = reader.GetBoolean(4);
                     user.UserIsLocked = reader.GetBoolean(5);
@@ -600,7 +600,7 @@ namespace OpenDMSBackend.Core.Services
                                  this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 10)),//must be deleted after
                                 reader.GetString(11),//businessowner
                                 Core.Misc.Utilities.StringToLanguagesList(reader.GetString(12)),//languages
-                                reader.GetString(13)//userid
+                                DBUtilities.GetNullableValue<string>(reader, 13)//userid; null for a document which was added by an automatic operation (for example an import) instead of by a user
                             );
                             document.IsLatestVersion = reader.GetBoolean(4);//is latest version
                             document.IsHardDeleted = isHardDeleted;
@@ -773,7 +773,7 @@ namespace OpenDMSBackend.Core.Services
                 using DbDataReader reader = command.ExecuteReader();
                 if (reader.HasRows)
                 {
-                    //TODO assert that there is only one result-row in the reader
+                    //the script returns exactly the one container of the hierarchy which is a storage-location.
                     reader.Read();
                     return reader.GetString(0);
                 }
@@ -990,6 +990,11 @@ namespace OpenDMSBackend.Core.Services
         {
             this.RunTransaction(nameof(Update), true, (command) =>
             {
+                if (!document.IsHardDeleted)
+                {
+                    //the binary content and the preview are stored in the file-system, so they have to be written as well; a hard-deleted document is skipped because its files were removed on purpose and must not reappear.
+                    this.SaveDocument(document);
+                }
                 command.CommandText = this._SQLProvider.GetScriptUpdateDocument();
 
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", document.Id));
@@ -1040,7 +1045,7 @@ namespace OpenDMSBackend.Core.Services
             return GUtilities.GetValue(this.RunTransaction(nameof(GetParentIdOfContainee), true, (cmd) =>
             {
                 cmd.CommandText = this._SQLProvider.GetScriptGetParentIdOfContainee();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", containeeId));
+                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContaineeId", containeeId));
                 using DbDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
                 {
@@ -1064,21 +1069,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool IsStorageLocationId(string id)
         {
-            return this.RunTransaction(nameof(IsStorageLocationId), true, (cmd) =>
-            {
-                cmd.CommandText = this._SQLProvider.GetScriptIsStorageLocation();
-                cmd.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("ContentId", id));
-                using DbDataReader reader = cmd.ExecuteReader();
-                reader.Read();
-                if (reader.HasRows)
-                {
-                    return reader.GetInt32(0) == 1;
-                }
-                else
-                {
-                    return false;
-                }
-            })[0];
+            //this is the same check as IsStorageLocation; both exist because IPersistence declares both. The check is implemented once to keep them consistent.
+            return this.IsStorageLocation(id);
         }
 
         /// <inheritdoc />
@@ -1110,7 +1102,7 @@ namespace OpenDMSBackend.Core.Services
                         this.ToNullableDateTimeOffset(DBUtilities.GetNullableValue<DateTime>(reader, 9)),//must be deleted after
                         reader.GetString(10),//business owner
                         Core.Misc.Utilities.StringToLanguagesList(GUtilities.GetValue(DBUtilities.GetNullableValue<string>(reader, 11))), //languages
-                        reader.GetString(12)//creator-user-is
+                        DBUtilities.GetNullableValue<string>(reader, 12)//creator-user-id; null for a document which was added by an automatic operation (for example an import) instead of by a user
                     );
                     document.IsLatestVersion = reader.GetBoolean(4);//is latest version
                     document.IsHardDeleted = isHardDeleted;
