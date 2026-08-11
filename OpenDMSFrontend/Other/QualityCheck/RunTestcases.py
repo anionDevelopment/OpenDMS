@@ -5,7 +5,9 @@ from ScriptCollection.TFCPS.TFCPS_VisualRegressionTests import TFCPS_VisualRegre
 def run_testcases():
     tf:TFCPS_CodeUnitSpecific_NodeJS_Functions=TFCPS_CodeUnitSpecific_NodeJS_CLI.parse(__file__)
     tf.run_testcases()
-    TFCPS_VisualRegressionTests(tf).run(False)
+    vrt=TFCPS_VisualRegressionTests(tf)
+    vrt.run(False)
+    vrt.check_screenshots_are_similar()
 
 
 

@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import { respondWith } from './SimulatedBackend';
 
 /*
  * The key under which the application stores the access-token. It is duplicated here on purpose:
@@ -36,12 +37,4 @@ export async function simulateLoggedInUser(page: Page): Promise<void> {
     }, { key: storageKeyOfTheAccessToken, value: accessTokenOfTheSimulatedUser });
     await respondWith(page, '**/API/v3/UserController/TokenIsValid*', true);
     await respondWith(page, '**/API/v3/UserController/GetUserInformation*', informationAboutTheSimulatedUser);
-}
-
-async function respondWith(page: Page, urlPattern: string, content: unknown): Promise<void> {
-    await page.route(urlPattern, (route) => route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(content)
-    }));
 }
