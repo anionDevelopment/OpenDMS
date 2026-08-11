@@ -7,7 +7,11 @@ def run_testcases():
     tf.run_testcases()
     vrt=TFCPS_VisualRegressionTests(tf)
     vrt.run(False)
+    # The two checks answer different questions: the run above compares every screenshot with the baseline of its
+    # own browser (which detects a change of the user-interface), while the two checks below compare the browsers
+    # with each other (which detects that a page looks different in one browser than in the others).
     vrt.check_screenshots_are_similar()
+    vrt.check_layouts_are_similar()
 
 
 

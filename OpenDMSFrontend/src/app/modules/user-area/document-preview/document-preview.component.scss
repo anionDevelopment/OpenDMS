@@ -1,3 +1,12 @@
+:host {
+    /*
+     * Without this the element is an inline-element which contains a block-element, and the height such a
+     * construct gets differs between the browser-engines: on the page of a document the element was 79 pixels
+     * high in chromium and in firefox but 107 pixels high in webkit, which moved everything below it.
+     */
+    display: block;
+}
+
 .image-popup {
     position: fixed;
     z-index: 1000;

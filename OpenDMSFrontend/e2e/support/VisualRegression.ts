@@ -1,4 +1,5 @@
 import { expect, Page } from '@playwright/test';
+import { saveLayoutOfPage } from './PageLayout';
 
 /*
  * Elements whose content changes without a change of the layout. They are masked in every
@@ -20,6 +21,12 @@ export async function expectPageToLookLikeBaseline(page: Page, route: string, ba
         animations: 'disabled',
         mask: selectorsOfVolatileElements.map((selector) => page.locator(selector))
     });
+    /*
+     * The screenshot above is only compared with the baseline of the same browser, which can not detect that a
+     * page looks different in one browser than in the others. The geometry of the page is therefore written
+     * down additionally; it is compared across the browsers after the run (see saveLayoutOfPage).
+     */
+    await saveLayoutOfPage(page, baselineName, selectorsOfVolatileElements);
 }
 
 /*
