@@ -1,6 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 
+/*
+ * The font-packages which deliver "Material Icons" only contain the font itself and not this class, which the
+ * stylesheet of the external font-provider used to contain. The class is required because Angular Material adds
+ * it to every "mat-icon"-element but does not define which font such an element uses; without it an icon would
+ * be displayed as the name of the icon instead of as the icon.
+ */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   margin: 0;

@@ -23,9 +23,11 @@ export async function expectPageToLookLikeBaseline(page: Page, route: string, ba
 }
 
 /*
- * The font which the application loads from an external font-provider and which is used on every page. A
- * page which is rendered before this font is available looks completely different, so a screenshot which is
- * taken at that moment does not differ from its baseline by a few pixels but by a large part of the image.
+ * The font which is used on every page. A page which is rendered before this font is available looks completely
+ * different, so a screenshot which is taken at that moment does not differ from its baseline by a few pixels but
+ * by a large part of the image. The font is delivered with the application, so it is available immediately; the
+ * check is kept nevertheless, because it makes a missing font fail with a clear message instead of with a
+ * difference of the whole page, which would look like a regression of the user-interface.
  * Only this font is checked and not for example the icon-font, because a font which a page does not use is
  * not loaded at all and would therefore never be reported as available.
  */
