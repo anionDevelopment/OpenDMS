@@ -2,12 +2,11 @@ from ScriptCollection.TFCPS.NodeJS.TFCPS_CodeUnitSpecific_NodeJS import TFCPS_Co
 from ScriptCollection.TFCPS.TFCPS_VisualRegressionTests import TFCPS_VisualRegressionTests
 
 
-def run_testcases():
+def update_visual_regression_baselines():
     tf:TFCPS_CodeUnitSpecific_NodeJS_Functions=TFCPS_CodeUnitSpecific_NodeJS_CLI.parse(__file__)
-    tf.run_testcases()
-    TFCPS_VisualRegressionTests(tf).run(False)
+    TFCPS_VisualRegressionTests(tf).run(True)
 
 
 
 if __name__ == "__main__":
-    run_testcases()
+    update_visual_regression_baselines()
