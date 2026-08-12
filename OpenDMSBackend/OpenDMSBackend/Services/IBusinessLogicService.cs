@@ -65,6 +65,16 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="requesterUserId">The id of the user requesting the operation.</param>
         /// <param name="enabled">Whether the automatic generation should be enabled.</param>
         public void SetAutoGenerateAISummary(string requesterUserId, bool enabled);
+
+        /// <summary>Returns the color-scheme the given user chose.</summary>
+        /// <param name="userId">The id of the user.</param>
+        /// <returns>"system", "light" or "dark". A user who did not choose a color-scheme yet gets "system", which follows the setting of the operating-system of that user.</returns>
+        public string GetThemeOfUser(string userId);
+
+        /// <summary>Sets the color-scheme of the given user.</summary>
+        /// <param name="userId">The id of the user.</param>
+        /// <param name="theme">"system", "light" or "dark".</param>
+        public void SetThemeOfUser(string userId, string theme);
         #endregion
 
         #region Storage

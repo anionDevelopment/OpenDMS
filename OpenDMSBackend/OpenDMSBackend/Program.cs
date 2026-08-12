@@ -42,7 +42,7 @@ namespace OpenDMSBackend.Core
 {
     internal class Program
     {
-        internal bool ListenOnEveryIP { get; set; } = false;
+        internal bool ListenOnEveryIP { get; set; } = true;
         internal bool RunAsync { get; set; } = false;
         internal bool IsRunning { get; set; } = false;
         internal IBusinessLogicService? _BusinessLogicService;

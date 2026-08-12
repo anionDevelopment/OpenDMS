@@ -37,4 +37,6 @@ export async function simulateLoggedInUser(page: Page): Promise<void> {
     }, { key: storageKeyOfTheAccessToken, value: accessTokenOfTheSimulatedUser });
     await respondWith(page, '**/API/v3/UserController/TokenIsValid*', true);
     await respondWith(page, '**/API/v3/UserController/GetUserInformation*', informationAboutTheSimulatedUser);
+    /* The color-scheme which the user chose. "system" is the value of a user who did not choose one. */
+    await respondWith(page, '**/API/v3/UserController/GetTheme*', { value: 'system' });
 }

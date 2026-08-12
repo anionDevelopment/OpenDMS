@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { StorageService } from './storage.service';
 import { Observable, first, map, mergeMap, of, switchMap, tap } from 'rxjs';
 import { UserInformationDTO, UserService } from '../generated/open-dms-backend';
+import { ThemeService } from './theme.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { UserInformationDTO, UserService } from '../generated/open-dms-backend';
 export class UserDataService {
   private loaded: boolean = false;
 
-  constructor(private userService: UserService, private storageService: StorageService) {
+  constructor(private userService: UserService, private storageService: StorageService, private themeService: ThemeService) {
   }
 
   loadUserData(): Observable<void> {
@@ -21,6 +22,7 @@ export class UserDataService {
     this.storageService.setUserId(null);
     this.storageService.setAccessToken(null);
     this.storageService.setUserIsAdmin(false);
+    this.themeService.unloadModeOfUser();
     this.loaded = false;
   }
 

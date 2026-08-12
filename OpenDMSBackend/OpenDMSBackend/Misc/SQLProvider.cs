@@ -58,6 +58,18 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptGetUserSetting()
+        {
+            return this.LoadSQLScript("GetUserSetting");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptSetUserSetting()
+        {
+            return this.LoadSQLScript("SetUserSetting");
+        }
+
+        /// <inheritdoc />
         public string GetScriptAddDocumentVersion()
         {
             return this.LoadSQLScript("AddDocumentVersion");

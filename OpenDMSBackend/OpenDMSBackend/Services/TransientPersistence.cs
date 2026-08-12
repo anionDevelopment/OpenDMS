@@ -21,6 +21,7 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationViewGrants;
         private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationEditGrants;
         private readonly IDictionary<string/*key*/, string/*value*/> _Settings;
+        private readonly IDictionary<(string/*userid*/, string/*key*/), string/*value*/> _UserSettings;
         private readonly IDictionary<string/*field-definition-id*/, MetadataFieldDefinition> _MetadataFieldDefinitions;
         private readonly IList<DocumentVersionEntry> _DocumentVersions;
         private readonly IIdGenerator<ulong> _IdGenerator;
@@ -43,6 +44,7 @@ namespace OpenDMSBackend.Core.Services
             this._StorageLocationViewGrants = new Dictionary<string, ISet<string>>();
             this._StorageLocationEditGrants = new Dictionary<string, ISet<string>>();
             this._Settings = new Dictionary<string, string>();
+            this._UserSettings = new Dictionary<(string, string), string>();
             this._MetadataFieldDefinitions = new Dictionary<string, MetadataFieldDefinition>();
             this._DocumentVersions = new List<DocumentVersionEntry>();
             this._Tags = new Dictionary<string, Tag>();
@@ -68,6 +70,7 @@ namespace OpenDMSBackend.Core.Services
             this._StorageLocationViewGrants.Clear();
             this._StorageLocationEditGrants.Clear();
             this._Settings.Clear();
+            this._UserSettings.Clear();
             this._MetadataFieldDefinitions.Clear();
             this._DocumentVersions.Clear();
             this._Tags.Clear();
@@ -710,6 +713,24 @@ namespace OpenDMSBackend.Core.Services
             lock (_Lock)
             {
                 this._Settings[key] = value;
+            }
+        }
+
+        /// <inheritdoc />
+        public string? GetUserSetting(string userId, string key)
+        {
+            lock (_Lock)
+            {
+                return this._UserSettings.TryGetValue((userId, key), out string? value) ? value : null;
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetUserSetting(string userId, string key, string value)
+        {
+            lock (_Lock)
+            {
+                this._UserSettings[(userId, key)] = value;
             }
         }
 

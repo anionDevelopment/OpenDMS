@@ -120,6 +120,30 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(Utilities.GetUserInformation(this.GetUser()));
         }
 
+        /// <summary>Returns the color-scheme which the currently authenticated user chose.</summary>
+        /// <returns>A <see cref="StringValueDTO"/> containing "system", "light" or "dark". A user who did not choose a color-scheme yet gets "system", which follows the setting of the operating-system of that user.</returns>
+        [Authenticate]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StringValueDTO))]
+        [Route(nameof(GetTheme))]
+        public IActionResult GetTheme()
+        {
+            return this.Ok(new StringValueDTO() { Value = this._BusinessLogicService.GetThemeOfUser(this.GetUser().Id) });
+        }
+
+        /// <summary>Sets the color-scheme of the currently authenticated user, so that the choice is available again on another device and after a new login.</summary>
+        /// <param name="theme">The color-scheme to store: "system", "light" or "dark".</param>
+        /// <returns>200 if the color-scheme was stored.</returns>
+        [Authenticate]
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Route(nameof(SetTheme))]
+        public IActionResult SetTheme([FromBody] StringValueDTO theme)
+        {
+            this._BusinessLogicService.SetThemeOfUser(this.GetUser().Id, theme.Value);
+            return this.Ok();
+        }
+
         /// <summary>Returns all users together with the roles assigned to them. Requires administrator privileges.</summary>
         /// <returns>An array of <see cref="UserOverviewDTO"/>.</returns>
         [Authenticate]

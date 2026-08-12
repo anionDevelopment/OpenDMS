@@ -1601,6 +1601,31 @@ paths:
       summary: Returns the roles assigned to the currently authenticated user.
       tags:
       - User
+  /API/v3/UserController/GetTheme:
+    get:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringValueDTO'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/StringValueDTO'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/StringValueDTO'
+          description: OK
+      summary: Returns the color-scheme which the currently authenticated user chose.
+      tags:
+      - User
   /API/v3/UserController/GetUserInformation:
     get:
       parameters:
@@ -1733,6 +1758,34 @@ paths:
           description: OK
       summary: Sets the complete set of roles of the given user (roles not contained
         are removed, missing ones are added). Requires administrator privileges.
+      tags:
+      - User
+  /API/v3/UserController/SetTheme:
+    put:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+        description: 'The color-scheme to store: "system", "light" or "dark".'
+      responses:
+        '200':
+          description: OK
+      summary: Sets the color-scheme of the currently authenticated user, so that
+        the choice is available again on another device and after a new login.
       tags:
       - User
   /API/v3/UserController/TokenIsValid:
