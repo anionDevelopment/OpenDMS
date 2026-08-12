@@ -1,13 +1,15 @@
 <mat-accordion multi>
-  <mat-expansion-panel *ngFor="let storageLocation of storageLocations">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        <mat-icon>inventory-2</mat-icon>
-        {{storageLocation.name}}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-content-view [title]="storageLocation.name" [folderIds]="storageLocation.containedFolderIds" [documentIds]="storageLocation.containedDocumentIds" [containerId]="storageLocation.id" [isFolder]="false" (containerRemoved)="onContainerRemoved($event)" (containerTitleChanged)="onStorageLocationTitleChanged(storageLocation, $event)"></app-content-view>
-  </mat-expansion-panel>
+  @for (storageLocation of storageLocations; track storageLocation) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>inventory-2</mat-icon>
+          {{storageLocation.name}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-content-view [title]="storageLocation.name" [folderIds]="storageLocation.containedFolderIds" [documentIds]="storageLocation.containedDocumentIds" [containerId]="storageLocation.id" [isFolder]="false" (containerRemoved)="onContainerRemoved($event)" (containerTitleChanged)="onStorageLocationTitleChanged(storageLocation, $event)"></app-content-view>
+    </mat-expansion-panel>
+  }
 </mat-accordion>
 <app-edit-storage-location-menu (storageLocationAdded)="onStorageLocationAdded($event)"></app-edit-storage-location-menu>
 <!--TODO set userIsAllowedToAddStorageLocation-->
