@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Settings } from '../../../static/Settings';
 import { Router } from '@angular/router';
 import { ThemeService } from '../../../services/theme.service';
@@ -7,6 +7,7 @@ import { ThemeService } from '../../../services/theme.service';
   selector: 'app-frame-work',
   standalone: false,
   templateUrl: './frame-work.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './frame-work.component.scss'
 })
 export class FrameWorkComponent implements OnInit {

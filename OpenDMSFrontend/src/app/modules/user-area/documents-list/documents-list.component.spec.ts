@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 import { UserAreaContainerComponent } from '../user-area-container/user-area-container.component';
 import { UserDataService } from '../../../services/user-data.service';
 import { Router } from '@angular/router';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,6 +37,7 @@ import { EditStorageLocationMenuComponent } from '../edit-storage-location-menu/
 @Component({
   selector: 'app-user-area-container',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: '<ng-content></ng-content>'
 })
 class UserAreaContainerComponentMock { }

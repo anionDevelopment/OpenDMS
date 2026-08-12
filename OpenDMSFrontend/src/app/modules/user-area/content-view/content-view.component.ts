@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { DocumentDTO, DocumentPreviewDTO, FolderDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
   selector: 'app-content-view',
   standalone: false,
   templateUrl: './content-view.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './content-view.component.scss'
 })
 export class ContentViewComponent implements OnInit {//shows the content of a container

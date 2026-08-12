@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UserOverviewDTO, UserService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 
@@ -6,6 +6,7 @@ import { StorageService } from '../../../services/storage.service';
   selector: 'app-users-list',
   standalone: false,
   templateUrl: './users-list.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './users-list.component.scss'
 })
 export class UsersListComponent {

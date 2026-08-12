@@ -19,7 +19,7 @@
                 {{doc?.originalFilename}}
                 <br>
                   <span i18n="@@doc_metadata_import_date_label">Import-date:</span>
-                  {{doc?.importDate | timestamp}}
+                  {{$safeNavigationMigration(doc?.importDate) | timestamp}}
                   <br>
                     <span i18n="@@doc_metadata_version_label">Version:</span>
                     {{doc?.versionNumber}}

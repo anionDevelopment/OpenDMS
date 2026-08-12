@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Observable, combineLatest, iif, of, switchMap } from 'rxjs';
 import { UserDataService } from '../../../services/user-data.service';
@@ -7,6 +7,7 @@ import { UserDataService } from '../../../services/user-data.service';
   selector: 'app-user-dashboard',
   standalone: false,
   templateUrl: './user-dashboard.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-dashboard.component.scss'
 })
 export class UserDashboardComponent {

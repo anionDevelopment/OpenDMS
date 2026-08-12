@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UserService } from '../../../generated/open-dms-backend';
 import { Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { switchMap } from 'rxjs';
   selector: 'app-login-form',
   standalone: false,
   templateUrl: './login-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './login-form.component.scss'
 })
 export class LoginFormComponent {

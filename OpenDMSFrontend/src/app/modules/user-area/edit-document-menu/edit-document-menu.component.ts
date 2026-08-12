@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { DocumentPreviewDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 import { Router } from '@angular/router';
@@ -13,6 +13,7 @@ import { of, switchMap } from 'rxjs';
   selector: 'app-edit-document-menu',
   standalone: false,
   templateUrl: './edit-document-menu.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-document-menu.component.scss'
 })
 export class EditDocumentMenuComponent {
