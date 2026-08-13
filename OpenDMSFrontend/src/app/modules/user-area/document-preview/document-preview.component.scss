@@ -10,10 +10,11 @@
 .image-popup {
     position: fixed;
     z-index: 1000;
-    border: 1px solid #ccc;
-    background: white;
+    /* System-tokens of the theme, so the popup follows the chosen color-scheme instead of staying bright. */
+    border: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container-high);
     padding: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--mat-sys-level2);
     pointer-events: none;
 }
 

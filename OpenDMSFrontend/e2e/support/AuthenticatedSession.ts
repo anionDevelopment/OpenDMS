@@ -29,14 +29,21 @@ const informationAboutTheSimulatedUser = {
  * depend on the content of a database.
  *
  * This function has to be called before the page is opened.
+ *
+ * @param colorScheme The color-scheme which the simulated user chose. It is answered to the request which the
+ * application sends after the login, so the page is rendered in exactly that scheme. "system" is the value of a
+ * user who did not choose one; in that case the scheme of the operating-system applies, which is light in the
+ * browsers of the testrun.
  */
-export async function simulateLoggedInUser(page: Page): Promise<void> {
+export async function simulateLoggedInUser(page: Page, colorScheme: ColorScheme = 'system'): Promise<void> {
     /* The init-script runs in the browser, so everything it needs has to be passed as an argument. */
     await page.addInitScript((accessToken: { key: string, value: string }) => {
         sessionStorage.setItem(accessToken.key, accessToken.value);
     }, { key: storageKeyOfTheAccessToken, value: accessTokenOfTheSimulatedUser });
     await respondWith(page, '**/API/v3/UserController/TokenIsValid*', true);
     await respondWith(page, '**/API/v3/UserController/GetUserInformation*', informationAboutTheSimulatedUser);
-    /* The color-scheme which the user chose. "system" is the value of a user who did not choose one. */
-    await respondWith(page, '**/API/v3/UserController/GetTheme*', { value: 'system' });
+    await respondWith(page, '**/API/v3/UserController/GetTheme*', { value: colorScheme });
 }
+
+/* The color-schemes which the application supports. (See the color-scheme-toggle-button.) */
+export type ColorScheme = 'system' | 'light' | 'dark';
