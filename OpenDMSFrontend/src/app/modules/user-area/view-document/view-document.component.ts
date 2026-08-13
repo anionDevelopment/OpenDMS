@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { DocumentDTO, DocumentPreviewDTO, OpenDMSBackendService, TagDTO } from '../../../generated/open-dms-backend';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   selector: 'app-view-document',
   standalone: false,
   templateUrl: './view-document.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './view-document.component.scss'
 })
 export class ViewDocumentComponent {

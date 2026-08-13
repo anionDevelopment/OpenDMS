@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { GeneralSettingsDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 
@@ -6,6 +6,7 @@ import { StorageService } from '../../../services/storage.service';
   selector: 'app-admin-settings',
   standalone: false,
   templateUrl: './admin-settings.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-settings.component.scss'
 })
 export class AdminSettingsComponent {

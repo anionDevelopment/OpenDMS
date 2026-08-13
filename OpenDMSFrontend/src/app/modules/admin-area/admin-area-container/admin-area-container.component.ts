@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserDataService } from '../../../services/user-data.service';
 
@@ -6,6 +6,7 @@ import { UserDataService } from '../../../services/user-data.service';
   selector: 'app-admin-area-container',
   standalone: false,
   templateUrl: './admin-area-container.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-area-container.component.scss'
 })
 export class AdminAreaContainerComponent {

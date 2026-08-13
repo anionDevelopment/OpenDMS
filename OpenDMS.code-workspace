@@ -151,6 +151,19 @@
 				"allowcustomarguments": true
 			},
 			{
+				"label": "Update: Visual-regression-baselines",
+				"command": "python UpdateVisualRegressionBaselines.py",
+				"args": [],
+				"type": "shell",
+				"options": {
+					"cwd": "${workspaceFolder}/OpenDMSFrontend/Other/QualityCheck"
+				},
+				"aliases": [
+					"uvrb"
+				],
+				"allowcustomarguments": true
+			},
+			{
 				"label": "Translate",
 				"command": "python Translate.py",
 				"args": [],

@@ -7,3 +7,4 @@ Resources/DependentCodeUnits
 Resources/Constants
 Resources/OpenAPIGenerator
 !Reference/ReferenceContent/api/index.md
+Resources/Constants/CurrentTimestamp.*

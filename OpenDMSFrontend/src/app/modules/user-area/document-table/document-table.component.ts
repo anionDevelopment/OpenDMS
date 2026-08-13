@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { DocumentPreviewDTO } from '../../../generated/open-dms-backend';
 import { Observable } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
@@ -8,6 +8,7 @@ import { MatSort } from '@angular/material/sort';
   selector: 'app-document-table',
   standalone: false,
   templateUrl: './document-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './document-table.component.scss'
 })
 export class DocumentTableComponent implements OnInit {

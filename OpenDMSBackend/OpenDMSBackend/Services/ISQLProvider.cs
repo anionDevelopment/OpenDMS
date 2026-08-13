@@ -12,6 +12,8 @@
         string GetScriptSetAISummary();
         string GetScriptGetSetting();
         string GetScriptSetSetting();
+        string GetScriptGetUserSetting();
+        string GetScriptSetUserSetting();
         string GetScriptAddDocumentVersion();
         string GetScriptGetVersionsOfDocument();
         string GetScriptGetVersionByContentId();

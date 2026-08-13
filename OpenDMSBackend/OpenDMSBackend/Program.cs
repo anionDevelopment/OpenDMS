@@ -1,4 +1,4 @@
-using GRYLibrary.Core.APIServer.CommonRoutes;
+﻿using GRYLibrary.Core.APIServer.CommonRoutes;
 using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
 using GRYLibrary.Core.APIServer.Mid.AuthS;
@@ -43,7 +43,7 @@ namespace OpenDMSBackend.Core
 {
     internal class Program
     {
-        internal bool ListenOnEveryIP { get; set; } = false;
+        internal bool ListenOnEveryIP { get; set; } = true;
         internal bool RunAsync { get; set; } = false;
         internal bool IsRunning { get; set; } = false;
         internal IBusinessLogicService? _BusinessLogicService;

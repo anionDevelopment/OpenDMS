@@ -1,10 +1,20 @@
+:host {
+    /*
+     * Without this the element is an inline-element which contains a block-element, and the height such a
+     * construct gets differs between the browser-engines: on the page of a document the element was 79 pixels
+     * high in chromium and in firefox but 107 pixels high in webkit, which moved everything below it.
+     */
+    display: block;
+}
+
 .image-popup {
     position: fixed;
     z-index: 1000;
-    border: 1px solid #ccc;
-    background: white;
+    /* System-tokens of the theme, so the popup follows the chosen color-scheme instead of staying bright. */
+    border: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container-high);
     padding: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--mat-sys-level2);
     pointer-events: none;
 }
 

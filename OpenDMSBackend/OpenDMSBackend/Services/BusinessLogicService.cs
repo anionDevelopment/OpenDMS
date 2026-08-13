@@ -565,6 +565,29 @@ namespace OpenDMSBackend.Core.Services
             this._AuditLog.Logger.Log($"Setting '{CodeUnitSpecificConstants.SettingKeyAutoGenerateAISummary}' set to '{enabled}' by user '{requesterUserId}'.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
+        /// <inheritdoc />
+        public string GetThemeOfUser(string userId)
+        {
+            // A value which is not stored (or which is not valid anymore because the set of the accepted values
+            // changed) is treated as the default, so that the user-interface never has to deal with an unknown value.
+            string? value = this._Persistence.GetUserSetting(userId, CodeUnitSpecificConstants.UserSettingKeyTheme);
+            if (value == null || !CodeUnitSpecificConstants.Themes.Contains(value))
+            {
+                return CodeUnitSpecificConstants.ThemeSystem;
+            }
+            return value;
+        }
+
+        /// <inheritdoc />
+        public void SetThemeOfUser(string userId, string theme)
+        {
+            if (!CodeUnitSpecificConstants.Themes.Contains(theme))
+            {
+                throw new BadRequestException($"'{theme}' is not a valid color-scheme. Valid are: {string.Join(", ", CodeUnitSpecificConstants.Themes)}.");
+            }
+            this._Persistence.SetUserSetting(userId, CodeUnitSpecificConstants.UserSettingKeyTheme, theme);
+        }
+
         private void AnalyseDocument(Document document)
         {
             this._Logger.Log($"Analyse document {document.ReadableId}", Microsoft.Extensions.Logging.LogLevel.Information);

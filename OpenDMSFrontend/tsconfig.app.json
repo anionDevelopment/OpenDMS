@@ -15,5 +15,13 @@
   "include": [
     "src/**/*.d.ts"
   ],
-  "exclude": []
+  "exclude": [],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }

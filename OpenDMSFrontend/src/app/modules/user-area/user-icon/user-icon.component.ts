@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { UserDataService } from '../../../services/user-data.service';
 import { UserService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
   selector: 'app-user-icon',
   standalone: false,
   templateUrl: './user-icon.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-icon.component.scss'
 })
 export class UserIconComponent {

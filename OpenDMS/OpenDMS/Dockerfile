@@ -44,6 +44,6 @@ RUN chmod +x /Workspace/Other/EntryPoint/EntryPoint.sh
 COPY OpenDMS/HealthCheck.sh /Workspace/Other/EntryPoint
 RUN chmod +x /Workspace/Other/EntryPoint/HealthCheck.sh
 
-HEALTHCHECK CMD ./HealthCheck.sh
+HEALTHCHECK --interval=30s --timeout=20s --start-period=2m CMD ./HealthCheck.sh
 
 ENTRYPOINT ["./EntryPoint.sh"]

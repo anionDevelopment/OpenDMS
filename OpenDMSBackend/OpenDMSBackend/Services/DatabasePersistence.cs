@@ -1522,6 +1522,40 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
+        public string? GetUserSetting(string userId, string key)
+        {
+            return this.RunTransaction(nameof(GetUserSetting), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptGetUserSetting();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Key", key));
+                using DbDataReader reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    reader.Read();
+                    return reader.GetString(0);
+                }
+                else
+                {
+                    return null;
+                }
+            })[0];
+        }
+
+        /// <inheritdoc />
+        public void SetUserSetting(string userId, string key, string value)
+        {
+            this.RunTransaction(nameof(SetUserSetting), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptSetUserSetting();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("UserId", userId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Key", key));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Value", value));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
         public void AddDocumentVersion(DocumentVersionEntry versionEntry)
         {
             this.RunTransaction(nameof(AddDocumentVersion), true, (command) =>

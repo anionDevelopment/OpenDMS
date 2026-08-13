@@ -121,3 +121,13 @@ tasks:
     aliases:
       - translate
       - t
+
+  UpdateVisualRegressionBaselines:
+    desc: "Update: Visual-regression-baselines"
+    silent: true
+    dir: "./OpenDMSFrontend/Other/QualityCheck"
+    cmds:
+      - "python UpdateVisualRegressionBaselines.py {{.CLI_ARGS}}"
+    aliases:
+      - updatevisualregressionbaselines
+      - uvrb

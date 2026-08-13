@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { DocumentDTO, DocumentPreviewDTO } from '../../../generated/open-dms-backend';
 
 @Component({
   selector: 'app-document-preview',
   standalone: false,
   templateUrl: './document-preview.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './document-preview.component.scss'
 })
 export class DocumentPreviewComponent implements OnInit {

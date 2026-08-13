@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
 import { Router } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { StorageService } from '../../../services/storage.service';
 
@@ -50,7 +50,7 @@ describe('UsersListComponent', () => {
             url: "admin/dashboard",
           },
         },
-        provideHttpClient(),
+        provideHttpClient(withXhr()),
         provideHttpClientTesting(),
       ]
     }).compileComponents();

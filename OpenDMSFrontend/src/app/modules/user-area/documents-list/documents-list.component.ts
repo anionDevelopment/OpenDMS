@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { DocumentPreviewDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { BehaviorSubject } from 'rxjs';
@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
   selector: 'app-documents-list',
   standalone: false,
   templateUrl: './documents-list.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './documents-list.component.scss'
 })
 export class DocumentsListComponent {

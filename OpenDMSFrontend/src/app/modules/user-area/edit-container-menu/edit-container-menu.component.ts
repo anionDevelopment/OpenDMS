@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { DocumentDTO, FolderDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,6 +9,7 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
   selector: 'app-edit-container-menu',
   standalone: false,
   templateUrl: './edit-container-menu.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-container-menu.component.scss'
 })
 export class EditContainerMenuComponent {

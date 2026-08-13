@@ -15,11 +15,12 @@ import { Router } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
 import { of } from 'rxjs';
 import { UserIconComponent } from '../user-icon/user-icon.component';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-user-area-container',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: '<ng-content></ng-content>'
 })
 class UserAreaContainerComponentMock { }

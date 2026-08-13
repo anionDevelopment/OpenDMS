@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MetadataFieldDefinitionCreationDTO, MetadataFieldDefinitionDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 
@@ -11,6 +11,7 @@ import { StorageService } from '../../../services/storage.service';
   selector: 'app-metadata-fields',
   standalone: false,
   templateUrl: './metadata-fields.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './metadata-fields.component.scss'
 })
 export class MetadataFieldsComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { OpenDMSBackendService, StorageLocationDTO } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 import { UtilitiesService } from '../../../services/utilities.service';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
   selector: 'app-edit-storage-location-menu',
   standalone: false,
   templateUrl: './edit-storage-location-menu.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-storage-location-menu.component.scss'
 })
 export class EditStorageLocationMenuComponent {

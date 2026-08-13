@@ -1,24 +1,30 @@
 <mat-accordion multi>
-  <mat-expansion-panel *ngFor="let folder of folders">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        <mat-icon>folder</mat-icon>
-        <span>{{folder.name}}</span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-content-view [title]="folder.name" [folderIds]="folder.containedFolderIds" [documentIds]="folder.containedDocumentIds" [containerId]="folder.id!" [isFolder]="true" (containerRemoved)="onContainerRemoved($event)" (containerTitleChanged)="onSubFolderTitleChanged(folder, $event)"></app-content-view>
-  </mat-expansion-panel>
-  <mat-expansion-panel *ngIf="(documents$|async)!.length>0">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        <mat-icon>description</mat-icon>
-        <span i18n="@@content_view_document_count">{{(documents$|async)!.length}} document(s)</span>
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-document-table [documents$]="documents$" (documentRemoved)="onDocumentRemoved($event)"></app-document-table>
-  </mat-expansion-panel>
+  @for (folder of folders; track folder) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>folder</mat-icon>
+          <span>{{folder.name}}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-content-view [title]="folder.name" [folderIds]="folder.containedFolderIds" [documentIds]="folder.containedDocumentIds" [containerId]="folder.id!" [isFolder]="true" (containerRemoved)="onContainerRemoved($event)" (containerTitleChanged)="onSubFolderTitleChanged(folder, $event)"></app-content-view>
+    </mat-expansion-panel>
+  }
+  @if ((documents$|async)!.length>0) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>description</mat-icon>
+          <span i18n="@@content_view_document_count">{{(documents$|async)!.length}} document(s)</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-document-table [documents$]="documents$" (documentRemoved)="onDocumentRemoved($event)"></app-document-table>
+    </mat-expansion-panel>
+  }
 </mat-accordion>
 <app-edit-container-menu [containerId]="containerId!" [containerTitle]="title" (documentAdded)="onDocumentAdded($event)" (folderAdded)="onFolderAdded($event)" (containerRemoved)="onRemoved()" (containerTitleChanged)="onContainerTitleChanged($event)"></app-edit-container-menu>
 <!--custom metadata-fields are defined per storage-location, so the panel is only shown for a storage-location (not for a nested folder).-->
-<app-metadata-fields *ngIf="!isFolder && containerId" [storageLocationId]="containerId"></app-metadata-fields>
+@if (!isFolder && containerId) {
+  <app-metadata-fields [storageLocationId]="containerId"></app-metadata-fields>
+}
 <!--TODO set userIsAllowedToAddDocument and userIsAllowedToAddFolder-->

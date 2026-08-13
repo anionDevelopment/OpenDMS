@@ -2128,6 +2128,91 @@
         }
       }
     },
+    "/API/v3/UserController/GetTheme": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns the color-scheme which the currently authenticated user chose.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringValueDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringValueDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringValueDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/UserController/SetTheme": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Sets the color-scheme of the currently authenticated user, so that the choice is available again on another device and after a new login.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The color-scheme to store: \"system\", \"light\" or \"dark\".",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/API/v3/UserController/GetAllUsers": {
       "get": {
         "tags": [
