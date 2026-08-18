@@ -8,6 +8,7 @@ using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
@@ -82,6 +83,28 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Assert.IsTrue(persistence.UserWithIdExists(userId));
             Assert.IsTrue(businessLogicService.UserWithNameExists(user));
             // TODO add more assertions
+        }
+
+        /// <remarks>
+        /// A duplicate name must be refused by the business-logic, not only by the unique-constraint of the
+        /// database: the constraint does not exist in the transient persistence and its violation would surface
+        /// as an internal error instead of a usable one.
+        /// </remarks>
+        [TestMethod(DisplayName = nameof(RegisterWithAlreadyTakenUsernameIsRejectedTest))]
+        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        public void RegisterWithAlreadyTakenUsernameIsRejectedTest()
+        {
+            // arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string user = "someuser";
+            string userId = businessLogicService.Register(user, "somepassword");
+
+            // act & assert
+            Assert.ThrowsExactly<BadRequestException>(() => businessLogicService.Register(user, "anotherpassword"));
+
+            // assert: the existing account is untouched and no second one was created
+            Assert.IsTrue(persistence.UserWithIdExists(userId));
         }
 
         [TestMethod(DisplayName = nameof(GetLatestDocumentsTest))]
