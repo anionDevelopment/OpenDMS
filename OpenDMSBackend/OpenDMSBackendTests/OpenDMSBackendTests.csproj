@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifiers>win-x64;linux-x64;linux-arm64</RuntimeIdentifiers>
     <Authors>Marius Göcke</Authors>
     <Version>3.1.0</Version>
     <AssemblyVersion>3.1.0</AssemblyVersion>
@@ -9,6 +10,7 @@
     <IsPackable>false</IsPackable>
     <PreserveCompilationContext>false</PreserveCompilationContext>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>OpenDMSBackendTests is the test-project for OpenDMSBackend.</Description>
     <PackageProjectUrl>https://github.com/anionDevelopment/OpenDMS</PackageProjectUrl>
@@ -58,8 +60,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\GRYLibrary\GRYLibrary\GRYLibrary\GRYLibrary.csproj" />
     <ProjectReference Include="..\OpenDMSBackend\OpenDMSBackend.csproj" />
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="coverlet.collector" Version="6.0.4">
+    <PackageReference Include="CommandLineParser" Version="[2.9.1]" />
+    <PackageReference Include="coverlet.collector" Version="[6.0.4]">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

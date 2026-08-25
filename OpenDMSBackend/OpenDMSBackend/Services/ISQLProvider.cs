@@ -1,4 +1,4 @@
-﻿namespace OpenDMSBackend.Core.Services
+namespace OpenDMSBackend.Core.Services
 {
     public interface ISQLProvider
     {

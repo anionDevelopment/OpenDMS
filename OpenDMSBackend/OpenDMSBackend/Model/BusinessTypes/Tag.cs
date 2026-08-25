@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using OpenDMSBackend.Core.Model.DTOs;
 
 namespace OpenDMSBackend.Core.Model.BusinessTypes

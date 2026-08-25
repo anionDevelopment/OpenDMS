@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.CommonRoutes;
+using GRYLibrary.Core.APIServer.CommonRoutes;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
 using GRYLibrary.Core.APIServer.Mid.AuthS;
 using GRYLibrary.Core.APIServer.Mid.AutS;

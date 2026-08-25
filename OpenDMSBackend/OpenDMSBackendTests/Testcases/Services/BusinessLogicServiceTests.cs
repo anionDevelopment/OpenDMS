@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer;
+using GRYLibrary.Core.APIServer;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.Services.Init;
@@ -8,6 +8,7 @@ using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
@@ -49,7 +50,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(DatabaseInitializationTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void DatabaseInitializationTest()
         {
             // arrange
@@ -65,7 +66,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(RegisterTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void RegisterTest()
         {
             // arrange
@@ -84,8 +85,30 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             // TODO add more assertions
         }
 
+        /// <remarks>
+        /// A duplicate name must be refused by the business-logic, not only by the unique-constraint of the
+        /// database: the constraint does not exist in the transient persistence and its violation would surface
+        /// as an internal error instead of a usable one.
+        /// </remarks>
+        [TestMethod(DisplayName = nameof(RegisterWithAlreadyTakenUsernameIsRejectedTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void RegisterWithAlreadyTakenUsernameIsRejectedTest()
+        {
+            // arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string user = "someuser";
+            string userId = businessLogicService.Register(user, "somepassword");
+
+            // act & assert
+            Assert.ThrowsExactly<BadRequestException>(() => businessLogicService.Register(user, "anotherpassword"));
+
+            // assert: the existing account is untouched and no second one was created
+            Assert.IsTrue(persistence.UserWithIdExists(userId));
+        }
+
         [TestMethod(DisplayName = nameof(GetLatestDocumentsTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void GetLatestDocumentsTest()
         {
             //arrange
@@ -135,7 +158,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(SoftDeleteDocumentTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SoftDeleteDocumentTest()
         {
             //arrange
@@ -159,7 +182,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(SoftDeleteStorageLocationSoftDeletesContainedDocumentsTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SoftDeleteStorageLocationSoftDeletesContainedDocumentsTest()
         {
             //arrange
@@ -185,7 +208,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(GenerateAISummaryTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void GenerateAISummaryTest()
         {
             //arrange
@@ -210,7 +233,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(AutoGenerateAISummarySettingTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void AutoGenerateAISummarySettingTest()
         {
             //arrange
@@ -224,7 +247,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(SetAutoGenerateAISummaryRequiresAdminTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SetAutoGenerateAISummaryRequiresAdminTest()
         {
             //arrange
@@ -247,7 +270,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(VersionHistoryAndLatestVersionFilteringTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void VersionHistoryAndLatestVersionFilteringTest()
         {
             //arrange
@@ -281,7 +304,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(UploadNewVersionTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void UploadNewVersionTest()
         {
             //arrange
@@ -323,7 +346,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(DefineAndGetMetadataFieldTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void DefineAndGetMetadataFieldTest()
         {
             //arrange
@@ -344,7 +367,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(DefineMetadataFieldRequiresModeratorTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void DefineMetadataFieldRequiresModeratorTest()
         {
             //arrange
@@ -368,7 +391,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(DefineDuplicateMetadataFieldNameTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void DefineDuplicateMetadataFieldNameTest()
         {
             //arrange
@@ -391,7 +414,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(SetStringAndBooleanMetadataValueTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SetStringAndBooleanMetadataValueTest()
         {
             //arrange
@@ -413,7 +436,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(SetInvalidBooleanMetadataValueTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SetInvalidBooleanMetadataValueTest()
         {
             //arrange
@@ -436,7 +459,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(ClearMetadataValueTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void ClearMetadataValueTest()
         {
             //arrange
@@ -455,7 +478,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(RemoveMetadataFieldRemovesValuesTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void RemoveMetadataFieldRemovesValuesTest()
         {
             //arrange
@@ -474,7 +497,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(RemoveMetadataFieldRequiresModeratorTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void RemoveMetadataFieldRequiresModeratorTest()
         {
             //arrange
@@ -500,7 +523,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(GetMetadataFieldsRequiresViewPermissionTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void GetMetadataFieldsRequiresViewPermissionTest()
         {
             //arrange
@@ -525,7 +548,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(GetMetadataFieldsAllowedForSharedViewerTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void GetMetadataFieldsAllowedForSharedViewerTest()
         {
             //arrange
@@ -547,7 +570,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(SetDocumentMetadataValueRequiresEditPermissionTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SetDocumentMetadataValueRequiresEditPermissionTest()
         {
             //arrange
@@ -575,7 +598,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(DefineMetadataFieldOnNonStorageLocationTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void DefineMetadataFieldOnNonStorageLocationTest()
         {
             //arrange
@@ -601,7 +624,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(DefineMetadataFieldWithEmptyNameTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void DefineMetadataFieldWithEmptyNameTest()
         {
             //arrange
@@ -623,7 +646,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(SetDocumentMetadataValueForFieldOfDifferentStorageLocationTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SetDocumentMetadataValueForFieldOfDifferentStorageLocationTest()
         {
             //arrange
@@ -648,7 +671,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(SoftDeleteRequiresEditPermissionTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SoftDeleteRequiresEditPermissionTest()
         {
             //arrange
@@ -673,7 +696,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(HardDeleteRequiresEditPermissionTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void HardDeleteRequiresEditPermissionTest()
         {
             //arrange
@@ -699,7 +722,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(MoveRequiresEditPermissionOnTargetContainerTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void MoveRequiresEditPermissionOnTargetContainerTest()
         {
             //arrange

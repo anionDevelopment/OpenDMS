@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Settings;
+using GRYLibrary.Core.APIServer.Settings;
 using System;
 
 namespace OpenDMSBackend.Tests.TestUtilities

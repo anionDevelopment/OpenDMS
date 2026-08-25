@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
     public class OpenDMSBackendControllerTests
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestAddDocument()
         {
             // arrange
@@ -71,6 +73,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
         //TODO add testcase that you get a 403-response when you try to load a document without having the requried permissions.
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestGetMetadataFields()
         {
             // arrange
@@ -119,6 +122,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestDefineMetadataFieldPropagatesAuthorizationFailure()
         {
             // arrange: the business-logic-layer rejects the request because the caller is not a moderator of the storage-location.
@@ -169,6 +173,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestDefineMetadataFieldRejectsInvalidType()
         {
             // arrange: an unsupported field-type must be rejected before any change is attempted, so the business-logic-service must never be called.

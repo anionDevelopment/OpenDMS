@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
+using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Logger;
@@ -197,6 +197,14 @@ namespace OpenDMSBackend.Core.Services
                 if (!this._Configuration.ApplicationSpecificConfiguration.RegistrationIsEnabled)
                 {
                     throw new NotAuthorizedException();
+                }
+                // Reject a name which is already taken. The database enforces this as well (the unique-constraint
+                // on Users.Name), but only the check here can answer with a usable error instead of letting a
+                // constraint-violation surface as an internal error. It also covers the transient persistence,
+                // which has no constraint at all.
+                if (this._Persistence.UserWithNameExists(username))
+                {
+                    throw new BadRequestException($"The username '{username}' is already taken.");
                 }
                 Model.BusinessTypes.User newUser = Model.BusinessTypes.User.Create(username, password == null ? null : this._AuthenticationService.Hash(password), this._TimeService);
                 this._AuthenticationService.AddUserTyped(newUser);
