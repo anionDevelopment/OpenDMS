@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services;
+using GRYLibrary.Core.APIServer.Services;
 using SimpleOCR.Library.Core;
 
 namespace OpenDMSBackend.Core.Services

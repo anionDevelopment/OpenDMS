@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services;
+using GRYLibrary.Core.APIServer.Services;
 using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;

@@ -1,4 +1,4 @@
-﻿using OpenDMSBackend.Core.Misc;
+using OpenDMSBackend.Core.Misc;
 
 namespace OpenDMSBackend.Core.Services
 {

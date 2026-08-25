@@ -1,4 +1,4 @@
-﻿namespace OpenDMSBackend.Core.Model.DTOs
+namespace OpenDMSBackend.Core.Model.DTOs
 {
     public class UserInformationDTO
     {

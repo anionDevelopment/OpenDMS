@@ -1,4 +1,4 @@
-﻿namespace OpenDMSBackend.Core.Configuration
+namespace OpenDMSBackend.Core.Configuration
 {
     public class ImportDefinition
     {

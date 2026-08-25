@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.BaseServices;
+using GRYLibrary.Core.APIServer.BaseServices;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Prometheus;

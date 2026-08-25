@@ -52,7 +52,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(ImportNewDocumentsFromFileSystemTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void ImportNewDocumentsFromFileSystemTest()
         {
             //arrange
@@ -84,7 +84,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(InactiveImportDefinitionIsSkippedTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void InactiveImportDefinitionIsSkippedTest()
         {
             //arrange
@@ -114,7 +114,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(AdaptScriptModifiesScalarMetadataTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void AdaptScriptModifiesScalarMetadataTest()
         {
             //arrange
@@ -145,7 +145,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(AdaptScriptAssignsTagByNameTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void AdaptScriptAssignsTagByNameTest()
         {
             //arrange
@@ -175,7 +175,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         }
 
         [TestMethod(DisplayName = nameof(DoScheduledHardDeletionsDeletesOnlyDocumentsWithReachedRetentionDeadlineTest))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DoScheduledHardDeletionsDeletesOnlyDocumentsWithReachedRetentionDeadlineTest()
         {
             //arrange
