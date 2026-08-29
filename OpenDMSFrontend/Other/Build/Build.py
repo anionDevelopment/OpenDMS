@@ -7,7 +7,6 @@ def build():
     tf.build()
     tf.add_culture_chooser(tf.get_product_name(),tf.get_available_cultures_for_angular_app())
     tf.add_maintenance_site(tf.get_product_name())
-    tf.organize_translations(["ar","cs","da","de","de-CH","de-AT","en-GB","es","fa","fi","fr","he","hi","id","it","ja","ko","ms","nl","ms-SG","nb","pl","pt","ru","sv","th","ur","vi","zh"])
 
 
 if __name__ == "__main__":
