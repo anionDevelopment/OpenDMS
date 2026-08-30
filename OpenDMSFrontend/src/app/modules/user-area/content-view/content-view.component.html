@@ -15,7 +15,7 @@
       <mat-expansion-panel-header>
         <mat-panel-title>
           <mat-icon>description</mat-icon>
-          <span i18n="@@content_view_document_count">{{(documents$|async)!.length}} document(s)</span>
+          <span>{{(documents$|async)!.length}} <span i18n="@@content_view_document_count">document(s)</span></span>
         </mat-panel-title>
       </mat-expansion-panel-header>
       <app-document-table [documents$]="documents$" (documentRemoved)="onDocumentRemoved($event)"></app-document-table>

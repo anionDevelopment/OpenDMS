@@ -2,6 +2,6 @@
   <mat-icon>account_circle</mat-icon>
 </button>
 <mat-menu #menu="matMenu">
-  <span i18n="@@hello_user">Hello {{this.userName}}</span>
+  <span><span i18n="@@hello_user">Hello</span> {{this.userName}}</span>
   <button mat-menu-item (click)="logout()" i18n="@@logout">Logout</button>
 </mat-menu>
