@@ -21,20 +21,27 @@ def common_tasks():
         "de-AT",  # German (Austria)
         "de-CH",  # German (Switzerland)
         "el",  # Greek
+        "en",  # English
         "en-GB",  # English (United Kingdom)
         "es",  # Spanish
-        "es-BR",  # Spanish (Brazil)
+        "es-AR",  # Spanish (Argentina)
+        "es-CL",  # Spanish (Chile)
+        "es-CO",  # Spanish (Colombia)
+        "es-CR",  # Spanish (Costa Rica)
+        "es-DO",  # Spanish (Dominican Republic)
+        "es-EC",  # Spanish (Ecuador)
         "es-MX",  # Spanish (Mexico)
+        "es-VE",  # Spanish (Venezuela)
         "et",  # Estonian
         "fa",  # Persian
         "fi",  # Finnish
         "fr",  # French
+        "ga",  # Irish
         "he",  # Hebrew
         "hi",  # Hindi
         "hr",  # Croatian
         "hu",  # Hungarian
         "id",  # Indonesian
-        "ir",  # Irish
         "is",  # Icelandic
         "it",  # Italian
         "ja",  # Japanese
@@ -49,6 +56,8 @@ def common_tasks():
         "ms",  # Malay
         "ms-ID",  # Malay (Indonesia)
         "ms-SG",  # Malay (Singapore)
+        "mn",  # Mongolian
+        "my",  # Burmese
         "nb",  # Norwegian Bokmål
         "nl",  # Dutch
         "ph",  # Filipino
