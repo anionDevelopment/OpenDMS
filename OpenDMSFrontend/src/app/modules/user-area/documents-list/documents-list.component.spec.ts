@@ -96,6 +96,7 @@ describe('DocumentsListComponent', () => {
           provide: StorageService,
           useValue: {
             getAccessToken: () => "accesstoken1",
+            hasAccessToken: () => false,
           }
         },
         {
