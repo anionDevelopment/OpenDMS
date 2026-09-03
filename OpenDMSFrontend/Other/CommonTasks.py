@@ -54,7 +54,6 @@ def common_tasks():
         "lv",  # Latvian
         "lt",  # Lithuanian
         "ms",  # Malay
-        "ms-ID",  # Malay (Indonesia)
         "ms-SG",  # Malay (Singapore)
         "mn",  # Mongolian
         "my",  # Burmese
@@ -69,6 +68,7 @@ def common_tasks():
         "sv",  # Swedish
         "th",  # Thai
         "tk",  # Turkmen
+        "tl",  # Tagalog
         "tr",  # Turkish
         "uk",  # Ukrainian
         "ur",  # Urdu
