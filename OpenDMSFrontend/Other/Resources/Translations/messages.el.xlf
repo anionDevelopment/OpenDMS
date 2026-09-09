@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en-US">
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en">
   <file id="ngi18n" original="ng.template">
     <unit id="admin_menu_label">
       <notes>
-        <note category="location">src/app/modules/admin-area/admin-area-container/admin-area-container.component.html:4,5</note>
+        <note category="location">src/app/modules/admin-area/admin-area-container/admin-area-container.component.html:4,6</note>
       </notes>
       <segment state="translated">
         <source>Admin-menu:</source>
-        <target>Quản trị:</target>
+        <target>Διαχειριστής-μενού:</target>
       </segment>
     </unit>
     <unit id="admin_dashboard">
@@ -16,7 +16,7 @@
       </notes>
       <segment state="translated">
         <source>Admin dashboard</source>
-        <target>Bảng điều khiển</target>
+        <target>Πίνακας διαχείρισης</target>
       </segment>
     </unit>
     <unit id="settings">
@@ -26,25 +26,25 @@
       </notes>
       <segment state="translated">
         <source>settings</source>
-        <target>thiết lập</target>
+        <target>settings</target>
       </segment>
     </unit>
     <unit id="setting_auto_generate_ai_summary">
       <notes>
-        <note category="location">src/app/modules/admin-area/admin-settings/admin-settings.component.html:6,9</note>
+        <note category="location">src/app/modules/admin-area/admin-settings/admin-settings.component.html:5,7</note>
       </notes>
       <segment state="translated">
         <source>Automatically generate an AI-summary whenever a document is added or changed</source>
-        <target>Tự động tạo một cơ sở dữ liệu AI khi một tài liệu được thêm hay thay đổi</target>
+        <target>Αυτόματη δημιουργία μιας περίληψης AI όταν ένα έγγραφο προστίθεται ή τροποποιείται</target>
       </segment>
     </unit>
     <unit id="admin_user_placeholder">
       <notes>
-        <note category="location">src/app/modules/admin-area/user/user.component.html:2,4</note>
+        <note category="location">src/app/modules/admin-area/user/user.component.html:2,3</note>
       </notes>
       <segment state="translated">
         <source>user works!</source>
-        <target>người dùng làm việc!</target>
+        <target>ο χρήστης δουλεύει!</target>
       </segment>
     </unit>
     <unit id="users">
@@ -52,8 +52,8 @@
         <note category="location">src/app/modules/admin-area/users-list/users-list.component.html:3,4</note>
       </notes>
       <segment state="translated">
-        <source>users</source>
-        <target>người dùng</target>
+        <source>Users</source>
+        <target>Χρήστες</target>
       </segment>
     </unit>
     <unit id="users_col_name">
@@ -62,118 +62,70 @@
       </notes>
       <segment state="translated">
         <source>Name</source>
-        <target>Tên</target>
+        <target>Όνομα</target>
       </segment>
     </unit>
     <unit id="hint_not_authenticated">
       <notes>
-        <note category="location">src/app/modules/home-page/hint-not-authenticated/hint-not-authenticated.component.html:2,4</note>
+        <note category="location">src/app/modules/home-page/hint-not-authenticated/hint-not-authenticated.component.html:2,3</note>
       </notes>
       <segment state="translated">
         <source>You must be authenticated for this action.</source>
-        <target>Bạn phải được xác thực cho hành động này.</target>
+        <target>Πρέπει να πιστοποιηθείς γι' αυτή τη δράση.</target>
       </segment>
     </unit>
     <unit id="hint_not_authorized">
       <notes>
-        <note category="location">src/app/modules/home-page/hint-not-authorized/hint-not-authorized.component.html:2,4</note>
+        <note category="location">src/app/modules/home-page/hint-not-authorized/hint-not-authorized.component.html:2,3</note>
       </notes>
       <segment state="translated">
         <source>You are not authorized for this action.</source>
-        <target>Anh không được phép hành động này.</target>
+        <target>Δεν είσαι εξουσιοδοτημένος γι' αυτή τη δράση.</target>
       </segment>
     </unit>
     <unit id="hint_not_found">
       <notes>
-        <note category="location">src/app/modules/home-page/hint-not-found/hint-not-found.component.html:4,6</note>
+        <note category="location">src/app/modules/home-page/hint-not-found/hint-not-found.component.html:3,5</note>
       </notes>
       <segment state="translated">
         <source>Site not found</source>
-        <target>Không tìm thấy chỗ ngồi</target>
+        <target>Η τοποθεσία δε βρέθηκε</target>
       </segment>
     </unit>
     <unit id="username">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:4,5</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:3,4</note>
       </notes>
       <segment state="translated">
         <source>Username</source>
-        <target>Tên người dùng</target>
+        <target>Όνομα χρήστη</target>
       </segment>
     </unit>
     <unit id="login_username_placeholder">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:5</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:4</note>
       </notes>
       <segment state="translated">
         <source>Example: johndoe</source>
-        <target>Ví dụ: Johndoe</target>
+        <target>Παράδειγμα: Johndoe</target>
       </segment>
     </unit>
     <unit id="password">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:11,12</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:8,9</note>
       </notes>
       <segment state="translated">
         <source>Password</source>
-        <target>Mật khẩu</target>
+        <target>Κωδικός πρόσβασης</target>
       </segment>
     </unit>
     <unit id="login_button">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:17,19</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:12,13</note>
       </notes>
       <segment state="translated">
         <source>Login</source>
-        <target>Đăng nhập</target>
-      </segment>
-    </unit>
-    <unit id="oidc_provider_label">
-      <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:25,26</note>
-      </notes>
-      <segment>
-        <source>Login with</source>
-      </segment>
-    </unit>
-    <unit id="oidc_login_button">
-      <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:35,37</note>
-      </notes>
-      <segment>
-        <source>Login with selected provider</source>
-      </segment>
-    </unit>
-    <unit id="oidc_callback_loading">
-      <notes>
-        <note category="location">src/app/modules/home-page/oidc-callback/oidc-callback.component.html:3,5</note>
-      </notes>
-      <segment>
-        <source>Completing login, please wait...</source>
-      </segment>
-    </unit>
-    <unit id="oidc_callback_missing_params">
-      <notes>
-        <note category="location">src/app/modules/home-page/oidc-callback/oidc-callback.component.ts:34</note>
-      </notes>
-      <segment>
-        <source>Missing OIDC callback parameters.</source>
-      </segment>
-    </unit>
-    <unit id="oidc_callback_state_mismatch">
-      <notes>
-        <note category="location">src/app/modules/home-page/oidc-callback/oidc-callback.component.ts:39</note>
-      </notes>
-      <segment>
-        <source>Invalid OIDC state. Please try logging in again.</source>
-      </segment>
-    </unit>
-    <unit id="oidc_callback_exchange_failed">
-      <notes>
-        <note category="location">src/app/modules/home-page/oidc-callback/oidc-callback.component.ts:56</note>
-      </notes>
-      <segment>
-        <source>Login failed. Please try again.</source>
+        <target>Σύνδεση</target>
       </segment>
     </unit>
     <unit id="delete_dialog_title">
@@ -182,7 +134,7 @@
       </notes>
       <segment state="translated">
         <source>Delete</source>
-        <target>Xoá</target>
+        <target>Διαγραφή</target>
       </segment>
     </unit>
     <unit id="delete_dialog_content">
@@ -191,7 +143,7 @@
       </notes>
       <segment state="translated">
         <source>Would you like to delete this item?</source>
-        <target>Bạn có muốn xoá mục này không?</target>
+        <target>Θέλετε να διαγράψετε αυτό το αντικείμενο?</target>
       </segment>
     </unit>
     <unit id="no">
@@ -200,7 +152,7 @@
       </notes>
       <segment state="translated">
         <source>No</source>
-        <target>Không</target>
+        <target>Όχι</target>
       </segment>
     </unit>
     <unit id="yes">
@@ -209,12 +161,12 @@
       </notes>
       <segment state="translated">
         <source>Yes</source>
-        <target>Vâng</target>
+        <target>Ναι</target>
       </segment>
     </unit>
     <unit id="content_view_document_count">
       <notes>
-        <note category="location">src/app/modules/user-area/content-view/content-view.component.html:14,15</note>
+        <note category="location">src/app/modules/user-area/content-view/content-view.component.html:15,16</note>
       </notes>
       <segment state="translated">
         <source>
@@ -228,70 +180,70 @@
       </notes>
       <segment state="translated">
         <source>preview</source>
-        <target>ô xem thử</target>
+        <target>προεπισκόπηση</target>
       </segment>
     </unit>
     <unit id="large_preview_alt">
       <notes>
-        <note category="location">src/app/modules/user-area/document-preview/document-preview.component.html:5</note>
+        <note category="location">src/app/modules/user-area/document-preview/document-preview.component.html:4</note>
       </notes>
       <segment state="translated">
         <source>large preview</source>
-        <target>ô xem thử lớn</target>
+        <target>μεγάλη προεπισκόπηση</target>
       </segment>
     </unit>
     <unit id="col_id">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:4,5</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:4</note>
       </notes>
       <segment state="translated">
         <source>Id</source>
-        <target>Id</target>
+        <target>Ταυτότητα</target>
       </segment>
     </unit>
     <unit id="col_preview">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:11,12</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:9,10</note>
       </notes>
       <segment state="translated">
         <source>Preview</source>
-        <target>Xem thử</target>
+        <target>Προεπισκόπηση</target>
       </segment>
     </unit>
     <unit id="col_title">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:18,19</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:15,16</note>
       </notes>
       <segment state="translated">
         <source>Title</source>
-        <target>Tựa</target>
+        <target>Τίτλος</target>
       </segment>
     </unit>
     <unit id="col_created_at">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:25,26</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:22,23</note>
       </notes>
       <segment state="translated">
         <source>Created at</source>
-        <target>Tạo tại</target>
+        <target>Δημιουργία στο</target>
       </segment>
     </unit>
     <unit id="col_last_edit_date">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:25,26</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:26,27</note>
       </notes>
       <segment state="translated">
         <source>Last edited</source>
-        <target>Sửa đổi cuối cùng</target>
+        <target>Τελευταία επεξεργασία</target>
       </segment>
     </unit>
     <unit id="col_options">
       <notes>
-        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:32,33</note>
+        <note category="location">src/app/modules/user-area/document-table/document-table.component.html:30,31</note>
       </notes>
       <segment state="translated">
         <source>Options</source>
-        <target>Tùy chọn</target>
+        <target>Επιλογές</target>
       </segment>
     </unit>
     <unit id="tab_latest_documents">
@@ -300,25 +252,25 @@
       </notes>
       <segment state="translated">
         <source>Latest documents</source>
-        <target>Tài liệu mới nhất</target>
+        <target>Τελευταία έγγραφα</target>
       </segment>
     </unit>
     <unit id="tab_all_documents">
       <notes>
-        <note category="location">src/app/modules/user-area/documents-list/documents-list.component.html:8,9</note>
+        <note category="location">src/app/modules/user-area/documents-list/documents-list.component.html:7,8</note>
       </notes>
       <segment state="translated">
         <source>All documents</source>
-        <target>Mọi tài liệu</target>
+        <target>Όλα τα έγγραφα</target>
       </segment>
     </unit>
     <unit id="tab_search">
       <notes>
-        <note category="location">src/app/modules/user-area/documents-list/documents-list.component.html:11,12</note>
+        <note category="location">src/app/modules/user-area/documents-list/documents-list.component.html:11</note>
       </notes>
       <segment state="translated">
         <source>Search</source>
-        <target>Tìm kiếm</target>
+        <target>Αναζήτηση</target>
       </segment>
     </unit>
     <unit id="edit_container_dialog_title">
@@ -327,7 +279,7 @@
       </notes>
       <segment state="translated">
         <source>Edit container</source>
-        <target>Sửa hộp</target>
+        <target>Επεξεργασία δοχείου</target>
       </segment>
     </unit>
     <unit id="container_title_label">
@@ -336,25 +288,27 @@
       </notes>
       <segment state="translated">
         <source>Title</source>
-        <target>Tựa</target>
+        <target>Τίτλος</target>
       </segment>
     </unit>
     <unit id="abort">
       <notes>
+        <note category="location">src/app/modules/user-area/edit-container-dialog/edit-container-dialog.component.html:9,10</note>
         <note category="location">src/app/modules/user-area/edit-document-dialog/edit-document-dialog.component.html:9,10</note>
       </notes>
       <segment state="translated">
         <source>Abort</source>
-        <target>Hủy bỏ</target>
+        <target>Εγκατάλειψη</target>
       </segment>
     </unit>
     <unit id="save">
       <notes>
+        <note category="location">src/app/modules/user-area/edit-container-dialog/edit-container-dialog.component.html:10,11</note>
         <note category="location">src/app/modules/user-area/edit-document-dialog/edit-document-dialog.component.html:10,11</note>
       </notes>
       <segment state="translated">
         <source>Save</source>
-        <target>Lưu</target>
+        <target>Αποθήκευση</target>
       </segment>
     </unit>
     <unit id="add_folder">
@@ -363,36 +317,36 @@
       </notes>
       <segment state="translated">
         <source>Add folder</source>
-        <target>Thêm thư mục</target>
+        <target>Προσθήκη φακέλου</target>
       </segment>
     </unit>
     <unit id="upload_document">
       <notes>
-        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:5</note>
+        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:4</note>
       </notes>
       <segment state="translated">
         <source>Upload document</source>
-        <target>Tải lên tài liệu</target>
+        <target>Αποστολή εγγράφου</target>
       </segment>
     </unit>
     <unit id="edit">
       <notes>
-        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:11</note>
-        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:9</note>
+        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:8</note>
+        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:7</note>
       </notes>
       <segment state="translated">
         <source>Edit</source>
-        <target>Sửa</target>
+        <target>Επεξεργασία</target>
       </segment>
     </unit>
     <unit id="delete">
       <notes>
-        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:15</note>
-        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:13</note>
+        <note category="location">src/app/modules/user-area/edit-container-menu/edit-container-menu.component.html:11</note>
+        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:10</note>
       </notes>
       <segment state="translated">
         <source>Delete</source>
-        <target>Xoá</target>
+        <target>Διαγραφή</target>
       </segment>
     </unit>
     <unit id="edit_document_dialog_title">
@@ -401,7 +355,7 @@
       </notes>
       <segment state="translated">
         <source>Edit document</source>
-        <target>Sửa tài liệu</target>
+        <target>Επεξεργασία εγγράφου</target>
       </segment>
     </unit>
     <unit id="doc_title_label">
@@ -410,7 +364,7 @@
       </notes>
       <segment state="translated">
         <source>Title</source>
-        <target>Tựa</target>
+        <target>Τίτλος</target>
       </segment>
     </unit>
     <unit id="view_document">
@@ -419,16 +373,16 @@
       </notes>
       <segment state="translated">
         <source>View document</source>
-        <target>Xem tài liệu</target>
+        <target>Προβολή εγγράφου</target>
       </segment>
     </unit>
     <unit id="download">
       <notes>
-        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:5</note>
+        <note category="location">src/app/modules/user-area/edit-document-menu/edit-document-menu.component.html:4</note>
       </notes>
       <segment state="translated">
         <source>Download</source>
-        <target>Tải về</target>
+        <target>Λήψη</target>
       </segment>
     </unit>
     <unit id="add_storage_location">
@@ -437,88 +391,88 @@
       </notes>
       <segment state="translated">
         <source>Add storage location</source>
-        <target>Thêm vị trí lưu trữ</target>
+        <target>Προσθήκη τοποθεσίας αποθήκευσης</target>
       </segment>
     </unit>
     <unit id="metadata_fields_title">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:2,4</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:2,3</note>
       </notes>
       <segment state="translated">
         <source>Custom metadata-fields</source>
-        <target>Tự chọn</target>
+        <target>Προσαρμοσμένα πεδία μεταδεδομένων</target>
       </segment>
     </unit>
     <unit id="metadata_fields_none">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:5,8</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:3,4</note>
       </notes>
       <segment state="translated">
         <source>No custom metadata-fields are defined for this storage-location yet.</source>
-        <target>Chưa định nghĩa trường siêu dữ liệu tự chọn cho việc cất giữ này.</target>
+        <target>Δεν έχουν καθοριστεί προσαρμοσμένα πεδία μεταδεδομένων για αυτή την τοποθεσία αποθήκευσης.</target>
       </segment>
     </unit>
     <unit id="metadata_field_remove">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:13</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:8</note>
       </notes>
       <segment state="translated">
         <source>Remove metadata-field</source>
-        <target>Bỏ</target>
+        <target>Αφαίρεση πεδίου μεταδεδομένων</target>
       </segment>
     </unit>
     <unit id="metadata_field_name_label">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:21,22</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:15,16</note>
       </notes>
       <segment state="translated">
         <source>Field-name</source>
-        <target>Tên trường</target>
+        <target>Όνομα πεδίου</target>
       </segment>
     </unit>
     <unit id="metadata_field_type_label">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:25,26</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:19,20</note>
       </notes>
       <segment state="translated">
         <source>Type</source>
-        <target>Kiểu</target>
+        <target>Τύπος</target>
       </segment>
     </unit>
     <unit id="metadata_field_type_string">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:27,28</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:21,22</note>
       </notes>
       <segment state="translated">
         <source>Text</source>
-        <target>Văn bản</target>
+        <target>Κείμενο</target>
       </segment>
     </unit>
     <unit id="metadata_field_type_boolean">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:28,30</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:22,24</note>
       </notes>
       <segment state="translated">
         <source>Yes/No</source>
-        <target>Có/Không</target>
+        <target>Ναι/Όχι</target>
       </segment>
     </unit>
     <unit id="metadata_field_add">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:32,35</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:25,27</note>
       </notes>
       <segment state="translated">
         <source>Add field</source>
-        <target>Thêm trường</target>
+        <target>Προσθήκη πεδίου</target>
       </segment>
     </unit>
     <unit id="metadata_field_change_not_allowed">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:36,39</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:27,28</note>
       </notes>
       <segment state="translated">
         <source>Only a moderator of the storage-location may change its metadata-fields.</source>
-        <target>Chỉ có một người điều khiển kho lưu trữ mới có thể thay đổi khu vực siêu dữ liệu.</target>
+        <target>Μόνο ένας συντονιστής της θέσης αποθήκευσης μπορεί να αλλάξει τα πεδία μεταδεδομένων του.</target>
       </segment>
     </unit>
     <unit id="search_term">
@@ -527,59 +481,59 @@
       </notes>
       <segment state="translated">
         <source>Search term</source>
-        <target>Tìm kiếm</target>
+        <target>Όρος αναζήτησης</target>
       </segment>
     </unit>
     <unit id="user_menu_label">
       <notes>
-        <note category="location">src/app/modules/user-area/user-area-container/user-area-container.component.html:4,5</note>
+        <note category="location">src/app/modules/user-area/user-area-container/user-area-container.component.html:4,6</note>
       </notes>
       <segment state="translated">
         <source>User-menu:</source>
-        <target>Người dùng- menu:</target>
+        <target>Μενού χρήστη:</target>
       </segment>
     </unit>
     <unit id="hello_user">
       <notes>
         <note category="location">src/app/modules/user-area/user-dashboard/user-dashboard.component.html:3,4</note>
-        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:7,8</note>
+        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:5,6</note>
       </notes>
       <segment state="translated">
         <source>Hello<ph id="0" equiv="INTERPOLATION" disp="{{this.userName}}" />
         </source>
-        <target>Xin chào</target>
+        <target>Γεια σας</target>
       </segment>
     </unit>
     <unit id="logout">
       <notes>
-        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:8,9</note>
+        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:6,7</note>
       </notes>
       <segment state="translated">
         <source>Logout</source>
-        <target>Đăng xuất</target>
+        <target>Αποσύνδεση</target>
       </segment>
     </unit>
     <unit id="doc_metadata_heading">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:4,5</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:4,6</note>
       </notes>
       <segment state="translated">
         <source>Document meta-data:</source>
-        <target>Siêu dữ liệu tài liệu:</target>
+        <target>Μεταδεδομένα εγγράφου:</target>
       </segment>
     </unit>
     <unit id="doc_metadata_title_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:5,6</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:6,8</note>
       </notes>
       <segment state="translated">
         <source>Title:</source>
-        <target>Tựa:</target>
+        <target>Τίτλος:</target>
       </segment>
     </unit>
     <unit id="doc_metadata_id_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:6,7</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:9,11</note>
       </notes>
       <segment state="translated">
         <source>ID:</source>
@@ -588,38 +542,38 @@
     </unit>
     <unit id="doc_metadata_technical_id_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:7,8</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12,15</note>
       </notes>
       <segment state="translated">
         <source>Technical ID:</source>
-        <target>ID kỹ thuật:</target>
+        <target>Τεχνική ταυτότητα:</target>
       </segment>
     </unit>
     <unit id="doc_metadata_filename_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:8,9</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:15,17</note>
       </notes>
       <segment state="translated">
         <source>Filename:</source>
-        <target>Tên</target>
+        <target>Όνομα αρχείου:</target>
       </segment>
     </unit>
     <unit id="doc_metadata_original_filename_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:9,10</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:18,21</note>
       </notes>
       <segment state="translated">
         <source>Original filename:</source>
-        <target>Tên tập tin gốc:</target>
+        <target>Αρχικό όνομα αρχείου:</target>
       </segment>
     </unit>
     <unit id="doc_metadata_import_date_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:10,11</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:21,22</note>
       </notes>
       <segment state="translated">
         <source>Import-date:</source>
-        <target>Nhập ngày:</target>
+        <target>Ημερομηνία εισαγωγής:</target>
       </segment>
     </unit>
     <unit id="doc_metadata_version_label">
@@ -628,7 +582,7 @@
       </notes>
       <segment state="translated">
         <source>Version:</source>
-        <target>Phiên bản:</target>
+        <target>Έκδοση:</target>
       </segment>
     </unit>
     <unit id="doc_metadata_version_date_label">
@@ -637,16 +591,16 @@
       </notes>
       <segment state="translated">
         <source>Version-date:</source>
-        <target>Ngày phiên bản:</target>
+        <target>Ημερομηνία έκδοσης:</target>
       </segment>
     </unit>
     <unit id="doc_metadata_tags_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12,13</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:30,31</note>
       </notes>
       <segment state="translated">
         <source>Tags:</source>
-        <target>Thẻ:</target>
+        <target>Ετικέτες:</target>
       </segment>
     </unit>
     <unit id="doc_ai_summary_heading">
@@ -655,7 +609,7 @@
       </notes>
       <segment state="translated">
         <source>AI-summary:</source>
-        <target>Cơ sở dữ liệu:</target>
+        <target>Περίληψη AI:</target>
       </segment>
     </unit>
     <unit id="doc_ai_summary_generate_button">
@@ -664,7 +618,7 @@
       </notes>
       <segment state="translated">
         <source>Generate AI-summary</source>
-        <target>Tạo ra cơ sở dữ liệu AI</target>
+        <target>Δημιουργία περίληψης AI</target>
       </segment>
     </unit>
     <unit id="doc_ai_summary_generating_label">
@@ -673,7 +627,7 @@
       </notes>
       <segment state="translated">
         <source>Generating AI-summary…</source>
-        <target>Đang tạo ra cơ sở dữ liệu..</target>
+        <target>Δημιουργία περίληψης AI..</target>
       </segment>
     </unit>
   </file>

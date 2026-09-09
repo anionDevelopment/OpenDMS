@@ -1,3 +1,4 @@
+import { NgxCultureSelectorComponent } from '@aniondev/ngx-culture-selector';
 import { NgxDarkmodeToggleButtonComponent } from '@aniondev/ngx-darkmode-toggle-button';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -68,6 +69,7 @@ import { MetadataFieldsComponent } from './metadata-fields/metadata-fields.compo
   imports: [
     CommonModule,
     NgxDarkmodeToggleButtonComponent,
+    NgxCultureSelectorComponent,
     ReactiveFormsModule,
     FormsModule,
     MatExpansionModule,

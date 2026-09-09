@@ -16,6 +16,8 @@ import { StorageService } from '../../../services/storage.service';
 import { of } from 'rxjs';
 import { UserIconComponent } from '../user-icon/user-icon.component';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { NgxDarkmodeToggleButtonComponent } from '@aniondev/ngx-darkmode-toggle-button';
+import { NgxCultureSelectorComponent } from '@aniondev/ngx-culture-selector';
 
 @Component({
   selector: 'app-user-area-container',
@@ -41,6 +43,8 @@ describe('UserSettingsComponent', () => {
         MatSidenavModule,
         MatButtonModule,
         MatTabsModule,
+        NgxDarkmodeToggleButtonComponent,
+        NgxCultureSelectorComponent,
       ],
       declarations: [
         UserIconComponent,
@@ -52,6 +56,7 @@ describe('UserSettingsComponent', () => {
           provide: StorageService,
           useValue: {
             getAccessToken: () => "accesstoken1",
+            hasAccessToken: () => false,
           }
         },
         {
