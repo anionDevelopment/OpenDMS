@@ -10,3 +10,4 @@ Curl;docker.io/curlimages/curl;8.20.0
 Betterleaks;ghcr.io/betterleaks/betterleaks;v1.4.1
 Playwright;mcr.microsoft.com/playwright;v1.62.1-noble
 SCBuilder;aniondev/scbuilder;v1.2.12
+Keycloak;quay.io/keycloak/keycloak;26.7.3
