@@ -29,6 +29,18 @@ Caveat when regenerating locally: the backend's spec-generation uses `swagger to
 This step relies on the build-image (`SCBuilder`) and does not run against the GRYLibrary-APIServer-host in a plain local `dotnet build` in the `Development`-environment (the host validates its full service-graph on build, and Swashbuckle's host-resolver falls back to looking for a `Startup`-type).
 So an up-to-date client should be produced by the regular build (or in the build-image); after a backend-API-change the client has to be regenerated rather than the endpoint-methods being written by hand.
 
+## Unit-tests
+
+The unit-tests are the `*.spec.ts`-files next to the sourcecode. They are executed by the angular unit-test-builder (`@angular/build:unit-test`) with [Vitest](https://vitest.dev/) as test-runner, which replaced Karma and Jasmine.
+
+Things to know:
+
+- The tests run in `jsdom` and not in a real browser, so no browser has to be installed on the build-host. A testcase which needs a real browser-feature does not belong here but into the visual-regression-tests.
+- The globals of Vitest are enabled by the builder, so `describe`, `it` and `expect` do not have to be imported. The matchers are the ones of Vitest and not the ones of Jasmine, which means for example `expect(x).toBe(true)` instead of `expect(x).toBeTrue()` and `vi.fn()` instead of `jasmine.createSpyObj`.
+- `vitest-base.config.ts` exists for exactly one reason: the builder does not offer an option for the output-folder of the coverage-report, and the build-pipeline expects the cobertura-file at `Other/Artifacts/TestCoverage`. The coverage-provider configured there has to stay `istanbul`, because that provider writes the cobertura-file with the same library Karma used before and therefore with the structure the pipeline reads.
+- Each configuration of the test-target builds against the build-configuration of the same name plus the build-configuration `Test`, so `npm run test-Development` tests the application with `environment.Development.ts`.
+- The build-configuration `Test` exists only to set `aot: false`, and removing it breaks the testcases. The reason is not obvious: with ahead-of-time-compilation the bundler replaces `ngJitMode` by `false`, which drops the `ɵɵsetNgModuleScope`-calls from the bundle. An NgModule then has no declarations and no exports at runtime, so `TestBed.configureTestingModule({imports: [SomeModule]})` can not resolve the components that module exports and every element of them is reported as unknown (`NG0304`). Karma compiled the testcases just-in-time (its builder-option `aot` defaults to `false`), which is what this configuration restores.
+
 ## Visual-regression-tests
 
 Besides the unit-tests this codeunit contains visual-regression-tests which are implemented with [Playwright](https://playwright.dev/).
