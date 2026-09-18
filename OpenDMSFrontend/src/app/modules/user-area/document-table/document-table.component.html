@@ -16,7 +16,7 @@
     <td mat-cell *matCellDef="let element">
       <app-link-to-document [documentPreview]="element">{{element.title}}</app-link-to-document>
       @if (element.aiSummaryShort) {
-        <div class="ai-summary-short-hint">{{element.aiSummaryShort}}</div>
+      <div class="ai-summary-short-hint">{{element.aiSummaryShort}}</div>
       }
     </td>
   </ng-container>

@@ -345,38 +345,6 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public void CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor)
-        {
-            //creating a (globally usable) tag is allowed for any authenticated user.
-            this.EnsureAuthenticated(requesterUserId);
-            Tag tag = new Tag(Guid.NewGuid().ToString(), tagName, tagColor);
-            this._Persistence.CreateTag(tag);
-            this._AuditLog.Logger.Log($"Tag '{tagName}' (id '{tag.Id}') created by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
-        }
-
-        /// <summary>Assigns an existing tag to an existing document. The requesting user must be allowed to change the document.</summary>
-        /// <param name="requesterUserId">The id of the user performing the operation.</param>
-        /// <param name="documentId">The id of the document.</param>
-        /// <param name="tagId">The id of the tag to assign.</param>
-        public void AssignTag(string requesterUserId, string documentId, string tagId)
-        {
-            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
-            this._Persistence.AssignTag(documentId, tagId);
-            this._AuditLog.Logger.Log($"Tag '{tagId}' assigned to document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
-        }
-
-        /// <summary>Removes a tag assignment from an existing document. The requesting user must be allowed to change the document.</summary>
-        /// <param name="requesterUserId">The id of the user performing the operation.</param>
-        /// <param name="documentId">The id of the document.</param>
-        /// <param name="tagId">The id of the tag to unassign.</param>
-        public void UnassignTag(string requesterUserId, string documentId, string tagId)
-        {
-            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
-            this._Persistence.UnassignTag(documentId, tagId);
-            this._AuditLog.Logger.Log($"Tag '{tagId}' unassigned from document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
-        }
-
-        /// <inheritdoc />
         public bool UserIsAllowedToViewContent(string userId, string contentId)
         {
             return this.UserHasPermissionInHierarchy(userId, contentId, RequiredPermission.View);
@@ -435,12 +403,6 @@ namespace OpenDMSBackend.Core.Services
                 currentId = this._Persistence.GetParentIdOfContainee(currentId);
             }
             return false;
-        }
-
-        /// <inheritdoc />
-        public TagDTO[] GetAllTags()
-        {
-            return this._Persistence.GetAllTags();
         }
 
         /// <inheritdoc />
@@ -975,6 +937,15 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldsOfDocument(string requesterUserId, string documentId)
+        {
+            //which fields a document can hold a value for is determined by its storage-location. Resolving that here keeps the caller independent of where the document is located.
+            this.EnsureUserIsAllowedToViewContent(requesterUserId, documentId);
+            string storageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(documentId);
+            return this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(storageLocationId).ToList();
+        }
+
+        /// <inheritdoc />
         public void SetDocumentMetadataValue(string requesterUserId, string documentId, string fieldDefinitionId, string? value)
         {
             this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
@@ -1012,6 +983,58 @@ namespace OpenDMSBackend.Core.Services
                 default:
                     throw new BadRequestException($"Unsupported metadata-field-type '{definition.Type}'.");
             }
+        }
+
+        /// <inheritdoc />
+        public string CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor)
+        {
+            //creating a (globally usable) tag is allowed for any authenticated user.
+            this.EnsureAuthenticated(requesterUserId);
+            if (string.IsNullOrWhiteSpace(tagName))
+            {
+                throw new BadRequestException("The name of a tag must not be empty.");
+            }
+            string normalizedTagName = tagName.Trim();
+            if (this._Persistence.GetAllTags().Any(existing => string.Equals(existing.Name, normalizedTagName, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new BadRequestException($"A tag with the name '{normalizedTagName}' already exists.");
+            }
+            Tag tag = new Tag(Guid.NewGuid().ToString(), normalizedTagName, tagColor);
+            this._Persistence.CreateTag(tag);
+            this._AuditLog.Logger.Log($"Tag '{normalizedTagName}' (id '{tag.Id}') created by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+            return tag.Id;
+        }
+
+        /// <inheritdoc />
+        public TagDTO[] GetAllTags()
+        {
+            return this._Persistence.GetAllTags();
+        }
+
+        /// <inheritdoc />
+        public void AssignTag(string requesterUserId, string documentId, string tagId)
+        {
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
+            Tag tag = this._Persistence.GetTag(tagId);
+            if (this._Persistence.GetTagIdsOfDocument(documentId).Contains(tagId))
+            {
+                throw new BadRequestException($"The tag '{tag.Name}' is already assigned to document '{documentId}'.");
+            }
+            this._Persistence.AssignTag(documentId, tagId);
+            this._AuditLog.Logger.Log($"Tag '{tag.Name}' (id '{tagId}') assigned to document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public void UnassignTag(string requesterUserId, string documentId, string tagId)
+        {
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
+            Tag tag = this._Persistence.GetTag(tagId);
+            if (!this._Persistence.GetTagIdsOfDocument(documentId).Contains(tagId))
+            {
+                throw new BadRequestException($"The tag '{tag.Name}' is not assigned to document '{documentId}'.");
+            }
+            this._Persistence.UnassignTag(documentId, tagId);
+            this._AuditLog.Logger.Log($"Tag '{tag.Name}' (id '{tagId}') unassigned from document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />

@@ -18,7 +18,7 @@ export interface OIDCInitiationDTO {
      */
     authorizationUrl?: string | null;
     /**
-     * The OIDC state value. The frontend must store this and verify it matches what comes back  in the callback query parameter before calling ExchangeOIDCCode.
+     * The OIDC state value. The frontend must store this and verify it matches what comes back in the callback query parameter before calling ExchangeOIDCCode.
      */
     state?: string | null;
 }

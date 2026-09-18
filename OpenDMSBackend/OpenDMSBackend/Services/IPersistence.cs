@@ -49,6 +49,17 @@ namespace OpenDMSBackend.Core.Services
         /// <returns>An array of <see cref="TagDTO"/> representing every stored tag.</returns>
         public TagDTO[] GetAllTags();
 
+        /// <summary>Returns the tag with the specified id.</summary>
+        /// <param name="tagId">The id of the tag to retrieve.</param>
+        /// <returns>The <see cref="Tag"/> matching the given id.</returns>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when no tag with the given id exists.</exception>
+        public Tag GetTag(string tagId);
+
+        /// <summary>Returns the ids of the tags which are assigned to the specified document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <returns>A set containing the id of every tag assigned to the document.</returns>
+        public ISet<string> GetTagIdsOfDocument(string documentId);
+
         /// <summary>Returns the ids of all documents currently stored.</summary>
         /// <returns>A set containing every document id.</returns>
         public ISet<string> GetAllDocumentIds();

@@ -1,0 +1,769 @@
+@startuml
+title OpenDMSBackend - Database structure (MariaDB)
+hide circle
+skinparam linetype ortho
+
+entity "AccessToken" {
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  --
+  ExpiredMoment : datetime <<NOT NULL>>
+  UserId : varchar <<NOT NULL>>
+}
+
+entity "Container_Containee" {
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContaineeId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+  * ContainerId : varchar <<PK>>
+}
+
+entity "Document_MetadataValue" {
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  * MetadataFieldDefinitionId : varchar <<PK>>
+  --
+  Value : longtext <<NOT NULL>>
+}
+
+entity "Document_Tag" {
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * DocumentId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+  * TagId : varchar <<PK>>
+}
+
+entity "Documents" {
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  --
+  AddedByUserId : varchar
+  AISummaryLong : longtext
+  AISummaryShort : longtext
+  AssignedLanguages : varchar
+  DeleteIsNotAllowedBefore : datetime
+  Filename : varchar <<NOT NULL>>
+  GroupOfBusinessOwner : varchar <<NOT NULL>>
+  ImportDate : datetime <<NOT NULL>>
+  IsHardDeleted : tinyint <<NOT NULL>>
+  IsLatestVersion : tinyint <<NOT NULL>>
+  IsSoftDeleted : tinyint <<NOT NULL>>
+  MIMEType : varchar <<NOT NULL>>
+  MustBeHardDeletedAfter : datetime
+  OCRContent : longtext <<NOT NULL>>
+  OriginalFilename : varchar <<NOT NULL>>
+  ReadableId : bigint <<NOT NULL>>
+  Title : varchar <<NOT NULL>>
+}
+
+entity "DocumentVersion" {
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  * ContentId : varchar <<PK>>
+  --
+  DocumentId : varchar <<NOT NULL>>
+  Timestamp : datetime <<NOT NULL>>
+  Version : int <<NOT NULL>>
+}
+
+entity "Folders" {
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  --
+  Name : varchar <<NOT NULL>>
+}
+
+entity "MetadataFieldDefinitions" {
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  --
+  Name : varchar <<NOT NULL>>
+  StorageLocationId : varchar <<NOT NULL>>
+  Type : varchar <<NOT NULL>>
+}
+
+entity "RefreshToken" {
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  * Value : varchar <<PK>>
+  --
+  ExpiredMoment : datetime <<NOT NULL>>
+  UserId : varchar <<NOT NULL>>
+}
+
+entity "Role_InheritedRoles" {
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * InheritedRoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+}
+
+entity "Roles" {
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  --
+  Name : varchar <<NOT NULL>>
+}
+
+entity "Settings" {
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  --
+  Value : longtext <<NOT NULL>>
+}
+
+entity "StorageLocation_UserPermission" {
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  --
+  CanEdit : tinyint <<NOT NULL>>
+}
+
+entity "StorageLocations" {
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  --
+  Name : varchar <<NOT NULL>>
+}
+
+entity "StorageLocations_User" {
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * StorageLocationId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+}
+
+entity "Tags" {
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  --
+  Color : int <<NOT NULL>>
+  Name : varchar <<NOT NULL>>
+}
+
+entity "User_Roles" {
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * RoleId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+}
+
+entity "Users" {
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  * Id : varchar <<PK>>
+  --
+  EMailAddress : varchar
+  ExternalLoginProvider : varchar
+  ExternalLoginSubject : varchar
+  Name : varchar <<NOT NULL>>
+  PasswordHash : varchar
+  RegistrationMoment : datetime <<NOT NULL>>
+  TOTPActivated : tinyint
+  TOTPSecretKey : varchar
+  UserIsActivated : tinyint <<NOT NULL>>
+  UserIsLocked : tinyint <<NOT NULL>>
+}
+
+entity "UserSettings" {
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * Key : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  * UserId : varchar <<PK>>
+  --
+  Value : longtext <<NOT NULL>>
+}
+
+"AccessToken" }o--|| "AccessToken" : UserId
+"AccessToken" }o--|| "Container_Containee" : UserId
+"AccessToken" }o--|| "Document_MetadataValue" : UserId
+"AccessToken" }o--|| "Document_Tag" : UserId
+"AccessToken" }o--|| "Documents" : UserId
+"AccessToken" }o--|| "DocumentVersion" : UserId
+"AccessToken" }o--|| "Folders" : UserId
+"AccessToken" }o--|| "MetadataFieldDefinitions" : UserId
+"AccessToken" }o--|| "RefreshToken" : UserId
+"AccessToken" }o--|| "Role_InheritedRoles" : UserId
+"AccessToken" }o--|| "Roles" : UserId
+"AccessToken" }o--|| "Settings" : UserId
+"AccessToken" }o--|| "StorageLocation_UserPermission" : UserId
+"AccessToken" }o--|| "StorageLocations" : UserId
+"AccessToken" }o--|| "StorageLocations_User" : UserId
+"AccessToken" }o--|| "Tags" : UserId
+"AccessToken" }o--|| "User_Roles" : UserId
+"AccessToken" }o--|| "Users" : UserId
+"AccessToken" }o--|| "UserSettings" : UserId
+"DocumentVersion" }o--|| "AccessToken" : ContentId
+"DocumentVersion" }o--|| "Container_Containee" : ContentId
+"DocumentVersion" }o--|| "Document_MetadataValue" : ContentId
+"DocumentVersion" }o--|| "Document_Tag" : ContentId
+"DocumentVersion" }o--|| "Documents" : ContentId
+"DocumentVersion" }o--|| "DocumentVersion" : ContentId
+"DocumentVersion" }o--|| "Folders" : ContentId
+"DocumentVersion" }o--|| "MetadataFieldDefinitions" : ContentId
+"DocumentVersion" }o--|| "RefreshToken" : ContentId
+"DocumentVersion" }o--|| "Role_InheritedRoles" : ContentId
+"DocumentVersion" }o--|| "Roles" : ContentId
+"DocumentVersion" }o--|| "Settings" : ContentId
+"DocumentVersion" }o--|| "StorageLocation_UserPermission" : ContentId
+"DocumentVersion" }o--|| "StorageLocations" : ContentId
+"DocumentVersion" }o--|| "StorageLocations_User" : ContentId
+"DocumentVersion" }o--|| "Tags" : ContentId
+"DocumentVersion" }o--|| "User_Roles" : ContentId
+"DocumentVersion" }o--|| "Users" : ContentId
+"DocumentVersion" }o--|| "UserSettings" : ContentId
+"RefreshToken" }o--|| "AccessToken" : UserId
+"RefreshToken" }o--|| "Container_Containee" : UserId
+"RefreshToken" }o--|| "Document_MetadataValue" : UserId
+"RefreshToken" }o--|| "Document_Tag" : UserId
+"RefreshToken" }o--|| "Documents" : UserId
+"RefreshToken" }o--|| "DocumentVersion" : UserId
+"RefreshToken" }o--|| "Folders" : UserId
+"RefreshToken" }o--|| "MetadataFieldDefinitions" : UserId
+"RefreshToken" }o--|| "RefreshToken" : UserId
+"RefreshToken" }o--|| "Role_InheritedRoles" : UserId
+"RefreshToken" }o--|| "Roles" : UserId
+"RefreshToken" }o--|| "Settings" : UserId
+"RefreshToken" }o--|| "StorageLocation_UserPermission" : UserId
+"RefreshToken" }o--|| "StorageLocations" : UserId
+"RefreshToken" }o--|| "StorageLocations_User" : UserId
+"RefreshToken" }o--|| "Tags" : UserId
+"RefreshToken" }o--|| "User_Roles" : UserId
+"RefreshToken" }o--|| "Users" : UserId
+"RefreshToken" }o--|| "UserSettings" : UserId
+"Role_InheritedRoles" }o--|| "AccessToken" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Container_Containee" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Document_MetadataValue" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Document_Tag" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Documents" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "DocumentVersion" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Folders" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "MetadataFieldDefinitions" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "RefreshToken" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Role_InheritedRoles" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Roles" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Settings" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "StorageLocation_UserPermission" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "StorageLocations" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "StorageLocations_User" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Tags" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "User_Roles" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Users" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "UserSettings" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "AccessToken" : RoleId
+"Role_InheritedRoles" }o--|| "Container_Containee" : RoleId
+"Role_InheritedRoles" }o--|| "Document_MetadataValue" : RoleId
+"Role_InheritedRoles" }o--|| "Document_Tag" : RoleId
+"Role_InheritedRoles" }o--|| "Documents" : RoleId
+"Role_InheritedRoles" }o--|| "DocumentVersion" : RoleId
+"Role_InheritedRoles" }o--|| "Folders" : RoleId
+"Role_InheritedRoles" }o--|| "MetadataFieldDefinitions" : RoleId
+"Role_InheritedRoles" }o--|| "RefreshToken" : RoleId
+"Role_InheritedRoles" }o--|| "Role_InheritedRoles" : RoleId
+"Role_InheritedRoles" }o--|| "Roles" : RoleId
+"Role_InheritedRoles" }o--|| "Settings" : RoleId
+"Role_InheritedRoles" }o--|| "StorageLocation_UserPermission" : RoleId
+"Role_InheritedRoles" }o--|| "StorageLocations" : RoleId
+"Role_InheritedRoles" }o--|| "StorageLocations_User" : RoleId
+"Role_InheritedRoles" }o--|| "Tags" : RoleId
+"Role_InheritedRoles" }o--|| "User_Roles" : RoleId
+"Role_InheritedRoles" }o--|| "Users" : RoleId
+"Role_InheritedRoles" }o--|| "UserSettings" : RoleId
+"User_Roles" }o--|| "AccessToken" : RoleId
+"User_Roles" }o--|| "Container_Containee" : RoleId
+"User_Roles" }o--|| "Document_MetadataValue" : RoleId
+"User_Roles" }o--|| "Document_Tag" : RoleId
+"User_Roles" }o--|| "Documents" : RoleId
+"User_Roles" }o--|| "DocumentVersion" : RoleId
+"User_Roles" }o--|| "Folders" : RoleId
+"User_Roles" }o--|| "MetadataFieldDefinitions" : RoleId
+"User_Roles" }o--|| "RefreshToken" : RoleId
+"User_Roles" }o--|| "Role_InheritedRoles" : RoleId
+"User_Roles" }o--|| "Roles" : RoleId
+"User_Roles" }o--|| "Settings" : RoleId
+"User_Roles" }o--|| "StorageLocation_UserPermission" : RoleId
+"User_Roles" }o--|| "StorageLocations" : RoleId
+"User_Roles" }o--|| "StorageLocations_User" : RoleId
+"User_Roles" }o--|| "Tags" : RoleId
+"User_Roles" }o--|| "User_Roles" : RoleId
+"User_Roles" }o--|| "Users" : RoleId
+"User_Roles" }o--|| "UserSettings" : RoleId
+"User_Roles" }o--|| "AccessToken" : UserId
+"User_Roles" }o--|| "Container_Containee" : UserId
+"User_Roles" }o--|| "Document_MetadataValue" : UserId
+"User_Roles" }o--|| "Document_Tag" : UserId
+"User_Roles" }o--|| "Documents" : UserId
+"User_Roles" }o--|| "DocumentVersion" : UserId
+"User_Roles" }o--|| "Folders" : UserId
+"User_Roles" }o--|| "MetadataFieldDefinitions" : UserId
+"User_Roles" }o--|| "RefreshToken" : UserId
+"User_Roles" }o--|| "Role_InheritedRoles" : UserId
+"User_Roles" }o--|| "Roles" : UserId
+"User_Roles" }o--|| "Settings" : UserId
+"User_Roles" }o--|| "StorageLocation_UserPermission" : UserId
+"User_Roles" }o--|| "StorageLocations" : UserId
+"User_Roles" }o--|| "StorageLocations_User" : UserId
+"User_Roles" }o--|| "Tags" : UserId
+"User_Roles" }o--|| "User_Roles" : UserId
+"User_Roles" }o--|| "Users" : UserId
+"User_Roles" }o--|| "UserSettings" : UserId
+@enduml

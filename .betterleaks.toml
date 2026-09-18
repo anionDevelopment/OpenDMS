@@ -2,9 +2,10 @@
 useDefault = true
 
 [[allowlists]]
-description = "Development-only certificate (false positive, intentionally checked in for local dev workflows, not used in production)."
+description = "Development-only certificate (false positive, intentionally checked in for local dev workflows, not used in production). The second path is the place the same certificate has inside the built oci-image, where the dockerfile copies it to."
 paths = [
     '''Other/Resources/DevelopmentCertificate/''',
+    '''Workspace/Other/Certificates/''',
 ]
 
 [[allowlists]]

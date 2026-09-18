@@ -466,6 +466,12 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptUnassignTag()
+        {
+            return this.LoadSQLScript("UnassignTag");
+        }
+
+        /// <inheritdoc />
         public string GetScriptHardDeleteDocument()
         {
             return this.LoadSQLScript("HardDeleteDocument");

@@ -748,6 +748,213 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             Assert.AreEqual(storageLocationId, persistence.GetParentIdOfContainee(documentId), "The document must not have been moved.");
         }
 
+        [TestMethod(DisplayName = nameof(GetMetadataFieldsOfDocumentTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void GetMetadataFieldsOfDocumentTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string fieldId = businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            //a field of another storage-location must not be offered for this document.
+            string otherStorageLocationId = persistence.AddStoragLocation("otherStorageLocation");
+            persistence.SetOwnerOfStorageLocation(otherStorageLocationId, userId);
+            businessLogicService.DefineMetadataField(userId, otherStorageLocationId, "sender", MetadataFieldType.String);
+
+            //act
+            List<MetadataFieldDefinition> fields = businessLogicService.GetMetadataFieldsOfDocument(userId, documentId).ToList();
+
+            //assert
+            Assert.AreEqual(1, fields.Count, "Exactly the fields of the storage-location which contains the document must be returned.");
+            Assert.AreEqual(fieldId, fields[0].Id);
+        }
+
+        [TestMethod(DisplayName = nameof(GetMetadataFieldsOfDocumentRequiresViewPermissionTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void GetMetadataFieldsOfDocumentRequiresViewPermissionTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            businessLogicService.DefineMetadataField(userId, storageLocationId, "sender", MetadataFieldType.String);
+            string otherUserId = "other-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = otherUserId, });
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.GetMetadataFieldsOfDocument(otherUserId, documentId);
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A user without view-permission on the document must not be allowed to list the metadata-fields of it.");
+        }
+
+        [TestMethod(DisplayName = nameof(CreateAndAssignTagTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void CreateAndAssignTagTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string _, out string documentId);
+
+            //act
+            string tagId = businessLogicService.CreateTag(userId, "Invoice", new ExtendedColor(198, 40, 40));
+            businessLogicService.AssignTag(userId, documentId, tagId);
+
+            //assert
+            Document reloaded = businessLogicService.GetDocument(userId, documentId);
+            Assert.AreEqual(1, reloaded.Tags.Count);
+            Assert.AreEqual(tagId, reloaded.Tags.Single().Id);
+            Assert.AreEqual("Invoice", reloaded.Tags.Single().Name);
+        }
+
+        [TestMethod(DisplayName = nameof(UnassignTagTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void UnassignTagTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string _, out string documentId);
+            string tagId = businessLogicService.CreateTag(userId, "Invoice", new ExtendedColor(198, 40, 40));
+            businessLogicService.AssignTag(userId, documentId, tagId);
+
+            //act
+            businessLogicService.UnassignTag(userId, documentId, tagId);
+
+            //assert
+            Assert.AreEqual(0, businessLogicService.GetDocument(userId, documentId).Tags.Count, "The unassigned tag must not be assigned to the document anymore.");
+            Assert.AreEqual(1, businessLogicService.GetAllTags().Length, "Unassigning a tag must not delete the tag itself.");
+        }
+
+        [TestMethod(DisplayName = nameof(CreateTagWithDuplicateNameTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void CreateTagWithDuplicateNameTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string _, out string _);
+            businessLogicService.CreateTag(userId, "Invoice", new ExtendedColor(198, 40, 40));
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.CreateTag(userId, "INVOICE", new ExtendedColor(0, 0, 0));
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "Creating a second tag with an already-used name (case-insensitive) must be rejected.");
+            Assert.AreEqual(1, businessLogicService.GetAllTags().Length);
+        }
+
+        [TestMethod(DisplayName = nameof(CreateTagWithEmptyNameTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void CreateTagWithEmptyNameTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string _, out string _);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.CreateTag(userId, "   ", new ExtendedColor(0, 0, 0));
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A tag with an empty (whitespace-only) name must be rejected.");
+        }
+
+        [TestMethod(DisplayName = nameof(AssignTagTwiceTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void AssignTagTwiceTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string _, out string documentId);
+            string tagId = businessLogicService.CreateTag(userId, "Invoice", new ExtendedColor(198, 40, 40));
+            businessLogicService.AssignTag(userId, documentId, tagId);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.AssignTag(userId, documentId, tagId);
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "Assigning a tag which is already assigned to the document must be rejected.");
+        }
+
+        [TestMethod(DisplayName = nameof(UnassignNotAssignedTagTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void UnassignNotAssignedTagTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string _, out string documentId);
+            string tagId = businessLogicService.CreateTag(userId, "Invoice", new ExtendedColor(198, 40, 40));
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.UnassignTag(userId, documentId, tagId);
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "Unassigning a tag which is not assigned to the document must be rejected.");
+        }
+
+        [TestMethod(DisplayName = nameof(AssignTagRequiresEditPermissionTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void AssignTagRequiresEditPermissionTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            SetupModeratorWithDocument(persistence, out string userId, out string storageLocationId, out string documentId);
+            string tagId = businessLogicService.CreateTag(userId, "Invoice", new ExtendedColor(198, 40, 40));
+            string viewerUserId = "viewer-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = viewerUserId, });
+            //grant only view-permission, no edit-permission.
+            persistence.AuthorizeUserToViewStorageLocation(storageLocationId, viewerUserId);
+
+            //act & assert
+            bool threw = false;
+            try
+            {
+                businessLogicService.AssignTag(viewerUserId, documentId, tagId);
+            }
+            catch (GRYLibrary.Core.Exceptions.NotAuthorizedException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A user with only view-permission must not be allowed to assign a tag to a document.");
+            Assert.AreEqual(0, businessLogicService.GetDocument(userId, documentId).Tags.Count, "The tag must not have been assigned.");
+        }
+
         //TODO write more testcases for the things which are not allowed to verify the user is really not able to do certain things
     }
 }

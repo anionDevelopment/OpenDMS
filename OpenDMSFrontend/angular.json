@@ -45,7 +45,44 @@
           "th": "Other/Resources/Translations/messages.th.xlf",
           "ur": "Other/Resources/Translations/messages.ur.xlf",
           "vi": "Other/Resources/Translations/messages.vi.xlf",
-          "zh": "Other/Resources/Translations/messages.zh.xlf"
+          "zh": "Other/Resources/Translations/messages.zh.xlf",
+          "af": "Other/Resources/Translations/messages.af.xlf",
+          "ar-DZ": "Other/Resources/Translations/messages.ar-DZ.xlf",
+          "ar-EG": "Other/Resources/Translations/messages.ar-EG.xlf",
+          "ar-LY": "Other/Resources/Translations/messages.ar-LY.xlf",
+          "ar-MA": "Other/Resources/Translations/messages.ar-MA.xlf",
+          "ar-SD": "Other/Resources/Translations/messages.ar-SD.xlf",
+          "ar-TN": "Other/Resources/Translations/messages.ar-TN.xlf",
+          "bn": "Other/Resources/Translations/messages.bn.xlf",
+          "es-AR": "Other/Resources/Translations/messages.es-AR.xlf",
+          "es-CL": "Other/Resources/Translations/messages.es-CL.xlf",
+          "es-CO": "Other/Resources/Translations/messages.es-CO.xlf",
+          "es-CR": "Other/Resources/Translations/messages.es-CR.xlf",
+          "es-DO": "Other/Resources/Translations/messages.es-DO.xlf",
+          "es-EC": "Other/Resources/Translations/messages.es-EC.xlf",
+          "es-MX": "Other/Resources/Translations/messages.es-MX.xlf",
+          "es-VE": "Other/Resources/Translations/messages.es-VE.xlf",
+          "et": "Other/Resources/Translations/messages.et.xlf",
+          "ga": "Other/Resources/Translations/messages.ga.xlf",
+          "hr": "Other/Resources/Translations/messages.hr.xlf",
+          "hu": "Other/Resources/Translations/messages.hu.xlf",
+          "is": "Other/Resources/Translations/messages.is.xlf",
+          "ka": "Other/Resources/Translations/messages.ka.xlf",
+          "kk": "Other/Resources/Translations/messages.kk.xlf",
+          "km": "Other/Resources/Translations/messages.km.xlf",
+          "ky": "Other/Resources/Translations/messages.ky.xlf",
+          "lo": "Other/Resources/Translations/messages.lo.xlf",
+          "lv": "Other/Resources/Translations/messages.lv.xlf",
+          "lt": "Other/Resources/Translations/messages.lt.xlf",
+          "mn": "Other/Resources/Translations/messages.mn.xlf",
+          "my": "Other/Resources/Translations/messages.my.xlf",
+          "ph": "Other/Resources/Translations/messages.ph.xlf",
+          "pt-BR": "Other/Resources/Translations/messages.pt-BR.xlf",
+          "ro": "Other/Resources/Translations/messages.ro.xlf",
+          "tk": "Other/Resources/Translations/messages.tk.xlf",
+          "tl": "Other/Resources/Translations/messages.tl.xlf",
+          "tr": "Other/Resources/Translations/messages.tr.xlf",
+          "uk": "Other/Resources/Translations/messages.uk.xlf"
         }
       },
       "architect": {
@@ -82,8 +119,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1.5MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -130,7 +167,7 @@
           "defaultConfiguration": "QualityCheck"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "Productive": {
               "buildTarget": "OpenDMSFrontend:build:Productive"
@@ -146,8 +183,9 @@
           "defaultConfiguration": "QualityCheck"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
+            "buildTarget": "OpenDMSFrontend:build:Development",
             "outputPath": "Other/Resources/Translations",
             "format": "xlf2",
             "outFile": "messages.xlf"

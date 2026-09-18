@@ -1,0 +1,27 @@
+<div class="document-metadata">
+  <h4 i18n="@@document_metadata_title">Metadata</h4>
+  @if (entries.length === 0) {
+  <p class="document-metadata-empty" i18n="@@document_metadata_none">No custom metadata-fields are defined for the storage-location of this document.</p>
+  } @if (entries.length > 0) {
+  <ul class="document-metadata-list">
+    @for (entry of entries; track entry.definition.id) {
+    <li>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{entry.definition.name}}</mat-label>
+        @if (fieldIsBoolean(entry)) {
+        <mat-select [(ngModel)]="entry.value" (selectionChange)="saveValue(entry)">
+          <mat-option value="" i18n="@@document_metadata_boolean_not_set">Not set</mat-option>
+          <mat-option value="true" i18n="@@document_metadata_boolean_true">Yes</mat-option>
+          <mat-option value="false" i18n="@@document_metadata_boolean_false">No</mat-option>
+        </mat-select>
+        } @else {
+        <input matInput [(ngModel)]="entry.value" (keyup.enter)="saveValue(entry)" (blur)="saveValue(entry)">
+        }
+      </mat-form-field>
+    </li>
+    }
+  </ul>
+  } @if (changeNotAllowed) {
+  <p class="document-metadata-error" i18n="@@document_metadata_change_not_allowed">The metadata of this document could not be changed.</p>
+  }
+</div>

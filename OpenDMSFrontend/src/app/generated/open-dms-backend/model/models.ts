@@ -11,6 +11,7 @@ export * from './oIDCProviderDTO';
 export * from './problemDetails';
 export * from './storageLocationDTO';
 export * from './stringValueDTO';
+export * from './tagCreationDTO';
 export * from './tagDTO';
 export * from './userInformationDTO';
 export * from './userOverviewDTO';

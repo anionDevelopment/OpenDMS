@@ -381,6 +381,49 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetAllTags());
         }
 
+        /// <summary>Creates a new tag which can afterwards be assigned to documents.</summary>
+        /// <param name="tag">The name and the color of the tag to create.</param>
+        /// <returns>The id of the created tag.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPost]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [Route(nameof(CreateTag))]
+        public IActionResult CreateTag([FromBody] TagCreationDTO tag)
+        {
+            return this.Ok(this._BusinessLogicService.CreateTag(this.GetUser().Id, tag.Name, ParseColorCode(tag.ColorCode)));
+        }
+
+        /// <summary>Assigns an existing tag to the specified document. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="tagId">The id of the tag to assign.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPost]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(AssignTag)}/{{{nameof(documentId)}}}/{{{nameof(tagId)}}}")]
+        public IActionResult AssignTag([FromRoute] string documentId, [FromRoute] string tagId)
+        {
+            this._BusinessLogicService.AssignTag(this.GetUser().Id, documentId, tagId);
+            return this.Ok();
+        }
+
+        /// <summary>Removes the assignment of a tag from the specified document. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="tagId">The id of the tag to unassign.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpDelete]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(UnassignTag)}/{{{nameof(documentId)}}}/{{{nameof(tagId)}}}")]
+        public IActionResult UnassignTag([FromRoute] string documentId, [FromRoute] string tagId)
+        {
+            this._BusinessLogicService.UnassignTag(this.GetUser().Id, documentId, tagId);
+            return this.Ok();
+        }
+
         /// <summary>Permanently deletes the specified container or document and all its contents.</summary>
         /// <param name="containerOrContaineeId">The id of the container or document to delete.</param>
         /// <param name="reason">The stated reason for the deletion, recorded in the audit log.</param>
@@ -492,6 +535,19 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetMetadataFields(this.GetUser().Id, storageLocationId).Select(field => field.ToDTO()));
         }
 
+        /// <summary>Returns all custom metadata-fields the specified document can hold a value for, which are the fields defined for its storage-location. The current user must be allowed to view the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <returns>The field-definitions as <see cref="MetadataFieldDefinitionDTO"/> objects.</returns>
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetMetadataFieldsOfDocument)}/{{{nameof(documentId)}}}")]
+        [ProducesResponseType(typeof(MetadataFieldDefinitionDTO[]), StatusCodes.Status200OK)]
+        public IActionResult GetMetadataFieldsOfDocument([FromRoute] string documentId)
+        {
+            return this.Ok(this._BusinessLogicService.GetMetadataFieldsOfDocument(this.GetUser().Id, documentId).Select(field => field.ToDTO()));
+        }
+
         /// <summary>Sets the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.</summary>
         /// <param name="documentId">The id of the document.</param>
         /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
@@ -531,6 +587,17 @@ namespace OpenDMSBackend.Core.Controller
                 return result;
             }
             throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{type}' is not a valid metadata-field-type. Allowed values are '{nameof(Model.BusinessTypes.MetadataFieldType.String)}' and '{nameof(Model.BusinessTypes.MetadataFieldType.Boolean)}'.");
+        }
+
+        /// <summary>Parses the given six-digit hexadecimal rgb-value into an <see cref="GRYLibrary.Core.Misc.ExtendedColor"/>, rejecting malformed values with a <see cref="GRYLibrary.Core.Exceptions.BadRequestException"/>.</summary>
+        private static GRYLibrary.Core.Misc.ExtendedColor ParseColorCode(string colorCode)
+        {
+            string hexadecimalValue = colorCode == null ? string.Empty : colorCode.TrimStart('#');
+            if (hexadecimalValue.Length != 6 || !int.TryParse(hexadecimalValue, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out int rgbValue))
+            {
+                throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{colorCode}' is not a valid color. A color must be a six-digit hexadecimal rgb-value, for example 'C62828'.");
+            }
+            return new GRYLibrary.Core.Misc.ExtendedColor((byte)(rgbValue >> 16), (byte)(rgbValue >> 8), (byte)rgbValue);
         }
 
         private GRYLibrary.Core.APIServer.CommonDBTypes.User GetUser()

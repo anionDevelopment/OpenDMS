@@ -55,18 +55,35 @@ const previewOfTheSecondDocument = {
 };
 
 /*
+ * The tags which exist in the simulated installation. One of them is assigned to the document whose page is
+ * checked and the other one is not, so the page shows an assigned tag as well as a tag which can still be assigned.
+ */
+const tagOfTheDocument = { id: '00000000-0000-0000-0000-000000000201', name: 'Contract', colorCode: '283593' };
+const tagWhichIsNotAssigned = { id: '00000000-0000-0000-0000-000000000202', name: 'Invoice', colorCode: 'C62828' };
+
+/*
+ * The custom metadata-fields of the storage-location which contains the document. Both field-types exist exactly
+ * once, so the page shows the text-input as well as the checkbox which the two types are edited with.
+ */
+const metadataFieldOfTypeString = { id: '00000000-0000-0000-0000-000000000301', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Contact/Sender', type: 'String' };
+const metadataFieldOfTypeBoolean = { id: '00000000-0000-0000-0000-000000000302', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Tax-relevant', type: 'Boolean' };
+
+/*
  * The full document which belongs to the second preview. The document-page shows more values than
  * the document-list, so this object contains the additional ones.
  */
 const theDocumentWithAnOwnPage = {
     ...previewOfTheSecondDocument,
-    tags: [],
+    tags: [tagOfTheDocument],
     documentContentAsBase64: null,
     documentPreviewAsBase64: previewImageAsBase64,
     assignedLanguages: [],
     aiSummaryLong: 'The example-supplier delivers example-goods to the example-company. '
         + 'The contract is valid for one year and is extended automatically if none of the parties terminates it.',
-    metadataValues: {}
+    metadataValues: {
+        '00000000-0000-0000-0000-000000000301': 'Example-supplier',
+        '00000000-0000-0000-0000-000000000302': 'true'
+    }
 };
 
 /*
@@ -84,4 +101,10 @@ export async function simulateDocuments(page: Page): Promise<void> {
     await respondWith(page, '**/API/v3/OpenDMSBackend/GetAllViewableStorageLocations*', []);
     await respondWith(page, '**/API/v3/OpenDMSBackend/GetDocumentFromReadableId*', theDocumentWithAnOwnPage);
     await respondWith(page, '**/API/v3/OpenDMSBackend/GetDocumentPreview*', previewOfTheSecondDocument);
+    /*
+     * The document-page lets the user index the document, so it additionally asks for every tag which exists and
+     * for the metadata-fields which the document can hold a value for.
+     */
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetAllTags*', [tagOfTheDocument, tagWhichIsNotAssigned]);
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetMetadataFieldsOfDocument/*', [metadataFieldOfTypeString, metadataFieldOfTypeBoolean]);
 }

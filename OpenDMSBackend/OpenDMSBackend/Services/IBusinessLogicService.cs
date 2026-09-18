@@ -40,7 +40,6 @@ namespace OpenDMSBackend.Core.Services
         public void Update(string requesterUserId, Document updatedDocument);
         public Document GetDocument(string requesterUserId, string id);
         public IList<DocumentPreview> Search(string requesterUserId, string searchTerm);
-        public void CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor);
         /// <remarks>
         /// <paramref name="contentId"/> can be an id of any existing <see cref="IContent"/>-object.
         /// </remarks>
@@ -49,7 +48,6 @@ namespace OpenDMSBackend.Core.Services
         /// <paramref name="contentId"/> can be an id of any existing <see cref="IContent"/>-object.
         /// </remarks>
         public bool UserIsAllowedToEditContent(string userId, string contentId);
-        public TagDTO[] GetAllTags();
         IEnumerable<DocumentPreview> GetLatestDocuments(string requesterUserId);
         public DocumentPreview GetDocumentPreview(string requesterUserId, string documentId);
         /// <summary>Generates the short and the long AI-summary of the specified document and stores them.</summary>
@@ -119,12 +117,38 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="storageLocationId">The id of the storage-location.</param>
         /// <returns>The field-definitions of the storage-location.</returns>
         public IEnumerable<MetadataFieldDefinition> GetMetadataFields(string requesterUserId, string storageLocationId);
+        /// <summary>Returns all custom metadata-fields which are applicable to the given document, which are the fields defined for the storage-location the document is contained in. The requesting user must be allowed to view the document.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="documentId">The id of the document.</param>
+        /// <returns>The field-definitions which the document can hold a value for.</returns>
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldsOfDocument(string requesterUserId, string documentId);
         /// <summary>Sets (or, when <paramref name="value"/> is <see langword="null"/>, clears) the value the given document holds for the given metadata-field. The requesting user must be allowed to change the document and the field must be defined for the document's storage-location.</summary>
         /// <param name="requesterUserId">The id of the user requesting the operation.</param>
         /// <param name="documentId">The id of the document.</param>
         /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
         /// <param name="value">The value to set, or <see langword="null"/> to clear the value. For a boolean-field the value must be parseable as a boolean.</param>
         public void SetDocumentMetadataValue(string requesterUserId, string documentId, string fieldDefinitionId, string? value);
+        #endregion
+
+        #region Tags
+        /// <summary>Creates a new tag which can afterwards be assigned to documents. Every authenticated user may create a tag, because a tag is usable in every storage-location.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="tagName">The display-name of the tag (must not be empty and must not be used by another tag yet).</param>
+        /// <param name="tagColor">The color the user-interface shows the tag in.</param>
+        /// <returns>The id of the created tag.</returns>
+        public string CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor);
+        /// <summary>Returns all tags which exist in this installation.</summary>
+        public TagDTO[] GetAllTags();
+        /// <summary>Assigns an existing tag to an existing document. The requesting user must be allowed to change the document.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="tagId">The id of the tag to assign.</param>
+        public void AssignTag(string requesterUserId, string documentId, string tagId);
+        /// <summary>Removes the assignment of a tag from a document. The requesting user must be allowed to change the document.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="tagId">The id of the tag to unassign.</param>
+        public void UnassignTag(string requesterUserId, string documentId, string tagId);
         #endregion
 
         #endregion

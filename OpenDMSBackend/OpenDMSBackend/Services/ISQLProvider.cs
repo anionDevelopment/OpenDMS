@@ -78,6 +78,7 @@ namespace OpenDMSBackend.Core.Services
         string GetScriptUnauthorizeUserToEditStorageLocation();
         string GetScriptRemoveRoleFromUser();
         string GetScriptAssignTag();
+        string GetScriptUnassignTag();
         string GetScriptHardDeleteDocument();
         string GetScriptUnassignAllTagsOfDocument();
         string GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow();

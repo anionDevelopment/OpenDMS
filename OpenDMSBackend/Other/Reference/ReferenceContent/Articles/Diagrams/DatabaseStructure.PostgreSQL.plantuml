@@ -1,0 +1,157 @@
+@startuml
+title OpenDMSBackend - Database structure (PostgreSQL)
+hide circle
+skinparam linetype ortho
+
+entity "AccessToken" {
+  * Value : character varying <<PK>>
+  --
+  ExpiredMoment : timestamp without time zone <<NOT NULL>>
+  UserId : character varying <<NOT NULL>>
+}
+
+entity "Container_Containee" {
+  * ContaineeId : character varying <<PK>>
+  * ContainerId : character varying <<PK>>
+}
+
+entity "Document_MetadataValue" {
+  * DocumentId : character varying <<PK>>
+  * MetadataFieldDefinitionId : character varying <<PK>>
+  --
+  Value : text <<NOT NULL>>
+}
+
+entity "Document_Tag" {
+  * DocumentId : character varying <<PK>>
+  * TagId : character varying <<PK>>
+}
+
+entity "Documents" {
+  * Id : character varying <<PK>>
+  --
+  AddedByUserId : character varying
+  AISummaryLong : text
+  AISummaryShort : text
+  AssignedLanguages : character varying
+  DeleteIsNotAllowedBefore : timestamp without time zone
+  Filename : character varying <<NOT NULL>>
+  GroupOfBusinessOwner : character varying <<NOT NULL>>
+  ImportDate : timestamp without time zone <<NOT NULL>>
+  IsHardDeleted : boolean <<NOT NULL>>
+  IsLatestVersion : boolean <<NOT NULL>>
+  IsSoftDeleted : boolean <<NOT NULL>>
+  MIMEType : character varying <<NOT NULL>>
+  MustBeHardDeletedAfter : timestamp without time zone
+  OCRContent : text <<NOT NULL>>
+  OriginalFilename : character varying <<NOT NULL>>
+  ReadableId : bigint <<NOT NULL>>
+  Title : character varying <<NOT NULL>>
+}
+
+entity "DocumentVersion" {
+  * ContentId : character varying <<PK>>
+  --
+  DocumentId : character varying <<NOT NULL>>
+  Timestamp : timestamp without time zone <<NOT NULL>>
+  Version : integer <<NOT NULL>>
+}
+
+entity "Folders" {
+  * Id : character varying <<PK>>
+  --
+  Name : character varying <<NOT NULL>>
+}
+
+entity "MetadataFieldDefinitions" {
+  * Id : character varying <<PK>>
+  --
+  Name : character varying <<NOT NULL>>
+  StorageLocationId : character varying <<NOT NULL>>
+  Type : character varying <<NOT NULL>>
+}
+
+entity "RefreshToken" {
+  * Value : character varying <<PK>>
+  --
+  ExpiredMoment : timestamp without time zone <<NOT NULL>>
+  UserId : character varying <<NOT NULL>>
+}
+
+entity "Role_InheritedRoles" {
+  * InheritedRoleId : character varying <<PK>>
+  * RoleId : character varying <<PK>>
+}
+
+entity "Roles" {
+  * Id : character varying <<PK>>
+  --
+  Name : character varying <<NOT NULL>>
+}
+
+entity "Settings" {
+  * Key : character varying <<PK>>
+  --
+  Value : text <<NOT NULL>>
+}
+
+entity "StorageLocation_UserPermission" {
+  * StorageLocationId : character varying <<PK>>
+  * UserId : character varying <<PK>>
+  --
+  CanEdit : boolean <<NOT NULL>>
+}
+
+entity "StorageLocations" {
+  * Id : character varying <<PK>>
+  --
+  Name : character varying <<NOT NULL>>
+}
+
+entity "StorageLocations_User" {
+  * StorageLocationId : character varying <<PK>>
+  * UserId : character varying <<PK>>
+}
+
+entity "Tags" {
+  * Id : character varying <<PK>>
+  --
+  Color : integer <<NOT NULL>>
+  Name : character varying <<NOT NULL>>
+}
+
+entity "User_Roles" {
+  * RoleId : character varying <<PK>>
+  * UserId : character varying <<PK>>
+}
+
+entity "Users" {
+  * Id : character varying <<PK>>
+  --
+  EMailAddress : character varying
+  ExternalLoginProvider : character varying
+  ExternalLoginSubject : character varying
+  Name : character varying <<NOT NULL>>
+  PasswordHash : character varying
+  RegistrationMoment : timestamp without time zone <<NOT NULL>>
+  TOTPActivated : boolean
+  TOTPSecretKey : character varying
+  UserIsActivated : boolean <<NOT NULL>>
+  UserIsLocked : boolean <<NOT NULL>>
+}
+
+entity "UserSettings" {
+  * Key : character varying <<PK>>
+  * UserId : character varying <<PK>>
+  --
+  Value : text <<NOT NULL>>
+}
+
+"AccessToken" }o--|| "Users" : UserId
+"DocumentVersion" }o--|| "Documents" : ContentId
+"RefreshToken" }o--|| "Users" : UserId
+"Role_InheritedRoles" }o--|| "Roles" : InheritedRoleId
+"Role_InheritedRoles" }o--|| "Roles" : RoleId
+"User_Roles" }o--|| "Roles" : RoleId
+"User_Roles" }o--|| "Users" : UserId
+@enduml

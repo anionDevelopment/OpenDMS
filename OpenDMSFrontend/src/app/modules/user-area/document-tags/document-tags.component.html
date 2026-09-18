@@ -1,0 +1,48 @@
+<div class="document-tags">
+  <h4 i18n="@@document_tags_title">Tags</h4>
+  @if (assignedTags.length === 0) {
+  <p class="document-tags-empty" i18n="@@document_tags_none">No tags are assigned to this document yet.</p>
+  } @if (assignedTags.length > 0) {
+  <ul class="document-tags-list">
+    @for (tag of assignedTags; track tag.id) {
+    <li class="document-tag" [style.background-color]="backgroundColorOf(tag)" [style.color]="textColorOf(tag)">
+      <span class="document-tag-name">{{tag.name}}</span>
+      <button mat-icon-button (click)="unassignTag(tag)" aria-label="Remove tag from document" i18n-aria-label="@@document_tag_unassign">
+        <mat-icon>close</mat-icon>
+      </button>
+    </li>
+    }
+  </ul>
+  }
+  <div class="document-tags-assign">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label i18n="@@document_tag_existing_label">Existing tag</mat-label>
+      <mat-select [(ngModel)]="selectedTagId">
+        @for (tag of assignableTags; track tag.id) {
+        <mat-option [value]="tag.id">{{tag.name}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button mat-button color="primary" (click)="assignSelectedTag()" [disabled]="selectedTagId.length === 0" i18n="@@document_tag_assign">Assign tag</button>
+  </div>
+  <div class="document-tags-create">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label i18n="@@document_tag_new_name_label">New tag</mat-label>
+      <input matInput [(ngModel)]="newTagName" (keyup.enter)="createAndAssignTag()">
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label i18n="@@document_tag_new_color_label">Color</mat-label>
+      <mat-select [(ngModel)]="newTagColorCode">
+        @for (colorCode of selectableColorCodes; track colorCode) {
+        <mat-option [value]="colorCode">
+          <span class="document-tag-color-sample" [style.background-color]="'#' + colorCode"></span>
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button mat-button color="primary" (click)="createAndAssignTag()" [disabled]="newTagName.trim().length === 0" i18n="@@document_tag_create_and_assign">Create and assign</button>
+  </div>
+  @if (changeNotAllowed) {
+  <p class="document-tags-error" i18n="@@document_tag_change_not_allowed">The tags of this document could not be changed.</p>
+  }
+</div>

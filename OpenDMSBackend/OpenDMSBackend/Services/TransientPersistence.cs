@@ -133,9 +133,16 @@ namespace OpenDMSBackend.Core.Services
             this._Tags[tag.Id] = tag;
         }
 
-        private Tag GetTag(string id)
+        /// <inheritdoc />
+        public Tag GetTag(string tagId)
         {
-            return this._Tags[id];
+            return this._Tags[tagId];
+        }
+
+        /// <inheritdoc />
+        public ISet<string> GetTagIdsOfDocument(string documentId)
+        {
+            return this.GetDocument(documentId).Tags.Select(tag => tag.Id).ToHashSet();
         }
 
         /// <inheritdoc />

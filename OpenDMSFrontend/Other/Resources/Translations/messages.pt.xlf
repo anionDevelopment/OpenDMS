@@ -52,7 +52,7 @@
         <note category="location">src/app/modules/admin-area/users-list/users-list.component.html:3,4</note>
       </notes>
       <segment state="translated">
-        <source>users</source>
+        <source>Users</source>
         <target>usuários</target>
       </segment>
     </unit>
@@ -217,9 +217,56 @@
         <note category="location">src/app/modules/user-area/content-view/content-view.component.html:14,15</note>
       </notes>
       <segment state="translated">
-        <source>
-          <ph id="0" equiv="INTERPOLATION" disp="{{(documents$|async)!.length}}" />document(s)</source>
+        <source>document(s)</source>
         <target />
+      </segment>
+    </unit>
+    <unit id="document_metadata_title">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:2,4</note>
+      </notes>
+      <segment>
+        <source>Metadata</source>
+      </segment>
+    </unit>
+    <unit id="document_metadata_none">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:4,6</note>
+      </notes>
+      <segment>
+        <source>No custom metadata-fields are defined for the storage-location of this document.</source>
+      </segment>
+    </unit>
+    <unit id="document_metadata_boolean_not_set">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:14,15</note>
+      </notes>
+      <segment>
+        <source>Not set</source>
+      </segment>
+    </unit>
+    <unit id="document_metadata_boolean_true">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:15,16</note>
+      </notes>
+      <segment>
+        <source>Yes</source>
+      </segment>
+    </unit>
+    <unit id="document_metadata_boolean_false">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:16,18</note>
+      </notes>
+      <segment>
+        <source>No</source>
+      </segment>
+    </unit>
+    <unit id="document_metadata_change_not_allowed">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:27,30</note>
+      </notes>
+      <segment>
+        <source>The metadata of this document could not be changed.</source>
       </segment>
     </unit>
     <unit id="preview_alt">
@@ -292,6 +339,78 @@
       <segment state="translated">
         <source>Options</source>
         <target>Opções</target>
+      </segment>
+    </unit>
+    <unit id="document_tags_title">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:2,3</note>
+      </notes>
+      <segment>
+        <source>Tags</source>
+      </segment>
+    </unit>
+    <unit id="document_tags_none">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:4,6</note>
+      </notes>
+      <segment>
+        <source>No tags are assigned to this document yet.</source>
+      </segment>
+    </unit>
+    <unit id="document_tag_unassign">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:11</note>
+      </notes>
+      <segment>
+        <source>Remove tag from document</source>
+      </segment>
+    </unit>
+    <unit id="document_tag_existing_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:20,21</note>
+      </notes>
+      <segment>
+        <source>Existing tag</source>
+      </segment>
+    </unit>
+    <unit id="document_tag_assign">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:27,29</note>
+      </notes>
+      <segment>
+        <source>Assign tag</source>
+      </segment>
+    </unit>
+    <unit id="document_tag_new_name_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:31,32</note>
+      </notes>
+      <segment>
+        <source>New tag</source>
+      </segment>
+    </unit>
+    <unit id="document_tag_new_color_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:35,36</note>
+      </notes>
+      <segment>
+        <source>Color</source>
+      </segment>
+    </unit>
+    <unit id="document_tag_create_and_assign">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:44,46</note>
+      </notes>
+      <segment>
+        <source>Create and assign</source>
+      </segment>
+    </unit>
+    <unit id="document_tag_change_not_allowed">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:47,50</note>
+      </notes>
+      <segment>
+        <source>The tags of this document could not be changed.</source>
       </segment>
     </unit>
     <unit id="tab_latest_documents">
@@ -545,8 +664,7 @@
         <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:7,8</note>
       </notes>
       <segment state="translated">
-        <source>Hello<ph id="0" equiv="INTERPOLATION" disp="{{this.userName}}" />
-        </source>
+        <source>Hello</source>
         <target>Olá</target>
       </segment>
     </unit>
@@ -557,6 +675,22 @@
       <segment state="translated">
         <source>Logout</source>
         <target>Sair</target>
+      </segment>
+    </unit>
+    <unit id="user.settings.colorscheme">
+      <notes>
+        <note category="location">src/app/modules/user-area/user-settings/user-settings.component.html:5,6</note>
+      </notes>
+      <segment>
+        <source>Color scheme</source>
+      </segment>
+    </unit>
+    <unit id="user.settings.language">
+      <notes>
+        <note category="location">src/app/modules/user-area/user-settings/user-settings.component.html:9,10</note>
+      </notes>
+      <segment>
+        <source>Language</source>
       </segment>
     </unit>
     <unit id="doc_metadata_heading">
@@ -638,15 +772,6 @@
       <segment state="translated">
         <source>Version-date:</source>
         <target>Data da versão:</target>
-      </segment>
-    </unit>
-    <unit id="doc_metadata_tags_label">
-      <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12,13</note>
-      </notes>
-      <segment state="translated">
-        <source>Tags:</source>
-        <target>Etiquetas:</target>
       </segment>
     </unit>
     <unit id="doc_ai_summary_heading">

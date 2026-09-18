@@ -26,6 +26,14 @@ export class ViewDocumentComponent {
     });
   }
 
+  /**
+   * The tags which are assigned to the shown document. The generated type declares them as a set, but the backend
+   * delivers them as a json-array, so they are converted into the list which the user-interface works with.
+   */
+  get assignedTags(): TagDTO[] {
+    return this.doc?.tags ? Array.from(this.doc.tags) : [];
+  }
+
   aiSummaryIsAvailable(): boolean {
     return !!(this.doc && (this.doc.aiSummaryShort || this.doc.aiSummaryLong));
   }
@@ -46,12 +54,16 @@ export class ViewDocumentComponent {
     });
   }
 
-  formatTags(tags: Set<TagDTO>): string {
-    let set: Set<TagDTO> = tags;
-    if (!set) {
-      set = new Set<TagDTO>();
+  /**
+   * Loads the shown document again. The components which change the tags or the metadata of the document report
+   * their change instead of updating the document themselves, so that this component stays the single place which
+   * holds the state of the document.
+   */
+  reloadDocument(): void {
+    if (!this.doc?.id) {
+      return;
     }
-    return Array.from(set).map(tag => tag.name).join(", ");//TODO refactor to make this list ediable in the ui and consider color of tags
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.doc.id).subscribe(document => this.doc = document);
   }
 
   onDocumentRemoved(): void {

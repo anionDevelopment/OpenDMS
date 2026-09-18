@@ -215,5 +215,131 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
             Assert.IsTrue(threw, "An unsupported metadata-field-type must be rejected with a bad-request-error.");
             businessServiceMock.VerifyNoOtherCalls();
         }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void TestCreateTagPassesTheParsedColor()
+        {
+            // arrange: the color is transferred as a six-digit hexadecimal rgb-value, which the controller has to turn into the color the business-logic works with.
+            Mock<IAuthenticationService> authenticationServiceMock = new Mock<IAuthenticationService>(MockBehavior.Strict);
+            ITimeService timeService = new TimeService();
+            Mock<IBusinessLogicService> businessServiceMock = new Mock<IBusinessLogicService>(MockBehavior.Strict);
+            string userId = "userid";
+            string createdTagId = "createdTagId";
+            GRYLibrary.Core.APIServer.CommonDBTypes.User user = new GRYLibrary.Core.APIServer.CommonDBTypes.User() { Id = userId };
+            ExtendedColor expectedColor = new ExtendedColor(198, 40, 40);
+            TagCreationDTO creation = new TagCreationDTO("Invoice", "C62828");
+
+            authenticationServiceMock.Setup(mock => mock.GetUser(userId)).Returns(user);
+            businessServiceMock.Setup(mock => mock.CreateTag(userId, "Invoice", expectedColor)).Returns(createdTagId);
+            OpenDMSBackend.Core.Controller.OpenDMSBackendController controller = new OpenDMSBackend.Core.Controller.OpenDMSBackendController(businessServiceMock.Object, authenticationServiceMock.Object, timeService);
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim( "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",userId)
+            };
+            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+            // act
+            IActionResult actualResult = controller.CreateTag(creation);
+
+            // assert
+            OkObjectResult okObjectResult = actualResult as OkObjectResult;
+            Assert.IsNotNull(okObjectResult);
+            Assert.AreEqual(createdTagId, (string)okObjectResult.Value);
+            businessServiceMock.Verify(mock => mock.CreateTag(userId, "Invoice", expectedColor), Times.Once());
+            businessServiceMock.VerifyNoOtherCalls();
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void TestCreateTagRejectsInvalidColorCode()
+        {
+            // arrange: a malformed color must be rejected before any change is attempted, so the business-logic-service must never be called.
+            Mock<IAuthenticationService> authenticationServiceMock = new Mock<IAuthenticationService>(MockBehavior.Strict);
+            ITimeService timeService = new TimeService();
+            Mock<IBusinessLogicService> businessServiceMock = new Mock<IBusinessLogicService>(MockBehavior.Strict);
+            string userId = "userid";
+            GRYLibrary.Core.APIServer.CommonDBTypes.User user = new GRYLibrary.Core.APIServer.CommonDBTypes.User() { Id = userId };
+            TagCreationDTO creation = new TagCreationDTO("Invoice", "not-a-color");
+
+            authenticationServiceMock.Setup(mock => mock.GetUser(userId)).Returns(user);
+            OpenDMSBackend.Core.Controller.OpenDMSBackendController controller = new OpenDMSBackend.Core.Controller.OpenDMSBackendController(businessServiceMock.Object, authenticationServiceMock.Object, timeService);
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim( "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",userId)
+            };
+            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+            // act & assert
+            bool threw = false;
+            try
+            {
+                controller.CreateTag(creation);
+            }
+            catch (GRYLibrary.Core.Exceptions.BadRequestException)
+            {
+                threw = true;
+            }
+            Assert.IsTrue(threw, "A color which is not a six-digit hexadecimal rgb-value must be rejected with a bad-request-error.");
+            businessServiceMock.VerifyNoOtherCalls();
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void TestAssignTagDelegatesToTheBusinessLogic()
+        {
+            // arrange
+            Mock<IAuthenticationService> authenticationServiceMock = new Mock<IAuthenticationService>(MockBehavior.Strict);
+            ITimeService timeService = new TimeService();
+            Mock<IBusinessLogicService> businessServiceMock = new Mock<IBusinessLogicService>(MockBehavior.Strict);
+            string userId = "userid";
+            string documentId = "documentId";
+            string tagId = "tagId";
+            GRYLibrary.Core.APIServer.CommonDBTypes.User user = new GRYLibrary.Core.APIServer.CommonDBTypes.User() { Id = userId };
+
+            authenticationServiceMock.Setup(mock => mock.GetUser(userId)).Returns(user);
+            businessServiceMock.Setup(mock => mock.AssignTag(userId, documentId, tagId));
+            OpenDMSBackend.Core.Controller.OpenDMSBackendController controller = new OpenDMSBackend.Core.Controller.OpenDMSBackendController(businessServiceMock.Object, authenticationServiceMock.Object, timeService);
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim( "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",userId)
+            };
+            ClaimsIdentity identity = new ClaimsIdentity(claims, "TestAuth");
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+            // act
+            IActionResult actualResult = controller.AssignTag(documentId, tagId);
+
+            // assert
+            Assert.IsNotNull(actualResult as OkResult);
+            businessServiceMock.Verify(mock => mock.AssignTag(userId, documentId, tagId), Times.Once());
+            businessServiceMock.VerifyNoOtherCalls();
+        }
     }
 }

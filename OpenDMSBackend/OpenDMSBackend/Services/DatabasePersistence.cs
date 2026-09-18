@@ -680,7 +680,13 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void UnassignTag(string documentId, string tagId)
         {
-            throw new NotImplementedException();
+            this.RunTransaction(nameof(UnassignTag), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptUnassignTag();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("DocumentId", documentId));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TagId", tagId));
+                command.ExecuteNonQuery();
+            });
         }
 
         /// <inheritdoc />
@@ -705,6 +711,7 @@ namespace OpenDMSBackend.Core.Services
             });
             return result.ToArray();
         }
+        /// <inheritdoc />
         public Tag GetTag(string id)
         {
             return GUtilities.GetValue(this.RunTransaction(nameof(GetTag), true, (command) =>
@@ -727,6 +734,7 @@ namespace OpenDMSBackend.Core.Services
                   }
               })[0]);
         }
+        /// <inheritdoc />
         public ISet<string> GetTagIdsOfDocument(string documentId)
         {
             HashSet<string> result = new HashSet<string>();

@@ -6,20 +6,20 @@
         <tr>
           <th i18n="@@users_col_name">Name</th>
           @for (role of allRoles; track role) {
-            <th>{{role}}</th>
+          <th>{{role}}</th>
           }
         </tr>
       </thead>
       <tbody>
         @for (user of users; track user) {
-          <tr>
-            <td>{{user.name}}</td>
-            @for (role of allRoles; track role) {
-              <td class="role-cell">
-                <input type="checkbox" [checked]="userHasRole(user, role)" (change)="onRoleToggled(user, role, $any($event.target).checked)">
-              </td>
-            }
-          </tr>
+        <tr>
+          <td>{{user.name}}</td>
+          @for (role of allRoles; track role) {
+          <td class="role-cell">
+            <input type="checkbox" [checked]="userHasRole(user, role)" (change)="onRoleToggled(user, role, $any($event.target).checked)">
+          </td>
+          }
+        </tr>
         }
       </tbody>
     </table>

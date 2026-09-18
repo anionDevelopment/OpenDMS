@@ -29,6 +29,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { EditDocumentMenuComponent } from '../edit-document-menu/edit-document-menu.component';
 import { DocumentPreviewComponent } from '../document-preview/document-preview.component';
+import { DocumentTagsComponent } from '../document-tags/document-tags.component';
+import { DocumentMetadataComponent } from '../document-metadata/document-metadata.component';
+import { StorageService } from '../../../services/storage.service';
 import { UserIconComponent } from '../user-icon/user-icon.component';
 import { TimestampPipe } from '../../../pipes/timestamp.pipe';
 
@@ -66,6 +69,8 @@ describe('ViewDocumentComponent', () => {
         UserIconComponent,
         EditDocumentMenuComponent,
         DocumentPreviewComponent,
+        DocumentTagsComponent,
+        DocumentMetadataComponent,
         UserAreaContainerComponent,
         ViewDocumentComponent,
       ],
@@ -77,6 +82,15 @@ describe('ViewDocumentComponent', () => {
             aPIV3OpenDMSBackendGetDocumentFromReadableIdGet: () => of({
               id: 1,
             }),
+            aPIV3OpenDMSBackendGetAllTagsPut: () => of([]),
+            aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: () => of([]),
+          },
+        },
+        {
+          provide: StorageService,
+          useValue: {
+            getAccessToken: () => 'accesstoken1',
+            hasAccessToken: () => false,
           },
         },
         {

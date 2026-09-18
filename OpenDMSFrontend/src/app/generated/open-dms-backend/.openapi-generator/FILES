@@ -26,6 +26,7 @@ model/oIDCProviderDTO.ts
 model/problemDetails.ts
 model/storageLocationDTO.ts
 model/stringValueDTO.ts
+model/tagCreationDTO.ts
 model/tagDTO.ts
 model/userInformationDTO.ts
 model/userOverviewDTO.ts

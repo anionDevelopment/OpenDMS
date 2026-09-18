@@ -44,7 +44,7 @@ export class OIDCService extends BaseService {
     }
 
     /**
-     * Exchanges the OIDC authorization code for an OpenDMS access token.  Creates a new OpenDMS account for the user on their first login via this provider.
+     * Exchanges the OIDC authorization code for an OpenDMS access token. Creates a new OpenDMS account for the user on their first login via this provider.
      * @param oIDCCallbackRequestDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

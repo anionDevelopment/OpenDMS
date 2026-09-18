@@ -42,6 +42,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSortModule } from '@angular/material/sort';
 import { EditStorageLocationMenuComponent } from './edit-storage-location-menu/edit-storage-location-menu.component';
 import { MetadataFieldsComponent } from './metadata-fields/metadata-fields.component';
+import { DocumentMetadataComponent } from './document-metadata/document-metadata.component';
+import { DocumentTagsComponent } from './document-tags/document-tags.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { MetadataFieldsComponent } from './metadata-fields/metadata-fields.compo
     ContentViewComponent,
     DocumentTableComponent,
     DocumentsListComponent,
+    DocumentMetadataComponent,
     DocumentPreviewComponent,
+    DocumentTagsComponent,
     EditDocumentMenuComponent,
     EditDocumentDialogComponent,
     EditContainerMenuComponent,

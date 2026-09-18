@@ -10,7 +10,7 @@
     "test-Development": "ng test --configuration Development --watch false",
     "test-QualityCheck": "ng test --configuration QualityCheck --watch false",
     "test-Productive": "ng test --configuration Productive --watch false",
-    "start": "ng serve --configuration Development --host 0.0.0.0 --live-reload=false --disable-host-check",
+    "start": "ng serve --configuration Development --host 0.0.0.0 --live-reload=false --allowed-hosts=true",
     "lint": "ng lint",
     "extract-translations": "ng extract-i18n"
   },
@@ -36,7 +36,6 @@
     "zone.js": "0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "22.1.3",
     "@angular-eslint/schematics": "19.0.2",
     "@angular/build": "22.1.3",
     "@angular/cli": "22.1.3",

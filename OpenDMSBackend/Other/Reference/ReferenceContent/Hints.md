@@ -36,12 +36,32 @@ Apart from the transient-mode the supported values for `DatabaseType` are:
 
 To reset all your local backend-configuration-values etc. to a plain state you can simply remove the entire `<repository-root>\OpenDMSBackend\Other\Workspace`-folder.
 
-## Custom metadata-fields
+## Indexing a document: tags and custom metadata-fields
 
-Custom metadata-fields (see issue #2) are defined per storage-location: only a moderator of a storage-location may define a field (name + type `String` or `Boolean`), and every document contained in that storage-location (directly or in one of its folders) can optionally hold a value for each field.
-The value a document holds is a direct per-document-row association (analogous to tags) and is not versioned on its own; a metadata-only new version (for example a title-change) copies the values forward.
+A document is indexed (see issue #14) by two mechanisms which are deliberately kept apart, because they answer two different questions.
+
+### Tags
+
+A tag is a named and colored label which exists on its own and is usable in every storage-location, so it answers "which documents belong together".
+Every authenticated user may create a tag; the name must not be empty and must not be used by another tag yet (compared case-insensitively).
+Assigning a tag to a document and removing the assignment again requires the permission to change that document.
+Assigning a tag which is already assigned, and removing one which is not assigned, are both rejected instead of being silently ignored, so that a caller notices when it works on an outdated state.
+
+### Custom metadata-fields
+
+A custom metadata-field is defined per storage-location, so it answers "which values does this kind of document carry".
+Only a moderator of a storage-location may define a field (name + type `String` or `Boolean`), and every document contained in that storage-location (directly or in one of its folders) can optionally hold a value for each field.
+This covers the fields which issue #14 names as examples, for example the document-type and the contact/sender.
 A boolean-value is validated and stored in its normalized lower-case form (`true`/`false`).
+Holding no value is a different state than holding an empty text: clearing a value removes the association instead of storing an empty string.
 The types `double` and `timestamp` mentioned in issue #2 are not supported yet.
+The retention-date is deliberately not a metadata-field: it is held by `Document.DeleteIsNotAllowedBefore` and `Document.MustBeHardDeletedAfter` (see issue #9), so that there is exactly one place which decides when a document may and must be deleted.
+
+### Common properties of both
+
+The assignment of a tag and the value of a metadata-field are direct per-document-row associations and are not versioned on their own; a metadata-only new version (for example a title-change) copies both forward.
+Every change of a tag-assignment and of a metadata-value writes an audit-log-entry, as every other change-operation does.
+Neither of the two is part of the search yet; searching over them belongs to issue #15.
 
 ## Known defects which require a larger change
 

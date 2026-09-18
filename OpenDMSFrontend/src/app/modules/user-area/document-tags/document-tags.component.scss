@@ -1,0 +1,58 @@
+.document-tags {
+  padding: 0.5rem 0;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .document-tags-empty {
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  .document-tags-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .document-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0 0.25rem 0 0.75rem;
+    border-radius: 1rem;
+  }
+
+  /*
+   * The height is stated explicitly, because the height a form-field takes otherwise depends on the font-metrics
+   * of the browser-engine. That height is a fraction of a pixel, the fractions of the two rows add up, and the
+   * whole page below this component then ends up a pixel or two lower in one engine than in the others.
+   */
+  .document-tags-assign,
+  .document-tags-create {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 3.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .document-tags-error {
+    color: var(--mat-sys-error, #b00020);
+  }
+}
+
+/*
+ * The color-sample of the color-selection is placed outside of ".document-tags", because the options of a
+ * mat-select are rendered in an overlay at the end of the document and therefore not inside this component.
+ */
+.document-tag-color-sample {
+  display: inline-block;
+  width: 5rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+}
