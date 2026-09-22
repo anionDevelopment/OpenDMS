@@ -39,10 +39,10 @@ export class DocumentTagsComponent implements OnInit {
   tagsChanged: EventEmitter<void> = new EventEmitter<void>();
 
   availableTags: TagDTO[] = [];
-  selectedTagId: string = '';
-  newTagName: string = '';
+  selectedTagId = '';
+  newTagName = '';
   newTagColorCode: string = DocumentTagsComponent.selectableColorCodes[0];
-  changeNotAllowed: boolean = false;
+  changeNotAllowed = false;
 
   public constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
   }
@@ -60,7 +60,7 @@ export class DocumentTagsComponent implements OnInit {
    * an already-assigned tag is rejected by the backend.
    */
   get assignableTags(): TagDTO[] {
-    const assignedIds: Set<string> = new Set(this.assignedTags.map(tag => tag.id ?? ''));
+    const assignedIds = new Set<string>(this.assignedTags.map(tag => tag.id ?? ''));
     return this.availableTags.filter(tag => !assignedIds.has(tag.id ?? ''));
   }
 

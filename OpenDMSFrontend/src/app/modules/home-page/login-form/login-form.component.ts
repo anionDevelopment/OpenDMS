@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { OIDCProviderDTO, OIDCService, UserService } from '../../../generated/open-dms-backend';
+import { AccessToken, OIDCProviderDTO, OIDCService, UserService } from '../../../generated/open-dms-backend';
 import { Router } from '@angular/router';
 import { UserDataService } from '../../../services/user-data.service';
 import { StorageService } from '../../../services/storage.service';
@@ -43,7 +43,7 @@ export class LoginFormComponent implements OnInit {
     const password: string = this.form.get('password')!.value;
     this.userService.aPIV3UserControllerLoginPut(username, password)
       .pipe(
-        switchMap((accessToken: any) => {
+        switchMap((accessToken: AccessToken) => {
           this.storageService.setAccessToken(accessToken.value!);
           return this.userDataService.loadUserData();
         })

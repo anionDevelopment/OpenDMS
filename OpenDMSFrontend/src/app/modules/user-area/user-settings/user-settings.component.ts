@@ -25,7 +25,7 @@ export class UserSettingsComponent {
   ];
 
   /** The culture which is currently chosen. The choice is not applied to the application yet. */
-  selectedCulture: string = 'en';
+  selectedCulture = 'en';
 
   cultureSelected(culture: string): void {
     this.selectedCulture = culture;

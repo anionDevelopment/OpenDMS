@@ -7,12 +7,12 @@ import { respondWith } from './SimulatedBackend';
  * result is a plain area of that color and therefore contains no scaling-artefacts which could
  * differ between the browsers.
  */
-const previewImageAsBase64: string = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mOYt+IIAAPyAgtr2afYAAAAAElFTkSuQmCC';
+const previewImageAsBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mOYt+IIAAPyAgtr2afYAAAAAElFTkSuQmCC';
 
 /*
  * The readable id of the document whose page is checked by the visual-regression-tests.
  */
-export const readableIdOfTheDocumentWithAnOwnPage: number = 1002;
+export const readableIdOfTheDocumentWithAnOwnPage = 1002;
 
 /*
  * The documents which the simulated backend returns. All displayed values are fixed because they

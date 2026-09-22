@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UserDataService } from '../../../services/user-data.service';
 import { UserService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';

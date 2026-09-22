@@ -13,11 +13,11 @@ import type { Mock } from 'vitest';
 
 //typed loosely on purpose: OpenDMSBackendService's generated methods are overloaded (body/response/events),
 //and constraining the mock to the full interface makes TypeScript pick the wrong ('events') overload.
-type OpenDMSBackendServiceMock = {
+interface OpenDMSBackendServiceMock {
   aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: Mock;
   aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost: Mock;
   aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete: Mock;
-};
+}
 
 const senderField: MetadataFieldDefinitionDTO = { id: 'field-sender', storageLocationId: 'sl1', name: 'sender', type: 'String' };
 const taxRelevantField: MetadataFieldDefinitionDTO = { id: 'field-tax', storageLocationId: 'sl1', name: 'tax-relevant', type: 'Boolean' };

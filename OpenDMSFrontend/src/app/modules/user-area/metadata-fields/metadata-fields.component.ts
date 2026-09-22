@@ -20,12 +20,12 @@ export class MetadataFieldsComponent implements OnInit {
   storageLocationId: string | null | undefined = null;
 
   @Input()
-  userIsModerator: boolean = true;//TODO set initial value to false and set only to true when the user is a moderator of the storage-location
+  userIsModerator = true;//TODO set initial value to false and set only to true when the user is a moderator of the storage-location
 
   fields: MetadataFieldDefinitionDTO[] = [];
-  newFieldName: string = '';
-  newFieldType: string = 'String';
-  changeNotAllowed: boolean = false;
+  newFieldName = '';
+  newFieldType = 'String';
+  changeNotAllowed = false;
 
   public constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
   }

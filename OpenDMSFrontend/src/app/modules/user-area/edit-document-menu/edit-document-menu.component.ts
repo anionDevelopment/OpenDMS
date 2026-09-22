@@ -34,7 +34,7 @@ export class EditDocumentMenuComponent {
       if (userConfirmedAction) {
         this.openDMSBackendService.aPIV3OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.documentPreview!.id!, this.storageService.getAccessToken())
           .subscribe(() => {
-            this.documentRemoved.emit(this.documentPreview?.id!);
+            this.documentRemoved.emit(this.documentPreview!.id!);
           });
       }
     });
@@ -55,7 +55,7 @@ export class EditDocumentMenuComponent {
       //the result is undefined when the dialog was closed without using one of its buttons (for example by pressing escape or by clicking the backdrop).
       if (result?.save) {
         const newTitle: string = result.data.documentTitle;
-        return this.openDMSBackendService.aPIV3OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.documentPreview?.id!, this.storageService.getAccessToken(), { value: newTitle }).pipe(switchMap(() => of(newTitle)));
+        return this.openDMSBackendService.aPIV3OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.documentPreview!.id!, this.storageService.getAccessToken(), { value: newTitle }).pipe(switchMap(() => of(newTitle)));
       } else {
         return of(this.documentPreview?.title);
       }
@@ -67,7 +67,7 @@ export class EditDocumentMenuComponent {
   viewDocument() {
     this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.documentPreview!.id!)
       .subscribe(documentDTO => {
-        var fileURL = window.URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
+        const fileURL = window.URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
         const tab = window.open()!;
         tab.location.href = fileURL;
       });

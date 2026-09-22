@@ -10,7 +10,7 @@ import { StorageService } from '../../../services/storage.service';
   styleUrl: './admin-settings.component.scss'
 })
 export class AdminSettingsComponent {
-  autoGenerateAISummary: boolean = false;
+  autoGenerateAISummary = false;
 
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
     this.openDMSBackendService.aPIV3OpenDMSBackendGetGeneralSettingsGet(this.storageService.getAccessToken()).subscribe(settings => {

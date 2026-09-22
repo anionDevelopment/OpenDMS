@@ -12,7 +12,6 @@ using System.Net.Http;
 namespace OpenDMSBackend.Tests.Testcases.Controller
 {
     [TestClass]
-    [Ignore("ignored because otherwise the testcoverage remains 0% for unknown reasons.")]
     public class MaintenanceControllerTests
     {
         [TestMethod]

@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 export class EditStorageLocationMenuComponent {
 
   @Input()
-  userIsAllowedToAddStorageLocation: boolean = true;//TODO set initial value to false and set only to true when user has permission to do that
+  userIsAllowedToAddStorageLocation = true;//TODO set initial value to false and set only to true when user has permission to do that
 
 
   @Output()

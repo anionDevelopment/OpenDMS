@@ -24,7 +24,7 @@ export class ContentTreeComponent implements OnInit {
   }
 
   onContainerRemoved(containerId: string) {
-    var storageLocations = this.storageLocations.filter(storageLocation => storageLocation.id != containerId);
+    const storageLocations = this.storageLocations.filter(storageLocation => storageLocation.id != containerId);
     this.storageLocations = [...storageLocations];
   }
 
@@ -33,7 +33,7 @@ export class ContentTreeComponent implements OnInit {
   }
 
   onStorageLocationAdded(storageLocation: StorageLocationDTO) {
-    var storageLocations = this.storageLocations
+    const storageLocations = this.storageLocations
     storageLocations.push(storageLocation);
     this.storageLocations = [...storageLocations];
   }

@@ -26,10 +26,7 @@
 </mat-accordion>
 <app-edit-container-menu [containerId]="containerId!" [containerTitle]="title" (documentAdded)="onDocumentAdded($event)" (folderAdded)="onFolderAdded($event)" (containerRemoved)="onRemoved()" (containerTitleChanged)="onContainerTitleChanged($event)"></app-edit-container-menu>
 <!--custom metadata-fields are defined per storage-location, so the panel is only shown for a storage-location (not for a nested folder).-->
-@if (!isFolder
-&
-&
-containerId) {
+@if (!isFolder && containerId) {
 <app-metadata-fields [storageLocationId]="containerId"></app-metadata-fields>
 }
 <!--TODO set userIsAllowedToAddDocument and userIsAllowedToAddFolder-->

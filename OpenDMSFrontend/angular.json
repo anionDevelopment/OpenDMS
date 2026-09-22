@@ -221,12 +221,8 @@
           "options": {
             "lintFilePatterns": [
               "src/*.ts",
-              "src/modules/**/*.ts",
-              "src/guards/**/*.ts",
-              "src/interceptors/**/*.ts",
-              "src/modules/**/*.ts",
-              "src/services/**/*.ts",
-              "src/static/**/*.ts"
+              "src/app/**/*.ts",
+              "e2e/**/*.ts"
             ]
           }
         }

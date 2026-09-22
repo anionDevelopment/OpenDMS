@@ -9,7 +9,6 @@ export class StorageService {
   public static readonly keyUserName: string = 'userName';
   public static readonly keyUserId: string = 'userId';
   public static readonly keyUserIsAdmin: string = 'userIsAdmin';
-  constructor() { }
 
   public setAccessToken(value: string | null): void {
     if (value) {

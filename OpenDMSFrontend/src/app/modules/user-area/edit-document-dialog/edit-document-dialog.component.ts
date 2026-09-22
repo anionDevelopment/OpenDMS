@@ -1,4 +1,4 @@
-import { Component, Inject, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { DocumentDTO } from '../../../generated/open-dms-backend';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 

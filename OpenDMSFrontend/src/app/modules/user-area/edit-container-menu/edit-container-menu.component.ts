@@ -20,10 +20,10 @@ export class EditContainerMenuComponent {
   containerTitle: string | null | undefined = null;
 
   @Input()
-  userIsAllowedToAddDocument: boolean = true;//TODO set initial value to false and set only to true when user has permission to do that
+  userIsAllowedToAddDocument = true;//TODO set initial value to false and set only to true when user has permission to do that
 
   @Input()
-  userIsAllowedToAddFolder: boolean = true;//TODO set initial value to false and set only to true when user has permission to do that
+  userIsAllowedToAddFolder = true;//TODO set initial value to false and set only to true when user has permission to do that
 
   @Output()
   folderAdded: EventEmitter<FolderDTO> = new EventEmitter<FolderDTO>();
@@ -41,10 +41,11 @@ export class EditContainerMenuComponent {
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
   }
 
-  addDocument(event: any): void {
-    const blob: File = event.target.files[0];
+  addDocument(event: Event): void {
+    //the event comes from a file-input, so its target carries the chosen files.
+    const blob: File = (event.target as HTMLInputElement).files![0];
     const reader = new FileReader()
-    reader.onload = (e) => {
+    reader.onload = () => {
       const blobAsBaseString = (reader.result! as string).split(',')[1];
       this.openDMSBackendService.aPIV3OpenDMSBackendAddDocumentContainerIdPost(this.containerId!, this.storageService.getAccessToken(), blob.name, blob.name, [], '"' + blobAsBaseString + '"').subscribe((newDocumentId) => {
         this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentPreviewGet(this.storageService.getAccessToken(), newDocumentId).subscribe(newDocument => {

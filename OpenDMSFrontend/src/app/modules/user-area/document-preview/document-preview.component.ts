@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { DocumentDTO, DocumentPreviewDTO } from '../../../generated/open-dms-backend';
+import { DocumentPreviewDTO } from '../../../generated/open-dms-backend';
 
 @Component({
   selector: 'app-document-preview',
@@ -15,8 +15,6 @@ export class DocumentPreviewComponent implements OnInit {
 
   image: string | null = null;
 
-  constructor() {
-  }
 
   ngOnInit(): void {
     if (this.documentPreview) {

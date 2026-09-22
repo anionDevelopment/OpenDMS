@@ -3,11 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DocumentsListComponent } from './documents-list.component';
 import { HomePageModule } from '../../home-page/home-page.module';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { StorageService } from '../../../services/storage.service';
 import { OpenDMSBackendService, UserService } from '../../../generated/open-dms-backend';
 import { of } from 'rxjs';
-import { UserAreaContainerComponent } from '../user-area-container/user-area-container.component';
 import { UserDataService } from '../../../services/user-data.service';
 import { Router } from '@angular/router';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
@@ -40,7 +38,7 @@ import { EditStorageLocationMenuComponent } from '../edit-storage-location-menu/
   changeDetection: ChangeDetectionStrategy.Eager,
   template: '<ng-content></ng-content>'
 })
-class UserAreaContainerComponentMock { }
+class MockUserAreaContainerComponent { }
 
 describe('DocumentsListComponent', () => {
   let component: DocumentsListComponent;
@@ -75,7 +73,7 @@ describe('DocumentsListComponent', () => {
         ContentTreeComponent,
         DocumentTableComponent,
         EditStorageLocationMenuComponent,
-        UserAreaContainerComponentMock,
+        MockUserAreaContainerComponent,
         DocumentsListComponent,
         SearchComponent,
       ],

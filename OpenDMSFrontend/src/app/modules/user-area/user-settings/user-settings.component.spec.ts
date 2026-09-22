@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
-import { UserAreaContainerComponent } from '../user-area-container/user-area-container.component';
 import { UserService } from '../../../generated/open-dms-backend';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
@@ -25,7 +24,7 @@ import { NgxCultureSelectorComponent } from '@aniondev/ngx-culture-selector';
   changeDetection: ChangeDetectionStrategy.Eager,
   template: '<ng-content></ng-content>'
 })
-class UserAreaContainerComponentMock { }
+class MockUserAreaContainerComponent { }
 
 describe('UserSettingsComponent', () => {
   let component: UserSettingsComponent;
@@ -48,7 +47,7 @@ describe('UserSettingsComponent', () => {
       ],
       declarations: [
         UserIconComponent,
-        UserAreaContainerComponentMock,
+        MockUserAreaContainerComponent,
         UserSettingsComponent,
       ],
       providers: [
@@ -62,7 +61,7 @@ describe('UserSettingsComponent', () => {
         {
           provide: UserService,
           useValue: {
-            aPIV3UserControllerGetUserInformationGet: (token: string) => of({
+            aPIV3UserControllerGetUserInformationGet: () => of({
               id: "id1",
               name: "admin",
               isAdmin: true,

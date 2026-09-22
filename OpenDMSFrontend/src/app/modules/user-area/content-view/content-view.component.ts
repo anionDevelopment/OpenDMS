@@ -1,9 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { DocumentDTO, DocumentPreviewDTO, FolderDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { UtilitiesService } from '../../../services/utilities.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Component({
@@ -22,10 +19,10 @@ export class ContentViewComponent implements OnInit {//shows the content of a co
   containerId: string | null | undefined = null;
 
   @Input()
-  userIsAllowedToAddDocuments: boolean = false;
+  userIsAllowedToAddDocuments = false;
 
   @Input()
-  isFolder: boolean = false;
+  isFolder = false;
 
   @Input()
   documentIds: string[] | null | undefined = []

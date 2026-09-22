@@ -12,7 +12,7 @@ import { StorageService } from '../../../services/storage.service';
 })
 export class SearchComponent {
   documents$: BehaviorSubject<DocumentPreviewDTO[]> = new BehaviorSubject<DocumentPreviewDTO[]>([]);
-  searchText: string = "";
+  searchText = "";
 
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
   }

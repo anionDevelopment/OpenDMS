@@ -16,7 +16,7 @@ export class DocumentsListComponent {
 
   constructor(storageService: StorageService, openDMSBackendService: OpenDMSBackendService) {
     openDMSBackendService.aPIV3OpenDMSBackendGetLatestDocumentsGet(storageService.getAccessToken()).subscribe(documents => {
-      var sortedDocuments = documents.sort((a, b) => {
+      const sortedDocuments = documents.sort((a, b) => {
         const aD: Date = this.getNewestDate(a);
         const bD: Date = this.getNewestDate(b);
         if (aD < bD) {
@@ -44,7 +44,7 @@ export class DocumentsListComponent {
     return result;
   }
   private removeDocument(documentId: string) {
-    var latestDocuments = this.latestDocuments$.value.filter(document => document.id! != documentId);
+    const latestDocuments = this.latestDocuments$.value.filter(document => document.id! != documentId);
     this.latestDocuments$.next([...latestDocuments]);
   }
   onDocumentRemoved(documentId: string): void {

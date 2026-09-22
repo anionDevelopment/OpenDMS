@@ -6,9 +6,9 @@ import { respondWith } from './SimulatedBackend';
  * the testcases use the application from the outside and therefore must not import its sourcecode.
  * (See StorageService.keyAccessToken.)
  */
-const storageKeyOfTheAccessToken: string = 'accessToken';
+const storageKeyOfTheAccessToken = 'accessToken';
 
-const accessTokenOfTheSimulatedUser: string = 'access-token-of-the-visual-regression-tests';
+const accessTokenOfTheSimulatedUser = 'access-token-of-the-visual-regression-tests';
 
 /*
  * The user-information which the simulated backend returns. The values are fixed because they are

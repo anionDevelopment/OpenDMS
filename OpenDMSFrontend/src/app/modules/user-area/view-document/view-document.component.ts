@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class ViewDocumentComponent {
   doc: DocumentDTO | null = null;
   documentPreview: DocumentPreviewDTO | null = null;
-  aiSummaryIsGenerating: boolean = false;
+  aiSummaryIsGenerating = false;
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, route: ActivatedRoute, private router: Router) {
     route.params.subscribe(params => {
       const readableId = params['readableId'];

@@ -39,13 +39,13 @@ export class DocumentMetadataComponent implements OnChanges {
   documentId: string | null | undefined = null;
 
   @Input()
-  metadataValues: { [fieldDefinitionId: string]: string } | null | undefined = null;
+  metadataValues: Record<string, string> | null | undefined = null;
 
   @Output()
   metadataChanged: EventEmitter<void> = new EventEmitter<void>();
 
   entries: DocumentMetadataEntry[] = [];
-  changeNotAllowed: boolean = false;
+  changeNotAllowed = false;
 
   public constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
   }
@@ -89,7 +89,7 @@ export class DocumentMetadataComponent implements OnChanges {
   }
 
   private toEntries(fields: MetadataFieldDefinitionDTO[]): DocumentMetadataEntry[] {
-    const values: { [fieldDefinitionId: string]: string } = this.metadataValues ?? {};
+    const values: Record<string, string> = this.metadataValues ?? {};
     return fields
       .slice()
       .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))

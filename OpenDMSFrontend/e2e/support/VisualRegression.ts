@@ -38,7 +38,7 @@ export async function expectPageToLookLikeBaseline(page: Page, route: string, ba
  * Only this font is checked and not for example the icon-font, because a font which a page does not use is
  * not loaded at all and would therefore never be reported as available.
  */
-const requiredFont: string = '16px Roboto';
+const requiredFont = '16px Roboto';
 
 /*
  * Navigates to the given route and waits until the page is rendered completely.

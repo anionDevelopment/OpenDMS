@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StorageService } from './storage.service';
-import { Observable, first, map, mergeMap, of, switchMap, tap } from 'rxjs';
+import { Observable, first, map, of, switchMap, tap } from 'rxjs';
 import { UserInformationDTO, UserService } from '../generated/open-dms-backend';
 import { ThemeService } from './theme.service';
 
@@ -8,7 +8,7 @@ import { ThemeService } from './theme.service';
   providedIn: 'root'
 })
 export class UserDataService {
-  private loaded: boolean = false;
+  private loaded = false;
 
   constructor(private userService: UserService, private storageService: StorageService, private themeService: ThemeService) {
   }

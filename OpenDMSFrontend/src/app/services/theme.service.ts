@@ -22,7 +22,7 @@ export class ThemeService {
   private modeOfBackend: ThemeMode | null = null;
 
   /** Whether the mode of the user was loaded already. Before that nothing is sent to the backend. */
-  private modeOfBackendWasLoaded: boolean = false;
+  private modeOfBackendWasLoaded = false;
 
   public constructor() {
     effect(() => {
