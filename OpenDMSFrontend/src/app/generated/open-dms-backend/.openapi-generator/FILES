@@ -24,10 +24,12 @@ model/oIDCCallbackRequestDTO.ts
 model/oIDCInitiationDTO.ts
 model/oIDCProviderDTO.ts
 model/problemDetails.ts
+model/retentionDatesDTO.ts
 model/storageLocationDTO.ts
 model/stringValueDTO.ts
 model/tagCreationDTO.ts
 model/tagDTO.ts
+model/tagUpdateDTO.ts
 model/userInformationDTO.ts
 model/userOverviewDTO.ts
 param.ts

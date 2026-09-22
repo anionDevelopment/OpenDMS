@@ -1,0 +1,27 @@
+.document-retention {
+  padding: 0.5rem 0;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .document-retention-description {
+    margin: 0 0 0.5rem 0;
+    opacity: 0.7;
+  }
+
+  /*
+   * The height is stated explicitly, because the height a form-field takes otherwise depends on the font-metrics
+   * of the browser-engine, which moves everything below this component by a fraction of a pixel per engine.
+   */
+  .document-retention-dates {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 3.5rem;
+  }
+
+  .document-retention-error {
+    color: var(--mat-sys-error, #b00020);
+  }
+}

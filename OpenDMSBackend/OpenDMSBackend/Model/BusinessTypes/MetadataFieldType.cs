@@ -6,6 +6,10 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         /// <summary>A free-text (string) value.</summary>
         String,
         /// <summary>A boolean value (for example "tax-relevant" yes/no).</summary>
-        Boolean
+        Boolean,
+        /// <summary>A floating-point number (for example an amount).</summary>
+        Double,
+        /// <summary>A point in time (for example a deadline).</summary>
+        Timestamp
     }
 }

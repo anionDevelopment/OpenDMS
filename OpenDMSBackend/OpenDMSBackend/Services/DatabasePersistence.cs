@@ -661,6 +661,39 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", tag.Id));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", tag.Name));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Color", tag.Color.ColorCode));
+                //the type is stated explicitly, because a global tag has no owner and the value is therefore null.
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("OwnerUserId", tag.OwnerUserId, typeof(string)));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void UpdateTag(Tag tag)
+        {
+            this.RunTransaction(nameof(UpdateTag), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptUpdateTag();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", tag.Id));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", tag.Name));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Color", tag.Color.ColorCode));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void DeleteTag(string tagId)
+        {
+            this.RunTransaction(nameof(DeleteTag), true, (command) =>
+            {
+                //remove the tag from every document it is assigned to first ...
+                command.CommandText = this._SQLProvider.GetScriptUnassignTagFromAllDocuments();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("TagId", tagId));
+                command.ExecuteNonQuery();
+            }, (command) =>
+            {
+                //... then remove the tag itself.
+                command.CommandText = this._SQLProvider.GetScriptDeleteTag();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", tagId));
                 command.ExecuteNonQuery();
             });
         }
@@ -690,9 +723,9 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public TagDTO[] GetAllTags()
+        public IEnumerable<Tag> GetAllTags()
         {
-            HashSet<TagDTO> result = new HashSet<TagDTO>();
+            HashSet<Tag> result = new HashSet<Tag>();
             this.RunTransaction(nameof(GetAllTags), true, (command) =>
             {
                 command.CommandText = this._SQLProvider.GetScriptGetAllTags();
@@ -700,16 +733,11 @@ namespace OpenDMSBackend.Core.Services
                 {
                     while (reader.Read())
                     {
-                        Tag tag = new Tag(
-                            reader.GetString(0),
-                            reader.GetString(1),
-                            new ExtendedColor(reader.GetInt32(2))
-                        );
-                        result.Add(tag.ToDTO());
+                        result.Add(ReadTag(reader));
                     }
                 }
             });
-            return result.ToArray();
+            return result;
         }
         /// <inheritdoc />
         public Tag GetTag(string id)
@@ -722,17 +750,24 @@ namespace OpenDMSBackend.Core.Services
                   if (reader.HasRows)
                   {
                       reader.Read();
-                      return new Tag(
-                        reader.GetString(0),
-                        reader.GetString(1),
-                        new ExtendedColor(reader.GetInt32(2))
-                      );
+                      return ReadTag(reader);
                   }
                   else
                   {
                       throw new KeyNotFoundException($"No tag found with id '{id}'.");
                   }
               })[0]);
+        }
+
+        /// <summary>Reads a tag from the current row of the given reader, which must select the columns id, name, color and owner-user-id in this order.</summary>
+        private static Tag ReadTag(DbDataReader reader)
+        {
+            return new Tag(
+                reader.GetString(0),
+                reader.GetString(1),
+                new ExtendedColor(reader.GetInt32(2)),
+                reader.IsDBNull(3) ? null : reader.GetString(3)
+            );
         }
         /// <inheritdoc />
         public ISet<string> GetTagIdsOfDocument(string documentId)
@@ -1467,12 +1502,6 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public bool DeleteIsAllowed(string documentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
         public void SoftDelete(string documentId)
         {
             this.RunTransaction(nameof(SoftDelete), true, (command) =>
@@ -1759,6 +1788,18 @@ namespace OpenDMSBackend.Core.Services
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("StorageLocationId", definition.StorageLocationId));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", definition.Name));
                 command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Type", definition.Type.ToString()));
+                command.ExecuteNonQuery();
+            });
+        }
+
+        /// <inheritdoc />
+        public void UpdateMetadataFieldDefinition(MetadataFieldDefinition definition)
+        {
+            this.RunTransaction(nameof(UpdateMetadataFieldDefinition), true, (command) =>
+            {
+                command.CommandText = this._SQLProvider.GetScriptUpdateMetadataFieldDefinition();
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Id", definition.Id));
+                command.Parameters.Add(this._Database.GetGenericDatabaseInteractor().GetParameter("Name", definition.Name));
                 command.ExecuteNonQuery();
             });
         }

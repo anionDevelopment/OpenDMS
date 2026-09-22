@@ -11,7 +11,7 @@ import { StorageService } from '../../../services/storage.service';
  */
 export interface DocumentMetadataEntry {
   definition: MetadataFieldDefinitionDTO;
-  /** The value of the document as it is currently shown in the user-interface. An empty string means that the document holds no value for this field. */
+  /** The value of the document as it is currently shown in the user-interface. An empty string means that the document holds no value for this field. A timestamp is held in the format of the date-and-time-input and not in the format the backend stores it in. */
   value: string;
 }
 
@@ -69,6 +69,14 @@ export class DocumentMetadataComponent implements OnChanges {
     return entry.definition.type === 'Boolean';
   }
 
+  fieldIsNumber(entry: DocumentMetadataEntry): boolean {
+    return entry.definition.type === 'Double';
+  }
+
+  fieldIsTimestamp(entry: DocumentMetadataEntry): boolean {
+    return entry.definition.type === 'Timestamp';
+  }
+
   /**
    * Stores the value which is currently shown for the given field. An empty value means that the document holds no
    * value for the field, which is a different state than holding an empty text and is therefore cleared instead of
@@ -79,9 +87,10 @@ export class DocumentMetadataComponent implements OnChanges {
     if (!this.documentId || !entry.definition.id) {
       return;
     }
-    const request = entry.value.length === 0
+    const valueForBackend: string = this.fieldIsTimestamp(entry) ? DocumentMetadataComponent.toBackendTimestamp(entry.value) : entry.value;
+    const request = valueForBackend.length === 0
       ? this.openDMSBackendService.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete(this.documentId, entry.definition.id, this.storageService.getAccessToken())
-      : this.openDMSBackendService.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost(this.documentId, entry.definition.id, this.storageService.getAccessToken(), { value: entry.value });
+      : this.openDMSBackendService.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost(this.documentId, entry.definition.id, this.storageService.getAccessToken(), { value: valueForBackend });
     request.subscribe({
       next: () => this.metadataChanged.emit(),
       error: () => this.changeNotAllowed = true
@@ -93,6 +102,34 @@ export class DocumentMetadataComponent implements OnChanges {
     return fields
       .slice()
       .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
-      .map(definition => ({ definition: definition, value: values[definition.id ?? ''] ?? '' }));
+      .map(definition => ({ definition: definition, value: DocumentMetadataComponent.toShownValue(definition, values[definition.id ?? ''] ?? '') }));
+  }
+
+  /**
+   * The value as the user-interface shows it. A timestamp is stored by the backend in the iso-8601-format, but the
+   * date-and-time-input requires the local time in the format "yyyy-MM-ddTHH:mm" without a time-zone.
+   */
+  private static toShownValue(definition: MetadataFieldDefinitionDTO, storedValue: string): string {
+    if (definition.type !== 'Timestamp' || storedValue.length === 0) {
+      return storedValue;
+    }
+    const timestamp: Date = new Date(storedValue);
+    if (isNaN(timestamp.getTime())) {
+      return '';
+    }
+    const twoDigits: (value: number) => string = value => value.toString().padStart(2, '0');
+    return `${timestamp.getFullYear()}-${twoDigits(timestamp.getMonth() + 1)}-${twoDigits(timestamp.getDate())}T${twoDigits(timestamp.getHours())}:${twoDigits(timestamp.getMinutes())}`;
+  }
+
+  /** The value of a date-and-time-input as the iso-8601-timestamp which the backend expects. */
+  private static toBackendTimestamp(shownValue: string): string {
+    if (shownValue.length === 0) {
+      return '';
+    }
+    const timestamp: Date = new Date(shownValue);
+    if (isNaN(timestamp.getTime())) {
+      return '';
+    }
+    return timestamp.toISOString();
   }
 }

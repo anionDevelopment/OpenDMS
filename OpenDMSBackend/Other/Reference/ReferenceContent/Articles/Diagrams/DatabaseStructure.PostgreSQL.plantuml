@@ -118,6 +118,7 @@ entity "Tags" {
   --
   Color : integer <<NOT NULL>>
   Name : character varying <<NOT NULL>>
+  OwnerUserId : character varying
 }
 
 entity "User_Roles" {

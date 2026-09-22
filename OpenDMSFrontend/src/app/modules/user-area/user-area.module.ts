@@ -44,6 +44,8 @@ import { EditStorageLocationMenuComponent } from './edit-storage-location-menu/e
 import { MetadataFieldsComponent } from './metadata-fields/metadata-fields.component';
 import { DocumentMetadataComponent } from './document-metadata/document-metadata.component';
 import { DocumentTagsComponent } from './document-tags/document-tags.component';
+import { DocumentRetentionComponent } from './document-retention/document-retention.component';
+import { TagManagementComponent } from './tag-management/tag-management.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +57,7 @@ import { DocumentTagsComponent } from './document-tags/document-tags.component';
     DocumentsListComponent,
     DocumentMetadataComponent,
     DocumentPreviewComponent,
+    DocumentRetentionComponent,
     DocumentTagsComponent,
     EditDocumentMenuComponent,
     EditDocumentDialogComponent,
@@ -68,7 +71,12 @@ import { DocumentTagsComponent } from './document-tags/document-tags.component';
     UserDashboardComponent,
     UserSettingsComponent,
     SearchComponent,
+    TagManagementComponent,
     ViewDocumentComponent,
+  ],
+  exports: [
+    //the admin-area uses the tag-management to manage the global tags.
+    TagManagementComponent,
   ],
   imports: [
     CommonModule,

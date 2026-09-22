@@ -45,9 +45,17 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="tagId">The id of the tag to unassign.</param>
         public void UnassignTag(string documentId, string tagId);
 
-        /// <summary>Returns all tags currently stored.</summary>
-        /// <returns>An array of <see cref="TagDTO"/> representing every stored tag.</returns>
-        public TagDTO[] GetAllTags();
+        /// <summary>Stores the changed name and color of an existing tag.</summary>
+        /// <param name="tag">The tag with its new values.</param>
+        public void UpdateTag(Tag tag);
+
+        /// <summary>Deletes the tag with the given id together with all of its assignments to documents.</summary>
+        /// <param name="tagId">The id of the tag to delete.</param>
+        public void DeleteTag(string tagId);
+
+        /// <summary>Returns all tags currently stored, independently of the user they belong to.</summary>
+        /// <returns>Every stored tag.</returns>
+        public IEnumerable<Tag> GetAllTags();
 
         /// <summary>Returns the tag with the specified id.</summary>
         /// <param name="tagId">The id of the tag to retrieve.</param>
@@ -131,11 +139,6 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="containee">The containee whose parent should be set.</param>
         /// <param name="parentContainerId">The id of the new parent container.</param>
         public void SetParentOfContainee(IContainee containee, string parentContainerId);
-
-        /// <summary>Returns whether deletion of the specified document is currently permitted.</summary>
-        /// <param name="documentId">The id of the document to check.</param>
-        /// <returns><see langword="true"/> if deletion is allowed; otherwise <see langword="false"/>.</returns>
-        public bool DeleteIsAllowed(string documentId);
 
         /// <summary>Marks the specified document as soft-deleted without removing it from the store.</summary>
         /// <param name="documentId">The id of the document to soft-delete.</param>
@@ -302,6 +305,10 @@ namespace OpenDMSBackend.Core.Services
         /// <summary>Persists a new storage-location-specific custom metadata-field-definition.</summary>
         /// <param name="definition">The field-definition to create.</param>
         public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition);
+
+        /// <summary>Stores the changed name of an existing metadata-field-definition.</summary>
+        /// <param name="definition">The field-definition with its new name.</param>
+        public void UpdateMetadataFieldDefinition(MetadataFieldDefinition definition);
 
         /// <summary>Deletes the metadata-field-definition with the given id together with all document-values stored for it.</summary>
         /// <param name="fieldDefinitionId">The id of the field-definition to delete.</param>

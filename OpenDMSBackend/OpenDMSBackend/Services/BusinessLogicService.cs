@@ -18,6 +18,7 @@ using SimpleOCR.Library.Core.Visitors;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -743,6 +744,8 @@ namespace OpenDMSBackend.Core.Services
             {
                 this.EnsureUserIsAllowedToEditContent(requesterUserId, containerOrContaineeId);
             }
+            //the retention-period is a legal requirement, so it is enforced for every caller, also for the automatic housekeeping. The check is done outside of the try-block on purpose so that the caller learns that the document was kept instead of the error being swallowed by the error-logging.
+            this.EnsureRetentionPeriodAllowsHardDeletion(containerOrContaineeId);
             try
             {
                 //remove from parent container. A hard-deleted document keeps its place in the containment-tree (its row is kept for traceability and it is only hidden from the listings), so only containers (folders/storage-locations) are unlinked from their parent.
@@ -762,6 +765,46 @@ namespace OpenDMSBackend.Core.Services
             {
                 this._Logger.Log($"Hard-deletion of '{containerOrContaineeId}' failed. Reason of the deletion-attempt: {reason}", exception);
             }
+        }
+
+        /// <summary>
+        /// Ensures that no document which would be removed by hard-deleting the given content is still within its retention-period.
+        /// A soft-deletion is not affected by this, because it only marks the document and keeps its content.
+        /// </summary>
+        private void EnsureRetentionPeriodAllowsHardDeletion(string containerOrContaineeId)
+        {
+            DateTimeOffset now = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset();
+            foreach (string documentId in this.GetContainedDocumentIds(containerOrContaineeId))
+            {
+                DateTimeOffset? deleteIsNotAllowedBefore = this._Persistence.GetDocumentPreview(documentId).DeleteIsNotAllowedBefore;
+                if (deleteIsNotAllowedBefore.HasValue && now < deleteIsNotAllowedBefore.Value)
+                {
+                    throw new BadRequestException($"Document '{documentId}' must not be hard-deleted before '{deleteIsNotAllowedBefore.Value.ToString("o", CultureInfo.InvariantCulture)}' because of its retention-period.");
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetRetentionDates(string requesterUserId, string documentId, DateTimeOffset? deleteIsNotAllowedBefore, DateTimeOffset? mustBeHardDeletedAfter)
+        {
+            this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
+            if (deleteIsNotAllowedBefore.HasValue && mustBeHardDeletedAfter.HasValue && mustBeHardDeletedAfter.Value < deleteIsNotAllowedBefore.Value)
+            {
+                throw new BadRequestException("The point in time before which the document must not be deleted must not be after the point in time after which it must be deleted.");
+            }
+            lock (_LockObject)
+            {
+                Document document = this._Persistence.GetDocument(documentId);
+                document.DeleteIsNotAllowedBefore = deleteIsNotAllowedBefore;
+                document.MustBeHardDeletedAfter = mustBeHardDeletedAfter;
+                this._Persistence.Update(requesterUserId, document);
+                this._AuditLog.Logger.Log($"Retention-dates of document '{documentId}' set to '{FormatRetentionDate(deleteIsNotAllowedBefore)}' (deletion not allowed before) and '{FormatRetentionDate(mustBeHardDeletedAfter)}' (must be hard-deleted after) by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+            }
+        }
+
+        private static string FormatRetentionDate(DateTimeOffset? retentionDate)
+        {
+            return retentionDate.HasValue ? retentionDate.Value.ToString("o", CultureInfo.InvariantCulture) : "none";
         }
 
         /// <inheritdoc />
@@ -797,9 +840,75 @@ namespace OpenDMSBackend.Core.Services
             //moving requires the permission to change both the moved containee (its current location) and the target-container it is moved into.
             this.EnsureUserIsAllowedToEditContent(requesterUserId, containeeIdToMove);
             this.EnsureUserIsAllowedToEditContent(requesterUserId, targetContainerId);
+            string previousStorageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(containeeIdToMove);
             //TODO remove containeeToMove from previous parent
             this._Persistence.SetParentOfContainee(this.GetContainee(containeeIdToMove), targetContainerId);
+            string newStorageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(containeeIdToMove);
+            if (previousStorageLocationId != newStorageLocationId)
+            {
+                //a metadata-field belongs to a single storage-location, so the values of every moved document have to follow into the fields of the new storage-location.
+                foreach (string documentId in this.GetContainedDocumentIds(containeeIdToMove))
+                {
+                    this.MigrateMetadataValuesToStorageLocation(requesterUserId, documentId, previousStorageLocationId, newStorageLocationId);
+                }
+            }
             this._AuditLog.Logger.Log($"Containee '{containeeIdToMove}' moved into container '{targetContainerId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <summary>
+        /// Transfers the metadata-values of a document which was moved into another storage-location: a value is kept when the new storage-location has a field with the same name and the same type, and is removed otherwise.
+        /// Without this the value would stay stored for a field of the previous storage-location, where it is neither shown nor changeable any more.
+        /// </summary>
+        private void MigrateMetadataValuesToStorageLocation(string? requesterUserId, string documentId, string previousStorageLocationId, string newStorageLocationId)
+        {
+            IDictionary<string, string> values = this._Persistence.GetMetadataValuesOfDocument(documentId);
+            if (!values.Any())
+            {
+                return;
+            }
+            IList<MetadataFieldDefinition> previousDefinitions = this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(previousStorageLocationId).ToList();
+            IList<MetadataFieldDefinition> newDefinitions = this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(newStorageLocationId).ToList();
+            foreach (KeyValuePair<string, string> value in values)
+            {
+                if (newDefinitions.Any(definition => definition.Id == value.Key))
+                {
+                    continue;
+                }
+                this._Persistence.RemoveDocumentMetadataValue(documentId, value.Key);
+                MetadataFieldDefinition? previousDefinition = previousDefinitions.FirstOrDefault(definition => definition.Id == value.Key);
+                MetadataFieldDefinition? matchingDefinition = previousDefinition == null
+                    ? null
+                    : newDefinitions.FirstOrDefault(definition => string.Equals(definition.Name, previousDefinition.Name, StringComparison.OrdinalIgnoreCase) && definition.Type == previousDefinition.Type);
+                if (matchingDefinition == null)
+                {
+                    this._AuditLog.Logger.Log($"Metadata-value of field '{value.Key}' on document '{documentId}' removed because the document was moved into storage-location '{newStorageLocationId}' which does not have a matching field. Operation by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+                }
+                else
+                {
+                    this._Persistence.SetDocumentMetadataValue(documentId, matchingDefinition.Id, value.Value);
+                    this._AuditLog.Logger.Log($"Metadata-value of field '{value.Key}' on document '{documentId}' transferred to field '{matchingDefinition.Id}' of storage-location '{newStorageLocationId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+                }
+            }
+        }
+
+        /// <summary>Returns the ids of all documents which the given containee is or contains (directly or in one of its folders).</summary>
+        private IEnumerable<string> GetContainedDocumentIds(string containeeId)
+        {
+            return Core.Misc.Utilities.DoForContentObject<IEnumerable<string>>(this._Persistence, containeeId,
+                (storageLocationId) => this.GetDocumentIdsOfContainer(storageLocationId),
+                (folderId) => this.GetDocumentIdsOfContainer(folderId),
+                (documentId) => new List<string>() { documentId }
+            );
+        }
+
+        private IEnumerable<string> GetDocumentIdsOfContainer(string containerId)
+        {
+            List<string> result = new List<string>();
+            foreach (IContainee child in this._Persistence.GetContainerById(containerId).Content)
+            {
+                result.AddRange(this.GetContainedDocumentIds(child.Id));
+            }
+            return result;
         }
 
         private IContainee GetContainee(string containeeId)
@@ -910,14 +1019,40 @@ namespace OpenDMSBackend.Core.Services
             {
                 throw new BadRequestException("The name of a metadata-field must not be empty.");
             }
-            if (this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(storageLocationId).Any(existing => string.Equals(existing.Name, name, StringComparison.OrdinalIgnoreCase)))
-            {
-                throw new BadRequestException($"A metadata-field with the name '{name}' is already defined for storage-location '{storageLocationId}'.");
-            }
+            this.EnsureMetadataFieldNameIsUnused(storageLocationId, name, null);
             MetadataFieldDefinition definition = new MetadataFieldDefinition(Guid.NewGuid().ToString(), storageLocationId, name, type);
             this._Persistence.CreateMetadataFieldDefinition(definition);
             this._AuditLog.Logger.Log($"Metadata-field '{name}' (id '{definition.Id}', type {type}) defined for storage-location '{storageLocationId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
             return definition.Id;
+        }
+
+        /// <inheritdoc />
+        public void RenameMetadataField(string requesterUserId, string fieldDefinitionId, string newName)
+        {
+            MetadataFieldDefinition definition = this._Persistence.GetMetadataFieldDefinition(fieldDefinitionId);
+            this.EnsureUserIsModeratorOfStorageLocation(requesterUserId, definition.StorageLocationId);
+            if (string.IsNullOrWhiteSpace(newName))
+            {
+                throw new BadRequestException("The name of a metadata-field must not be empty.");
+            }
+            //only the name is changeable. The type stays as it is, because the values which the documents already hold for the field were validated against it.
+            this.EnsureMetadataFieldNameIsUnused(definition.StorageLocationId, newName, fieldDefinitionId);
+            string previousName = definition.Name;
+            definition.Name = newName;
+            this._Persistence.UpdateMetadataFieldDefinition(definition);
+            this._AuditLog.Logger.Log($"Metadata-field '{previousName}' (id '{fieldDefinitionId}') of storage-location '{definition.StorageLocationId}' renamed to '{newName}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <summary>Ensures that no other metadata-field of the given storage-location already has the given name.</summary>
+        /// <param name="storageLocationId">The id of the storage-location the field belongs to.</param>
+        /// <param name="name">The name to check.</param>
+        /// <param name="fieldDefinitionIdToIgnore">The id of the field which is renamed, so that keeping its own name is not reported as a conflict, or <see langword="null"/> when a field is defined.</param>
+        private void EnsureMetadataFieldNameIsUnused(string storageLocationId, string name, string? fieldDefinitionIdToIgnore)
+        {
+            if (this._Persistence.GetMetadataFieldDefinitionsOfStorageLocation(storageLocationId).Any(existing => existing.Id != fieldDefinitionIdToIgnore && string.Equals(existing.Name, name, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new BadRequestException($"A metadata-field with the name '{name}' is already defined for storage-location '{storageLocationId}'.");
+            }
         }
 
         /// <inheritdoc />
@@ -967,7 +1102,11 @@ namespace OpenDMSBackend.Core.Services
             this._AuditLog.Logger.Log($"Metadata-value of field '{fieldDefinitionId}' on document '{documentId}' set to '{normalizedValue}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
-        /// <summary>Validates the given raw value against the field's type and returns its normalized representation (a boolean is normalized to its lower-case string-representation).</summary>
+        /// <summary>
+        /// Validates the given raw value against the field's type and returns its normalized representation.
+        /// A boolean is normalized to its lower-case string-representation, a number to its round-trippable invariant-culture-representation and a timestamp to its round-trippable iso-8601-representation.
+        /// Normalizing makes the stored value independent of the culture and of the format the caller used, so that every reader of the value gets the same representation back.
+        /// </summary>
         private static string NormalizeMetadataValue(MetadataFieldDefinition definition, string value)
         {
             switch (definition.Type)
@@ -978,6 +1117,18 @@ namespace OpenDMSBackend.Core.Services
                         throw new BadRequestException($"The value '{value}' is not a valid boolean-value for the metadata-field '{definition.Name}'.");
                     }
                     return booleanValue.ToString().ToLowerInvariant();
+                case MetadataFieldType.Double:
+                    if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double doubleValue))
+                    {
+                        throw new BadRequestException($"The value '{value}' is not a valid number for the metadata-field '{definition.Name}'. A number must be given in the invariant culture (for example '1234.56').");
+                    }
+                    return doubleValue.ToString("R", CultureInfo.InvariantCulture);
+                case MetadataFieldType.Timestamp:
+                    if (!DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset timestampValue))
+                    {
+                        throw new BadRequestException($"The value '{value}' is not a valid timestamp for the metadata-field '{definition.Name}'. A timestamp must be given in the iso-8601-format (for example '2026-01-31T12:00:00+01:00').");
+                    }
+                    return timestampValue.ToString("o", CultureInfo.InvariantCulture);
                 case MetadataFieldType.String:
                     return value;
                 default:
@@ -986,29 +1137,52 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public string CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor)
+        public string CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor, bool isGlobal)
         {
-            //creating a (globally usable) tag is allowed for any authenticated user.
             this.EnsureAuthenticated(requesterUserId);
-            if (string.IsNullOrWhiteSpace(tagName))
+            if (isGlobal)
             {
-                throw new BadRequestException("The name of a tag must not be empty.");
+                //a global tag is visible for and usable by everybody, so only an administrator may create one. A tag of an ordinary user belongs to that user.
+                this.EnsureAdministrator(requesterUserId);
             }
-            string normalizedTagName = tagName.Trim();
-            if (this._Persistence.GetAllTags().Any(existing => string.Equals(existing.Name, normalizedTagName, StringComparison.OrdinalIgnoreCase)))
-            {
-                throw new BadRequestException($"A tag with the name '{normalizedTagName}' already exists.");
-            }
-            Tag tag = new Tag(Guid.NewGuid().ToString(), normalizedTagName, tagColor);
+            string normalizedTagName = NormalizeTagName(tagName);
+            string? ownerUserId = isGlobal ? null : requesterUserId;
+            this.EnsureTagNameIsUnused(requesterUserId, normalizedTagName, null);
+            Tag tag = new Tag(Guid.NewGuid().ToString(), normalizedTagName, tagColor, ownerUserId);
             this._Persistence.CreateTag(tag);
-            this._AuditLog.Logger.Log($"Tag '{normalizedTagName}' (id '{tag.Id}') created by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+            this._AuditLog.Logger.Log($"{(isGlobal ? "Global tag" : "Tag")} '{normalizedTagName}' (id '{tag.Id}') created by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
             return tag.Id;
         }
 
         /// <inheritdoc />
-        public TagDTO[] GetAllTags()
+        public TagDTO[] GetTags(string requesterUserId)
         {
-            return this._Persistence.GetAllTags();
+            this.EnsureAuthenticated(requesterUserId);
+            return this._Persistence.GetAllTags().Where(tag => tag.IsVisibleFor(requesterUserId)).Select(tag => tag.ToDTO()).ToArray();
+        }
+
+        /// <inheritdoc />
+        public void UpdateTag(string requesterUserId, string tagId, string newTagName, ExtendedColor newTagColor)
+        {
+            Tag tag = this._Persistence.GetTag(tagId);
+            this.EnsureUserIsAllowedToManageTag(requesterUserId, tag);
+            string normalizedTagName = NormalizeTagName(newTagName);
+            this.EnsureTagNameIsUnused(requesterUserId, normalizedTagName, tagId);
+            string previousName = tag.Name;
+            tag.Name = normalizedTagName;
+            tag.Color = newTagColor;
+            this._Persistence.UpdateTag(tag);
+            this._AuditLog.Logger.Log($"Tag '{previousName}' (id '{tagId}') changed to name '{normalizedTagName}' and color '{newTagColor.GetRGBString()}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <inheritdoc />
+        public void DeleteTag(string requesterUserId, string tagId)
+        {
+            Tag tag = this._Persistence.GetTag(tagId);
+            this.EnsureUserIsAllowedToManageTag(requesterUserId, tag);
+            //deleting the tag removes it from every document it is assigned to, because a tag-assignment without its tag would be a dangling reference.
+            this._Persistence.DeleteTag(tagId);
+            this._AuditLog.Logger.Log($"Tag '{tag.Name}' (id '{tagId}') deleted (including all of its assignments) by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
         }
 
         /// <inheritdoc />
@@ -1016,6 +1190,7 @@ namespace OpenDMSBackend.Core.Services
         {
             this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             Tag tag = this._Persistence.GetTag(tagId);
+            this.EnsureTagIsVisibleForUser(requesterUserId, tag);
             if (this._Persistence.GetTagIdsOfDocument(documentId).Contains(tagId))
             {
                 throw new BadRequestException($"The tag '{tag.Name}' is already assigned to document '{documentId}'.");
@@ -1029,12 +1204,58 @@ namespace OpenDMSBackend.Core.Services
         {
             this.EnsureUserIsAllowedToEditContent(requesterUserId, documentId);
             Tag tag = this._Persistence.GetTag(tagId);
+            this.EnsureTagIsVisibleForUser(requesterUserId, tag);
             if (!this._Persistence.GetTagIdsOfDocument(documentId).Contains(tagId))
             {
                 throw new BadRequestException($"The tag '{tag.Name}' is not assigned to document '{documentId}'.");
             }
             this._Persistence.UnassignTag(documentId, tagId);
             this._AuditLog.Logger.Log($"Tag '{tag.Name}' (id '{tagId}') unassigned from document '{documentId}' by {DescribeRequester(requesterUserId)}.", Microsoft.Extensions.Logging.LogLevel.Information);
+        }
+
+        /// <summary>Trims the given tag-name and ensures it is not empty.</summary>
+        private static string NormalizeTagName(string tagName)
+        {
+            if (string.IsNullOrWhiteSpace(tagName))
+            {
+                throw new BadRequestException("The name of a tag must not be empty.");
+            }
+            return tagName.Trim();
+        }
+
+        /// <summary>Ensures that no other tag which is visible for the given user already has the given name, because two tags with the same name can not be distinguished in the user-interface.</summary>
+        /// <param name="requesterUserId">The id of the user the name must be unambiguous for.</param>
+        /// <param name="tagName">The (already normalized) name to check.</param>
+        /// <param name="tagIdToIgnore">The id of the tag which is renamed, so that keeping its own name is not reported as a conflict, or <see langword="null"/> when a tag is created.</param>
+        private void EnsureTagNameIsUnused(string requesterUserId, string tagName, string? tagIdToIgnore)
+        {
+            if (this._Persistence.GetAllTags().Any(existing => existing.Id != tagIdToIgnore && existing.IsVisibleFor(requesterUserId) && string.Equals(existing.Name, tagName, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new BadRequestException($"A tag with the name '{tagName}' already exists.");
+            }
+        }
+
+        /// <summary>Ensures the given user may change or delete the given tag, which an administrator may do for a global tag and the owner may do for their own tag.</summary>
+        private void EnsureUserIsAllowedToManageTag(string requesterUserId, Tag tag)
+        {
+            this.EnsureAuthenticated(requesterUserId);
+            if (tag.OwnerUserId == null)
+            {
+                this.EnsureAdministrator(requesterUserId);
+            }
+            else if (tag.OwnerUserId != requesterUserId)
+            {
+                throw new NotAuthorizedException($"No permission to manage the tag '{tag.Id}' because it belongs to another user.");
+            }
+        }
+
+        /// <summary>Ensures the given tag is a global tag or belongs to the given user, because a tag of another user must not be usable.</summary>
+        private void EnsureTagIsVisibleForUser(string requesterUserId, Tag tag)
+        {
+            if (!tag.IsVisibleFor(requesterUserId))
+            {
+                throw new NotAuthorizedException($"No permission to use the tag '{tag.Id}' because it belongs to another user.");
+            }
         }
 
         /// <inheritdoc />

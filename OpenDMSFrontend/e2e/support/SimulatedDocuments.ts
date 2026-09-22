@@ -58,15 +58,17 @@ const previewOfTheSecondDocument = {
  * The tags which exist in the simulated installation. One of them is assigned to the document whose page is
  * checked and the other one is not, so the page shows an assigned tag as well as a tag which can still be assigned.
  */
-const tagOfTheDocument = { id: '00000000-0000-0000-0000-000000000201', name: 'Contract', colorCode: '283593' };
-const tagWhichIsNotAssigned = { id: '00000000-0000-0000-0000-000000000202', name: 'Invoice', colorCode: 'C62828' };
+const tagOfTheDocument = { id: '00000000-0000-0000-0000-000000000201', name: 'Contract', colorCode: '283593', ownerUserId: null };
+const tagWhichIsNotAssigned = { id: '00000000-0000-0000-0000-000000000202', name: 'Invoice', colorCode: 'C62828', ownerUserId: null };
 
 /*
- * The custom metadata-fields of the storage-location which contains the document. Both field-types exist exactly
- * once, so the page shows the text-input as well as the checkbox which the two types are edited with.
+ * The custom metadata-fields of the storage-location which contains the document. Every field-type exists exactly
+ * once, so the page shows every input which the types are edited with.
  */
 const metadataFieldOfTypeString = { id: '00000000-0000-0000-0000-000000000301', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Contact/Sender', type: 'String' };
 const metadataFieldOfTypeBoolean = { id: '00000000-0000-0000-0000-000000000302', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Tax-relevant', type: 'Boolean' };
+const metadataFieldOfTypeDouble = { id: '00000000-0000-0000-0000-000000000303', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Amount', type: 'Double' };
+const metadataFieldOfTypeTimestamp = { id: '00000000-0000-0000-0000-000000000304', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Deadline', type: 'Timestamp' };
 
 /*
  * The full document which belongs to the second preview. The document-page shows more values than
@@ -82,8 +84,13 @@ const theDocumentWithAnOwnPage = {
         + 'The contract is valid for one year and is extended automatically if none of the parties terminates it.',
     metadataValues: {
         '00000000-0000-0000-0000-000000000301': 'Example-supplier',
-        '00000000-0000-0000-0000-000000000302': 'true'
-    }
+        '00000000-0000-0000-0000-000000000302': 'true',
+        '00000000-0000-0000-0000-000000000303': '1234.56',
+        '00000000-0000-0000-0000-000000000304': '2026-01-31T12:00:00+01:00'
+    },
+    /* the retention-dates are fixed values as well, because the document-page shows them in its retention-section. */
+    deleteIsNotAllowedBefore: '2026-01-31T00:00:00+01:00',
+    mustBeHardDeletedAfter: '2036-01-31T00:00:00+01:00'
 };
 
 /*
@@ -105,6 +112,6 @@ export async function simulateDocuments(page: Page): Promise<void> {
      * The document-page lets the user index the document, so it additionally asks for every tag which exists and
      * for the metadata-fields which the document can hold a value for.
      */
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetAllTags*', [tagOfTheDocument, tagWhichIsNotAssigned]);
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetMetadataFieldsOfDocument/*', [metadataFieldOfTypeString, metadataFieldOfTypeBoolean]);
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetTags*', [tagOfTheDocument, tagWhichIsNotAssigned]);
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetMetadataFieldsOfDocument/*', [metadataFieldOfTypeString, metadataFieldOfTypeBoolean, metadataFieldOfTypeDouble, metadataFieldOfTypeTimestamp]);
 }

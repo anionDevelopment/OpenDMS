@@ -78,6 +78,27 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             this.RenameFolder();
         }
 
+        [TestMethod(DisplayName = nameof(UpdateTagTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public override void UpdateTagTest()
+        {
+            this.UpdateTag();
+        }
+
+        [TestMethod(DisplayName = nameof(DeleteTagTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public override void DeleteTagTest()
+        {
+            this.DeleteTag();
+        }
+
+        [TestMethod(DisplayName = nameof(UpdateMetadataFieldDefinitionTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public override void UpdateMetadataFieldDefinitionTest()
+        {
+            this.UpdateMetadataFieldDefinition();
+        }
+
         [TestMethod(DisplayName = nameof(CreateTagTest))]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public override void CreateTagTest()

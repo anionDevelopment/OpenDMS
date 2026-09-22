@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import { expectPageToLookLikeBaseline } from './support/VisualRegression';
 import { simulateLoggedInUser } from './support/AuthenticatedSession';
+import { simulateTags } from './support/SimulatedTags';
 
 test.describe('User-settings-page', () => {
     /*
@@ -11,11 +12,13 @@ test.describe('User-settings-page', () => {
      */
     test('looks like the baseline-screenshot in the light color-scheme', async ({ page }) => {
         await simulateLoggedInUser(page, 'light');
+        await simulateTags(page);
         await expectPageToLookLikeBaseline(page, '/user/settings', 'user-settings-page-light');
     });
 
     test('looks like the baseline-screenshot in the dark color-scheme', async ({ page }) => {
         await simulateLoggedInUser(page, 'dark');
+        await simulateTags(page);
         await expectPageToLookLikeBaseline(page, '/user/settings', 'user-settings-page-dark');
     });
 });

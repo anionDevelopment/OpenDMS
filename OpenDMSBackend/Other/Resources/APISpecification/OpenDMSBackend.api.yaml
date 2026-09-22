@@ -297,6 +297,23 @@ components:
           nullable: true
           type: string
       type: object
+    RetentionDatesDTO:
+      additionalProperties: false
+      description: Data transfer object for the retention-dates of a document.
+      properties:
+        deleteIsNotAllowedBefore:
+          description: The point in time before which the document must not be hard-deleted,
+            as iso-8601-timestamp (for example "2026-01-31T12:00:00+01:00"), or null
+            when the document has no deletion-lock.
+          nullable: true
+          type: string
+        mustBeHardDeletedAfter:
+          description: The point in time after which the document must be hard-deleted
+            by the scheduled housekeeping, as iso-8601-timestamp, or null when the
+            document must not be deleted automatically.
+          nullable: true
+          type: string
+      type: object
     StorageLocationDTO:
       additionalProperties: false
       properties:
@@ -333,6 +350,11 @@ components:
             example "C62828"), optionally prefixed with a number-sign.
           nullable: true
           type: string
+        isGlobal:
+          description: Indicates whether the tag is created as a global tag (usable
+            by every user, only an administrator may do this) instead of a tag which
+            belongs to the creating user.
+          type: boolean
         name:
           description: The display-name of the tag to create.
           nullable: true
@@ -348,6 +370,26 @@ components:
           nullable: true
           type: string
         name:
+          nullable: true
+          type: string
+        ownerUserId:
+          description: The id of the user the tag belongs to, or null when it is a
+            global tag which every user can see and use.
+          nullable: true
+          type: string
+      type: object
+    TagUpdateDTO:
+      additionalProperties: false
+      description: Data transfer object used to change the name and the color of an
+        existing tag.
+      properties:
+        colorCode:
+          description: The new color of the tag as a six-digit hexadecimal rgb-value
+            (for example "C62828"), optionally prefixed with a number-sign.
+          nullable: true
+          type: string
+        name:
+          description: The new display-name of the tag.
           nullable: true
           type: string
       type: object
@@ -805,7 +847,7 @@ paths:
           text/json:
             schema:
               $ref: '#/components/schemas/TagCreationDTO'
-        description: The name and the color of the tag to create.
+        description: The name, the color and the scope of the tag to create.
       responses:
         '200':
           content:
@@ -819,7 +861,8 @@ paths:
               schema:
                 type: string
           description: OK
-      summary: Creates a new tag which can afterwards be assigned to documents.
+      summary: Creates a new tag which can afterwards be assigned to documents. A
+        global tag can only be created by an administrator.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/DefineMetadataField/{storageLocationId}:
@@ -848,7 +891,8 @@ paths:
           text/json:
             schema:
               $ref: '#/components/schemas/MetadataFieldDefinitionCreationDTO'
-        description: The name and type ("String" or "Boolean") of the field to create.
+        description: The name and type ("String", "Boolean", "Double" or "Timestamp")
+          of the field to create.
       responses:
         '200':
           content:
@@ -864,6 +908,29 @@ paths:
           description: OK
       summary: Defines a new custom metadata-field for the specified storage-location.
         Only a moderator of the storage-location may do this.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/DeleteTag/{tagId}:
+    delete:
+      parameters:
+      - description: The id of the tag to delete.
+        in: path
+        name: tagId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Deletes an existing tag together with all of its assignments to documents.
+        A global tag can only be deleted by an administrator and a tag which belongs
+        to a user only by that user.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GenerateAISummary/{documentId}:
@@ -896,37 +963,6 @@ paths:
           description: OK
       summary: Generates the short and the long AI-summary of the specified document
         and returns the updated document.
-      tags:
-      - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetAllTags:
-    put:
-      parameters:
-      - description: Access Token
-        in: header
-        name: X-AccessToken
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/TagDTO'
-                type: array
-            text/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/TagDTO'
-                type: array
-            text/plain:
-              schema:
-                items:
-                  $ref: '#/components/schemas/TagDTO'
-                type: array
-          description: OK
-      summary: Returns all tags defined in the system.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetAllViewableStorageLocations:
@@ -1286,6 +1322,38 @@ paths:
       summary: Returns the storage location with the specified id.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/GetTags:
+    put:
+      parameters:
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagDTO'
+                type: array
+            text/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagDTO'
+                type: array
+            text/plain:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagDTO'
+                type: array
+          description: OK
+      summary: Returns the tags the current user can use, which are the global tags
+        and the tags the user owns.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/GetVersionHistory:
     get:
       parameters:
@@ -1491,6 +1559,40 @@ paths:
       summary: Renames the specified container to the given new name.
       tags:
       - OpenDMSBackend
+  /API/v3/OpenDMSBackend/RenameMetadataField/{fieldDefinitionId}:
+    put:
+      parameters:
+      - description: The id of the field-definition to rename.
+        in: path
+        name: fieldDefinitionId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/StringValueDTO'
+        description: The new name of the field.
+      responses:
+        '200':
+          description: OK
+      summary: Renames the specified custom metadata-field. Only a moderator of the
+        field's storage-location may do this. The type of a field can not be changed.
+      tags:
+      - OpenDMSBackend
   /API/v3/OpenDMSBackend/Search:
     get:
       parameters:
@@ -1561,8 +1663,9 @@ paths:
           text/json:
             schema:
               $ref: '#/components/schemas/StringValueDTO'
-        description: The value to set. For a boolean-field the value must be parseable
-          as a boolean.
+        description: 'The value to set. It must match the type of the field: a boolean
+          ("true"/"false"), a number in the invariant culture (for example "1234.56")
+          or a timestamp in the iso-8601-format (for example "2026-01-31T12:00:00+01:00").'
       responses:
         '200':
           description: OK
@@ -1596,6 +1699,46 @@ paths:
           description: OK
       summary: Updates the general (admin-configurable) OpenDMS-settings. Only administrators
         are allowed to call this.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/SetRetentionDates/{documentId}:
+    put:
+      parameters:
+      - description: The id of the document.
+        in: path
+        name: documentId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RetentionDatesDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetentionDatesDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/RetentionDatesDTO'
+        description: The retention-dates as iso-8601-timestamps. An omitted or empty
+          value removes the respective date.
+      responses:
+        '200':
+          description: OK
+      summary: 'Sets the retention-dates of the specified document. The current user
+        must be allowed to change the document.
+
+        As long as the point in time before which the document must not be deleted
+        is in the future, the document can not be hard-deleted; when the point in
+        time after which it must be deleted is reached, the scheduled housekeeping
+        hard-deletes it.'
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/SoftDelete/{containerOrContaineeId}:
@@ -1758,6 +1901,41 @@ paths:
                 type: string
           description: OK
       summary: Updates the display title of an existing document.
+      tags:
+      - OpenDMSBackend
+  /API/v3/OpenDMSBackend/UpdateTag/{tagId}:
+    put:
+      parameters:
+      - description: The id of the tag to change.
+        in: path
+        name: tagId
+        required: true
+        schema:
+          type: string
+      - description: Access Token
+        in: header
+        name: X-AccessToken
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/TagUpdateDTO'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagUpdateDTO'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/TagUpdateDTO'
+        description: The new name and the new color of the tag.
+      responses:
+        '200':
+          description: OK
+      summary: Changes the name and the color of an existing tag. A global tag can
+        only be changed by an administrator and a tag which belongs to a user only
+        by that user.
       tags:
       - OpenDMSBackend
   /API/v3/OpenDMSBackend/UploadNewVersion/{oldDocumentId}:

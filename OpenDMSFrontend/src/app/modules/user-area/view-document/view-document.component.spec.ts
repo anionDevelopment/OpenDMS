@@ -31,6 +31,7 @@ import { EditDocumentMenuComponent } from '../edit-document-menu/edit-document-m
 import { DocumentPreviewComponent } from '../document-preview/document-preview.component';
 import { DocumentTagsComponent } from '../document-tags/document-tags.component';
 import { DocumentMetadataComponent } from '../document-metadata/document-metadata.component';
+import { DocumentRetentionComponent } from '../document-retention/document-retention.component';
 import { StorageService } from '../../../services/storage.service';
 import { UserIconComponent } from '../user-icon/user-icon.component';
 import { TimestampPipe } from '../../../pipes/timestamp.pipe';
@@ -71,6 +72,7 @@ describe('ViewDocumentComponent', () => {
         DocumentPreviewComponent,
         DocumentTagsComponent,
         DocumentMetadataComponent,
+        DocumentRetentionComponent,
         UserAreaContainerComponent,
         ViewDocumentComponent,
       ],
@@ -82,7 +84,7 @@ describe('ViewDocumentComponent', () => {
             aPIV3OpenDMSBackendGetDocumentFromReadableIdGet: () => of({
               id: 1,
             }),
-            aPIV3OpenDMSBackendGetAllTagsPut: () => of([]),
+            aPIV3OpenDMSBackendGetTagsPut: () => of([]),
             aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: () => of([]),
           },
         },

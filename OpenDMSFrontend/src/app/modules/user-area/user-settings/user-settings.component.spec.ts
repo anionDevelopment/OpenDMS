@@ -26,6 +26,15 @@ import { NgxCultureSelectorComponent } from '@aniondev/ngx-culture-selector';
 })
 class MockUserAreaContainerComponent { }
 
+//the tag-management is tested by its own testcases; here it is only replaced so that the settings-page can be rendered.
+@Component({
+  selector: 'app-tag-management',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  template: ''
+})
+class MockTagManagementComponent { }
+
 describe('UserSettingsComponent', () => {
   let component: UserSettingsComponent;
   let fixture: ComponentFixture<UserSettingsComponent>;
@@ -48,6 +57,7 @@ describe('UserSettingsComponent', () => {
       declarations: [
         UserIconComponent,
         MockUserAreaContainerComponent,
+        MockTagManagementComponent,
         UserSettingsComponent,
       ],
       providers: [

@@ -21,5 +21,9 @@ export interface TagCreationDTO {
      * The color of the tag as a six-digit hexadecimal rgb-value (for example \"C62828\"), optionally prefixed with a number-sign.
      */
     colorCode?: string | null;
+    /**
+     * Indicates whether the tag is created as a global tag (usable by every user, only an administrator may do this) instead of a tag which belongs to the creating user.
+     */
+    isGlobal?: boolean;
 }
 

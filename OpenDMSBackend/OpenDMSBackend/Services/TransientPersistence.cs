@@ -158,9 +158,27 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public TagDTO[] GetAllTags()
+        public void UpdateTag(Tag tag)
         {
-            return this._Tags.Values.Select(t => t.ToDTO()).ToArray();
+            this._Tags[tag.Id] = tag;
+        }
+
+        /// <inheritdoc />
+        public void DeleteTag(string tagId)
+        {
+            Tag tag = this.GetTag(tagId);
+            this._Tags.Remove(tagId);
+            //remove the tag from every document it is assigned to, because an assignment of a no longer existing tag would be a dangling reference.
+            foreach (Document document in this._Documents.Values)
+            {
+                document.Tags.Remove(tag);
+            }
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<Tag> GetAllTags()
+        {
+            return this._Tags.Values.ToList();
         }
 
         /// <inheritdoc />
@@ -607,15 +625,23 @@ namespace OpenDMSBackend.Core.Services
         {
             if (document.Title.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
             {
-                return 5;
+                return 6;
             }
             if (document.Filename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
             {
-                return 4;
+                return 5;
             }
             foreach (Tag tag in document.Tags)
             {
                 if (tag.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return 4;
+                }
+            }
+            //a document is also found by the data it is indexed with, which are its tags and the values it holds for the metadata-fields of its storage-location.
+            foreach (string metadataValue in document.MetadataValues.Values)
+            {
+                if (metadataValue.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
                 {
                     return 3;
                 }
@@ -635,12 +661,6 @@ namespace OpenDMSBackend.Core.Services
         public GRYLibrary.Core.APIServer.CommonDBTypes.Role GetRoleByName(string roleName)
         {
             return this._TransientAuthenticationServicePersistence.GetRoleByName(roleName);
-        }
-
-        /// <inheritdoc />
-        public bool DeleteIsAllowed(string documentId)
-        {
-            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -798,6 +818,15 @@ namespace OpenDMSBackend.Core.Services
 
         /// <inheritdoc />
         public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition)
+        {
+            lock (_Lock)
+            {
+                this._MetadataFieldDefinitions[definition.Id] = definition;
+            }
+        }
+
+        /// <inheritdoc />
+        public void UpdateMetadataFieldDefinition(MetadataFieldDefinition definition)
         {
             lock (_Lock)
             {

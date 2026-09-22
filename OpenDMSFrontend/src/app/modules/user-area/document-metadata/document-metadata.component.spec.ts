@@ -167,4 +167,44 @@ describe('DocumentMetadataComponent', () => {
     expect(component.fieldIsBoolean({ definition: taxRelevantField, value: 'true' })).toBe(true);
     expect(component.fieldIsBoolean({ definition: senderField, value: 'x' })).toBe(false);
   });
+  it('should recognize which fields are edited as a number or as a timestamp', () => {
+    const amountField: MetadataFieldDefinitionDTO = { id: 'field-amount', storageLocationId: 'sl1', name: 'amount', type: 'Double' };
+    const deadlineField: MetadataFieldDefinitionDTO = { id: 'field-deadline', storageLocationId: 'sl1', name: 'deadline', type: 'Timestamp' };
+
+    expect(component.fieldIsNumber({ definition: amountField, value: '1234.56' })).toBe(true);
+    expect(component.fieldIsTimestamp({ definition: deadlineField, value: '' })).toBe(true);
+    expect(component.fieldIsNumber({ definition: senderField, value: 'x' })).toBe(false);
+    expect(component.fieldIsTimestamp({ definition: senderField, value: 'x' })).toBe(false);
+  });
+
+  it('should show a timestamp in the format of the date-and-time-input', () => {
+    const deadlineField: MetadataFieldDefinitionDTO = { id: 'field-deadline', storageLocationId: 'sl1', name: 'deadline', type: 'Timestamp' };
+    component.documentId = 'doc1';
+    component.metadataValues = { 'field-deadline': new Date('2026-01-31T12:00').toISOString() };
+    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([deadlineField]));
+
+    component.loadFields();
+
+    expect(component.entries[0].value).toBe('2026-01-31T12:00');
+  });
+
+  it('should store a timestamp as the iso-8601-timestamp which the backend expects', () => {
+    const deadlineField: MetadataFieldDefinitionDTO = { id: 'field-deadline', storageLocationId: 'sl1', name: 'deadline', type: 'Timestamp' };
+    component.documentId = 'doc1';
+    openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(of(undefined));
+
+    component.saveValue({ definition: deadlineField, value: '2026-01-31T12:00' });
+
+    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).toHaveBeenCalledWith('doc1', 'field-deadline', 'accesstoken1', { value: new Date('2026-01-31T12:00').toISOString() });
+  });
+
+  it('should clear a timestamp which the user emptied', () => {
+    const deadlineField: MetadataFieldDefinitionDTO = { id: 'field-deadline', storageLocationId: 'sl1', name: 'deadline', type: 'Timestamp' };
+    component.documentId = 'doc1';
+    openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete.mockReturnValue(of(undefined));
+
+    component.saveValue({ definition: deadlineField, value: '' });
+
+    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete).toHaveBeenCalledWith('doc1', 'field-deadline', 'accesstoken1');
+  });
 });

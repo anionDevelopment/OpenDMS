@@ -4,5 +4,6 @@
     <div class="setting-row">
       <mat-slide-toggle [checked]="autoGenerateAISummary" (change)="onAutoGenerateAISummaryChanged($event.checked)" i18n="@@setting_auto_generate_ai_summary">Automatically generate an AI-summary whenever a document is added or changed</mat-slide-toggle>
     </div>
+    <app-tag-management scope="global"></app-tag-management>
   </app-admin-area-container>
 </app-frame-work>

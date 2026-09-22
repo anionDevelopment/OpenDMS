@@ -1,4 +1,3 @@
-
-SELECT `Id`, `Name`, `Color`
+SELECT `Id`, `Name`, `Color`, `OwnerUserId`
     FROM `Tags`
     WHERE `Id`=@Id;

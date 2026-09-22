@@ -16,7 +16,7 @@ import type { Mock } from 'vitest';
 //typed loosely on purpose: OpenDMSBackendService's generated methods are overloaded (body/response/events),
 //and constraining the mock to the full interface makes TypeScript pick the wrong ('events') overload.
 interface OpenDMSBackendServiceMock {
-  aPIV3OpenDMSBackendGetAllTagsPut: Mock;
+  aPIV3OpenDMSBackendGetTagsPut: Mock;
   aPIV3OpenDMSBackendCreateTagPost: Mock;
   aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost: Mock;
   aPIV3OpenDMSBackendUnassignTagDocumentIdTagIdDelete: Mock;
@@ -29,12 +29,12 @@ describe('DocumentTagsComponent', () => {
 
   beforeEach(async () => {
     openDMSBackendServiceSpy = {
-      aPIV3OpenDMSBackendGetAllTagsPut: vi.fn(),
+      aPIV3OpenDMSBackendGetTagsPut: vi.fn(),
       aPIV3OpenDMSBackendCreateTagPost: vi.fn(),
       aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost: vi.fn(),
       aPIV3OpenDMSBackendUnassignTagDocumentIdTagIdDelete: vi.fn(),
     };
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetAllTagsPut.mockReturnValue(of([]));
+    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetTagsPut.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -79,7 +79,7 @@ describe('DocumentTagsComponent', () => {
       { id: '2', name: 'zeta', colorCode: 'C62828' },
       { id: '1', name: 'alpha', colorCode: '283593' },
     ];
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetAllTagsPut.mockReturnValue(of(unsorted));
+    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetTagsPut.mockReturnValue(of(unsorted));
 
     component.loadAvailableTags();
 
@@ -88,7 +88,7 @@ describe('DocumentTagsComponent', () => {
 
   it('should clear the available tags when loading them fails', () => {
     component.availableTags = [{ id: '1', name: 'alpha', colorCode: '283593' }];
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetAllTagsPut.mockReturnValue(throwError(() => new Error('boom')));
+    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetTagsPut.mockReturnValue(throwError(() => new Error('boom')));
 
     component.loadAvailableTags();
 
@@ -170,7 +170,7 @@ describe('DocumentTagsComponent', () => {
 
     component.createAndAssignTag();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendCreateTagPost).toHaveBeenCalledWith('accesstoken1', { name: 'Invoice', colorCode: 'C62828' });
+    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendCreateTagPost).toHaveBeenCalledWith('accesstoken1', { name: 'Invoice', colorCode: 'C62828', isGlobal: false });
     expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost).toHaveBeenCalledWith('doc1', 'new-tag-id', 'accesstoken1');
     expect(component.newTagName).toBe('');
     expect(changed).toHaveBeenCalled();

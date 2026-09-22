@@ -228,10 +228,10 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
             string createdTagId = "createdTagId";
             GRYLibrary.Core.APIServer.CommonDBTypes.User user = new GRYLibrary.Core.APIServer.CommonDBTypes.User() { Id = userId };
             ExtendedColor expectedColor = new ExtendedColor(198, 40, 40);
-            TagCreationDTO creation = new TagCreationDTO("Invoice", "C62828");
+            TagCreationDTO creation = new TagCreationDTO("Invoice", "C62828", false);
 
             authenticationServiceMock.Setup(mock => mock.GetUser(userId)).Returns(user);
-            businessServiceMock.Setup(mock => mock.CreateTag(userId, "Invoice", expectedColor)).Returns(createdTagId);
+            businessServiceMock.Setup(mock => mock.CreateTag(userId, "Invoice", expectedColor, false)).Returns(createdTagId);
             OpenDMSBackend.Core.Controller.OpenDMSBackendController controller = new OpenDMSBackend.Core.Controller.OpenDMSBackendController(businessServiceMock.Object, authenticationServiceMock.Object, timeService);
 
             List<Claim> claims = new List<Claim>
@@ -255,7 +255,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
             OkObjectResult okObjectResult = actualResult as OkObjectResult;
             Assert.IsNotNull(okObjectResult);
             Assert.AreEqual(createdTagId, (string)okObjectResult.Value);
-            businessServiceMock.Verify(mock => mock.CreateTag(userId, "Invoice", expectedColor), Times.Once());
+            businessServiceMock.Verify(mock => mock.CreateTag(userId, "Invoice", expectedColor, false), Times.Once());
             businessServiceMock.VerifyNoOtherCalls();
         }
 
@@ -269,7 +269,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
             Mock<IBusinessLogicService> businessServiceMock = new Mock<IBusinessLogicService>(MockBehavior.Strict);
             string userId = "userid";
             GRYLibrary.Core.APIServer.CommonDBTypes.User user = new GRYLibrary.Core.APIServer.CommonDBTypes.User() { Id = userId };
-            TagCreationDTO creation = new TagCreationDTO("Invoice", "not-a-color");
+            TagCreationDTO creation = new TagCreationDTO("Invoice", "not-a-color", false);
 
             authenticationServiceMock.Setup(mock => mock.GetUser(userId)).Returns(user);
             OpenDMSBackend.Core.Controller.OpenDMSBackendController controller = new OpenDMSBackend.Core.Controller.OpenDMSBackendController(businessServiceMock.Object, authenticationServiceMock.Object, timeService);

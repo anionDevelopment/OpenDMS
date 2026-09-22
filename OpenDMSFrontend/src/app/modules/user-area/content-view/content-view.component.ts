@@ -45,6 +45,16 @@ export class ContentViewComponent implements OnInit {//shows the content of a co
 
   }
 
+  /**
+   * Whether the custom metadata-fields are shown. They are defined per storage-location, so they belong to a
+   * storage-location and not to a nested folder.
+   * The condition is decided here and not in the template, because the formatter of the build breaks a template
+   * which contains the operator "&&".
+   */
+  get metadataFieldsAreShown(): boolean {
+    return !this.isFolder && !!this.containerId;
+  }
+
   ngOnInit(): void {
     if (this.documentIds) {
       this.documentIds.forEach(documentId => this.loadDocument(documentId));

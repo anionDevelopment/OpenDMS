@@ -25,6 +25,7 @@ namespace OpenDMSBackend.Core.Services
         #region BusinessLogic
 
         public void SoftDelete(string? requesterUserId, string containerOrContaineeId, string reason);
+        /// <summary>Hard-deletes the given content. A document which is still within its retention-period (see <see cref="SetRetentionDates"/>) is not deleted but reported as an error.</summary>
         public void HardDelete(string? requesterUserId, string containerOrContaineeId, string reason);
 
         public void RemoveEntireContent(string requesterUserId, string containerId,string reason);
@@ -39,7 +40,14 @@ namespace OpenDMSBackend.Core.Services
         public IEnumerable<DocumentPreview> GetVersionHistory(string requesterUserId, string documentId);
         public void Update(string requesterUserId, Document updatedDocument);
         public Document GetDocument(string requesterUserId, string id);
+        /// <summary>Searches for documents. A document is found by its title, its filenames, its ocr-content and by the data it is indexed with, which are its tags and the values it holds for the metadata-fields of its storage-location.</summary>
         public IList<DocumentPreview> Search(string requesterUserId, string searchTerm);
+        /// <summary>Sets the retention-dates of the given document. The requesting user must be allowed to change the document.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="deleteIsNotAllowedBefore">The point in time before which the document must not be hard-deleted, or <see langword="null"/> to remove the deletion-lock.</param>
+        /// <param name="mustBeHardDeletedAfter">The point in time after which the scheduled housekeeping hard-deletes the document, or <see langword="null"/> to remove the automatic deletion.</param>
+        public void SetRetentionDates(string requesterUserId, string documentId, System.DateTimeOffset? deleteIsNotAllowedBefore, System.DateTimeOffset? mustBeHardDeletedAfter);
         /// <remarks>
         /// <paramref name="contentId"/> can be an id of any existing <see cref="IContent"/>-object.
         /// </remarks>
@@ -79,6 +87,10 @@ namespace OpenDMSBackend.Core.Services
         public bool UserIsAllowedToViewStorageLocation(string userId, string storageLocationId);
         public bool UserIsAllowedToViewFolder(string userId, string folderId);
         public bool UserIsAllowedToViewDocument(string userId, string documentId);
+        /// <summary>
+        /// Moves the given containee into the given container.
+        /// When the move changes the storage-location, the metadata-values of every moved document are transferred to the field of the new storage-location which has the same name and the same type, and are removed when the new storage-location has no such field.
+        /// </summary>
         public void Move(string requesterUserId, string containeeIdToMove, string targetContainerId);
         /// <returns>Returns the id of the created storage-location.</returns>
         public string AddStorageLocation(string requesterUserId, string name);
@@ -105,9 +117,14 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="requesterUserId">The id of the user requesting the operation.</param>
         /// <param name="storageLocationId">The id of the storage-location the field is defined for.</param>
         /// <param name="name">The display-name of the field (must be unique within the storage-location).</param>
-        /// <param name="type">The value-type of the field (string or boolean).</param>
+        /// <param name="type">The value-type of the field (string, boolean, double or timestamp).</param>
         /// <returns>The id of the created field-definition.</returns>
         public string DefineMetadataField(string requesterUserId, string storageLocationId, string name, MetadataFieldType type);
+        /// <summary>Renames an existing custom metadata-field. Only a moderator of the field's storage-location may do this. The type of a field can not be changed, because the values which the documents already hold for it were validated against it.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="fieldDefinitionId">The id of the field-definition to rename.</param>
+        /// <param name="newName">The new display-name of the field (must be unique within the storage-location).</param>
+        public void RenameMetadataField(string requesterUserId, string fieldDefinitionId, string newName);
         /// <summary>Removes the given custom metadata-field-definition together with all values documents hold for it. Only a moderator of the field's storage-location may do this.</summary>
         /// <param name="requesterUserId">The id of the user requesting the operation.</param>
         /// <param name="fieldDefinitionId">The id of the field-definition to remove.</param>
@@ -126,19 +143,31 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="requesterUserId">The id of the user requesting the operation.</param>
         /// <param name="documentId">The id of the document.</param>
         /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
-        /// <param name="value">The value to set, or <see langword="null"/> to clear the value. For a boolean-field the value must be parseable as a boolean.</param>
+        /// <param name="value">The value to set, or <see langword="null"/> to clear the value. The value must match the type of the field: a boolean ("true"/"false"), a number in the invariant culture (for example "1234.56") or a timestamp in the iso-8601-format (for example "2026-01-31T12:00:00+01:00").</param>
         public void SetDocumentMetadataValue(string requesterUserId, string documentId, string fieldDefinitionId, string? value);
         #endregion
 
         #region Tags
-        /// <summary>Creates a new tag which can afterwards be assigned to documents. Every authenticated user may create a tag, because a tag is usable in every storage-location.</summary>
+        /// <summary>Creates a new tag which can afterwards be assigned to documents. Every authenticated user may create a tag which belongs to them; only an administrator may create a global tag which every user can use.</summary>
         /// <param name="requesterUserId">The id of the user requesting the operation.</param>
-        /// <param name="tagName">The display-name of the tag (must not be empty and must not be used by another tag yet).</param>
+        /// <param name="tagName">The display-name of the tag (must not be empty and must not be used by another tag which is visible for the requesting user yet).</param>
         /// <param name="tagColor">The color the user-interface shows the tag in.</param>
+        /// <param name="isGlobal">Whether the tag is created as a global tag (only allowed for an administrator) instead of a tag which belongs to the requesting user.</param>
         /// <returns>The id of the created tag.</returns>
-        public string CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor);
-        /// <summary>Returns all tags which exist in this installation.</summary>
-        public TagDTO[] GetAllTags();
+        public string CreateTag(string requesterUserId, string tagName, ExtendedColor tagColor, bool isGlobal);
+        /// <summary>Returns the tags which the given user can use, which are the global tags and the tags the user owns.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        public TagDTO[] GetTags(string requesterUserId);
+        /// <summary>Changes the name and the color of an existing tag. A global tag may only be changed by an administrator and a tag which belongs to a user only by that user.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="tagId">The id of the tag to change.</param>
+        /// <param name="newTagName">The new display-name of the tag.</param>
+        /// <param name="newTagColor">The new color the user-interface shows the tag in.</param>
+        public void UpdateTag(string requesterUserId, string tagId, string newTagName, ExtendedColor newTagColor);
+        /// <summary>Deletes an existing tag together with all of its assignments to documents. A global tag may only be deleted by an administrator and a tag which belongs to a user only by that user.</summary>
+        /// <param name="requesterUserId">The id of the user requesting the operation.</param>
+        /// <param name="tagId">The id of the tag to delete.</param>
+        public void DeleteTag(string requesterUserId, string tagId);
         /// <summary>Assigns an existing tag to an existing document. The requesting user must be allowed to change the document.</summary>
         /// <param name="requesterUserId">The id of the user requesting the operation.</param>
         /// <param name="documentId">The id of the document.</param>

@@ -70,8 +70,16 @@ namespace OpenDMSBackend.Core.BackgroundServices
         {
             foreach (string documentId in this._Persistence.GetIdsOfDocumentsWhichMustBeHardDeletedNow())
             {
-                //the business-logic-service performs the hard-deletion in a traceable way and handles/logs any deletion-error internally, so that one failing deletion does not stop the housekeeping-run.
-                this._BusinessLogicService.HardDelete(null, documentId, "Regulated deletion: the retention-period ended (MustBeHardDeletedAfter reached).");
+                try
+                {
+                    //the business-logic-service performs the hard-deletion in a traceable way and handles/logs any deletion-error internally.
+                    this._BusinessLogicService.HardDelete(null, documentId, "Regulated deletion: the retention-period ended (MustBeHardDeletedAfter reached).");
+                }
+                catch (System.Exception exception)
+                {
+                    //a document which must not be deleted yet (its deletion-lock still applies, which is only possible when its two retention-dates contradict each other) is reported and skipped, so that one document does not stop the housekeeping-run.
+                    this._Logger.Log($"Document '{documentId}' could not be deleted by the regulated deletion.", exception);
+                }
             }
         }
 
@@ -161,7 +169,8 @@ namespace OpenDMSBackend.Core.BackgroundServices
                 }
                 else if (line.Contains("<tag-definitions>"))
                 {
-                    foreach (Model.DTOs.TagDTO tag in this._Persistence.GetAllTags())
+                    //an import is an automatic system-operation which is not done by a user, so it can only use the global tags.
+                    foreach (Model.BusinessTypes.Tag tag in this._Persistence.GetAllTags().Where(tag => tag.OwnerUserId == null))
                     {
                         entireScriptLines.Add($"if (name === {this.ToTSStringLiteral(tag.Name)}) {{ return new Tag({this.ToTSStringLiteral(tag.Id)}, {this.ToTSStringLiteral(tag.Name)}); }}");
                     }

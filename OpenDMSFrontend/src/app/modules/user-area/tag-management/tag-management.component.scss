@@ -1,0 +1,57 @@
+.tag-management {
+  padding: 0.5rem 0;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .tag-management-empty {
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  .tag-management-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    /*
+     * The height is stated explicitly, because the height a form-field takes otherwise depends on the font-metrics
+     * of the browser-engine. That height is a fraction of a pixel, the fractions of the entries add up, and the
+     * whole page below this component then ends up a pixel or two lower in one engine than in the others.
+     */
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 3.5rem;
+    }
+  }
+
+  .tag-management-tag {
+    border-radius: 1rem;
+    padding: 0.2rem 0.7rem;
+  }
+
+  .tag-management-scope {
+    opacity: 0.7;
+  }
+
+  .tag-management-create {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 3.5rem;
+  }
+
+  .tag-management-color-sample {
+    display: inline-block;
+    width: 2rem;
+    height: 1rem;
+    border-radius: 0.2rem;
+  }
+
+  .tag-management-error {
+    color: var(--mat-sys-error, #b00020);
+  }
+}

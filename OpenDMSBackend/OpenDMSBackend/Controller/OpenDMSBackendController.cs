@@ -369,20 +369,20 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetLatestDocuments(this.GetUser().Id).Select(preview => preview.ToDTO()));
         }
 
-        /// <summary>Returns all tags defined in the system.</summary>
-        /// <returns>An array of all tags as <see cref="TagDTO"/> objects.</returns>
+        /// <summary>Returns the tags the current user can use, which are the global tags and the tags the user owns.</summary>
+        /// <returns>An array of the usable tags as <see cref="TagDTO"/> objects.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpPut]
         [ProducesResponseType(typeof(TagDTO[]), StatusCodes.Status200OK)]
-        [Route(nameof(GetAllTags))]
-        public IActionResult GetAllTags()
+        [Route(nameof(GetTags))]
+        public IActionResult GetTags()
         {
-            return this.Ok(this._BusinessLogicService.GetAllTags());
+            return this.Ok(this._BusinessLogicService.GetTags(this.GetUser().Id));
         }
 
-        /// <summary>Creates a new tag which can afterwards be assigned to documents.</summary>
-        /// <param name="tag">The name and the color of the tag to create.</param>
+        /// <summary>Creates a new tag which can afterwards be assigned to documents. A global tag can only be created by an administrator.</summary>
+        /// <param name="tag">The name, the color and the scope of the tag to create.</param>
         /// <returns>The id of the created tag.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
@@ -391,7 +391,36 @@ namespace OpenDMSBackend.Core.Controller
         [Route(nameof(CreateTag))]
         public IActionResult CreateTag([FromBody] TagCreationDTO tag)
         {
-            return this.Ok(this._BusinessLogicService.CreateTag(this.GetUser().Id, tag.Name, ParseColorCode(tag.ColorCode)));
+            return this.Ok(this._BusinessLogicService.CreateTag(this.GetUser().Id, tag.Name, ParseColorCode(tag.ColorCode), tag.IsGlobal));
+        }
+
+        /// <summary>Changes the name and the color of an existing tag. A global tag can only be changed by an administrator and a tag which belongs to a user only by that user.</summary>
+        /// <param name="tagId">The id of the tag to change.</param>
+        /// <param name="tag">The new name and the new color of the tag.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPut]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(UpdateTag)}/{{{nameof(tagId)}}}")]
+        public IActionResult UpdateTag([FromRoute] string tagId, [FromBody] TagUpdateDTO tag)
+        {
+            this._BusinessLogicService.UpdateTag(this.GetUser().Id, tagId, tag.Name, ParseColorCode(tag.ColorCode));
+            return this.Ok();
+        }
+
+        /// <summary>Deletes an existing tag together with all of its assignments to documents. A global tag can only be deleted by an administrator and a tag which belongs to a user only by that user.</summary>
+        /// <param name="tagId">The id of the tag to delete.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpDelete]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(DeleteTag)}/{{{nameof(tagId)}}}")]
+        public IActionResult DeleteTag([FromRoute] string tagId)
+        {
+            this._BusinessLogicService.DeleteTag(this.GetUser().Id, tagId);
+            return this.Ok();
         }
 
         /// <summary>Assigns an existing tag to the specified document. The current user must be allowed to change the document.</summary>
@@ -496,7 +525,7 @@ namespace OpenDMSBackend.Core.Controller
 
         /// <summary>Defines a new custom metadata-field for the specified storage-location. Only a moderator of the storage-location may do this.</summary>
         /// <param name="storageLocationId">The id of the storage-location the field is defined for.</param>
-        /// <param name="field">The name and type ("String" or "Boolean") of the field to create.</param>
+        /// <param name="field">The name and type ("String", "Boolean", "Double" or "Timestamp") of the field to create.</param>
         /// <returns>The id of the created field-definition.</returns>
         [Authenticate]
         [HttpPost]
@@ -506,6 +535,21 @@ namespace OpenDMSBackend.Core.Controller
         public IActionResult DefineMetadataField([FromRoute] string storageLocationId, [FromBody] MetadataFieldDefinitionCreationDTO field)
         {
             return this.Ok(this._BusinessLogicService.DefineMetadataField(this.GetUser().Id, storageLocationId, field.Name, ParseMetadataFieldType(field.Type)));
+        }
+
+        /// <summary>Renames the specified custom metadata-field. Only a moderator of the field's storage-location may do this. The type of a field can not be changed.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to rename.</param>
+        /// <param name="newName">The new name of the field.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPut]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RenameMetadataField)}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RenameMetadataField([FromRoute] string fieldDefinitionId, [FromBody] StringValueDTO newName)
+        {
+            this._BusinessLogicService.RenameMetadataField(this.GetUser().Id, fieldDefinitionId, newName.Value);
+            return this.Ok();
         }
 
         /// <summary>Removes the specified custom metadata-field-definition together with all values documents hold for it. Only a moderator of the field's storage-location may do this.</summary>
@@ -551,7 +595,7 @@ namespace OpenDMSBackend.Core.Controller
         /// <summary>Sets the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.</summary>
         /// <param name="documentId">The id of the document.</param>
         /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
-        /// <param name="value">The value to set. For a boolean-field the value must be parseable as a boolean.</param>
+        /// <param name="value">The value to set. It must match the type of the field: a boolean ("true"/"false"), a number in the invariant culture (for example "1234.56") or a timestamp in the iso-8601-format (for example "2026-01-31T12:00:00+01:00").</param>
         /// <returns>200 OK on success.</returns>
         [Authenticate]
         [HttpPost]
@@ -561,6 +605,24 @@ namespace OpenDMSBackend.Core.Controller
         public IActionResult SetDocumentMetadataValue([FromRoute] string documentId, [FromRoute] string fieldDefinitionId, [FromBody] StringValueDTO value)
         {
             this._BusinessLogicService.SetDocumentMetadataValue(this.GetUser().Id, documentId, fieldDefinitionId, value.Value);
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Sets the retention-dates of the specified document. The current user must be allowed to change the document.
+        /// As long as the point in time before which the document must not be deleted is in the future, the document can not be hard-deleted; when the point in time after which it must be deleted is reached, the scheduled housekeeping hard-deletes it.
+        /// </summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="retentionDates">The retention-dates as iso-8601-timestamps. An omitted or empty value removes the respective date.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPut]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(SetRetentionDates)}/{{{nameof(documentId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult SetRetentionDates([FromRoute] string documentId, [FromBody] RetentionDatesDTO retentionDates)
+        {
+            this._BusinessLogicService.SetRetentionDates(this.GetUser().Id, documentId, ParseTimestamp(retentionDates.DeleteIsNotAllowedBefore), ParseTimestamp(retentionDates.MustBeHardDeletedAfter));
             return this.Ok();
         }
 
@@ -586,7 +648,23 @@ namespace OpenDMSBackend.Core.Controller
             {
                 return result;
             }
-            throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{type}' is not a valid metadata-field-type. Allowed values are '{nameof(Model.BusinessTypes.MetadataFieldType.String)}' and '{nameof(Model.BusinessTypes.MetadataFieldType.Boolean)}'.");
+            throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{type}' is not a valid metadata-field-type. Allowed values are '{nameof(Model.BusinessTypes.MetadataFieldType.String)}', '{nameof(Model.BusinessTypes.MetadataFieldType.Boolean)}', '{nameof(Model.BusinessTypes.MetadataFieldType.Double)}' and '{nameof(Model.BusinessTypes.MetadataFieldType.Timestamp)}'.");
+        }
+
+        /// <summary>Parses the given iso-8601-timestamp, rejecting a malformed value with a <see cref="GRYLibrary.Core.Exceptions.BadRequestException"/>.</summary>
+        /// <param name="timestamp">The timestamp to parse, or <see langword="null"/>/empty when no timestamp is given.</param>
+        /// <returns>The parsed timestamp, or <see langword="null"/> when no timestamp was given.</returns>
+        private static System.DateTimeOffset? ParseTimestamp(string? timestamp)
+        {
+            if (string.IsNullOrWhiteSpace(timestamp))
+            {
+                return null;
+            }
+            if (!System.DateTimeOffset.TryParse(timestamp, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out System.DateTimeOffset result))
+            {
+                throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{timestamp}' is not a valid timestamp. A timestamp must be given in the iso-8601-format, for example '2026-01-31T12:00:00+01:00'.");
+            }
+            return result;
         }
 
         /// <summary>Parses the given six-digit hexadecimal rgb-value into an <see cref="GRYLibrary.Core.Misc.ExtendedColor"/>, rejecting malformed values with a <see cref="GRYLibrary.Core.Exceptions.BadRequestException"/>.</summary>

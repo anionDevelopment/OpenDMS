@@ -514,6 +514,7 @@ entity "Tags" {
   --
   Color : int <<NOT NULL>>
   Name : varchar <<NOT NULL>>
+  OwnerUserId : varchar
 }
 
 entity "User_Roles" {

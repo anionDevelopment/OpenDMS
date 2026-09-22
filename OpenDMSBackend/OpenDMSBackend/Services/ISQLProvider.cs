@@ -57,6 +57,9 @@ namespace OpenDMSBackend.Core.Services
         string GetScriptGetAllDocumentIds();
         string GetScriptGetAllTags();
         string GetScriptAddTag();
+        string GetScriptUpdateTag();
+        string GetScriptDeleteTag();
+        string GetScriptUnassignTagFromAllDocuments();
         string GetScriptGetRolesOfUser();
         string GetScriptGetStorageLocationIdOfContainee();
         string GetScriptGetContentOfContainer();
@@ -84,6 +87,7 @@ namespace OpenDMSBackend.Core.Services
         string GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow();
         string GetScriptRemoveChild();
         string GetScriptCreateMetadataFieldDefinition();
+        string GetScriptUpdateMetadataFieldDefinition();
         string GetScriptDeleteMetadataFieldDefinition();
         string GetScriptDeleteMetadataValuesOfField();
         string GetScriptGetMetadataFieldDefinition();

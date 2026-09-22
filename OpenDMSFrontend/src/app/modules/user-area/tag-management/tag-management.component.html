@@ -1,0 +1,64 @@
+<div class="tag-management">
+  <h4 i18n="@@tag_management_title">Tags</h4>
+  @if (tags.length === 0) {
+  <p class="tag-management-empty" i18n="@@tag_management_none">There are no tags yet.</p>
+  } @if (tags.length > 0) {
+  <ul class="tag-management-list">
+    @for (tag of tags; track tag.id) {
+    <li>
+      @if (tagIsBeingChanged(tag)) {
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label i18n="@@tag_management_name_label">Name</mat-label>
+        <input matInput [(ngModel)]="newNameOfTagBeingChanged" (keyup.enter)="saveChangedTag()">
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label i18n="@@tag_management_color_label">Color</mat-label>
+        <mat-select [(ngModel)]="newColorCodeOfTagBeingChanged">
+          @for (colorCode of selectableColorCodes; track colorCode) {
+          <mat-option [value]="colorCode">
+            <span class="tag-management-color-sample" [style.background-color]="'#' + colorCode"></span>
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button mat-button color="primary" (click)="saveChangedTag()" [disabled]="newNameOfTagBeingChanged.trim().length === 0" i18n="@@tag_management_save">Save tag</button>
+      <button mat-button (click)="cancelChangingTag()" i18n="@@tag_management_cancel">Cancel</button>
+      } @else {
+      <span class="tag-management-tag" [style.background-color]="backgroundColorOf(tag)" [style.color]="textColorOf(tag)">{{tag.name}}</span>
+      @if (tagIsGlobal(tag)) {
+      <span class="tag-management-scope" i18n="@@tag_management_scope_global">global</span>
+      } @else {
+      <span class="tag-management-scope" i18n="@@tag_management_scope_own">own</span>
+      } @if (userMayManage(tag)) {
+      <button mat-icon-button (click)="startChangingTag(tag)" aria-label="Change tag" i18n-aria-label="@@tag_management_change">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="deleteTag(tag)" aria-label="Delete tag" i18n-aria-label="@@tag_management_delete">
+        <mat-icon>delete</mat-icon>
+      </button>
+      } }
+    </li>
+    }
+  </ul>
+  }
+  <div class="tag-management-create">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label i18n="@@tag_management_new_name_label">New tag</mat-label>
+      <input matInput [(ngModel)]="newTagName" (keyup.enter)="createTag()">
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label i18n="@@tag_management_color_label">Color</mat-label>
+      <mat-select [(ngModel)]="newTagColorCode">
+        @for (colorCode of selectableColorCodes; track colorCode) {
+        <mat-option [value]="colorCode">
+          <span class="tag-management-color-sample" [style.background-color]="'#' + colorCode"></span>
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button mat-button color="primary" (click)="createTag()" [disabled]="newTagName.trim().length === 0" i18n="@@tag_management_create">Create tag</button>
+  </div>
+  @if (changeNotAllowed) {
+  <p class="tag-management-error" i18n="@@tag_management_change_not_allowed">The tag could not be changed.</p>
+  }
+</div>

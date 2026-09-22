@@ -13,5 +13,9 @@ export interface TagDTO {
     id?: string | null;
     name?: string | null;
     colorCode?: string | null;
+    /**
+     * The id of the user the tag belongs to, or null when it is a global tag which every user can see and use.
+     */
+    ownerUserId?: string | null;
 }
 

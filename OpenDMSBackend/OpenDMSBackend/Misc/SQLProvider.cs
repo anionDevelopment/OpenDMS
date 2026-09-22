@@ -334,6 +334,24 @@ namespace OpenDMSBackend.Core.Misc
         }
 
         /// <inheritdoc />
+        public string GetScriptUpdateTag()
+        {
+            return this.LoadSQLScript("UpdateTag");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptDeleteTag()
+        {
+            return this.LoadSQLScript("DeleteTag");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptUnassignTagFromAllDocuments()
+        {
+            return this.LoadSQLScript("UnassignTagFromAllDocuments");
+        }
+
+        /// <inheritdoc />
         public string GetScriptGetRolesOfUser()
         {
             return this.LoadSQLScript("GetRolesOfUser");
@@ -499,6 +517,12 @@ namespace OpenDMSBackend.Core.Misc
         public string GetScriptCreateMetadataFieldDefinition()
         {
             return this.LoadSQLScript("CreateMetadataFieldDefinition");
+        }
+
+        /// <inheritdoc />
+        public string GetScriptUpdateMetadataFieldDefinition()
+        {
+            return this.LoadSQLScript("UpdateMetadataFieldDefinition");
         }
 
         /// <inheritdoc />

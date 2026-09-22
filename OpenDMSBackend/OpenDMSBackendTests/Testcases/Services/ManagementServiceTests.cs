@@ -164,7 +164,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             };
             ManagementService managementService = this.CreateManagementService(new HashSet<ImportDefinition> { importDefinition }, out _, out IPersistence persistence);
             string tagId = Guid.NewGuid().ToString();
-            persistence.CreateTag(new Tag(tagId, "Invoice", new ExtendedColor(255, 0, 0)));
+            persistence.CreateTag(new Tag(tagId, "Invoice", new ExtendedColor(255, 0, 0), null));
             Document document = this.CreateTestDocument();
 
             //act

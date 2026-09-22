@@ -3,8 +3,10 @@ import { OpenDMSBackendService, TagCreationDTO, TagDTO } from '../../../generate
 import { StorageService } from '../../../services/storage.service';
 
 /**
- * Shows the tags which are assigned to a document and lets the user change them: assign an existing tag,
- * create a new tag and assign it directly, or remove an assignment again.
+ * Shows the tags which are assigned to a document and lets the user change them: assign one of the tags the user
+ * can use (the global tags and the tags the user owns), create a new own tag and assign it directly, or remove an
+ * assignment again. Renaming and deleting a tag is not done here but in the tag-management of the settings-page,
+ * because a tag exists independently of the documents it is assigned to.
  *
  * The component only knows the document and its currently assigned tags; it does not load the document itself.
  * Every change is reported via {@link tagsChanged} so that the owner of the document reloads it, which keeps a
@@ -65,7 +67,7 @@ export class DocumentTagsComponent implements OnInit {
   }
 
   loadAvailableTags(): void {
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetAllTagsPut(this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV3OpenDMSBackendGetTagsPut(this.storageService.getAccessToken()).subscribe({
       next: tags => this.availableTags = (tags ?? []).slice().sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '')),
       error: () => this.availableTags = []
     });
@@ -90,7 +92,8 @@ export class DocumentTagsComponent implements OnInit {
     if (!this.documentId || this.newTagName.trim().length === 0) {
       return;
     }
-    const creation: TagCreationDTO = { name: this.newTagName.trim(), colorCode: this.newTagColorCode };
+    //a tag which is created while a document is indexed belongs to the user who creates it. Global tags are created in the tag-management of the settings-page, which only an administrator can do.
+    const creation: TagCreationDTO = { name: this.newTagName.trim(), colorCode: this.newTagColorCode, isGlobal: false };
     this.openDMSBackendService.aPIV3OpenDMSBackendCreateTagPost(this.storageService.getAccessToken(), creation).subscribe({
       next: createdTagId => {
         this.newTagName = '';

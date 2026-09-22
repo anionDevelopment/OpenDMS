@@ -181,14 +181,84 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
                 using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
                 string tagId = Guid.NewGuid().ToString();
                 string tagName = $"tag-{Guid.NewGuid()}";
-                Tag tag = new Tag(tagId, tagName, new ExtendedColor(0xFF0000));
+                Tag tag = new Tag(tagId, tagName, new ExtendedColor(0xFF0000), null);
 
                 //act
                 persistenceD.Persistence.CreateTag(tag);
 
                 //assert
-                TagDTO[] allTags = persistenceD.Persistence.GetAllTags();
+                IEnumerable<Tag> allTags = persistenceD.Persistence.GetAllTags();
                 Assert.IsTrue(allTags.Any(t => t.Id == tagId && t.Name == tagName));
+            }
+        }
+
+        public abstract void UpdateTagTest();
+        public void UpdateTag()
+        {
+            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
+            {
+                //arrange
+                TimeService timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
+                Tag tag = new Tag(Guid.NewGuid().ToString(), $"tag-{Guid.NewGuid()}", new ExtendedColor(0xFF0000), null);
+                persistenceD.Persistence.CreateTag(tag);
+                string newName = $"tag-{Guid.NewGuid()}";
+
+                //act
+                tag.Name = newName;
+                tag.Color = new ExtendedColor(0x00FF00);
+                persistenceD.Persistence.UpdateTag(tag);
+
+                //assert
+                Tag reloaded = persistenceD.Persistence.GetTag(tag.Id);
+                Assert.AreEqual(newName, reloaded.Name);
+                Assert.AreEqual(new ExtendedColor(0x00FF00).ColorCode, reloaded.Color.ColorCode);
+            }
+        }
+
+        public abstract void DeleteTagTest();
+        public void DeleteTag()
+        {
+            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
+            {
+                //arrange
+                TimeService timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
+                Tag tag = new Tag(Guid.NewGuid().ToString(), $"tag-{Guid.NewGuid()}", new ExtendedColor(0xFF0000), null);
+                persistenceD.Persistence.CreateTag(tag);
+                Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 05, TimeSpan.Zero), 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, "some ocr content", new byte[] { 9, 8 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new HashSet<string>(), "added-by-user-id");
+                persistenceD.Persistence.CreateDocument(testDocument);
+                persistenceD.Persistence.AssignTag(testDocument.Id, tag.Id);
+
+                //act
+                persistenceD.Persistence.DeleteTag(tag.Id);
+
+                //assert: the tag is gone and is not assigned to any document anymore, because an assignment of a no longer existing tag would be a dangling reference.
+                Assert.IsFalse(persistenceD.Persistence.GetAllTags().Any(existingTag => existingTag.Id == tag.Id));
+                Assert.AreEqual(0, persistenceD.Persistence.GetTagIdsOfDocument(testDocument.Id).Count);
+            }
+        }
+
+        public abstract void UpdateMetadataFieldDefinitionTest();
+        public void UpdateMetadataFieldDefinition()
+        {
+            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
+            {
+                //arrange
+                TimeService timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
+                string storageLocationId = persistenceD.Persistence.AddStoragLocation($"storageLocation-{Guid.NewGuid()}");
+                MetadataFieldDefinition definition = new MetadataFieldDefinition(Guid.NewGuid().ToString(), storageLocationId, "contact", MetadataFieldType.String);
+                persistenceD.Persistence.CreateMetadataFieldDefinition(definition);
+
+                //act
+                definition.Name = "sender";
+                persistenceD.Persistence.UpdateMetadataFieldDefinition(definition);
+
+                //assert
+                MetadataFieldDefinition reloaded = persistenceD.Persistence.GetMetadataFieldDefinition(definition.Id);
+                Assert.AreEqual("sender", reloaded.Name);
+                Assert.AreEqual(MetadataFieldType.String, reloaded.Type);
             }
         }
 
@@ -200,7 +270,7 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
                 //arrange
                 TimeService timeService = new TimeService();
                 using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
-                Tag tag = new Tag(Guid.NewGuid().ToString(), $"tag-{Guid.NewGuid()}", new ExtendedColor(0xFF0000));
+                Tag tag = new Tag(Guid.NewGuid().ToString(), $"tag-{Guid.NewGuid()}", new ExtendedColor(0xFF0000), null);
                 persistenceD.Persistence.CreateTag(tag);
                 Document testDocument = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 05, TimeSpan.Zero), 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, "some ocr content", new byte[] { 9, 8 }, false, default, new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero), CodeUnitSpecificConstants.RolenameUsers, new HashSet<string>(), "added-by-user-id")
                 {

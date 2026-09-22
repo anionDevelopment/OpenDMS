@@ -1,3 +1,2 @@
-
-SELECT "Id", "Name", "Color"
+SELECT "Id", "Name", "Color", "OwnerUserId"
     FROM "Tags";

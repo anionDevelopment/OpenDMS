@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AdminSettingsComponent } from './admin-settings.component';
 import { FrameWorkComponent } from '../../home-page/frame-work/frame-work.component';
 import { AdminAreaContainerComponent } from '../admin-area-container/admin-area-container.component';
@@ -17,6 +18,16 @@ import { Router } from '@angular/router';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { StorageService } from '../../../services/storage.service';
+
+
+//the tag-management is tested by its own testcases; here it is only replaced so that the settings-page can be rendered.
+@Component({
+  selector: 'app-tag-management',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  template: ''
+})
+class MockTagManagementComponent { }
 
 describe('AdminSettingsComponent', () => {
   let component: AdminSettingsComponent;
@@ -42,6 +53,7 @@ describe('AdminSettingsComponent', () => {
         FrameWorkComponent,
         AdminAreaContainerComponent,
         AdminDashboardComponent,
+        MockTagManagementComponent,
       ],
       providers: [
         {

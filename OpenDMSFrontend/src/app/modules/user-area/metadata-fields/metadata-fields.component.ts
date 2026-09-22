@@ -3,9 +3,12 @@ import { MetadataFieldDefinitionCreationDTO, MetadataFieldDefinitionDTO, OpenDMS
 import { StorageService } from '../../../services/storage.service';
 
 /**
- * Displays the custom metadata-fields defined for a storage-location and lets a moderator add or remove them.
- * The list is shown to every user which may view the storage-location; adding and removing is only permitted for
- * moderators and is enforced by the backend (a rejected change is reported via {@link errorMessage}).
+ * Displays the custom metadata-fields defined for a storage-location and lets a moderator add, rename or remove
+ * them. The list is shown to every user which may view the storage-location; changing is only permitted for
+ * moderators and is enforced by the backend (a rejected change is reported via {@link changeNotAllowed}).
+ *
+ * The type of a field can not be changed after it was defined, because the values which the documents already
+ * hold for it were validated against it.
  */
 @Component({
   selector: 'app-metadata-fields',
@@ -26,6 +29,11 @@ export class MetadataFieldsComponent implements OnInit {
   newFieldName = '';
   newFieldType = 'String';
   changeNotAllowed = false;
+
+  /** The id of the field which is currently being renamed, or an empty string when no field is being renamed. */
+  fieldIdBeingRenamed = '';
+  /** The name which the field that is currently being renamed will get. */
+  newNameOfFieldBeingRenamed = '';
 
   public constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
   }
@@ -62,13 +70,45 @@ export class MetadataFieldsComponent implements OnInit {
     });
   }
 
+  startRenamingField(field: MetadataFieldDefinitionDTO): void {
+    this.changeNotAllowed = false;
+    this.fieldIdBeingRenamed = field.id ?? '';
+    this.newNameOfFieldBeingRenamed = field.name ?? '';
+  }
+
+  cancelRenamingField(): void {
+    this.fieldIdBeingRenamed = '';
+    this.newNameOfFieldBeingRenamed = '';
+  }
+
+  fieldIsBeingRenamed(field: MetadataFieldDefinitionDTO): boolean {
+    return this.fieldIdBeingRenamed.length > 0 && this.fieldIdBeingRenamed === field.id;
+  }
+
+  renameField(): void {
+    this.changeNotAllowed = false;
+    if (this.fieldIdBeingRenamed.length === 0 || this.newNameOfFieldBeingRenamed.trim().length === 0) {
+      return;
+    }
+    this.openDMSBackendService.aPIV3OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut(this.fieldIdBeingRenamed, this.storageService.getAccessToken(), { value: this.newNameOfFieldBeingRenamed.trim() }).subscribe({
+      next: () => {
+        this.cancelRenamingField();
+        this.loadFields();
+      },
+      error: () => this.changeNotAllowed = true
+    });
+  }
+
   removeField(field: MetadataFieldDefinitionDTO): void {
     this.changeNotAllowed = false;
     if (!field.id) {
       return;
     }
     this.openDMSBackendService.aPIV3OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete(field.id, this.storageService.getAccessToken()).subscribe({
-      next: () => this.loadFields(),
+      next: () => {
+        this.cancelRenamingField();
+        this.loadFields();
+      },
       error: () => this.changeNotAllowed = true
     });
   }
