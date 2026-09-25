@@ -231,7 +231,7 @@ namespace OpenDMSBackend.Core.Services
 
         private void EnrichWithDirectlyInheritedRoles(Role role)
         {
-            //TODO loading inherited roles is very inperformant currently, this should be optimized
+            //TODO loading inherited roles is very inefficient currently, this should be optimized
             ISet<string> inheritedRoleIds = this.RunTransaction(nameof(EnrichWithDirectlyInheritedRoles), true, (command) =>
             {
                 ISet<string> inheritedRoleIdsInternal = new HashSet<string>();
@@ -1215,7 +1215,7 @@ namespace OpenDMSBackend.Core.Services
                     return result;
                 }
             })[0]);
-            this.EnrichWithContainees(result);//this can be optimized regrading to performance: this function loads the full objets (folder and document, recursive) from the database. but in practise, only the ids are required for the requested DTO in most cases and loading the other properties as well is just unnecessary.
+            this.EnrichWithContainees(result);//this can be optimized regarding to performance: this function loads the full objects (folder and document, recursive) from the database. but in practice, only the ids are required for the requested DTO in most cases and loading the other properties as well is just unnecessary.
             return result;
         }
 

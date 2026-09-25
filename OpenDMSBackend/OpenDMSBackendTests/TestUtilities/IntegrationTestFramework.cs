@@ -52,7 +52,9 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     };
 
                     string[] args = new string[] {
-                        $"--{nameof(CommandlineParameter.UseMockOCRService)}"
+                        $"--{nameof(CommandlineParameter.UseMockOCRService)}",
+                        //The integration-tests drive the api of the application, so they need the business-logic of it.
+                        $"--{nameof(CommandlineParameter.RunBackgroundProcesses)}"
                     };//TODO add option to pass more configuration-values for the test-run like port etc. so that this can not go wrong due to a different configuration from a previous (manual) run.
                     this._ExitCodeOfServer = this._Program.MainImplementation(args);
                 }
@@ -118,7 +120,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
         private string GetExitCodeMessage()
         {
             string message = $"Exitcode of main-method was {this._ExitCodeOfServer}.";
-            if (this._Program != null && this._Program._Log != null)//TODO this condition should not be required. but for unknown reasons the _log-property is null and this causes problems whille retrieving the logs here which would be useful.
+            if (this._Program != null && this._Program._Log != null)//TODO this condition should not be required. but for unknown reasons the _log-property is null and this causes problems while retrieving the logs here which would be useful.
             {
                 IGRYLog log = this._Program._Log;
                 LogItem[] logMessages = log.LastLogEntries.GetEntries();

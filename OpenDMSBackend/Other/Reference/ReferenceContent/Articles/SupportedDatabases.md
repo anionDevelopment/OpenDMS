@@ -14,4 +14,4 @@ There are usually 2 usecases for that:
 
 From the perspective of the usage (as a backend-developer) Transient is similar to an in-memory-database which is internally included in the backend and does not have any third-party-dependencies.
 The persisted data will always be removed when the backend will get stopped when using the transient-persistence.
-So Transient is not appropriate for productive-usage for obviousreasons.
+So Transient is not appropriate for productive-usage for obvious reasons.

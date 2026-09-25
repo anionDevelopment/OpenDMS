@@ -76,7 +76,9 @@ namespace OpenDMSBackend.Core
                     {
                         _Log.Configuration.AddLogLevel(LogLevel.Debug);
                     }
-                    runBusinessLogic = initializationInformation.ApplicationConstants.ExecutionMode is not Analysis;//The analysis-mode only inspects the routes to generate the api-specification. Every other execution-mode (also a test-run) requires a fully functional server.
+                    // The execution-mode of a test-run does not tell whether the background-services are wanted, so a caller which
+                    // needs them asks for them with its own commandline-option.
+                    runBusinessLogic = initializationInformation.ApplicationConstants.ExecutionMode is RunProgram || initializationInformation.CommandlineParameter.RunBackgroundProcesses;
                     string domain = string.IsNullOrWhiteSpace(initializationInformation.CommandlineParameter.InitialDomain) ? Tools.GetDefaultDomainValue(GeneralConstants.CodeUnitName) : initializationInformation.CommandlineParameter.InitialDomain;
                     initializationInformation.ApplicationConstants.CommonRoutesHostInformation = new DoNotHostCommonRoutes();
                     initializationInformation.ApplicationConstants.HostMaintenanceInformation = new HostMaintenanceRoutes()

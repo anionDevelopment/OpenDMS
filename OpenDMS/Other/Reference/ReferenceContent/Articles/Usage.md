@@ -4,7 +4,7 @@
 
 The container listens on port 8080 (HTTP) and 443 (HTTPS).
 Even if internally nginx is used as internal reverse-proxy to distinguish between requests for frontend and backend this is not meant as reverse-proxy when the reference says it is supposed to be hosted as reverse-proxy.
-The container itself only contains the development-certificate to that it is able to be hosted using HTTPS.
+The container itself only contains the development-certificate so that it is able to be hosted using HTTPS.
 Anyway, this is not a public trusted certificate.
 There is also no mechanism to retrieve a public trusted certificate.
 Treat the OpenDMS-container as container which exposes its functionality without TLS.

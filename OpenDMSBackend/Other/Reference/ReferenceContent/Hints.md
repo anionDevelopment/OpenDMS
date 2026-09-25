@@ -19,7 +19,7 @@ The following tools from the [tools-list](https://github.com/anionDev/ScriptColl
 
 The recommended IDE for this codeunit is [Visual Studio](https://visualstudio.com/).
 
-Start the project using the usual usual debug-button in Visual Studio.
+Start the project using the usual debug-button in Visual Studio.
 When you start the backend the first time then a configuration-file will be generated which will be used.
 This configuration-file is located in `<repository-root>\OpenDMSBackend\Other\Workspace\Configuration\Configuration.xml`.
 This configuration-file will always be used if available when running the backend locally.
@@ -50,11 +50,10 @@ Assigning a tag which is already assigned, and removing one which is not assigne
 ### Custom metadata-fields
 
 A custom metadata-field is defined per storage-location, so it answers "which values does this kind of document carry".
-Only a moderator of a storage-location may define a field (name + type `String` or `Boolean`), and every document contained in that storage-location (directly or in one of its folders) can optionally hold a value for each field.
+Only a moderator of a storage-location may define a field (name + type `String`, `Boolean`, `Double` or `Timestamp`), and every document contained in that storage-location (directly or in one of its folders) can optionally hold a value for each field.
 This covers the fields which issue #14 names as examples, for example the document-type and the contact/sender.
-A boolean-value is validated and stored in its normalized lower-case form (`true`/`false`).
+A value is validated against the type of its field and is stored in a normalized representation (for example a boolean-value in its lower-case form `true`/`false`), so that every reader gets the same format back regardless of the culture of the writer.
 Holding no value is a different state than holding an empty text: clearing a value removes the association instead of storing an empty string.
-The types `double` and `timestamp` mentioned in issue #2 are not supported yet.
 The retention-date is deliberately not a metadata-field: it is held by `Document.DeleteIsNotAllowedBefore` and `Document.MustBeHardDeletedAfter` (see issue #9), so that there is exactly one place which decides when a document may and must be deleted.
 
 ### Common properties of both

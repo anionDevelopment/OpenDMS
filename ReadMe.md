@@ -60,7 +60,7 @@ See the general [product reference](./Other/Reference/Reference.md).
 
 ### Non functional requirements
 
-- ❌ [Allow login with OpenID.](https://github.com/anionDevelopment/OpenDMS/issues/25)
+- ✅ Allow login with OpenID. (via [OpenID Connect](https://github.com/anionDevelopment/OpenDMS/issues/25): an admin configures one or more OIDC providers, a user logs in through the provider's authorization flow, and an OpenDMS account is created automatically on the user's first login through that provider.)
 - ❌ [Export and import of all data (technical requirement for migrating everything from one server to another; really all data is exported and imported).](https://github.com/anionDevelopment/OpenDMS/issues/26)
 
 ### Feature 14: tagging and indexing with metadata
@@ -81,10 +81,6 @@ The topic covers the following points, which are all implemented:
 ### Usage
 
 TODO
-
-## Reference
-
-The OpenDMS-reference can be found [here](./Other/Resources/Reference/Reference.md).
 
 ## Build
 

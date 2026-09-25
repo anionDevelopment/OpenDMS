@@ -38,6 +38,7 @@ export class LoginFormComponent implements OnInit {
     });
   }
 
+  /** Logs in with the username and password entered in the form, stores the returned access-token and navigates to the dashboard on success. */
   public login(): void {
     const username: string = this.form.get('username')!.value;
     const password: string = this.form.get('password')!.value;
@@ -52,6 +53,12 @@ export class LoginFormComponent implements OnInit {
       });
   }
 
+  /**
+   * Starts the OIDC login for the selected provider: stores the expected state and the provider-id in
+   * session-storage (checked by the callback-page against the state the identity-provider returns, to
+   * detect a forged or replayed callback) and redirects the browser to the provider's authorization-URL.
+   * Does nothing when no provider is selected.
+   */
   public loginWithOidc(): void {
     if (!this.selectedProviderId) {
       return;

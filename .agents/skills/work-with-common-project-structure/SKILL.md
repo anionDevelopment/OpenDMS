@@ -105,7 +105,7 @@ If the pipeline-command exits with 0 then everything is fine. If it exits with a
 ## Changelog
 
 The changelog is always located in `<repository>\Other\Resources\Changelog`.
-When you change something then then always update the changelog accordingly.
+When you change something then always update the changelog accordingly.
 To find the correct changelog-file: Query the current project version. In repositories which use ScriptCollection this is done with `scshowprojectversion` (note that `scshowversion` shows the version of ScriptCollection itself, not the version of the project).
 It is important to determine the version after implementing the changes, not before it.
 The changelog-filename in the changelog-folder is then `v<version>.md`, where `<version>` is the determined version.

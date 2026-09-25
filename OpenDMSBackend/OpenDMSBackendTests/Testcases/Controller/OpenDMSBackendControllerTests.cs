@@ -70,7 +70,7 @@ namespace OpenDMSBackend.Tests.Testcases.Controller
             authenticationServiceMock.Verify(mock => mock.GetUser(userId),Times.Once());
             authenticationServiceMock.VerifyNoOtherCalls();
         }
-        //TODO add testcase that you get a 403-response when you try to load a document without having the requried permissions.
+        //TODO add testcase that you get a 403-response when you try to load a document without having the required permissions.
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]

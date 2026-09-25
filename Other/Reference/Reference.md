@@ -21,13 +21,13 @@ TODO add minimal service-description here.
 
 | Responsibility  | Name and contact-information |
 | --------------- | ---------------------------- |
-| Pdocut-owner    | Marius Göcke                         |
+| Product-owner   | Marius Göcke                         |
 | Product-manager | Marius Göcke                 |
 | Support         | Bugs and feature-requests: Use GitHub-issues<br>Support for issues which are not in the responsibility of the developer: Support-contracts on demand |
 
 ## License & Pricing
 
-See [License.txt](https://github.com/anionDev/OpenDMS/License.txt).
+See [License.txt](https://github.com/anionDev/OpenDMS/blob/main/License.txt).
 (For pricing of support-contracts please contact the product-owner.)
 
 ## External resources
