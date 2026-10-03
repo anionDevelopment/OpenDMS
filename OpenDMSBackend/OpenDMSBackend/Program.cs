@@ -1,3 +1,4 @@
+using GRYLibrary.Core.APIServer.BaseServices;
 using GRYLibrary.Core.APIServer.CommonRoutes;
 using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
@@ -48,6 +49,15 @@ namespace OpenDMSBackend.Core
         internal bool IsRunning { get; set; } = false;
         internal IBusinessLogicService? _BusinessLogicService;
         internal IInitializationService<CommandlineParameter>? _InitializationService;
+        /// <summary>
+        /// The background-services of the running application, or an empty list as long as none were started.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Stop"/> needs them: the shutdown of the web-application stops them itself, but a caller which
+        /// started the application asynchronously does not wait for that shutdown, so its process would end while the
+        /// services still run, and everything those services started would outlive the application.
+        /// </remarks>
+        private readonly IList<IIteratingBackgroundService> _BackgroundServices = new List<IIteratingBackgroundService>();
         internal IGRYLog _Log;
         internal IHostApplicationLifetime? _HostApplicationLifetime;
         internal APIServerConfiguration<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter> _Constants;
@@ -294,6 +304,8 @@ namespace OpenDMSBackend.Core
                             IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
                             IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
                             functionalInformationForWebApplication.RunAsync = this.RunAsync;
+                            this._BackgroundServices.Add(metricsService);
+                            this._BackgroundServices.Add(managementScheduler);
                             functionalInformationForWebApplication.PreRun = () =>
                             {
                                 //initialize
@@ -323,12 +335,24 @@ namespace OpenDMSBackend.Core
             return result;
         }
 
+        /// <summary>
+        /// Requests a graceful shutdown of the running API server and blocks until it has fully stopped.
+        /// </summary>
+        /// <remarks>
+        /// The background-services are stopped here and not only by the shutdown of the web-application, because a
+        /// caller which started the application asynchronously gets the control back long before that shutdown
+        /// happens. Stopping a service which was stopped already does nothing, so the two ways do not collide.
+        /// </remarks>
         internal void Stop()
         {
             GUtilities.AssertNotNull(this._Constants, nameof(this._Constants)).CancellationTokenSource.Cancel();
             while (this.IsRunning)
             {
                 System.Threading.Thread.Sleep(System.TimeSpan.FromMilliseconds(100));
+            }
+            foreach (IIteratingBackgroundService backgroundService in this._BackgroundServices)
+            {
+                backgroundService.Stop().Wait();
             }
         }
     }

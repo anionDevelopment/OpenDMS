@@ -43,13 +43,13 @@
             "language": "ar",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "ar",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "ar",
@@ -91,13 +91,13 @@
             "language": "cs",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "cs",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "cs",
@@ -115,13 +115,13 @@
             "language": "da",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "da",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "da",
@@ -139,13 +139,13 @@
             "language": "de",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "de",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "de",
@@ -163,13 +163,13 @@
             "language": "el",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "el",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "el",
@@ -187,13 +187,13 @@
             "language": "es",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "es",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "es",
@@ -235,13 +235,13 @@
             "language": "fa",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "fa",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "fa",
@@ -259,13 +259,13 @@
             "language": "fi",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "fi",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "fi",
@@ -283,13 +283,13 @@
             "language": "fr",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "fr",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "fr",
@@ -331,13 +331,13 @@
             "language": "he",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "he",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "he",
@@ -355,13 +355,13 @@
             "language": "hi",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "hi",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "hi",
@@ -427,13 +427,13 @@
             "language": "id",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "id",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "id",
@@ -475,13 +475,13 @@
             "language": "it",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "it",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "it",
@@ -499,13 +499,13 @@
             "language": "ja",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "ja",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "ja",
@@ -595,13 +595,13 @@
             "language": "ko",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "ko",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "ko",
@@ -739,13 +739,13 @@
             "language": "ms",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "ms",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "ms",
@@ -787,13 +787,13 @@
             "language": "nb",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "nb",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "nb",
@@ -811,13 +811,13 @@
             "language": "nl",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "nl",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "nl",
@@ -859,13 +859,13 @@
             "language": "pl",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "pl",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "pl",
@@ -883,13 +883,13 @@
             "language": "pt",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "pt",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "pt",
@@ -931,13 +931,13 @@
             "language": "ru",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "ru",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "ru",
@@ -955,13 +955,13 @@
             "language": "sv",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "sv",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "sv",
@@ -979,13 +979,13 @@
             "language": "th",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "th",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "th",
@@ -1099,13 +1099,13 @@
             "language": "ur",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "ur",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "ur",
@@ -1123,13 +1123,13 @@
             "language": "vi",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "vi",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "vi",
@@ -1147,13 +1147,13 @@
             "language": "zh",
             "state": "Initial",
             "state_order": 0,
-            "percentage": 0.25274725274725274
+            "percentage": 0.40869565217391307
           },
           {
             "language": "zh",
             "state": "Translated",
             "state_order": 1,
-            "percentage": 0.7472527472527473
+            "percentage": 0.591304347826087
           },
           {
             "language": "zh",
@@ -1301,7 +1301,7 @@
           },
           {
             "language": "ar",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "bn",
@@ -1309,23 +1309,23 @@
           },
           {
             "language": "cs",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "da",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "de",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "el",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "es",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "et",
@@ -1333,15 +1333,15 @@
           },
           {
             "language": "fa",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "fi",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "fr",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "ga",
@@ -1349,11 +1349,11 @@
           },
           {
             "language": "he",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "hi",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "hr",
@@ -1365,7 +1365,7 @@
           },
           {
             "language": "id",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "is",
@@ -1373,11 +1373,11 @@
           },
           {
             "language": "it",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "ja",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "ka",
@@ -1393,7 +1393,7 @@
           },
           {
             "language": "ko",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "ky",
@@ -1417,7 +1417,7 @@
           },
           {
             "language": "ms",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "my",
@@ -1425,11 +1425,11 @@
           },
           {
             "language": "nb",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "nl",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "ph",
@@ -1437,11 +1437,11 @@
           },
           {
             "language": "pl",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "pt",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "ro",
@@ -1449,15 +1449,15 @@
           },
           {
             "language": "ru",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "sv",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "th",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "tk",
@@ -1477,15 +1477,15 @@
           },
           {
             "language": "ur",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "vi",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           },
           {
             "language": "zh",
-            "label": "Initial 25%   Translated 75%   Reviewed 0%   Final 0%"
+            "label": "Initial 41%   Translated 59%   Reviewed 0%   Final 0%"
           }
         ]
       },

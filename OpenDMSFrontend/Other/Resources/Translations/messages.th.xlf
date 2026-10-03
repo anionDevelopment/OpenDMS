@@ -287,6 +287,54 @@
         <target>แสดงตัวอย่างขนาดใหญ่</target>
       </segment>
     </unit>
+    <unit id="document_retention_title">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:2,3</note>
+      </notes>
+      <segment>
+        <source>Retention</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_description">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:3,4</note>
+      </notes>
+      <segment>
+        <source>As long as the date before which the document must not be deleted is in the future, the document can not be deleted. When the date after which it must be deleted is reached, it is deleted automatically.</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_delete_not_allowed_before_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:6,7</note>
+      </notes>
+      <segment>
+        <source>Must not be deleted before</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_must_be_deleted_after_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:10,11</note>
+      </notes>
+      <segment>
+        <source>Must be deleted after</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_save">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:13,15</note>
+      </notes>
+      <segment>
+        <source>Save retention</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_change_not_allowed">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:16,18</note>
+      </notes>
+      <segment>
+        <source>The retention of this document could not be changed.</source>
+      </segment>
+    </unit>
     <unit id="col_id">
       <notes>
         <note category="location">src/app/modules/user-area/document-table/document-table.component.html:4,5</note>
@@ -577,15 +625,6 @@
         <target>ยังไม่มีการกําหนดช่องข้อมูลกํากับสําหรับจัดเก็บข้อมูล.</target>
       </segment>
     </unit>
-    <unit id="metadata_field_remove">
-      <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:13</note>
-      </notes>
-      <segment state="translated">
-        <source>Remove metadata-field</source>
-        <target>ลบช่องข้อมูลกํากับ</target>
-      </segment>
-    </unit>
     <unit id="metadata_field_name_label">
       <notes>
         <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:21,22</note>
@@ -593,6 +632,39 @@
       <segment state="translated">
         <source>Field-name</source>
         <target>ชื่อช่องข้อมูล</target>
+      </segment>
+    </unit>
+    <unit id="metadata_field_rename_save">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:14,15</note>
+      </notes>
+      <segment>
+        <source>Save name</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_rename_cancel">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:15,17</note>
+      </notes>
+      <segment>
+        <source>Cancel</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_rename">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:20</note>
+      </notes>
+      <segment>
+        <source>Rename metadata-field</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_remove">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:13</note>
+      </notes>
+      <segment state="translated">
+        <source>Remove metadata-field</source>
+        <target>ลบช่องข้อมูลกํากับ</target>
       </segment>
     </unit>
     <unit id="metadata_field_type_label">
@@ -622,6 +694,22 @@
         <target>ใช่/ ไม่</target>
       </segment>
     </unit>
+    <unit id="metadata_field_type_double">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:41,42</note>
+      </notes>
+      <segment>
+        <source>Number</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_type_timestamp">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:42,44</note>
+      </notes>
+      <segment>
+        <source>Date and time</source>
+      </segment>
+    </unit>
     <unit id="metadata_field_add">
       <notes>
         <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:32,35</note>
@@ -647,6 +735,111 @@
       <segment state="translated">
         <source>Search term</source>
         <target>เงื่อนไขการค้นหา</target>
+      </segment>
+    </unit>
+    <unit id="tag_management_title">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:2,4</note>
+      </notes>
+      <segment>
+        <source>Tags</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_none">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:4,6</note>
+      </notes>
+      <segment>
+        <source>There are no tags yet.</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_name_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:11,12</note>
+      </notes>
+      <segment>
+        <source>Name</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_color_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:15,16</note>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:50,51</note>
+      </notes>
+      <segment>
+        <source>Color</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_save">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:24,25</note>
+      </notes>
+      <segment>
+        <source>Save tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_cancel">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:25,27</note>
+      </notes>
+      <segment>
+        <source>Cancel</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_scope_global">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:29,31</note>
+      </notes>
+      <segment>
+        <source>global</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_scope_own">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:31,32</note>
+      </notes>
+      <segment>
+        <source>own</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_change">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:33</note>
+      </notes>
+      <segment>
+        <source>Change tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_delete">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:36</note>
+      </notes>
+      <segment>
+        <source>Delete tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_new_name_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:46,47</note>
+      </notes>
+      <segment>
+        <source>New tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_create">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:59,61</note>
+      </notes>
+      <segment>
+        <source>Create tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_change_not_allowed">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:62,64</note>
+      </notes>
+      <segment>
+        <source>The tag could not be changed.</source>
       </segment>
     </unit>
     <unit id="user_menu_label">

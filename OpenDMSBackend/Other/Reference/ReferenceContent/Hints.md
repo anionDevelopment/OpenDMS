@@ -43,7 +43,11 @@ A document is indexed (see issue #14) by two mechanisms which are deliberately k
 ### Tags
 
 A tag is a named and colored label which exists on its own and is usable in every storage-location, so it answers "which documents belong together".
-Every authenticated user may create a tag; the name must not be empty and must not be used by another tag yet (compared case-insensitively).
+A tag is either a global tag, which every user can see and use and which only an administrator may create, or it belongs to a single user (`Tag.OwnerUserId`), who is then the only one who can see and use it.
+Every authenticated user may therefore create a tag of their own, while creating a global one requires the administrator-role.
+The name of a tag must not be empty and must not be used by another tag which is visible for the same user yet (compared case-insensitively), because two tags with the same name can not be distinguished in the user-interface.
+A tag can be renamed, be given another color and be deleted; deleting it removes it from every document it is assigned to.
+Changing or deleting a tag is allowed for an administrator in case of a global tag and for the owner in case of a tag which belongs to a user.
 Assigning a tag to a document and removing the assignment again requires the permission to change that document.
 Assigning a tag which is already assigned, and removing one which is not assigned, are both rejected instead of being silently ignored, so that a caller notices when it works on an outdated state.
 
@@ -60,7 +64,7 @@ The retention-date is deliberately not a metadata-field: it is held by `Document
 
 The assignment of a tag and the value of a metadata-field are direct per-document-row associations and are not versioned on their own; a metadata-only new version (for example a title-change) copies both forward.
 Every change of a tag-assignment and of a metadata-value writes an audit-log-entry, as every other change-operation does.
-Neither of the two is part of the search yet; searching over them belongs to issue #15.
+Both are part of the search: `Search` finds a document by the name of a tag which is assigned to it and by the values it holds for the metadata-fields of its storage-location, besides its title, its filenames and its ocr-content. What is still missing is a search which is restricted to a single field and a machine-evaluable export of the result, which belongs to issue #15.
 
 ## Known defects which require a larger change
 

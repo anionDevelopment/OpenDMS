@@ -18,9 +18,12 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 Run `ng test` to execute the unit tests via [Vitest](https://vitest.dev).
 
-## Running end-to-end tests
+## Running visual-regression-tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+The visual-regression-tests are located in [e2e](./e2e) and are written with [Playwright](https://playwright.dev). They are
+executed by `Other/QualityCheck/RunTestcases.py` together with the unit-tests, always inside a container, because a screenshot
+depends on the operating-system it was rendered on. If the appearance of a page was changed intentionally then the
+baseline-screenshots have to be regenerated with the task `UpdateVisualRegressionBaselines` of the repository.
 
 ## Further help
 

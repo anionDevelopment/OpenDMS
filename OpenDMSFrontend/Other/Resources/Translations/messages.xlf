@@ -84,7 +84,7 @@
     </unit>
     <unit id="username">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:4,5</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:3,4</note>
       </notes>
       <segment>
         <source>Username</source>
@@ -92,7 +92,7 @@
     </unit>
     <unit id="login_username_placeholder">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:5</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:4</note>
       </notes>
       <segment>
         <source>Example: johndoe</source>
@@ -100,7 +100,7 @@
     </unit>
     <unit id="password">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:12,13</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:8,9</note>
       </notes>
       <segment>
         <source>Password</source>
@@ -108,7 +108,7 @@
     </unit>
     <unit id="login_button">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:18,22</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:12,14</note>
       </notes>
       <segment>
         <source>Login</source>
@@ -116,7 +116,7 @@
     </unit>
     <unit id="oidc_provider_label">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:26,27</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:17,18</note>
       </notes>
       <segment>
         <source>Login with</source>
@@ -124,7 +124,7 @@
     </unit>
     <unit id="oidc_login_button">
       <notes>
-        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:37,39</note>
+        <note category="location">src/app/modules/home-page/login-form/login-form.component.html:23,24</note>
       </notes>
       <segment>
         <source>Login with selected provider</source>
@@ -196,7 +196,7 @@
     </unit>
     <unit id="content_view_document_count">
       <notes>
-        <note category="location">src/app/modules/user-area/content-view/content-view.component.html:18,20</note>
+        <note category="location">src/app/modules/user-area/content-view/content-view.component.html:19,21</note>
       </notes>
       <segment>
         <source>document(s)</source>
@@ -220,7 +220,7 @@
     </unit>
     <unit id="document_metadata_boolean_not_set">
       <notes>
-        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:14,15</note>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:13,14</note>
       </notes>
       <segment>
         <source>Not set</source>
@@ -228,7 +228,7 @@
     </unit>
     <unit id="document_metadata_boolean_true">
       <notes>
-        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:15,16</note>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:14,15</note>
       </notes>
       <segment>
         <source>Yes</source>
@@ -236,7 +236,7 @@
     </unit>
     <unit id="document_metadata_boolean_false">
       <notes>
-        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:16,18</note>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:15,17</note>
       </notes>
       <segment>
         <source>No</source>
@@ -244,7 +244,7 @@
     </unit>
     <unit id="document_metadata_change_not_allowed">
       <notes>
-        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:27,30</note>
+        <note category="location">src/app/modules/user-area/document-metadata/document-metadata.component.html:30,32</note>
       </notes>
       <segment>
         <source>The metadata of this document could not be changed.</source>
@@ -264,6 +264,54 @@
       </notes>
       <segment>
         <source>large preview</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_title">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:2,3</note>
+      </notes>
+      <segment>
+        <source>Retention</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_description">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:3,4</note>
+      </notes>
+      <segment>
+        <source>As long as the date before which the document must not be deleted is in the future, the document can not be deleted. When the date after which it must be deleted is reached, it is deleted automatically.</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_delete_not_allowed_before_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:6,7</note>
+      </notes>
+      <segment>
+        <source>Must not be deleted before</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_must_be_deleted_after_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:10,11</note>
+      </notes>
+      <segment>
+        <source>Must be deleted after</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_save">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:13,15</note>
+      </notes>
+      <segment>
+        <source>Save retention</source>
+      </segment>
+    </unit>
+    <unit id="document_retention_change_not_allowed">
+      <notes>
+        <note category="location">src/app/modules/user-area/document-retention/document-retention.component.html:16,18</note>
+      </notes>
+      <segment>
+        <source>The retention of this document could not be changed.</source>
       </segment>
     </unit>
     <unit id="col_id">
@@ -324,7 +372,7 @@
     </unit>
     <unit id="document_tags_none">
       <notes>
-        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:4,6</note>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:4,5</note>
       </notes>
       <segment>
         <source>No tags are assigned to this document yet.</source>
@@ -332,7 +380,7 @@
     </unit>
     <unit id="document_tag_unassign">
       <notes>
-        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:11</note>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:10</note>
       </notes>
       <segment>
         <source>Remove tag from document</source>
@@ -340,7 +388,7 @@
     </unit>
     <unit id="document_tag_existing_label">
       <notes>
-        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:20,21</note>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:19,20</note>
       </notes>
       <segment>
         <source>Existing tag</source>
@@ -348,7 +396,7 @@
     </unit>
     <unit id="document_tag_assign">
       <notes>
-        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:27,29</note>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:26,28</note>
       </notes>
       <segment>
         <source>Assign tag</source>
@@ -356,7 +404,7 @@
     </unit>
     <unit id="document_tag_new_name_label">
       <notes>
-        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:31,32</note>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:30,31</note>
       </notes>
       <segment>
         <source>New tag</source>
@@ -364,7 +412,7 @@
     </unit>
     <unit id="document_tag_new_color_label">
       <notes>
-        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:35,36</note>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:34,35</note>
       </notes>
       <segment>
         <source>Color</source>
@@ -372,7 +420,7 @@
     </unit>
     <unit id="document_tag_create_and_assign">
       <notes>
-        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:44,46</note>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:43,45</note>
       </notes>
       <segment>
         <source>Create and assign</source>
@@ -380,7 +428,7 @@
     </unit>
     <unit id="document_tag_change_not_allowed">
       <notes>
-        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:47,50</note>
+        <note category="location">src/app/modules/user-area/document-tags/document-tags.component.html:46,48</note>
       </notes>
       <segment>
         <source>The tags of this document could not be changed.</source>
@@ -534,25 +582,50 @@
         <source>No custom metadata-fields are defined for this storage-location yet.</source>
       </segment>
     </unit>
-    <unit id="metadata_field_remove">
-      <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:13</note>
-      </notes>
-      <segment>
-        <source>Remove metadata-field</source>
-      </segment>
-    </unit>
     <unit id="metadata_field_name_label">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:24,25</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:11,12</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:33,34</note>
       </notes>
       <segment>
         <source>Field-name</source>
       </segment>
     </unit>
+    <unit id="metadata_field_rename_save">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:14,15</note>
+      </notes>
+      <segment>
+        <source>Save name</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_rename_cancel">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:15,17</note>
+      </notes>
+      <segment>
+        <source>Cancel</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_rename">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:20</note>
+      </notes>
+      <segment>
+        <source>Rename metadata-field</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_remove">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:23</note>
+      </notes>
+      <segment>
+        <source>Remove metadata-field</source>
+      </segment>
+    </unit>
     <unit id="metadata_field_type_label">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:28,29</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:37,38</note>
       </notes>
       <segment>
         <source>Type</source>
@@ -560,7 +633,7 @@
     </unit>
     <unit id="metadata_field_type_string">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:30,31</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:39,40</note>
       </notes>
       <segment>
         <source>Text</source>
@@ -568,15 +641,31 @@
     </unit>
     <unit id="metadata_field_type_boolean">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:31,33</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:40,41</note>
       </notes>
       <segment>
         <source>Yes/No</source>
       </segment>
     </unit>
+    <unit id="metadata_field_type_double">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:41,42</note>
+      </notes>
+      <segment>
+        <source>Number</source>
+      </segment>
+    </unit>
+    <unit id="metadata_field_type_timestamp">
+      <notes>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:42,44</note>
+      </notes>
+      <segment>
+        <source>Date and time</source>
+      </segment>
+    </unit>
     <unit id="metadata_field_add">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:34,37</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:45,47</note>
       </notes>
       <segment>
         <source>Add field</source>
@@ -584,7 +673,7 @@
     </unit>
     <unit id="metadata_field_change_not_allowed">
       <notes>
-        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:38,40</note>
+        <note category="location">src/app/modules/user-area/metadata-fields/metadata-fields.component.html:48,50</note>
       </notes>
       <segment>
         <source>Only a moderator of the storage-location may change its metadata-fields.</source>
@@ -598,6 +687,111 @@
         <source>Search term</source>
       </segment>
     </unit>
+    <unit id="tag_management_title">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:2,4</note>
+      </notes>
+      <segment>
+        <source>Tags</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_none">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:4,6</note>
+      </notes>
+      <segment>
+        <source>There are no tags yet.</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_name_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:11,12</note>
+      </notes>
+      <segment>
+        <source>Name</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_color_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:15,16</note>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:50,51</note>
+      </notes>
+      <segment>
+        <source>Color</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_save">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:24,25</note>
+      </notes>
+      <segment>
+        <source>Save tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_cancel">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:25,27</note>
+      </notes>
+      <segment>
+        <source>Cancel</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_scope_global">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:29,31</note>
+      </notes>
+      <segment>
+        <source>global</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_scope_own">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:31,32</note>
+      </notes>
+      <segment>
+        <source>own</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_change">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:33</note>
+      </notes>
+      <segment>
+        <source>Change tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_delete">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:36</note>
+      </notes>
+      <segment>
+        <source>Delete tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_new_name_label">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:46,47</note>
+      </notes>
+      <segment>
+        <source>New tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_create">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:59,61</note>
+      </notes>
+      <segment>
+        <source>Create tag</source>
+      </segment>
+    </unit>
+    <unit id="tag_management_change_not_allowed">
+      <notes>
+        <note category="location">src/app/modules/user-area/tag-management/tag-management.component.html:62,64</note>
+      </notes>
+      <segment>
+        <source>The tag could not be changed.</source>
+      </segment>
+    </unit>
     <unit id="user_menu_label">
       <notes>
         <note category="location">src/app/modules/user-area/user-area-container/user-area-container.component.html:4,5</note>
@@ -608,8 +802,8 @@
     </unit>
     <unit id="hello_user">
       <notes>
-        <note category="location">src/app/modules/user-area/user-dashboard/user-dashboard.component.html:3</note>
-        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:5</note>
+        <note category="location">src/app/modules/user-area/user-dashboard/user-dashboard.component.html:4,5</note>
+        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:6,7</note>
       </notes>
       <segment>
         <source>Hello</source>
@@ -617,7 +811,7 @@
     </unit>
     <unit id="logout">
       <notes>
-        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:6,7</note>
+        <note category="location">src/app/modules/user-area/user-icon/user-icon.component.html:9,10</note>
       </notes>
       <segment>
         <source>Logout</source>
@@ -657,7 +851,7 @@
     </unit>
     <unit id="doc_metadata_id_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:9,10</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:9,11</note>
       </notes>
       <segment>
         <source>ID:</source>
@@ -665,7 +859,7 @@
     </unit>
     <unit id="doc_metadata_technical_id_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12,14</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:12,15</note>
       </notes>
       <segment>
         <source>Technical ID:</source>
@@ -681,7 +875,7 @@
     </unit>
     <unit id="doc_metadata_original_filename_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:18,20</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:18,21</note>
       </notes>
       <segment>
         <source>Original filename:</source>
@@ -697,7 +891,7 @@
     </unit>
     <unit id="doc_metadata_version_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:24,25</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:24,26</note>
       </notes>
       <segment>
         <source>Version:</source>
@@ -713,7 +907,7 @@
     </unit>
     <unit id="doc_ai_summary_heading">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:34,35</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:35,37</note>
       </notes>
       <segment>
         <source>AI-summary:</source>
@@ -721,7 +915,7 @@
     </unit>
     <unit id="doc_ai_summary_generate_button">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:46,48</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:44,45</note>
       </notes>
       <segment>
         <source>Generate AI-summary</source>
@@ -729,7 +923,7 @@
     </unit>
     <unit id="doc_ai_summary_generating_label">
       <notes>
-        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:49,51</note>
+        <note category="location">src/app/modules/user-area/view-document/view-document.component.html:46,50</note>
       </notes>
       <segment>
         <source>Generating AI-summary…</source>

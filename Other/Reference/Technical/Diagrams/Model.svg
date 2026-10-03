@@ -1,112 +1,112 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" contentStyleType="text/css" data-diagram-type="CLASS" height="320px" preserveAspectRatio="none" style="width:589px;height:320px;background:#FFFFFF;" version="1.1" viewBox="0 0 589 320" width="589px" zoomAndPan="magnify">
-  <ns0:defs />
-  <ns0:g>
-    <ns0:g class="entity" data-qualified-name="IContainer" data-source-line="2" id="ent0001">
-      <ns0:rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="104.543" x="29.5" y="7" />
-      <ns0:ellipse cx="44.5" cy="23" fill="#B4A7E5" rx="11" ry="11" style="stroke:#181818;stroke-width:1;" />
-      <ns0:path d="M45.4531,19.6406 L45.4531,26.2969 L47.1719,26.2969 Q47.7813,26.2969 48.0469,26.5313 Q48.3125,26.7656 48.3125,27.1563 Q48.3125,27.5313 48.0469,27.7656 Q47.7813,28 47.1719,28 L42.0313,28 Q41.4219,28 41.1563,27.7656 Q40.8906,27.5313 40.8906,27.1406 Q40.8906,26.7656 41.1563,26.5313 Q41.4219,26.2969 42.0313,26.2969 L43.75,26.2969 L43.75,19.6406 L42.0313,19.6406 Q41.4219,19.6406 41.1563,19.4063 Q40.8906,19.1719 40.8906,18.7813 Q40.8906,18.4063 41.1563,18.1719 Q41.4219,17.9375 42.0313,17.9375 L47.1719,17.9375 Q47.7813,17.9375 48.0469,18.1719 Q48.3125,18.4063 48.3125,18.7813 Q48.3125,19.1719 48.0469,19.4063 Q47.7813,19.6406 47.1719,19.6406 L45.4531,19.6406 Z " fill="#000000" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="72.543" x="58.5" y="27.8467">IContainer</ns0:text>
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="30.5" x2="133.043" y1="39" y2="39" />
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="30.5" x2="133.043" y1="47" y2="47" />
-    </ns0:g>
-    <ns0:g class="entity" data-qualified-name="IContainee" data-source-line="3" id="ent0002">
-      <ns0:rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="107.4004" x="222.5" y="7" />
-      <ns0:ellipse cx="237.5" cy="23" fill="#B4A7E5" rx="11" ry="11" style="stroke:#181818;stroke-width:1;" />
-      <ns0:path d="M238.4531,19.6406 L238.4531,26.2969 L240.1719,26.2969 Q240.7813,26.2969 241.0469,26.5313 Q241.3125,26.7656 241.3125,27.1563 Q241.3125,27.5313 241.0469,27.7656 Q240.7813,28 240.1719,28 L235.0313,28 Q234.4219,28 234.1563,27.7656 Q233.8906,27.5313 233.8906,27.1406 Q233.8906,26.7656 234.1563,26.5313 Q234.4219,26.2969 235.0313,26.2969 L236.75,26.2969 L236.75,19.6406 L235.0313,19.6406 Q234.4219,19.6406 234.1563,19.4063 Q233.8906,19.1719 233.8906,18.7813 Q233.8906,18.4063 234.1563,18.1719 Q234.4219,17.9375 235.0313,17.9375 L240.1719,17.9375 Q240.7813,17.9375 241.0469,18.1719 Q241.3125,18.4063 241.3125,18.7813 Q241.3125,19.1719 241.0469,19.4063 Q240.7813,19.6406 240.1719,19.6406 L238.4531,19.6406 Z " fill="#000000" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="75.4004" x="251.5" y="27.8467">IContainee</ns0:text>
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="223.5" x2="328.9004" y1="39" y2="39" />
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="223.5" x2="328.9004" y1="47" y2="47" />
-    </ns0:g>
-    <ns0:g class="entity" data-qualified-name="IFolder" data-source-line="4" id="ent0003">
-      <ns0:rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="79.8926" x="188" y="132" />
-      <ns0:ellipse cx="203" cy="148" fill="#B4A7E5" rx="11" ry="11" style="stroke:#181818;stroke-width:1;" />
-      <ns0:path d="M203.9531,144.6406 L203.9531,151.2969 L205.6719,151.2969 Q206.2813,151.2969 206.5469,151.5313 Q206.8125,151.7656 206.8125,152.1563 Q206.8125,152.5313 206.5469,152.7656 Q206.2813,153 205.6719,153 L200.5313,153 Q199.9219,153 199.6563,152.7656 Q199.3906,152.5313 199.3906,152.1406 Q199.3906,151.7656 199.6563,151.5313 Q199.9219,151.2969 200.5313,151.2969 L202.25,151.2969 L202.25,144.6406 L200.5313,144.6406 Q199.9219,144.6406 199.6563,144.4063 Q199.3906,144.1719 199.3906,143.7813 Q199.3906,143.4063 199.6563,143.1719 Q199.9219,142.9375 200.5313,142.9375 L205.6719,142.9375 Q206.2813,142.9375 206.5469,143.1719 Q206.8125,143.4063 206.8125,143.7813 Q206.8125,144.1719 206.5469,144.4063 Q206.2813,144.6406 205.6719,144.6406 L203.9531,144.6406 Z " fill="#000000" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="47.8926" x="217" y="152.8467">IFolder</ns0:text>
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="189" x2="266.8926" y1="164" y2="164" />
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="189" x2="266.8926" y1="172" y2="172" />
-    </ns0:g>
-    <ns0:g class="entity" data-qualified-name="StorageLocation" data-source-line="7" id="ent0005">
-      <ns0:rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="146.2354" x="7" y="132" />
-      <ns0:ellipse cx="22" cy="148" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;" />
-      <ns0:path d="M24.7656,143.875 Q24.9219,143.6563 25.1094,143.5469 Q25.2969,143.4375 25.5156,143.4375 Q25.8906,143.4375 26.125,143.7031 Q26.3594,143.9531 26.3594,144.5625 L26.3594,146.0156 Q26.3594,146.625 26.125,146.8906 Q25.8906,147.1563 25.5156,147.1563 Q25.1719,147.1563 24.9688,146.9531 Q24.7656,146.7656 24.6563,146.25 Q24.6094,145.8906 24.4219,145.7031 Q24.0938,145.3281 23.4844,145.1094 Q22.875,144.8906 22.25,144.8906 Q21.4844,144.8906 20.8438,145.2188 Q20.2188,145.5469 19.7188,146.2969 Q19.2344,147.0469 19.2344,148.0781 L19.2344,149.1719 Q19.2344,150.4063 20.125,151.2344 Q21.0156,152.0469 22.6094,152.0469 Q23.5469,152.0469 24.2031,151.7969 Q24.5938,151.6406 25.0156,151.2031 Q25.2813,150.9375 25.4219,150.8594 Q25.5781,150.7813 25.7813,150.7813 Q26.1094,150.7813 26.3594,151.0469 Q26.625,151.2969 26.625,151.6406 Q26.625,151.9844 26.2813,152.3906 Q25.7813,152.9688 24.9844,153.2969 Q23.9063,153.75 22.6094,153.75 Q21.0938,153.75 19.8906,153.125 Q18.9063,152.625 18.2188,151.5625 Q17.5313,150.4844 17.5313,149.2031 L17.5313,148.0469 Q17.5313,146.7188 18.1406,145.5781 Q18.7656,144.4219 19.8594,143.8125 Q20.9531,143.1875 22.1875,143.1875 Q22.9219,143.1875 23.5625,143.3594 Q24.2188,143.5156 24.7656,143.875 Z " fill="#000000" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="14" lengthAdjust="spacing" textLength="114.2354" x="36" y="152.8467">StorageLocation</ns0:text>
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="152.2354" y1="164" y2="164" />
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="152.2354" y1="172" y2="172" />
-    </ns0:g>
-    <ns0:g class="entity" data-qualified-name="Document" data-source-line="10" id="ent0012">
-      <ns0:rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="104.5293" x="402.5" y="132" />
-      <ns0:ellipse cx="417.5" cy="148" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;" />
-      <ns0:path d="M420.2656,143.875 Q420.4219,143.6563 420.6094,143.5469 Q420.7969,143.4375 421.0156,143.4375 Q421.3906,143.4375 421.625,143.7031 Q421.8594,143.9531 421.8594,144.5625 L421.8594,146.0156 Q421.8594,146.625 421.625,146.8906 Q421.3906,147.1563 421.0156,147.1563 Q420.6719,147.1563 420.4688,146.9531 Q420.2656,146.7656 420.1563,146.25 Q420.1094,145.8906 419.9219,145.7031 Q419.5938,145.3281 418.9844,145.1094 Q418.375,144.8906 417.75,144.8906 Q416.9844,144.8906 416.3438,145.2188 Q415.7188,145.5469 415.2188,146.2969 Q414.7344,147.0469 414.7344,148.0781 L414.7344,149.1719 Q414.7344,150.4063 415.625,151.2344 Q416.5156,152.0469 418.1094,152.0469 Q419.0469,152.0469 419.7031,151.7969 Q420.0938,151.6406 420.5156,151.2031 Q420.7813,150.9375 420.9219,150.8594 Q421.0781,150.7813 421.2813,150.7813 Q421.6094,150.7813 421.8594,151.0469 Q422.125,151.2969 422.125,151.6406 Q422.125,151.9844 421.7813,152.3906 Q421.2813,152.9688 420.4844,153.2969 Q419.4063,153.75 418.1094,153.75 Q416.5938,153.75 415.3906,153.125 Q414.4063,152.625 413.7188,151.5625 Q413.0313,150.4844 413.0313,149.2031 L413.0313,148.0469 Q413.0313,146.7188 413.6406,145.5781 Q414.2656,144.4219 415.3594,143.8125 Q416.4531,143.1875 417.6875,143.1875 Q418.4219,143.1875 419.0625,143.3594 Q419.7188,143.5156 420.2656,143.875 Z " fill="#000000" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="14" lengthAdjust="spacing" textLength="72.5293" x="431.5" y="152.8467">Document</ns0:text>
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="403.5" x2="506.0293" y1="164" y2="164" />
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="403.5" x2="506.0293" y1="172" y2="172" />
-    </ns0:g>
-    <ns0:g class="entity" data-qualified-name="Group" data-source-line="11" id="ent0015">
-      <ns0:rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="74.9297" x="357.5" y="257" />
-      <ns0:ellipse cx="372.5" cy="273" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;" />
-      <ns0:path d="M375.2656,268.875 Q375.4219,268.6563 375.6094,268.5469 Q375.7969,268.4375 376.0156,268.4375 Q376.3906,268.4375 376.625,268.7031 Q376.8594,268.9531 376.8594,269.5625 L376.8594,271.0156 Q376.8594,271.625 376.625,271.8906 Q376.3906,272.1563 376.0156,272.1563 Q375.6719,272.1563 375.4688,271.9531 Q375.2656,271.7656 375.1563,271.25 Q375.1094,270.8906 374.9219,270.7031 Q374.5938,270.3281 373.9844,270.1094 Q373.375,269.8906 372.75,269.8906 Q371.9844,269.8906 371.3438,270.2188 Q370.7188,270.5469 370.2188,271.2969 Q369.7344,272.0469 369.7344,273.0781 L369.7344,274.1719 Q369.7344,275.4063 370.625,276.2344 Q371.5156,277.0469 373.1094,277.0469 Q374.0469,277.0469 374.7031,276.7969 Q375.0938,276.6406 375.5156,276.2031 Q375.7813,275.9375 375.9219,275.8594 Q376.0781,275.7813 376.2813,275.7813 Q376.6094,275.7813 376.8594,276.0469 Q377.125,276.2969 377.125,276.6406 Q377.125,276.9844 376.7813,277.3906 Q376.2813,277.9688 375.4844,278.2969 Q374.4063,278.75 373.1094,278.75 Q371.5938,278.75 370.3906,278.125 Q369.4063,277.625 368.7188,276.5625 Q368.0313,275.4844 368.0313,274.2031 L368.0313,273.0469 Q368.0313,271.7188 368.6406,270.5781 Q369.2656,269.4219 370.3594,268.8125 Q371.4531,268.1875 372.6875,268.1875 Q373.4219,268.1875 374.0625,268.3594 Q374.7188,268.5156 375.2656,268.875 Z " fill="#000000" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="14" lengthAdjust="spacing" textLength="42.9297" x="386.5" y="277.8467">Group</ns0:text>
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="358.5" x2="431.4297" y1="289" y2="289" />
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="358.5" x2="431.4297" y1="297" y2="297" />
-    </ns0:g>
-    <ns0:g class="entity" data-qualified-name="Folder" data-source-line="12" id="ent0017">
-      <ns0:rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="75.7637" x="190" y="257" />
-      <ns0:ellipse cx="205" cy="273" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;" />
-      <ns0:path d="M207.7656,268.875 Q207.9219,268.6563 208.1094,268.5469 Q208.2969,268.4375 208.5156,268.4375 Q208.8906,268.4375 209.125,268.7031 Q209.3594,268.9531 209.3594,269.5625 L209.3594,271.0156 Q209.3594,271.625 209.125,271.8906 Q208.8906,272.1563 208.5156,272.1563 Q208.1719,272.1563 207.9688,271.9531 Q207.7656,271.7656 207.6563,271.25 Q207.6094,270.8906 207.4219,270.7031 Q207.0938,270.3281 206.4844,270.1094 Q205.875,269.8906 205.25,269.8906 Q204.4844,269.8906 203.8438,270.2188 Q203.2188,270.5469 202.7188,271.2969 Q202.2344,272.0469 202.2344,273.0781 L202.2344,274.1719 Q202.2344,275.4063 203.125,276.2344 Q204.0156,277.0469 205.6094,277.0469 Q206.5469,277.0469 207.2031,276.7969 Q207.5938,276.6406 208.0156,276.2031 Q208.2813,275.9375 208.4219,275.8594 Q208.5781,275.7813 208.7813,275.7813 Q209.1094,275.7813 209.3594,276.0469 Q209.625,276.2969 209.625,276.6406 Q209.625,276.9844 209.2813,277.3906 Q208.7813,277.9688 207.9844,278.2969 Q206.9063,278.75 205.6094,278.75 Q204.0938,278.75 202.8906,278.125 Q201.9063,277.625 201.2188,276.5625 Q200.5313,275.4844 200.5313,274.2031 L200.5313,273.0469 Q200.5313,271.7188 201.1406,270.5781 Q201.7656,269.4219 202.8594,268.8125 Q203.9531,268.1875 205.1875,268.1875 Q205.9219,268.1875 206.5625,268.3594 Q207.2188,268.5156 207.7656,268.875 Z " fill="#000000" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="14" lengthAdjust="spacing" textLength="43.7637" x="219" y="277.8467">Folder</ns0:text>
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="191" x2="264.7637" y1="289" y2="289" />
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="191" x2="264.7637" y1="297" y2="297" />
-    </ns0:g>
-    <ns0:g class="entity" data-qualified-name="User" data-source-line="14" id="ent0020">
-      <ns0:rect fill="#F1F1F1" height="48" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="63.9102" x="303" y="132" />
-      <ns0:ellipse cx="318" cy="148" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1;" />
-      <ns0:path d="M320.7656,143.875 Q320.9219,143.6563 321.1094,143.5469 Q321.2969,143.4375 321.5156,143.4375 Q321.8906,143.4375 322.125,143.7031 Q322.3594,143.9531 322.3594,144.5625 L322.3594,146.0156 Q322.3594,146.625 322.125,146.8906 Q321.8906,147.1563 321.5156,147.1563 Q321.1719,147.1563 320.9688,146.9531 Q320.7656,146.7656 320.6563,146.25 Q320.6094,145.8906 320.4219,145.7031 Q320.0938,145.3281 319.4844,145.1094 Q318.875,144.8906 318.25,144.8906 Q317.4844,144.8906 316.8438,145.2188 Q316.2188,145.5469 315.7188,146.2969 Q315.2344,147.0469 315.2344,148.0781 L315.2344,149.1719 Q315.2344,150.4063 316.125,151.2344 Q317.0156,152.0469 318.6094,152.0469 Q319.5469,152.0469 320.2031,151.7969 Q320.5938,151.6406 321.0156,151.2031 Q321.2813,150.9375 321.4219,150.8594 Q321.5781,150.7813 321.7813,150.7813 Q322.1094,150.7813 322.3594,151.0469 Q322.625,151.2969 322.625,151.6406 Q322.625,151.9844 322.2813,152.3906 Q321.7813,152.9688 320.9844,153.2969 Q319.9063,153.75 318.6094,153.75 Q317.0938,153.75 315.8906,153.125 Q314.9063,152.625 314.2188,151.5625 Q313.5313,150.4844 313.5313,149.2031 L313.5313,148.0469 Q313.5313,146.7188 314.1406,145.5781 Q314.7656,144.4219 315.8594,143.8125 Q316.9531,143.1875 318.1875,143.1875 Q318.9219,143.1875 319.5625,143.3594 Q320.2188,143.5156 320.7656,143.875 Z " fill="#000000" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="14" lengthAdjust="spacing" textLength="31.9102" x="332" y="152.8467">User</ns0:text>
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="304" x2="365.9102" y1="164" y2="164" />
-      <ns0:line style="stroke:#181818;stroke-width:0.5;" x1="304" x2="365.9102" y1="172" y2="172" />
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0001" data-entity-2="ent0002" data-link-type="dependency" data-source-line="6" id="lnk4">
-      <ns0:path codeLine="6" d="M134.76,31 C161.91,31 189.95,31 217.24,31" fill="none" id="IContainer-to-IContainee" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="#181818" points="222.24,31,213.24,27,217.24,31,213.24,35,222.24,31" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="13" lengthAdjust="spacing" textLength="51.7017" x="153" y="24.0669">Content</ns0:text>
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="13" lengthAdjust="spacing" textLength="6.5" x="207.9107" y="26.9751">*</ns0:text>
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0001" data-entity-2="ent0005" data-link-type="extension" data-source-line="7" id="lnk7">
-      <ns0:path codeLine="7" d="M81.3335,73.1377 C80.9835,95.1277 80.73,110.01 80.37,131.97" fill="none" id="IContainer-backto-StorageLocation" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="none" points="81.62,55.14,75.3343,73.0422,87.3328,73.2332,81.62,55.14" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0001" data-entity-2="ent0003" data-link-type="extension" data-source-line="8" id="lnk9">
-      <ns0:path codeLine="8" d="M123.0374,66.6275 C139.2274,80.2875 146.4,86.33 165,102 C176.59,111.76 189.38,122.52 200.39,131.79" fill="none" id="IContainer-backto-IFolder" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="none" points="109.28,55.02,119.1682,71.2133,126.9066,62.0417,109.28,55.02" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0002" data-entity-2="ent0003" data-link-type="extension" data-source-line="9" id="lnk11">
-      <ns0:path codeLine="9" d="M260.4272,71.9088 C251.8472,93.8988 245.56,110.01 236.99,131.97" fill="none" id="IContainee-backto-IFolder" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="none" points="266.97,55.14,254.8376,69.7278,266.0168,74.0897,266.97,55.14" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0002" data-entity-2="ent0012" data-link-type="extension" data-source-line="10" id="lnk14">
-      <ns0:path codeLine="10" d="M324.5049,65.3344 C356.5049,87.3244 389.53,110.01 421.48,131.97" fill="none" id="IContainee-backto-Document" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="none" points="309.67,55.14,321.1068,70.2793,327.903,60.3894,309.67,55.14" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0012" data-entity-2="ent0015" data-link-type="dependency" data-source-line="11" id="lnk16">
-      <ns0:path codeLine="11" d="M443.71,180.14 C432.99,202.13 419.1434,230.5168 408.4234,252.4768" fill="none" id="Document-to-Group" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="#181818" points="406.23,256.97,413.7727,250.6369,408.4234,252.4768,406.5836,247.1275,406.23,256.97" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="13" lengthAdjust="spacing" textLength="144.917" x="429" y="223.0669">Business-owner-group</ns0:text>
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0003" data-entity-2="ent0017" data-link-type="extension" data-source-line="12" id="lnk19">
-      <ns0:path codeLine="12" d="M228,198.14 C228,220.13 228,235.01 228,256.97" fill="none" id="IFolder-backto-Folder" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="none" points="228,180.14,222,198.14,234,198.14,228,180.14" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0020" data-entity-2="ent0005" data-link-type="dependency" data-source-line="14" id="lnk21">
-      <ns0:path codeLine="14" d="M304.43,131.72 C285.15,118 259.05,102.2 233,95 C207.3,87.9 198.55,87.37 173,95 C148.76,102.24 128.9117,114.951 111.4617,128.661" fill="none" id="User-to-StorageLocation" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="#181818" points="107.53,131.75,117.0782,129.3351,111.4617,128.661,112.1358,123.0444,107.53,131.75" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="13" lengthAdjust="spacing" textLength="58.9634" x="174" y="98.0669">Viewable</ns0:text>
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="13" lengthAdjust="spacing" textLength="6.5" x="107.5414" y="121.094">*</ns0:text>
-    </ns0:g>
-    <ns0:g class="link" data-entity-1="ent0020" data-entity-2="ent0015" data-link-type="dependency" data-source-line="15" id="lnk22">
-      <ns0:path codeLine="15" d="M346.29,180.14 C357.01,202.13 370.8566,230.5168 381.5766,252.4768" fill="none" id="User-to-Group" style="stroke:#181818;stroke-width:1;" />
-      <ns0:polygon fill="#181818" points="383.77,256.97,383.4164,247.1275,381.5766,252.4768,376.2273,250.6369,383.77,256.97" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
-      <ns0:text fill="#000000" font-family="'DejaVu Sans'" font-size="13" lengthAdjust="spacing" textLength="6.5" x="374.1966" y="245.9743">*</ns0:text>
-    </ns0:g>
-  </ns0:g>
-</ns0:svg>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" data-diagram-type="CLASS" style="width:590px;height:320px;background:#FFFFFF;" width="590px" height="320px" viewBox="0 0 590 320" zoomAndPan="magnify" preserveAspectRatio="none" contentStyleType="text/css">
+  <defs />
+  <g font-family="sans-serif" lengthAdjust="spacing">
+    <g class="entity" data-qualified-name="IContainer" id="ent0001" data-source-line="2">
+      <rect x="30.85" y="7" width="104.543" height="48" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <ellipse cx="45.85" cy="23" rx="11" ry="11" fill="#B4A7E5" style="stroke:#181818;stroke-width:1;" />
+      <path d="M41.772,18.766 L41.772,16.609 L49.163,16.609 L49.163,18.766 L46.694,18.766 L46.694,26.844 L49.163,26.844 L49.163,29 L41.772,29 L41.772,26.844 L44.241,26.844 L44.241,18.766 L41.772,18.766 Z " fill="#000" />
+      <text x="59.85" y="27.847" fill="#000" font-size="14" textLength="72.543" font-style="italic" font-family="DejaVu Sans">IContainer</text>
+      <line x1="31.85" y1="39" x2="134.393" y2="39" style="stroke:#181818;stroke-width:0.5;" />
+      <line x1="31.85" y1="47" x2="134.393" y2="47" style="stroke:#181818;stroke-width:0.5;" />
+    </g>
+    <g class="entity" data-qualified-name="IContainee" id="ent0002" data-source-line="3">
+      <rect x="222.42" y="7" width="107.4" height="48" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <ellipse cx="237.42" cy="23" rx="11" ry="11" fill="#B4A7E5" style="stroke:#181818;stroke-width:1;" />
+      <path d="M233.342,18.766 L233.342,16.609 L240.733,16.609 L240.733,18.766 L238.264,18.766 L238.264,26.844 L240.733,26.844 L240.733,29 L233.342,29 L233.342,26.844 L235.811,26.844 L235.811,18.766 L233.342,18.766 Z " fill="#000" />
+      <text x="251.42" y="27.847" fill="#000" font-size="14" textLength="75.4" font-style="italic" font-family="DejaVu Sans">IContainee</text>
+      <line x1="223.42" y1="39" x2="328.82" y2="39" style="stroke:#181818;stroke-width:0.5;" />
+      <line x1="223.42" y1="47" x2="328.82" y2="47" style="stroke:#181818;stroke-width:0.5;" />
+    </g>
+    <g class="entity" data-qualified-name="IFolder" id="ent0003" data-source-line="4">
+      <rect x="188.17" y="132" width="79.893" height="48" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <ellipse cx="203.17" cy="148" rx="11" ry="11" fill="#B4A7E5" style="stroke:#181818;stroke-width:1;" />
+      <path d="M199.092,143.766 L199.092,141.609 L206.483,141.609 L206.483,143.766 L204.014,143.766 L204.014,151.844 L206.483,151.844 L206.483,154 L199.092,154 L199.092,151.844 L201.561,151.844 L201.561,143.766 L199.092,143.766 Z " fill="#000" />
+      <text x="217.17" y="152.847" fill="#000" font-size="14" textLength="47.893" font-style="italic" font-family="DejaVu Sans">IFolder</text>
+      <line x1="189.17" y1="164" x2="267.063" y2="164" style="stroke:#181818;stroke-width:0.5;" />
+      <line x1="189.17" y1="172" x2="267.063" y2="172" style="stroke:#181818;stroke-width:0.5;" />
+    </g>
+    <g class="entity" data-qualified-name="StorageLocation" id="ent0005" data-source-line="7">
+      <rect x="7" y="132" width="146.235" height="48" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <ellipse cx="22" cy="148" rx="11" ry="11" fill="#ADD1B2" style="stroke:#181818;stroke-width:1;" />
+      <path d="M24.969,153.641 Q24.391,153.938 23.75,154.078 Q23.109,154.234 22.406,154.234 Q19.906,154.234 18.578,152.594 Q17.266,150.938 17.266,147.813 Q17.266,144.688 18.578,143.031 Q19.906,141.375 22.406,141.375 Q23.109,141.375 23.75,141.531 Q24.406,141.688 24.969,141.984 L24.969,144.703 Q24.344,144.125 23.75,143.859 Q23.156,143.578 22.531,143.578 Q21.188,143.578 20.5,144.656 Q19.813,145.719 19.813,147.813 Q19.813,149.906 20.5,150.984 Q21.188,152.047 22.531,152.047 Q23.156,152.047 23.75,151.781 Q24.344,151.5 24.969,150.922 L24.969,153.641 Z " fill="#000" />
+      <text x="36" y="152.847" fill="#000" font-size="14" textLength="114.235" font-family="DejaVu Sans">StorageLocation</text>
+      <line x1="8" y1="164" x2="152.235" y2="164" style="stroke:#181818;stroke-width:0.5;" />
+      <line x1="8" y1="172" x2="152.235" y2="172" style="stroke:#181818;stroke-width:0.5;" />
+    </g>
+    <g class="entity" data-qualified-name="Document" id="ent0012" data-source-line="10">
+      <rect x="401.85" y="132" width="104.529" height="48" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <ellipse cx="416.85" cy="148" rx="11" ry="11" fill="#ADD1B2" style="stroke:#181818;stroke-width:1;" />
+      <path d="M419.819,153.641 Q419.241,153.938 418.6,154.078 Q417.959,154.234 417.256,154.234 Q414.756,154.234 413.428,152.594 Q412.116,150.938 412.116,147.813 Q412.116,144.688 413.428,143.031 Q414.756,141.375 417.256,141.375 Q417.959,141.375 418.6,141.531 Q419.256,141.688 419.819,141.984 L419.819,144.703 Q419.194,144.125 418.6,143.859 Q418.006,143.578 417.381,143.578 Q416.038,143.578 415.35,144.656 Q414.663,145.719 414.663,147.813 Q414.663,149.906 415.35,150.984 Q416.038,152.047 417.381,152.047 Q418.006,152.047 418.6,151.781 Q419.194,151.5 419.819,150.922 L419.819,153.641 Z " fill="#000" />
+      <text x="430.85" y="152.847" fill="#000" font-size="14" textLength="72.529" font-family="DejaVu Sans">Document</text>
+      <line x1="402.85" y1="164" x2="505.379" y2="164" style="stroke:#181818;stroke-width:0.5;" />
+      <line x1="402.85" y1="172" x2="505.379" y2="172" style="stroke:#181818;stroke-width:0.5;" />
+    </g>
+    <g class="entity" data-qualified-name="Group" id="ent0015" data-source-line="11">
+      <rect x="358.65" y="257" width="74.93" height="48" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <ellipse cx="373.65" cy="273" rx="11" ry="11" fill="#ADD1B2" style="stroke:#181818;stroke-width:1;" />
+      <path d="M376.619,278.641 Q376.041,278.938 375.4,279.078 Q374.759,279.234 374.056,279.234 Q371.556,279.234 370.228,277.594 Q368.916,275.938 368.916,272.813 Q368.916,269.688 370.228,268.031 Q371.556,266.375 374.056,266.375 Q374.759,266.375 375.4,266.531 Q376.056,266.688 376.619,266.984 L376.619,269.703 Q375.994,269.125 375.4,268.859 Q374.806,268.578 374.181,268.578 Q372.838,268.578 372.15,269.656 Q371.463,270.719 371.463,272.813 Q371.463,274.906 372.15,275.984 Q372.838,277.047 374.181,277.047 Q374.806,277.047 375.4,276.781 Q375.994,276.5 376.619,275.922 L376.619,278.641 Z " fill="#000" />
+      <text x="387.65" y="277.847" fill="#000" font-size="14" textLength="42.93" font-family="DejaVu Sans">Group</text>
+      <line x1="359.65" y1="289" x2="432.58" y2="289" style="stroke:#181818;stroke-width:0.5;" />
+      <line x1="359.65" y1="297" x2="432.58" y2="297" style="stroke:#181818;stroke-width:0.5;" />
+    </g>
+    <g class="entity" data-qualified-name="Folder" id="ent0017" data-source-line="12">
+      <rect x="190.24" y="257" width="75.764" height="48" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <ellipse cx="205.24" cy="273" rx="11" ry="11" fill="#ADD1B2" style="stroke:#181818;stroke-width:1;" />
+      <path d="M208.209,278.641 Q207.631,278.938 206.99,279.078 Q206.349,279.234 205.646,279.234 Q203.146,279.234 201.818,277.594 Q200.506,275.938 200.506,272.813 Q200.506,269.688 201.818,268.031 Q203.146,266.375 205.646,266.375 Q206.349,266.375 206.99,266.531 Q207.646,266.688 208.209,266.984 L208.209,269.703 Q207.584,269.125 206.99,268.859 Q206.396,268.578 205.771,268.578 Q204.428,268.578 203.74,269.656 Q203.053,270.719 203.053,272.813 Q203.053,274.906 203.74,275.984 Q204.428,277.047 205.771,277.047 Q206.396,277.047 206.99,276.781 Q207.584,276.5 208.209,275.922 L208.209,278.641 Z " fill="#000" />
+      <text x="219.24" y="277.847" fill="#000" font-size="14" textLength="43.764" font-family="DejaVu Sans">Folder</text>
+      <line x1="191.24" y1="289" x2="265.004" y2="289" style="stroke:#181818;stroke-width:0.5;" />
+      <line x1="191.24" y1="297" x2="265.004" y2="297" style="stroke:#181818;stroke-width:0.5;" />
+    </g>
+    <g class="entity" data-qualified-name="User" id="ent0020" data-source-line="14">
+      <rect x="303.16" y="132" width="63.91" height="48" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <ellipse cx="318.16" cy="148" rx="11" ry="11" fill="#ADD1B2" style="stroke:#181818;stroke-width:1;" />
+      <path d="M321.129,153.641 Q320.551,153.938 319.91,154.078 Q319.269,154.234 318.566,154.234 Q316.066,154.234 314.738,152.594 Q313.426,150.938 313.426,147.813 Q313.426,144.688 314.738,143.031 Q316.066,141.375 318.566,141.375 Q319.269,141.375 319.91,141.531 Q320.566,141.688 321.129,141.984 L321.129,144.703 Q320.504,144.125 319.91,143.859 Q319.316,143.578 318.691,143.578 Q317.348,143.578 316.66,144.656 Q315.973,145.719 315.973,147.813 Q315.973,149.906 316.66,150.984 Q317.348,152.047 318.691,152.047 Q319.316,152.047 319.91,151.781 Q320.504,151.5 321.129,150.922 L321.129,153.641 Z " fill="#000" />
+      <text x="332.16" y="152.847" fill="#000" font-size="14" textLength="31.91" font-family="DejaVu Sans">User</text>
+      <line x1="304.16" y1="164" x2="366.07" y2="164" style="stroke:#181818;stroke-width:0.5;" />
+      <line x1="304.16" y1="172" x2="366.07" y2="172" style="stroke:#181818;stroke-width:0.5;" />
+    </g>
+    <g class="link" data-entity-1="ent0001" data-entity-2="ent0002" id="lnk4" data-source-line="6" data-link-type="dependency">
+      <path d="M135.86,31 C162.64,31 190.14,31 217.1,31" style="stroke:#181818;stroke-width:1;" fill="none" id="IContainer-to-IContainee" codeLine="6" />
+      <polygon points="222.1,31,213.1,27,217.1,31,213.1,35,222.1,31" fill="#181818" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+      <text x="153.4" y="24.067" fill="#000" font-size="13" textLength="51.702" font-family="DejaVu Sans">Content</text>
+      <text x="207.762" y="26.975" fill="#000" font-size="13" font-family="DejaVu Sans">*</text>
+    </g>
+    <g class="link" data-entity-1="ent0001" data-entity-2="ent0005" id="lnk7" data-source-line="7" data-link-type="extension">
+      <path d="M82.106,73.415 C81.566,95.305 81.22,109.8 80.69,131.66" style="stroke:#181818;stroke-width:1;" fill="none" id="IContainer-backto-StorageLocation" codeLine="7" />
+      <polygon points="82.55,55.42,76.108,73.267,88.104,73.562,82.55,55.42" fill="none" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+    </g>
+    <g class="link" data-entity-1="ent0001" data-entity-2="ent0003" id="lnk9" data-source-line="8" data-link-type="extension">
+      <path d="M124.087,67.082 C140.017,80.712 146.84,86.51 165.12,102 C176.57,111.7 189.22,122.36 200.17,131.56" style="stroke:#181818;stroke-width:1;" fill="none" id="IContainer-backto-IFolder" codeLine="8" />
+      <polygon points="110.41,55.38,120.186,71.641,127.988,62.523,110.41,55.38" fill="none" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+    </g>
+    <g class="link" data-entity-1="ent0002" data-entity-2="ent0003" id="lnk11" data-source-line="9" data-link-type="extension">
+      <path d="M260.438,72.189 C251.898,94.079 245.76,109.8 237.23,131.66" style="stroke:#181818;stroke-width:1;" fill="none" id="IContainee-backto-IFolder" codeLine="9" />
+      <polygon points="266.98,55.42,254.848,70.008,266.028,74.37,266.98,55.42" fill="none" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+    </g>
+    <g class="link" data-entity-1="ent0002" data-entity-2="ent0012" id="lnk14" data-source-line="10" data-link-type="extension">
+      <path d="M324.827,65.655 C356.497,87.545 388.71,109.8 420.34,131.66" style="stroke:#181818;stroke-width:1;" fill="none" id="IContainee-backto-Document" codeLine="10" />
+      <polygon points="310.02,55.42,321.416,70.59,328.239,60.719,310.02,55.42" fill="none" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+    </g>
+    <g class="link" data-entity-1="ent0012" data-entity-2="ent0015" id="lnk16" data-source-line="11" data-link-type="dependency">
+      <path d="M443.07,180.42 C432.75,202.31 419.563,230.278 409.253,252.138" style="stroke:#181818;stroke-width:1;" fill="none" id="Document-to-Group" codeLine="11" />
+      <polygon points="407.12,256.66,414.577,250.226,409.253,252.138,407.341,246.814,407.12,256.66" fill="#181818" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+      <text x="429.59" y="223.067" fill="#000" font-size="13" textLength="144.917" font-family="DejaVu Sans">Business-owner-group</text>
+    </g>
+    <g class="link" data-entity-1="ent0003" data-entity-2="ent0017" id="lnk19" data-source-line="12" data-link-type="extension">
+      <path d="M228.12,198.42 C228.12,220.31 228.12,234.8 228.12,256.66" style="stroke:#181818;stroke-width:1;" fill="none" id="IFolder-backto-Folder" codeLine="12" />
+      <polygon points="228.12,180.42,222.12,198.42,234.12,198.42,228.12,180.42" fill="none" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+    </g>
+    <g class="link" data-entity-1="ent0020" data-entity-2="ent0005" id="lnk21" data-source-line="14" data-link-type="dependency">
+      <path d="M304.08,131.57 C284.84,118.02 258.94,102.51 233.12,95.42 C207.4,88.36 198.68,87.82 173.12,95.42 C149.1,102.55 129.448,114.992 112.028,128.532" style="stroke:#181818;stroke-width:1;" fill="none" id="User-to-StorageLocation" codeLine="14" />
+      <polygon points="108.08,131.6,117.641,129.235,112.028,128.532,112.731,122.919,108.08,131.6" fill="#181818" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+      <text x="174.12" y="98.067" fill="#000" font-size="13" textLength="58.963" font-family="DejaVu Sans">Viewable</text>
+      <text x="108.226" y="120.907" fill="#000" font-size="13" font-family="DejaVu Sans">*</text>
+    </g>
+    <g class="link" data-entity-1="ent0020" data-entity-2="ent0015" id="lnk22" data-source-line="15" data-link-type="dependency">
+      <path d="M346.73,180.42 C357.59,202.31 371.479,230.321 382.319,252.181" style="stroke:#181818;stroke-width:1;" fill="none" id="User-to-Group" codeLine="15" />
+      <polygon points="384.54,256.66,384.125,246.82,382.319,252.181,376.958,250.374,384.54,256.66" fill="#181818" style="stroke:#181818;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;" />
+      <text x="375.048" y="245.982" fill="#000" font-size="13" font-family="DejaVu Sans">*</text>
+    </g>
+  </g>
+</svg>
