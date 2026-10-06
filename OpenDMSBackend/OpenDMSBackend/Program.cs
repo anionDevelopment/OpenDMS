@@ -113,6 +113,10 @@ namespace OpenDMSBackend.Core
                         },
                         MaximalLengthofRequestBodies = 500,
                         MaximalLengthOfResponseBodies = 500,
+                        RoutesWhereResponseBodyIsNotLogged = new HashSet<string>()
+                        {
+                            @$"^/API/v{GeneralConstants.CodeUnitMajorVersion}/UserController/Login$",
+                        },
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ConfigurationForExceptionManagerMiddleware = new ExceptionManagerConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation()
