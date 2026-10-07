@@ -11,14 +11,14 @@ Example-content for a valid `Variables.env`-file:
 ```bash
 InitialAdminPassword=Adm1npa55w0rd
 InitialDatabaseType=PostgreSQL
-InitialDatabaseConnectionString=Host=opendms_database;Port=5432;Database=OpenDMSDatabase;Username=root;Password=R00tpa55w0rd;
+InitialDatabaseConnectionString=Host=opendms_database;Port=5432;Database=OpenDMSDatabase;Username=root;Password=R00tpa55w0rd;IncludeErrorDetail=true;
 ```
 
 ## Access
 
 ### Database
 
-connectionstring: `Host=opendms_database;Port=5432;Database=OpenDMSDatabase;Username=root;Password=R00tpa55w0rd;`
+connectionstring: `Host=opendms_database;Port=5432;Database=OpenDMSDatabase;Username=root;Password=R00tpa55w0rd;IncludeErrorDetail=true;`
 
 Data for adminer:
 

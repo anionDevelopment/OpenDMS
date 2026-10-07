@@ -4,11 +4,12 @@ import { UserDashboardComponent } from './user-dashboard.component';
 import { UserDataService } from '../../../services/user-data.service';
 import { of } from 'rxjs';
 import { HomePageModule } from '../../home-page/home-page.module';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-user-area-container',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: '<span>app-user-area-container-mock</span>'
 })
 class MockUserAreaContainerComponent { }

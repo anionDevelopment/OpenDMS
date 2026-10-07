@@ -9,20 +9,31 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
-import { UserAreaContainerComponent } from '../user-area-container/user-area-container.component';
 import { UserService } from '../../../generated/open-dms-backend';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../services/storage.service';
 import { of } from 'rxjs';
 import { UserIconComponent } from '../user-icon/user-icon.component';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { NgxDarkmodeToggleButtonComponent } from '@aniondev/ngx-darkmode-toggle-button';
+import { NgxCultureSelectorComponent } from '@aniondev/ngx-culture-selector';
 
 @Component({
   selector: 'app-user-area-container',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: '<ng-content></ng-content>'
 })
-class UserAreaContainerComponentMock { }
+class MockUserAreaContainerComponent { }
+
+//the tag-management is tested by its own testcases; here it is only replaced so that the settings-page can be rendered.
+@Component({
+  selector: 'app-tag-management',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  template: ''
+})
+class MockTagManagementComponent { }
 
 describe('UserSettingsComponent', () => {
   let component: UserSettingsComponent;
@@ -40,10 +51,13 @@ describe('UserSettingsComponent', () => {
         MatSidenavModule,
         MatButtonModule,
         MatTabsModule,
+        NgxDarkmodeToggleButtonComponent,
+        NgxCultureSelectorComponent,
       ],
       declarations: [
         UserIconComponent,
-        UserAreaContainerComponentMock,
+        MockUserAreaContainerComponent,
+        MockTagManagementComponent,
         UserSettingsComponent,
       ],
       providers: [
@@ -51,12 +65,13 @@ describe('UserSettingsComponent', () => {
           provide: StorageService,
           useValue: {
             getAccessToken: () => "accesstoken1",
+            hasAccessToken: () => false,
           }
         },
         {
           provide: UserService,
           useValue: {
-            aPIV3UserControllerGetUserInformationGet: (token: string) => of({
+            aPIV3UserControllerGetUserInformationGet: () => of({
               id: "id1",
               name: "admin",
               isAdmin: true,

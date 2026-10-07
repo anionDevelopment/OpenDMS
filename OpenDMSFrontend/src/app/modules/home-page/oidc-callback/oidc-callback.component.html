@@ -1,0 +1,8 @@
+<div class="oidc-callback-container">
+  <ng-container *ngIf="!error">
+    <p i18n="@@oidc_callback_loading">Completing login, please wait...</p>
+  </ng-container>
+  <ng-container *ngIf="error">
+    <p class="error-message">{{ error }}</p>
+  </ng-container>
+</div>

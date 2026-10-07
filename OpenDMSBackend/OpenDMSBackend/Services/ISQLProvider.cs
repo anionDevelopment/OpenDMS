@@ -1,4 +1,4 @@
-﻿namespace OpenDMSBackend.Core.Services
+namespace OpenDMSBackend.Core.Services
 {
     public interface ISQLProvider
     {
@@ -8,6 +8,16 @@
         string GetScriptGetAllRoles();
         string GetScriptAddDocument();
         string GetScriptUpdateDocument();
+        string GetScriptSoftDeleteDocument();
+        string GetScriptSetAISummary();
+        string GetScriptGetSetting();
+        string GetScriptSetSetting();
+        string GetScriptGetUserSetting();
+        string GetScriptSetUserSetting();
+        string GetScriptAddDocumentVersion();
+        string GetScriptGetVersionsOfDocument();
+        string GetScriptGetVersionByContentId();
+        string GetScriptSetIsLatestVersion();
         string GetScriptDeleteInheritedRoles();
         string GetScriptAddInheritedRole();
         string GetScriptGetRoleByName();
@@ -20,6 +30,7 @@
         string GetScriptUserWithNameExists();
         string GetScriptGetAmountOfDocuments();
         string GetScriptGetUserByName();
+        string GetScriptGetUserByExternalLogin();
         string GetScriptAddAccessToken();
         string GetScriptGetAccessToken();
         string GetScriptGetDocument();
@@ -46,6 +57,9 @@
         string GetScriptGetAllDocumentIds();
         string GetScriptGetAllTags();
         string GetScriptAddTag();
+        string GetScriptUpdateTag();
+        string GetScriptDeleteTag();
+        string GetScriptUnassignTagFromAllDocuments();
         string GetScriptGetRolesOfUser();
         string GetScriptGetStorageLocationIdOfContainee();
         string GetScriptGetContentOfContainer();
@@ -55,5 +69,31 @@
         string GetScriptGetDirectlyInheritedRoleIds();
         string GetScriptRenameFolder();
         string GetScriptRenameStorageLocation();
+        string GetScriptGetAllUsers();
+        string GetScriptIsUserOwnerOfStorageLocation();
+        string GetScriptGetOwnersOfStorageLocation();
+        string GetScriptRemoveOwnerOfStorageLocation();
+        string GetScriptStorageLocationIsSharedWithUser();
+        string GetScriptStorageLocationIsEditableByUser();
+        string GetScriptAuthorizeUserToViewStorageLocation();
+        string GetScriptAuthorizeUserToEditStorageLocation();
+        string GetScriptUnauthorizeUserToViewStorageLocation();
+        string GetScriptUnauthorizeUserToEditStorageLocation();
+        string GetScriptRemoveRoleFromUser();
+        string GetScriptAssignTag();
+        string GetScriptUnassignTag();
+        string GetScriptHardDeleteDocument();
+        string GetScriptUnassignAllTagsOfDocument();
+        string GetScriptGetIdsOfDocumentsWhichMustBeHardDeletedNow();
+        string GetScriptRemoveChild();
+        string GetScriptCreateMetadataFieldDefinition();
+        string GetScriptUpdateMetadataFieldDefinition();
+        string GetScriptDeleteMetadataFieldDefinition();
+        string GetScriptDeleteMetadataValuesOfField();
+        string GetScriptGetMetadataFieldDefinition();
+        string GetScriptGetMetadataFieldDefinitionsOfStorageLocation();
+        string GetScriptSetDocumentMetadataValue();
+        string GetScriptRemoveDocumentMetadataValue();
+        string GetScriptGetMetadataValuesOfDocument();
     }
 }

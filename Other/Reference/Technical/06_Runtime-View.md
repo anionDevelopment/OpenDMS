@@ -12,7 +12,8 @@ When developing/debugging the following components are used usually:
 
 ##### Quick test
 
-For a quick test with a transient persistent `task BaseQuickStart` (or shorter: `task bqs`) is the correct command.
+For a quick test with a transient persistence `task BaseQuickStart` (or shorter: `task bqs`) is the correct command.
+It runs the image `opendms:latest`, which the build of the codeunit `OpenDMS` creates, so the repository has to be built with `scbuildcodeunits` before.
 (Do `Ctrl+c` to abort the test.)
 This starts OpenDMS locally in a container with a transient persistence:
 

@@ -1,18 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifiers>win-x64;linux-x64;linux-arm64</RuntimeIdentifiers>
     <Authors>Marius Göcke</Authors>
-    <Version>3.0.5</Version>
-    <AssemblyVersion>3.0.5</AssemblyVersion>
-    <FileVersion>3.0.5</FileVersion>
+    <Version>3.1.0</Version>
+    <AssemblyVersion>3.1.0</AssemblyVersion>
+    <FileVersion>3.1.0</FileVersion>
     <SelfContained>false</SelfContained>
     <IsPackable>false</IsPackable>
     <PreserveCompilationContext>false</PreserveCompilationContext>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <Copyright>Copyright © 2025 Marius Göcke</Copyright>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>OpenDMSBackend is the backend of OpenDMS.</Description>
-    <PackageProjectUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend</PackageProjectUrl>
-    <RepositoryUrl>https://projects.aniondev.de/PublicProjects/Common/OpenDMSBackend.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/anionDevelopment/OpenDMS</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/anionDevelopment/OpenDMS.git</RepositoryUrl>
     <RootNamespace>OpenDMSBackend.Core</RootNamespace>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <Nullable>enable</Nullable>
@@ -58,35 +60,39 @@
     <ErrorReport>none</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="ExtendedXmlSerializer" Version="3.10.0" />
-    <PackageReference Include="GRYLibrary" Version="2.0.17" />
-    <PackageReference Include="Microsoft.ClearScript.Core" Version="7.5.0" />
-    <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.3" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-    <PackageReference Include="Npgsql" Version="10.0.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
-    <PackageReference Include="prometheus-net" Version="8.2.1" />
-    <PackageReference Include="SimpleOCRLibrary" Version="1.5.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="SkiaSharp" Version="3.119.2" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
-    <PackageReference Include="System.Collections.Immutable" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
-    <PackageReference Include="NJsonSchema" Version="11.5.2" />
-    <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.3" />
-    <PackageReference Include="System.Reactive" Version="6.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
+    <PackageReference Include="CommandLineParser" Version="[2.9.1]" />
+    <PackageReference Include="ExtendedXmlSerializer" Version="[3.10.0]" />
+    <PackageReference Include="GRYLibrary" Version="[2.1.0]" />
+    <PackageReference Include="Microsoft.ClearScript.Core" Version="[7.5.0]" />
+    <PackageReference Include="Microsoft.ClearScript.V8" Version="[7.5.0]" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="[7.5.0]" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="[7.5.0]" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-arm64" Version="[7.5.0]" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="[10.0.3]" />
+    <PackageReference Include="HtmlAgilityPack" Version="[1.12.4]" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="[2.3.9]" />
+    <PackageReference Include="Microsoft.CSharp" Version="[4.7.0]" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="[10.0.3]" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="[10.0.3]" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="[5.0.0]" />
+    <PackageReference Include="Npgsql" Version="[10.0.1]" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="[10.0.0]" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="[9.0.0]" />
+    <PackageReference Include="prometheus-net" Version="[8.2.1]" />
+    <PackageReference Include="SimpleOCRLibrary" Version="[1.5.0]" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="[3.1.12]" />
+    <PackageReference Include="SkiaSharp" Version="[3.119.2]" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="[3.119.2]" />
+    <PackageReference Include="System.Collections.Immutable" Version="[10.0.3]" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[10.0.3]" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="[10.0.3]" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.3]" />
+    <PackageReference Include="NJsonSchema" Version="[11.5.2]" />
+    <PackageReference Include="NSwag.AspNetCore" Version="[14.6.3]" />
+    <PackageReference Include="System.Drawing.Common" Version="[10.0.3]" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="[8.16.0]" />
+    <PackageReference Include="System.Reactive" Version="[6.1.0]" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="[10.2.1]" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\**">

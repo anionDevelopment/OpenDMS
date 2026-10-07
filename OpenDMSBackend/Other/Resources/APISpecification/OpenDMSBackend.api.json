@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v3.0.5 API documentation",
+    "title": "OpenDMSBackend v3.1.0 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v3.0.5"
+    "version": "v3.1.0"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
@@ -74,6 +74,174 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OIDCController/GetOIDCProviders": {
+      "get": {
+        "tags": [
+          "OIDC"
+        ],
+        "summary": "Returns the list of configured OIDC providers. An empty list means OIDC login is not available.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OIDCProviderDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OIDCProviderDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OIDCProviderDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OIDCController/InitiateOIDCLogin": {
+      "get": {
+        "tags": [
+          "OIDC"
+        ],
+        "summary": "Initiates an OIDC login for the specified provider. Returns the authorization URL to redirect the user to.",
+        "parameters": [
+          {
+            "name": "providerId",
+            "in": "query",
+            "description": "The id of the OIDC provider (e.g. \"keycloak-1\").",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/OIDCInitiationDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OIDCInitiationDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OIDCInitiationDTO"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OIDCController/ExchangeOIDCCode": {
+      "post": {
+        "tags": [
+          "OIDC"
+        ],
+        "summary": "Exchanges the OIDC authorization code for an OpenDMS access token.\nCreates a new OpenDMS account for the user on their first login via this provider.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OIDCCallbackRequestDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OIDCCallbackRequestDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OIDCCallbackRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessToken"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -177,6 +345,170 @@
               "text/json": {
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/UploadNewVersion/{oldDocumentId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Uploads a new version of an existing document. The new version is stored as a regular document in the same folder and is linked to the old document.",
+        "parameters": [
+          {
+            "name": "oldDocumentId",
+            "in": "path",
+            "description": "The ID of the document a new version is uploaded for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "query",
+            "description": "The file name for the uploaded document.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "An optional display title for the document.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "additionalOCRLanguages",
+            "in": "query",
+            "description": "Additional languages to use during OCR processing.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The raw binary content of the new version.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            },
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "byte"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetVersionHistory": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns the complete version-history (from oldest to newest) of the document's version-chain.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "query",
+            "description": "The ID of a document in the version-chain.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentPreviewDTO"
+                  }
                 }
               }
             }
@@ -477,6 +809,233 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/AuthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Grants the specified user permission to change (edit) the specified storage location and its contents. Only a moderator (owner) of the storage-location may do this.",
+        "parameters": [
+          {
+            "name": "storageLocationId",
+            "in": "path",
+            "description": "The id of the storage location.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "editUserId",
+            "in": "path",
+            "description": "The id of the user to grant the edit-permission to.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/UnauthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Revokes the specified user's permission to change (edit) the specified storage location. Only a moderator (owner) of the storage-location may do this.",
+        "parameters": [
+          {
+            "name": "storageLocationId",
+            "in": "path",
+            "description": "The id of the storage location.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "editUserId",
+            "in": "path",
+            "description": "The id of the user whose edit-permission should be revoked.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/AddModerator/{contentId}/{newModeratorUserId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Adds the specified user as a moderator of the specified content-object (storage-location, folder or document). Only a moderator may do this. A content-object can have several moderators.",
+        "parameters": [
+          {
+            "name": "contentId",
+            "in": "path",
+            "description": "The id of the content-object.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newModeratorUserId",
+            "in": "path",
+            "description": "The id of the user to add as a moderator.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/RemoveModerator/{contentId}/{moderatorUserId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Removes the specified user from the moderators of the specified content-object. Only a moderator may do this. A folder or storage-location must always keep at least one moderator.",
+        "parameters": [
+          {
+            "name": "contentId",
+            "in": "path",
+            "description": "The id of the content-object.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moderatorUserId",
+            "in": "path",
+            "description": "The id of the moderator to remove.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetModerators/{contentId}": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns the ids of all moderators of the specified content-object. Only a moderator may query this.",
+        "parameters": [
+          {
+            "name": "contentId",
+            "in": "path",
+            "description": "The id of the content-object.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -937,12 +1496,12 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetAllTags": {
+    "/API/v3/OpenDMSBackend/GetTags": {
       "put": {
         "tags": [
           "OpenDMSBackend"
         ],
-        "summary": "Returns all tags defined in the system.",
+        "summary": "Returns the tags the current user can use, which are the global tags and the tags the user owns.",
         "parameters": [
           {
             "name": "X-AccessToken",
@@ -983,6 +1542,237 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/CreateTag": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Creates a new tag which can afterwards be assigned to documents. A global tag can only be created by an administrator.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The name, the color and the scope of the tag to create.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagCreationDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagCreationDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagCreationDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/UpdateTag/{tagId}": {
+      "put": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Changes the name and the color of an existing tag. A global tag can only be changed by an administrator and a tag which belongs to a user only by that user.",
+        "parameters": [
+          {
+            "name": "tagId",
+            "in": "path",
+            "description": "The id of the tag to change.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The new name and the new color of the tag.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagUpdateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagUpdateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagUpdateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/DeleteTag/{tagId}": {
+      "delete": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Deletes an existing tag together with all of its assignments to documents. A global tag can only be deleted by an administrator and a tag which belongs to a user only by that user.",
+        "parameters": [
+          {
+            "name": "tagId",
+            "in": "path",
+            "description": "The id of the tag to delete.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/AssignTag/{documentId}/{tagId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Assigns an existing tag to the specified document. The current user must be allowed to change the document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagId",
+            "in": "path",
+            "description": "The id of the tag to assign.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/UnassignTag/{documentId}/{tagId}": {
+      "delete": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Removes the assignment of a tag from the specified document. The current user must be allowed to change the document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tagId",
+            "in": "path",
+            "description": "The id of the tag to unassign.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -1086,6 +1876,572 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GenerateAISummary/{documentId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Generates the short and the long AI-summary of the specified document and returns the updated document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document to summarize.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetGeneralSettings": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns the general (admin-configurable) OpenDMS-settings.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeneralSettingsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/SetGeneralSettings": {
+      "put": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Updates the general (admin-configurable) OpenDMS-settings. Only administrators are allowed to call this.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The new settings-values.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralSettingsDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/DefineMetadataField/{storageLocationId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Defines a new custom metadata-field for the specified storage-location. Only a moderator of the storage-location may do this.",
+        "parameters": [
+          {
+            "name": "storageLocationId",
+            "in": "path",
+            "description": "The id of the storage-location the field is defined for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The name and type (\"String\", \"Boolean\", \"Double\" or \"Timestamp\") of the field to create.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataFieldDefinitionCreationDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataFieldDefinitionCreationDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataFieldDefinitionCreationDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/RenameMetadataField/{fieldDefinitionId}": {
+      "put": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Renames the specified custom metadata-field. Only a moderator of the field's storage-location may do this. The type of a field can not be changed.",
+        "parameters": [
+          {
+            "name": "fieldDefinitionId",
+            "in": "path",
+            "description": "The id of the field-definition to rename.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The new name of the field.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/RemoveMetadataField/{fieldDefinitionId}": {
+      "delete": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Removes the specified custom metadata-field-definition together with all values documents hold for it. Only a moderator of the field's storage-location may do this.",
+        "parameters": [
+          {
+            "name": "fieldDefinitionId",
+            "in": "path",
+            "description": "The id of the field-definition to remove.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetMetadataFields/{storageLocationId}": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns all custom metadata-fields defined for the specified storage-location. The current user must be allowed to view the storage-location.",
+        "parameters": [
+          {
+            "name": "storageLocationId",
+            "in": "path",
+            "description": "The id of the storage-location.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/GetMetadataFieldsOfDocument/{documentId}": {
+      "get": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Returns all custom metadata-fields the specified document can hold a value for, which are the fields defined for its storage-location. The current user must be allowed to view the document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MetadataFieldDefinitionDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/SetDocumentMetadataValue/{documentId}/{fieldDefinitionId}": {
+      "post": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Sets the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fieldDefinitionId",
+            "in": "path",
+            "description": "The id of the metadata-field-definition.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The value to set. It must match the type of the field: a boolean (\"true\"/\"false\"), a number in the invariant culture (for example \"1234.56\") or a timestamp in the iso-8601-format (for example \"2026-01-31T12:00:00+01:00\").",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/SetRetentionDates/{documentId}": {
+      "put": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Sets the retention-dates of the specified document. The current user must be allowed to change the document.\nAs long as the point in time before which the document must not be deleted is in the future, the document can not be hard-deleted; when the point in time after which it must be deleted is reached, the scheduled housekeeping hard-deletes it.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The retention-dates as iso-8601-timestamps. An omitted or empty value removes the respective date.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetentionDatesDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetentionDatesDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetentionDatesDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/OpenDMSBackend/RemoveDocumentMetadataValue/{documentId}/{fieldDefinitionId}": {
+      "delete": {
+        "tags": [
+          "OpenDMSBackend"
+        ],
+        "summary": "Clears the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.",
+        "parameters": [
+          {
+            "name": "documentId",
+            "in": "path",
+            "description": "The id of the document.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fieldDefinitionId",
+            "in": "path",
+            "description": "The id of the metadata-field-definition.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1335,6 +2691,252 @@
           }
         }
       }
+    },
+    "/API/v3/UserController/GetTheme": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns the color-scheme which the currently authenticated user chose.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringValueDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringValueDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StringValueDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/UserController/SetTheme": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Sets the color-scheme of the currently authenticated user, so that the choice is available again on another device and after a new login.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The color-scheme to store: \"system\", \"light\" or \"dark\".",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StringValueDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/API/v3/UserController/GetAllUsers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns all users together with the roles assigned to them. Requires administrator privileges.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserOverviewDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserOverviewDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserOverviewDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/UserController/GetAllRoles": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Returns the names of all roles that can be assigned to a user. Requires administrator privileges.",
+        "parameters": [
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/API/v3/UserController/SetRolesOfUser": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Sets the complete set of roles of the given user (roles not contained are removed, missing ones are added). Requires administrator privileges.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "header",
+            "description": "The id of the user whose roles should be set.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-AccessToken",
+            "in": "header",
+            "description": "Access Token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The names of the roles the user should have afterwards.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1380,10 +2982,6 @@
             "type": "string",
             "nullable": true
           },
-          "lastEditDate": {
-            "type": "string",
-            "nullable": true
-          },
           "tags": {
             "uniqueItems": true,
             "type": "array",
@@ -1423,9 +3021,6 @@
             "type": "string",
             "nullable": true
           },
-          "version": {
-            "$ref": "#/components/schemas/Version3"
-          },
           "assignedLanguages": {
             "uniqueItems": true,
             "type": "array",
@@ -1436,6 +3031,34 @@
           },
           "addedByUserId": {
             "type": "string",
+            "nullable": true
+          },
+          "aiSummaryShort": {
+            "type": "string",
+            "description": "A very short AI-generated summary (at most three sentences), or null if none has been generated yet.",
+            "nullable": true
+          },
+          "aiSummaryLong": {
+            "type": "string",
+            "description": "A regular AI-generated summary, or null if none has been generated yet.",
+            "nullable": true
+          },
+          "versionNumber": {
+            "type": "integer",
+            "description": "The incrementing version-number of this document within its version-chain (1-based).",
+            "format": "int32"
+          },
+          "versionTimestamp": {
+            "type": "string",
+            "description": "The moment this version was created, as a formatted string.",
+            "nullable": true
+          },
+          "metadataValues": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The values this document holds for the custom metadata-fields defined at its containing storage-location, keyed by the field-definition-id.\nA boolean-value is represented as \"true\"/\"false\". A field for which the document has no value is absent from this dictionary.",
             "nullable": true
           }
         },
@@ -1462,10 +3085,6 @@
             "nullable": true
           },
           "importDate": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastEditDate": {
             "type": "string",
             "nullable": true
           },
@@ -1496,9 +3115,6 @@
             "type": "string",
             "nullable": true
           },
-          "version": {
-            "$ref": "#/components/schemas/Version3"
-          },
           "assignedLanguages": {
             "uniqueItems": true,
             "type": "array",
@@ -1509,6 +3125,21 @@
           },
           "addedByUserId": {
             "type": "string",
+            "nullable": true
+          },
+          "aiSummaryShort": {
+            "type": "string",
+            "description": "A very short AI-generated summary (at most three sentences) shown as a hint in listings, or null if none has been generated yet.",
+            "nullable": true
+          },
+          "versionNumber": {
+            "type": "integer",
+            "description": "The incrementing version-number of this document within its version-chain (1-based).",
+            "format": "int32"
+          },
+          "versionTimestamp": {
+            "type": "string",
+            "description": "The moment this version was created, as a formatted string.",
             "nullable": true
           }
         },
@@ -1542,6 +3173,158 @@
           }
         },
         "additionalProperties": false
+      },
+      "GeneralSettingsDTO": {
+        "type": "object",
+        "properties": {
+          "autoGenerateAISummary": {
+            "type": "boolean",
+            "description": "Whether an AI-summary is generated automatically whenever a document is added or changed."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object for the general (admin-configurable) OpenDMS-settings."
+      },
+      "MetadataFieldDefinitionCreationDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The display-name of the field to create.",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "description": "The value-type of the field (\"String\" or \"Boolean\").",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object used to create a new custom metadata-field-definition for a storage-location."
+      },
+      "MetadataFieldDefinitionDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "storageLocationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "description": "The value-type of the field (\"String\" or \"Boolean\").",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object for a storage-location-specific custom metadata-field-definition."
+      },
+      "OIDCCallbackRequestDTO": {
+        "type": "object",
+        "properties": {
+          "providerId": {
+            "type": "string",
+            "description": "The provider id that initiated the flow (e.g. \"keycloak-1\").",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "description": "The authorization code received from the OIDC provider callback.",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "description": "The state value from the callback, used to look up the stored code verifier.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Sent by the frontend to exchange an OIDC authorization code for an OpenDMS access token."
+      },
+      "OIDCInitiationDTO": {
+        "type": "object",
+        "properties": {
+          "authorizationUrl": {
+            "type": "string",
+            "description": "The full URL to redirect the user's browser to at the OIDC provider.",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "description": "The OIDC state value. The frontend must store this and verify it matches what comes back\nin the callback query parameter before calling ExchangeOIDCCode.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Returned when initiating an OIDC login; the frontend redirects the user to OpenDMSBackend.Core.Model.DTOs.OIDCInitiationDTO.AuthorizationUrl."
+      },
+      "OIDCProviderDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique provider id (e.g. \"keycloak-1\").",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "description": "The human-readable label for the login button.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Public representation of a configured OIDC provider, returned to the frontend."
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {}
+      },
+      "RetentionDatesDTO": {
+        "type": "object",
+        "properties": {
+          "deleteIsNotAllowedBefore": {
+            "type": "string",
+            "description": "The point in time before which the document must not be hard-deleted, as iso-8601-timestamp (for example \"2026-01-31T12:00:00+01:00\"), or null when the document has no deletion-lock.",
+            "nullable": true
+          },
+          "mustBeHardDeletedAfter": {
+            "type": "string",
+            "description": "The point in time after which the document must be hard-deleted by the scheduled housekeeping, as iso-8601-timestamp, or null when the document must not be deleted automatically.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object for the retention-dates of a document."
       },
       "StorageLocationDTO": {
         "type": "object",
@@ -1581,6 +3364,27 @@
         },
         "additionalProperties": false
       },
+      "TagCreationDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The display-name of the tag to create.",
+            "nullable": true
+          },
+          "colorCode": {
+            "type": "string",
+            "description": "The color of the tag as a six-digit hexadecimal rgb-value (for example \"C62828\"), optionally prefixed with a number-sign.",
+            "nullable": true
+          },
+          "isGlobal": {
+            "type": "boolean",
+            "description": "Indicates whether the tag is created as a global tag (usable by every user, only an administrator may do this) instead of a tag which belongs to the creating user."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object used to create a new tag."
+      },
       "TagDTO": {
         "type": "object",
         "properties": {
@@ -1595,9 +3399,31 @@
           "colorCode": {
             "type": "string",
             "nullable": true
+          },
+          "ownerUserId": {
+            "type": "string",
+            "description": "The id of the user the tag belongs to, or null when it is a global tag which every user can see and use.",
+            "nullable": true
           }
         },
         "additionalProperties": false
+      },
+      "TagUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The new display-name of the tag.",
+            "nullable": true
+          },
+          "colorCode": {
+            "type": "string",
+            "description": "The new color of the tag as a six-digit hexadecimal rgb-value (for example \"C62828\"), optionally prefixed with a number-sign.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Data transfer object used to change the name and the color of an existing tag."
       },
       "UserInformationDTO": {
         "type": "object",
@@ -1616,29 +3442,37 @@
         },
         "additionalProperties": false
       },
-      "Version3": {
+      "UserOverviewDTO": {
         "type": "object",
         "properties": {
-          "major": {
-            "type": "integer",
-            "format": "int64"
+          "id": {
+            "type": "string",
+            "nullable": true
           },
-          "minor": {
-            "type": "integer",
-            "format": "int64"
+          "name": {
+            "type": "string",
+            "nullable": true
           },
-          "patch": {
-            "type": "integer",
-            "format": "int64"
+          "roles": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Represents a user together with the names of the roles currently assigned to it. Used for the administrative user-overview."
       }
     }
   },
   "tags": [
     {
       "name": "MaintenanceRoutes"
+    },
+    {
+      "name": "OIDC"
     },
     {
       "name": "OpenDMSBackend"

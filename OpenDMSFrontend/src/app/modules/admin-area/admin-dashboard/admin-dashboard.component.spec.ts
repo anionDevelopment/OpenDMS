@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdminDashboardComponent } from './admin-dashboard.component';
 import { FrameWorkComponent } from '../../home-page/frame-work/frame-work.component';
 import { AdminAreaContainerComponent } from '../admin-area-container/admin-area-container.component';
-import { UserService } from '../../../generated/open-dms-backend';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';

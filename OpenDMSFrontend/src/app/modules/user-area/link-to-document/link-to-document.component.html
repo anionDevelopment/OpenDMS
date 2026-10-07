@@ -1,5 +1,7 @@
-<div *ngIf="documentPreview">
+@if (documentPreview) {
+<div>
   <a href="/user/document/{{documentPreview!.readableId!}}">
     <ng-content></ng-content>
   </a>
 </div>
+}

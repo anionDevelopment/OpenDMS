@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { OpenDMSBackendService, StorageLocationDTO } from '../../../generated/open-dms-backend';
 
@@ -6,6 +6,7 @@ import { OpenDMSBackendService, StorageLocationDTO } from '../../../generated/op
   selector: 'app-content-tree',
   standalone: false,
   templateUrl: './content-tree.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './content-tree.component.scss'
 })
 export class ContentTreeComponent implements OnInit {
@@ -23,7 +24,7 @@ export class ContentTreeComponent implements OnInit {
   }
 
   onContainerRemoved(containerId: string) {
-    var storageLocations = this.storageLocations.filter(storageLocation => storageLocation.id != containerId);
+    const storageLocations = this.storageLocations.filter(storageLocation => storageLocation.id != containerId);
     this.storageLocations = [...storageLocations];
   }
 
@@ -32,7 +33,7 @@ export class ContentTreeComponent implements OnInit {
   }
 
   onStorageLocationAdded(storageLocation: StorageLocationDTO) {
-    var storageLocations = this.storageLocations
+    const storageLocations = this.storageLocations
     storageLocations.push(storageLocation);
     this.storageLocations = [...storageLocations];
   }

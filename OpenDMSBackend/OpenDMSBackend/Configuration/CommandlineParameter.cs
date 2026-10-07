@@ -1,10 +1,14 @@
-﻿using CommandLine;
+using CommandLine;
 using GRYLibrary.Core.APIServer.Verbs;
 
 namespace OpenDMSBackend.Core.Configuration
 {
     public class CommandlineParameter : RunServer
     {
+
+        /// <summary>Whether the application runs its background-services. They are only started when the application really runs, which the execution-mode of a test-run does not tell.</summary>
+        [Option(nameof(RunBackgroundProcesses), Required = false, Default = false)]
+        public bool RunBackgroundProcesses { get; set; }
 
         [Option(nameof(InitialAdminPassword), Required = false)]
         public string? InitialAdminPassword { get; set; }

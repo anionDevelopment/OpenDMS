@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
 import { DocumentPreviewDTO } from '../../../generated/open-dms-backend';
 import { Observable } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
@@ -8,9 +8,10 @@ import { MatSort } from '@angular/material/sort';
   selector: 'app-document-table',
   standalone: false,
   templateUrl: './document-table.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './document-table.component.scss'
 })
-export class DocumentTableComponent implements OnInit {
+export class DocumentTableComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = ["id", "preview", "name", "importdate", "lasteditdate", "options"];
 
@@ -38,7 +39,7 @@ export class DocumentTableComponent implements OnInit {
         case 'id': return item.readableId ?? '';
         case 'name': return item.title ?? '';
         case 'importdate': return item.importDate ?? '';
-        case 'lasteditdate': return item.lastEditDate ?? '';
+        case 'lasteditdate': return item.versionTimestamp ?? '';
         default: return '';
       }
     };

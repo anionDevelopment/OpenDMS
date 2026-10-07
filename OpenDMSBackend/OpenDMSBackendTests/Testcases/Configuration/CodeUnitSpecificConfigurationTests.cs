@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenDMSBackend.Core.Configuration;
 
@@ -8,7 +8,7 @@ namespace OpenDMSBackend.Tests.Testcases.Configuration
     public class CodeUnitSpecificConfigurationTests
     {
         [TestMethod(DisplayName = nameof(CodeUnitSpecificConfigurationRegistrationIsAllowed))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void CodeUnitSpecificConfigurationRegistrationIsAllowed()
         {
             //arrange
@@ -24,7 +24,7 @@ namespace OpenDMSBackend.Tests.Testcases.Configuration
         }
 
         [TestMethod(DisplayName = nameof(CodeUnitSpecificConfigurationLoginIsAllowed))]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void CodeUnitSpecificConfigurationLoginIsAllowed()
         {
             //arrange

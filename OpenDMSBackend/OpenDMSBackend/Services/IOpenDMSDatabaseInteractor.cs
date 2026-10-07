@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Database;
+using GRYLibrary.Core.APIServer.Services.Database;
 
 namespace OpenDMSBackend.Core.Services
 {

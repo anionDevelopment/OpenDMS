@@ -1,4 +1,4 @@
-﻿namespace OpenDMSBackend.Core.Model.BusinessTypes
+namespace OpenDMSBackend.Core.Model.BusinessTypes
 {
     public interface IDocument : IContainee
     {

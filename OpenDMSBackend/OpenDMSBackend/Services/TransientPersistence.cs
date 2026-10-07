@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
@@ -17,7 +17,13 @@ namespace OpenDMSBackend.Core.Services
         private readonly IDictionary<string/*id*/, Document> _Documents;
         private readonly IDictionary<string/*id*/, Tag> _Tags;
         private readonly IDictionary<string/*containee-id*/, string/*container-id*/> _ContaineeContainerAssignments;
-        private readonly IDictionary<string/*storagelocation-id*/, string/*user-id*/> _StorageLocationOwnerAssignments;
+        private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationOwnerAssignments;
+        private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationViewGrants;
+        private readonly IDictionary<string/*storagelocation-id*/, ISet<string>/*user-ids*/> _StorageLocationEditGrants;
+        private readonly IDictionary<string/*key*/, string/*value*/> _Settings;
+        private readonly IDictionary<(string/*userid*/, string/*key*/), string/*value*/> _UserSettings;
+        private readonly IDictionary<string/*field-definition-id*/, MetadataFieldDefinition> _MetadataFieldDefinitions;
+        private readonly IList<DocumentVersionEntry> _DocumentVersions;
         private readonly IIdGenerator<ulong> _IdGenerator;
         private readonly ITimeService _TimeService;
         private readonly IAuthenticationServicePersistence<User> _TransientAuthenticationServicePersistence;
@@ -34,7 +40,13 @@ namespace OpenDMSBackend.Core.Services
             this._Folders = new Dictionary<string, Folder>();
             this._Documents = new Dictionary<string, Document>();
             this._ContaineeContainerAssignments = new Dictionary<string, string>();
-            this._StorageLocationOwnerAssignments = new Dictionary<string, string>();
+            this._StorageLocationOwnerAssignments = new Dictionary<string, ISet<string>>();
+            this._StorageLocationViewGrants = new Dictionary<string, ISet<string>>();
+            this._StorageLocationEditGrants = new Dictionary<string, ISet<string>>();
+            this._Settings = new Dictionary<string, string>();
+            this._UserSettings = new Dictionary<(string, string), string>();
+            this._MetadataFieldDefinitions = new Dictionary<string, MetadataFieldDefinition>();
+            this._DocumentVersions = new List<DocumentVersionEntry>();
             this._Tags = new Dictionary<string, Tag>();
             this._IdGenerator = idGenerator;
             this._TimeService = timeService;
@@ -55,6 +67,12 @@ namespace OpenDMSBackend.Core.Services
             this._Documents.Clear();
             this._ContaineeContainerAssignments.Clear();
             this._StorageLocationOwnerAssignments.Clear();
+            this._StorageLocationViewGrants.Clear();
+            this._StorageLocationEditGrants.Clear();
+            this._Settings.Clear();
+            this._UserSettings.Clear();
+            this._MetadataFieldDefinitions.Clear();
+            this._DocumentVersions.Clear();
             this._Tags.Clear();
             this._IdGenerator.Reset();
         }
@@ -115,9 +133,16 @@ namespace OpenDMSBackend.Core.Services
             this._Tags[tag.Id] = tag;
         }
 
-        private Tag GetTag(string id)
+        /// <inheritdoc />
+        public Tag GetTag(string tagId)
         {
-            return this._Tags[id];
+            return this._Tags[tagId];
+        }
+
+        /// <inheritdoc />
+        public ISet<string> GetTagIdsOfDocument(string documentId)
+        {
+            return this.GetDocument(documentId).Tags.Select(tag => tag.Id).ToHashSet();
         }
 
         /// <inheritdoc />
@@ -133,9 +158,27 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public TagDTO[] GetAllTags()
+        public void UpdateTag(Tag tag)
         {
-            throw new NotImplementedException();
+            this._Tags[tag.Id] = tag;
+        }
+
+        /// <inheritdoc />
+        public void DeleteTag(string tagId)
+        {
+            Tag tag = this.GetTag(tagId);
+            this._Tags.Remove(tagId);
+            //remove the tag from every document it is assigned to, because an assignment of a no longer existing tag would be a dangling reference.
+            foreach (Document document in this._Documents.Values)
+            {
+                document.Tags.Remove(tag);
+            }
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<Tag> GetAllTags()
+        {
+            return this._Tags.Values.ToList();
         }
 
         /// <inheritdoc />
@@ -164,20 +207,56 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public bool UserIsOwnerOfStorageLocation(string userId, string storageLocationId)
         {
-            if (this._StorageLocations.ContainsKey(storageLocationId))
-            {
-                return this._StorageLocationOwnerAssignments[storageLocationId] == userId;
-            }
-            else
-            {
-                return false;
-            }
+            //the "owner"-concept is a moderator of a content-object (storage-location, folder or document); a content-object can have several moderators.
+            return this.HasGrant(this._StorageLocationOwnerAssignments, storageLocationId, userId);
+        }
+
+        /// <inheritdoc />
+        public ISet<string> GetOwnersOfStorageLocation(string storageLocationId)
+        {
+            return this._StorageLocationOwnerAssignments.TryGetValue(storageLocationId, out ISet<string>? owners) ? new HashSet<string>(owners) : new HashSet<string>();
+        }
+
+        /// <inheritdoc />
+        public void RemoveOwnerOfStorageLocation(string storageLocationId, string userId)
+        {
+            this.RemoveGrant(this._StorageLocationOwnerAssignments, storageLocationId, userId);
         }
 
         /// <inheritdoc />
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId)
         {
-            return false;//TODO
+            //an edit-grant implies a view-grant.
+            return this.HasGrant(this._StorageLocationViewGrants, storageLocationId, userId) || this.HasGrant(this._StorageLocationEditGrants, storageLocationId, userId);
+        }
+
+        /// <inheritdoc />
+        public bool StorageLocationIsEditableByUser(string storageLocationId, string userId)
+        {
+            return this.HasGrant(this._StorageLocationEditGrants, storageLocationId, userId);
+        }
+
+        private bool HasGrant(IDictionary<string, ISet<string>> grants, string storageLocationId, string userId)
+        {
+            return grants.TryGetValue(storageLocationId, out ISet<string>? userIds) && userIds.Contains(userId);
+        }
+
+        private void AddGrant(IDictionary<string, ISet<string>> grants, string storageLocationId, string userId)
+        {
+            if (!grants.TryGetValue(storageLocationId, out ISet<string>? userIds))
+            {
+                userIds = new HashSet<string>();
+                grants[storageLocationId] = userIds;
+            }
+            userIds.Add(userId);
+        }
+
+        private void RemoveGrant(IDictionary<string, ISet<string>> grants, string storageLocationId, string userId)
+        {
+            if (grants.TryGetValue(storageLocationId, out ISet<string>? userIds))
+            {
+                userIds.Remove(userId);
+            }
         }
 
         /// <inheritdoc />
@@ -193,7 +272,8 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public void SetOwnerOfStorageLocation(string storageLocationId, string userId)
         {
-            this._StorageLocationOwnerAssignments[storageLocationId] = userId;
+            //adds the user as a moderator ("owner") of the content-object; a content-object can have several moderators.
+            this.AddGrant(this._StorageLocationOwnerAssignments, storageLocationId, userId);
         }
 
         /// <inheritdoc />
@@ -244,21 +324,45 @@ namespace OpenDMSBackend.Core.Services
                 },
                 (documentId) =>
                 {
-                    //TODO remove all related stuff from _ContaineeContainerAssignments
-                    this._Documents.Remove(documentId);
+                    //hard-deleting a document does not remove its row: the binary-content and preview are cleared, the OCR-content and AI-summaries are cleared, the tags are unassigned and it is marked as hard-deleted. The row and version-entry are kept for traceability and no new version is created.
+                    Document document = this._Documents[documentId];
+                    document.Content = System.Array.Empty<byte>();
+                    document.Preview = System.Array.Empty<byte>();
+                    document.OCRContent = string.Empty;
+                    document.AISummaryShort = null;
+                    document.AISummaryLong = null;
+                    document.Tags.Clear();
+                    document.IsHardDeleted = true;
                 });
         }
 
         /// <inheritdoc />
         public void AuthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            this.AddGrant(this._StorageLocationViewGrants, storageLocationId, sharedWithUserId);
         }
 
         /// <inheritdoc />
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId)
         {
-            throw new NotImplementedException();
+            //revoking the view-permission also revokes the (stronger) edit-permission.
+            this.RemoveGrant(this._StorageLocationViewGrants, storageLocationId, sharedWithUserId);
+            this.RemoveGrant(this._StorageLocationEditGrants, storageLocationId, sharedWithUserId);
+        }
+
+        /// <inheritdoc />
+        public void AuthorizeUserToEditStorageLocation(string storageLocationId, string editUserId)
+        {
+            //an edit-grant implies a view-grant; both are stored so that the view-check succeeds too.
+            this.AddGrant(this._StorageLocationViewGrants, storageLocationId, editUserId);
+            this.AddGrant(this._StorageLocationEditGrants, storageLocationId, editUserId);
+        }
+
+        /// <inheritdoc />
+        public void UnauthorizeUserToEditStorageLocation(string storageLocationId, string editUserId)
+        {
+            //revoking the edit-permission keeps the view-permission.
+            this.RemoveGrant(this._StorageLocationEditGrants, storageLocationId, editUserId);
         }
 
         /// <inheritdoc />
@@ -521,15 +625,23 @@ namespace OpenDMSBackend.Core.Services
         {
             if (document.Title.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
             {
-                return 5;
+                return 6;
             }
             if (document.Filename.Value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
             {
-                return 4;
+                return 5;
             }
             foreach (Tag tag in document.Tags)
             {
                 if (tag.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return 4;
+                }
+            }
+            //a document is also found by the data it is indexed with, which are its tags and the values it holds for the metadata-fields of its storage-location.
+            foreach (string metadataValue in document.MetadataValues.Values)
+            {
+                if (metadataValue.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase))
                 {
                     return 3;
                 }
@@ -552,22 +664,110 @@ namespace OpenDMSBackend.Core.Services
         }
 
         /// <inheritdoc />
-        public bool DeleteIsAllowed(string documentId)
+        public void SoftDelete(string documentId)
         {
-            throw new NotImplementedException();
+            Document document = this.GetDocument(documentId);
+            document.IsSoftDeleted = true;
         }
 
         /// <inheritdoc />
-        public void SoftDelete(string documentId)
+        public void SetAISummary(string documentId, string? shortSummary, string? longSummary)
         {
-            throw new NotImplementedException();
+            Document document = this.GetDocument(documentId);
+            document.AISummaryShort = shortSummary;
+            document.AISummaryLong = longSummary;
+        }
+
+        /// <inheritdoc />
+        public void AddDocumentVersion(DocumentVersionEntry versionEntry)
+        {
+            lock (_Lock)
+            {
+                this._DocumentVersions.Add(versionEntry);
+                if (this._Documents.TryGetValue(versionEntry.ContentId, out Document? document))
+                {
+                    document.VersionNumber = versionEntry.Version;
+                    document.VersionTimestamp = versionEntry.Timestamp;
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public IReadOnlyList<DocumentVersionEntry> GetVersionsOfDocument(string documentId)
+        {
+            lock (_Lock)
+            {
+                return this._DocumentVersions
+                    .Where(versionEntry => versionEntry.DocumentId == documentId)
+                    .OrderBy(versionEntry => versionEntry.Version)
+                    .ToList();
+            }
+        }
+
+        /// <inheritdoc />
+        public DocumentVersionEntry? GetVersionByContentId(string contentId)
+        {
+            lock (_Lock)
+            {
+                return this._DocumentVersions.FirstOrDefault(versionEntry => versionEntry.ContentId == contentId);
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetIsLatestVersion(string contentId, bool isLatestVersion)
+        {
+            lock (_Lock)
+            {
+                if (this._Documents.TryGetValue(contentId, out Document? document))
+                {
+                    document.IsLatestVersion = isLatestVersion;
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public string? GetSetting(string key)
+        {
+            lock (_Lock)
+            {
+                return this._Settings.TryGetValue(key, out string? value) ? value : null;
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetSetting(string key, string value)
+        {
+            lock (_Lock)
+            {
+                this._Settings[key] = value;
+            }
+        }
+
+        /// <inheritdoc />
+        public string? GetUserSetting(string userId, string key)
+        {
+            lock (_Lock)
+            {
+                return this._UserSettings.TryGetValue((userId, key), out string? value) ? value : null;
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetUserSetting(string userId, string key, string value)
+        {
+            lock (_Lock)
+            {
+                this._UserSettings[(userId, key)] = value;
+            }
         }
 
         /// <inheritdoc />
         public IEnumerable<string> GetIdsOfDocumentsWhichMustBeHardDeletedNow()
         {
+            DateTimeOffset now = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset();
+            //a document must be hard-deleted now exactly if it has a retention-deadline (MustBeHardDeletedAfter) which has been reached and it is not already hard-deleted; documents without a deadline are never deleted automatically.
             return this._Documents
-                   .Where(doc => this._TimeService.GetCurrentLocalTimeAsDateTimeOffset() < doc.Value.MustBeHardDeletedAfter)
+                   .Where(doc => !doc.Value.IsHardDeleted && doc.Value.MustBeHardDeletedAfter != null && doc.Value.MustBeHardDeletedAfter.Value <= now)
                    .Select(doc => doc.Value.Id)
                    .ToList();
         }
@@ -592,6 +792,109 @@ namespace OpenDMSBackend.Core.Services
         public void AddAccessToken(AccessToken newAccessToken)
         {
             this._TransientAuthenticationServicePersistence.AddAccessToken(newAccessToken);
+        }
+
+        /// <inheritdoc />
+        public Model.BusinessTypes.User? GetUserByExternalLogin(string providerId, string subject)
+        {
+            lock (_Lock)
+            {
+                foreach (Model.BusinessTypes.User user in this._TransientAuthenticationServicePersistence.GetAllUsers().Values)
+                {
+                    if (user.ExternalLoginProvider == providerId && user.ExternalLoginSubject == subject)
+                    {
+                        return user;
+                    }
+                }
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public bool UserWithExternalLoginExists(string providerId, string subject)
+        {
+            return this.GetUserByExternalLogin(providerId, subject) != null;
+        }
+
+        /// <inheritdoc />
+        public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition)
+        {
+            lock (_Lock)
+            {
+                this._MetadataFieldDefinitions[definition.Id] = definition;
+            }
+        }
+
+        /// <inheritdoc />
+        public void UpdateMetadataFieldDefinition(MetadataFieldDefinition definition)
+        {
+            lock (_Lock)
+            {
+                this._MetadataFieldDefinitions[definition.Id] = definition;
+            }
+        }
+
+        /// <inheritdoc />
+        public void DeleteMetadataFieldDefinition(string fieldDefinitionId)
+        {
+            lock (_Lock)
+            {
+                this._MetadataFieldDefinitions.Remove(fieldDefinitionId);
+                //remove the value every document holds for the deleted field.
+                foreach (Document document in this._Documents.Values)
+                {
+                    document.MetadataValues.Remove(fieldDefinitionId);
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public MetadataFieldDefinition GetMetadataFieldDefinition(string fieldDefinitionId)
+        {
+            lock (_Lock)
+            {
+                if (this._MetadataFieldDefinitions.TryGetValue(fieldDefinitionId, out MetadataFieldDefinition? definition))
+                {
+                    return definition;
+                }
+                throw new KeyNotFoundException($"No metadata-field-definition found with id '{fieldDefinitionId}'.");
+            }
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldDefinitionsOfStorageLocation(string storageLocationId)
+        {
+            lock (_Lock)
+            {
+                return this._MetadataFieldDefinitions.Values.Where(definition => definition.StorageLocationId == storageLocationId).ToList();
+            }
+        }
+
+        /// <inheritdoc />
+        public void SetDocumentMetadataValue(string documentId, string fieldDefinitionId, string value)
+        {
+            lock (_Lock)
+            {
+                this.GetDocument(documentId).MetadataValues[fieldDefinitionId] = value;
+            }
+        }
+
+        /// <inheritdoc />
+        public void RemoveDocumentMetadataValue(string documentId, string fieldDefinitionId)
+        {
+            lock (_Lock)
+            {
+                this.GetDocument(documentId).MetadataValues.Remove(fieldDefinitionId);
+            }
+        }
+
+        /// <inheritdoc />
+        public IDictionary<string, string> GetMetadataValuesOfDocument(string documentId)
+        {
+            lock (_Lock)
+            {
+                return new Dictionary<string, string>(this.GetDocument(documentId).MetadataValues);
+            }
         }
     }
 }

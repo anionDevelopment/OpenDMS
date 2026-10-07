@@ -1,3 +1,4 @@
+using GRYLibrary.Core.APIServer.BaseServices;
 using GRYLibrary.Core.APIServer.CommonRoutes;
 using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
@@ -12,6 +13,7 @@ using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Logger;
+using GRYLibrary.Core.APIServer.Services.OIDC;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Res;
 using GRYLibrary.Core.APIServer.Services.Trans;
@@ -42,11 +44,20 @@ namespace OpenDMSBackend.Core
 {
     internal class Program
     {
-        internal bool ListenOnEveryIP { get; set; } = false;
+        internal bool ListenOnEveryIP { get; set; } = true;
         internal bool RunAsync { get; set; } = false;
         internal bool IsRunning { get; set; } = false;
         internal IBusinessLogicService? _BusinessLogicService;
         internal IInitializationService<CommandlineParameter>? _InitializationService;
+        /// <summary>
+        /// The background-services of the running application, or an empty list as long as none were started.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Stop"/> needs them: the shutdown of the web-application stops them itself, but a caller which
+        /// started the application asynchronously does not wait for that shutdown, so its process would end while the
+        /// services still run, and everything those services started would outlive the application.
+        /// </remarks>
+        private readonly IList<IIteratingBackgroundService> _BackgroundServices = new List<IIteratingBackgroundService>();
         internal IGRYLog _Log;
         internal IHostApplicationLifetime? _HostApplicationLifetime;
         internal APIServerConfiguration<CodeUnitSpecificConstants, CodeUnitSpecificConfiguration, CommandlineParameter> _Constants;
@@ -65,17 +76,19 @@ namespace OpenDMSBackend.Core
         }
         internal int MainImplementation(string[] commandlineArguments)
         {
-            bool runningUsually = false;
+            bool runBusinessLogic = false;
             this.IsRunning = true;
             int result = Tools.RunAPIServer<CommandlineParameter, CodeUnitSpecificConstants, CodeUnitSpecificConfiguration>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitDescription, Version3.Parse(GeneralConstants.CodeUnitVersion), OpenDMSBackendUtilities.GetEnvironmentTargetType(), GUtilities.GetExecutionMode(commandlineArguments), commandlineArguments, null, (apiServerConfiguration) =>
             {
-                apiServerConfiguration.SetInitialzationInformationAction = (initializationInformation) =>
+                apiServerConfiguration.SetInitializationInformationAction = (initializationInformation) =>
                 {
                     if (initializationInformation.CommandlineParameter.EnforceVerbose)
                     {
                         _Log.Configuration.AddLogLevel(LogLevel.Debug);
                     }
-                    runningUsually = initializationInformation.ApplicationConstants.ExecutionMode is RunProgram;
+                    // The execution-mode of a test-run does not tell whether the background-services are wanted, so a caller which
+                    // needs them asks for them with its own commandline-option.
+                    runBusinessLogic = initializationInformation.ApplicationConstants.ExecutionMode is RunProgram || initializationInformation.CommandlineParameter.RunBackgroundProcesses;
                     string domain = string.IsNullOrWhiteSpace(initializationInformation.CommandlineParameter.InitialDomain) ? Tools.GetDefaultDomainValue(GeneralConstants.CodeUnitName) : initializationInformation.CommandlineParameter.InitialDomain;
                     initializationInformation.ApplicationConstants.CommonRoutesHostInformation = new DoNotHostCommonRoutes();
                     initializationInformation.ApplicationConstants.HostMaintenanceInformation = new HostMaintenanceRoutes()
@@ -100,6 +113,10 @@ namespace OpenDMSBackend.Core
                         },
                         MaximalLengthofRequestBodies = 500,
                         MaximalLengthOfResponseBodies = 500,
+                        RoutesWhereResponseBodyIsNotLogged = new HashSet<string>()
+                        {
+                            @$"^/API/v{GeneralConstants.CodeUnitMajorVersion}/UserController/Login$",
+                        },
                     };
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ConfigurationForExceptionManagerMiddleware = new ExceptionManagerConfiguration();
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MaintenanceRoutesInformation = new MaintenanceRoutesInformation()
@@ -119,6 +136,7 @@ namespace OpenDMSBackend.Core
                             @$"^/API/Other/Resources/APISpecification/*",
                             @$"^/API/Other/Maintenance/Metrics$",
                             @$"^/API/Other/Maintenance/HealthCheck$",
+                            @$"^/API/v{GeneralConstants.CodeUnitMajorVersion}/OIDCController/.*$",
                         },
                     };
                     if (initializationInformation.CommandlineParameter.InitialOCRDataServiceAddress != null)
@@ -134,7 +152,6 @@ namespace OpenDMSBackend.Core
                         DatabaseConnectionString = initializationInformation.CommandlineParameter.InitialDatabaseConnectionString ?? "insert your connection-string here",
                         DatabaseType = initializationInformation.CommandlineParameter.InitialDatabaseType ?? "Transient",
                     };
-                    bool runServices = !runningUsually;
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.AuditLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./Audit.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.ManagementSchedulerServiceLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./ManagementService.log"), true);
                     initializationInformation.InitialApplicationConfiguration.ApplicationSpecificConfiguration.MetricsServiceLogConfiguration = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./MetricsService.log"), true);
@@ -234,12 +251,16 @@ namespace OpenDMSBackend.Core
                         if (functionalInformation.InitializationInformation.CommandlineParameter.UseMockOCRService)
                         {
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClientMock>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAISummaryServiceClient, AISummaryServiceClientMock>();
                         }
                         else
                         {
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOCRServiceClient, OCRServiceClient>();
+                            functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAISummaryServiceClient, AISummaryServiceClient>();
                         }
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IBusinessLogicService, BusinessLogicService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOIDCService, OIDCService>();
+                        functionalInformation.WebApplicationBuilder.Services.AddSingleton<IOIDCLoginService, OIDCLoginService>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IAuthenticationService>(sp => sp.GetRequiredService<IAuthenticationService<Model.BusinessTypes.User>>());
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IRoleBasedAuthorizationService, StaticRoleBasedUserAuthorizationService<Model.BusinessTypes.User>>();
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton<IUserAuthorizationService>(sp => sp.GetRequiredService<IRoleBasedAuthorizationService>());
@@ -255,7 +276,7 @@ namespace OpenDMSBackend.Core
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthenticationMiddleware);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.AuthorizationConfiguration);
                         functionalInformation.WebApplicationBuilder.Services.AddSingleton(functionalInformation.PersistedAPIServerConfiguration.ApplicationSpecificConfiguration.ConfigurationForAuthorizationMiddleware);
-                        if (runningUsually)
+                        if (runBusinessLogic)
                         {
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService<CommandlineParameter>, InitializationService>();
                             functionalInformation.WebApplicationBuilder.Services.AddSingleton<IInitializationService>(sp => sp.GetRequiredService<IInitializationService<CommandlineParameter>>());
@@ -280,13 +301,15 @@ namespace OpenDMSBackend.Core
                     this._Log = functionalInformationForWebApplication.WebApplication.Services.GetService<IGRYLog>();
                     try
                     {
-                        if (runningUsually)
+                        if (runBusinessLogic)
                         {
                             this._BusinessLogicService = functionalInformationForWebApplication.WebApplication.Services.GetService<IBusinessLogicService>();
                             this._HostApplicationLifetime = functionalInformationForWebApplication.WebApplication.Services.GetService<IHostApplicationLifetime>();
                             IManagementScheduler managementScheduler = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IManagementScheduler>());
                             IMetricsService metricsService = GUtilities.GetValue(functionalInformationForWebApplication.WebApplication.Services.GetService<IMetricsService>());
                             functionalInformationForWebApplication.RunAsync = this.RunAsync;
+                            this._BackgroundServices.Add(metricsService);
+                            this._BackgroundServices.Add(managementScheduler);
                             functionalInformationForWebApplication.PreRun = () =>
                             {
                                 //initialize
@@ -316,12 +339,24 @@ namespace OpenDMSBackend.Core
             return result;
         }
 
+        /// <summary>
+        /// Requests a graceful shutdown of the running API server and blocks until it has fully stopped.
+        /// </summary>
+        /// <remarks>
+        /// The background-services are stopped here and not only by the shutdown of the web-application, because a
+        /// caller which started the application asynchronously gets the control back long before that shutdown
+        /// happens. Stopping a service which was stopped already does nothing, so the two ways do not collide.
+        /// </remarks>
         internal void Stop()
         {
             GUtilities.AssertNotNull(this._Constants, nameof(this._Constants)).CancellationTokenSource.Cancel();
             while (this.IsRunning)
             {
                 System.Threading.Thread.Sleep(System.TimeSpan.FromMilliseconds(100));
+            }
+            foreach (IIteratingBackgroundService backgroundService in this._BackgroundServices)
+            {
+                backgroundService.Stop().Wait();
             }
         }
     }

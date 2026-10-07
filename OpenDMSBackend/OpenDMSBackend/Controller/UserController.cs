@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
+using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.MidT.Auth;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
@@ -12,6 +12,7 @@ using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Misc;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
+using System.Linq;
 using IAuthenticationService = GRYLibrary.Core.APIServer.Services.Interfaces.IAuthenticationService;
 
 namespace OpenDMSBackend.Core.Controller
@@ -119,7 +120,68 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(Utilities.GetUserInformation(this.GetUser()));
         }
 
-        //TODO there must be functions for an admin to grant the read-right (=>role: user) or the update-right (=>role: moderator) to certain documents only.
+        /// <summary>Returns the color-scheme which the currently authenticated user chose.</summary>
+        /// <returns>A <see cref="StringValueDTO"/> containing "system", "light" or "dark". A user who did not choose a color-scheme yet gets "system", which follows the setting of the operating-system of that user.</returns>
+        [Authenticate]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StringValueDTO))]
+        [Route(nameof(GetTheme))]
+        public IActionResult GetTheme()
+        {
+            return this.Ok(new StringValueDTO() { Value = this._BusinessLogicService.GetThemeOfUser(this.GetUser().Id) });
+        }
+
+        /// <summary>Sets the color-scheme of the currently authenticated user, so that the choice is available again on another device and after a new login.</summary>
+        /// <param name="theme">The color-scheme to store: "system", "light" or "dark".</param>
+        /// <returns>200 if the color-scheme was stored.</returns>
+        [Authenticate]
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Route(nameof(SetTheme))]
+        public IActionResult SetTheme([FromBody] StringValueDTO theme)
+        {
+            this._BusinessLogicService.SetThemeOfUser(this.GetUser().Id, theme.Value);
+            return this.Ok();
+        }
+
+        /// <summary>Returns all users together with the roles assigned to them. Requires administrator privileges.</summary>
+        /// <returns>An array of <see cref="UserOverviewDTO"/>.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserOverviewDTO[]))]
+        [Route(nameof(GetAllUsers))]
+        public IActionResult GetAllUsers()
+        {
+            return this.Ok(this._BusinessLogicService.GetAllUsersWithRoles(this.GetUser().Id));
+        }
+
+        /// <summary>Returns the names of all roles that can be assigned to a user. Requires administrator privileges.</summary>
+        /// <returns>An array of role names.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string[]))]
+        [Route(nameof(GetAllRoles))]
+        public IActionResult GetAllRoles()
+        {
+            return this.Ok(this._BusinessLogicService.GetAllRoleNames(this.GetUser().Id));
+        }
+
+        /// <summary>Sets the complete set of roles of the given user (roles not contained are removed, missing ones are added). Requires administrator privileges.</summary>
+        /// <param name="userId">The id of the user whose roles should be set.</param>
+        /// <param name="roleNames">The names of the roles the user should have afterwards.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(void))]
+        [Route(nameof(SetRolesOfUser))]
+        public IActionResult SetRolesOfUser([FromHeader] string userId, [FromBody] string[] roleNames)
+        {
+            this._BusinessLogicService.SetRolesOfUser(this.GetUser().Id, userId, roleNames.ToHashSet());
+            return this.Ok();
+        }
 
         private User GetUser()
         {

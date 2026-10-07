@@ -1,5 +1,4 @@
-import { NonNullAssert } from '@angular/compiler';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserDataService } from '../../../services/user-data.service';
 import { UtilitiesService } from '../../../services/utilities.service';
@@ -8,6 +7,7 @@ import { UtilitiesService } from '../../../services/utilities.service';
   selector: 'app-user-area-container',
   standalone: false,
   templateUrl: './user-area-container.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-area-container.component.scss'
 })
 export class UserAreaContainerComponent {

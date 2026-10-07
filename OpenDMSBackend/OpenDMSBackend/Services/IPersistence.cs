@@ -45,9 +45,28 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="tagId">The id of the tag to unassign.</param>
         public void UnassignTag(string documentId, string tagId);
 
-        /// <summary>Returns all tags currently stored.</summary>
-        /// <returns>An array of <see cref="TagDTO"/> representing every stored tag.</returns>
-        public TagDTO[] GetAllTags();
+        /// <summary>Stores the changed name and color of an existing tag.</summary>
+        /// <param name="tag">The tag with its new values.</param>
+        public void UpdateTag(Tag tag);
+
+        /// <summary>Deletes the tag with the given id together with all of its assignments to documents.</summary>
+        /// <param name="tagId">The id of the tag to delete.</param>
+        public void DeleteTag(string tagId);
+
+        /// <summary>Returns all tags currently stored, independently of the user they belong to.</summary>
+        /// <returns>Every stored tag.</returns>
+        public IEnumerable<Tag> GetAllTags();
+
+        /// <summary>Returns the tag with the specified id.</summary>
+        /// <param name="tagId">The id of the tag to retrieve.</param>
+        /// <returns>The <see cref="Tag"/> matching the given id.</returns>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when no tag with the given id exists.</exception>
+        public Tag GetTag(string tagId);
+
+        /// <summary>Returns the ids of the tags which are assigned to the specified document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <returns>A set containing the id of every tag assigned to the document.</returns>
+        public ISet<string> GetTagIdsOfDocument(string documentId);
 
         /// <summary>Returns the ids of all documents currently stored.</summary>
         /// <returns>A set containing every document id.</returns>
@@ -70,15 +89,31 @@ namespace OpenDMSBackend.Core.Services
         /// <returns><see langword="true"/> if the storage location is shared with the user; otherwise <see langword="false"/>.</returns>
         public bool StorageLocationIsSharedWithUser(string storageLocationId, string userId);
 
+        /// <summary>Returns whether the specified user has been granted the permission to change (edit) the specified storage location and its contents.</summary>
+        /// <param name="storageLocationId">The id of the storage location to check.</param>
+        /// <param name="userId">The id of the user to check.</param>
+        /// <returns><see langword="true"/> if the user may edit the storage location; otherwise <see langword="false"/>.</returns>
+        public bool StorageLocationIsEditableByUser(string storageLocationId, string userId);
+
         /// <summary>Creates a new storage location with the given name and returns its generated id.</summary>
         /// <param name="name">The display name of the new storage location.</param>
         /// <returns>The id of the newly created storage location.</returns>
         public string AddStoragLocation(string name);
 
-        /// <summary>Sets the owner of the specified storage location to the specified user.</summary>
-        /// <param name="storageLocationId">The id of the storage location.</param>
-        /// <param name="userId">The id of the user who should become the owner.</param>
+        /// <summary>Adds the specified user as a moderator ("owner") of the specified content-object (storage-location, folder or document). A content-object can have several moderators.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <param name="userId">The id of the user who should become a moderator.</param>
         public void SetOwnerOfStorageLocation(string storageLocationId, string userId);
+
+        /// <summary>Returns the ids of all users which are moderators ("owners") of the specified content-object.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <returns>The ids of the moderators; empty if none.</returns>
+        public System.Collections.Generic.ISet<string> GetOwnersOfStorageLocation(string storageLocationId);
+
+        /// <summary>Removes the specified user from the moderators ("owners") of the specified content-object.</summary>
+        /// <param name="storageLocationId">The id of the content-object.</param>
+        /// <param name="userId">The id of the user to remove from the moderators.</param>
+        public void RemoveOwnerOfStorageLocation(string storageLocationId, string userId);
 
         /// <summary>Creates a new folder with the given name and returns its generated id.</summary>
         /// <param name="name">The display name of the new folder.</param>
@@ -105,14 +140,56 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="parentContainerId">The id of the new parent container.</param>
         public void SetParentOfContainee(IContainee containee, string parentContainerId);
 
-        /// <summary>Returns whether deletion of the specified document is currently permitted.</summary>
-        /// <param name="documentId">The id of the document to check.</param>
-        /// <returns><see langword="true"/> if deletion is allowed; otherwise <see langword="false"/>.</returns>
-        public bool DeleteIsAllowed(string documentId);
-
         /// <summary>Marks the specified document as soft-deleted without removing it from the store.</summary>
         /// <param name="documentId">The id of the document to soft-delete.</param>
         public void SoftDelete(string documentId);
+
+        /// <summary>Stores the AI-generated summaries of the specified document.</summary>
+        /// <param name="documentId">The id of the document whose summaries should be stored.</param>
+        /// <param name="shortSummary">The short summary, or <see langword="null"/>.</param>
+        /// <param name="longSummary">The long summary, or <see langword="null"/>.</param>
+        public void SetAISummary(string documentId, string? shortSummary, string? longSummary);
+
+        /// <summary>Returns the value of the setting with the given key, or <see langword="null"/> if the setting is not set.</summary>
+        /// <param name="key">The key of the setting.</param>
+        /// <returns>The stored value, or <see langword="null"/> if no value is stored for the key.</returns>
+        public string? GetSetting(string key);
+
+        /// <summary>Stores (inserts or updates) the value of the setting with the given key.</summary>
+        /// <param name="key">The key of the setting.</param>
+        /// <param name="value">The value to store.</param>
+        public void SetSetting(string key, string value);
+
+        /// <summary>Returns the value of the setting with the given key which belongs to the given user, or <see langword="null"/> if the user did not set it.</summary>
+        /// <param name="userId">The id of the user the setting belongs to.</param>
+        /// <param name="key">The key of the setting.</param>
+        /// <returns>The stored value, or <see langword="null"/> if the user has no value for the key.</returns>
+        public string? GetUserSetting(string userId, string key);
+
+        /// <summary>Stores (inserts or updates) the value of the setting with the given key for the given user.</summary>
+        /// <param name="userId">The id of the user the setting belongs to.</param>
+        /// <param name="key">The key of the setting.</param>
+        /// <param name="value">The value to store.</param>
+        public void SetUserSetting(string userId, string key, string value);
+
+        /// <summary>Adds an entry to the <c>DocumentVersion</c>-table which assigns a version (a <c>Documents</c>-row) to a logical document.</summary>
+        /// <param name="versionEntry">The version-entry to add.</param>
+        public void AddDocumentVersion(DocumentVersionEntry versionEntry);
+
+        /// <summary>Returns all versions of the logical document with the given id, ordered from the oldest to the newest version.</summary>
+        /// <param name="documentId">The id of the logical document.</param>
+        /// <returns>The version-entries, ordered ascending by version-number.</returns>
+        public IReadOnlyList<DocumentVersionEntry> GetVersionsOfDocument(string documentId);
+
+        /// <summary>Returns the version-entry which refers to the given <c>Documents</c>-row (content-id), or <see langword="null"/> if the row is not versioned.</summary>
+        /// <param name="contentId">The id of the <c>Documents</c>-row.</param>
+        /// <returns>The version-entry, or <see langword="null"/>.</returns>
+        public DocumentVersionEntry? GetVersionByContentId(string contentId);
+
+        /// <summary>Sets the <c>IsLatestVersion</c>-flag of the <c>Documents</c>-row with the given id.</summary>
+        /// <param name="contentId">The id of the <c>Documents</c>-row.</param>
+        /// <param name="isLatestVersion">The value to set.</param>
+        public void SetIsLatestVersion(string contentId, bool isLatestVersion);
 
         /// <summary>Permanently removes the specified container or containee and all associated data from the store.</summary>
         /// <param name="containerOrContaineeId">The id of the container or containee to delete.</param>
@@ -127,6 +204,16 @@ namespace OpenDMSBackend.Core.Services
         /// <param name="storageLocationId">The id of the storage location.</param>
         /// <param name="sharedWithUserId">The id of the user whose access should be revoked.</param>
         public void UnauthorizeUserToViewStorageLocation(string storageLocationId, string sharedWithUserId);
+
+        /// <summary>Grants the specified user the permission to change (edit) the specified storage location and its contents (which also implies the permission to view it).</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user to grant the edit-permission to.</param>
+        public void AuthorizeUserToEditStorageLocation(string storageLocationId, string editUserId);
+
+        /// <summary>Revokes the specified user's permission to change (edit) the specified storage location. The view-permission (if granted) is kept.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user whose edit-permission should be revoked.</param>
+        public void UnauthorizeUserToEditStorageLocation(string storageLocationId, string editUserId);
 
         /// <summary>Renames the specified container to the given new name.</summary>
         /// <param name="containerId">The id of the container to rename.</param>
@@ -203,5 +290,56 @@ namespace OpenDMSBackend.Core.Services
 
         /// <summary>Resets the persistence store to its initial empty state.</summary>
         public void Reset();
+
+        /// <summary>
+        /// Returns the user that is linked to the given external OIDC provider and subject.
+        /// Returns <see langword="null"/> if no such user exists.
+        /// </summary>
+        public Model.BusinessTypes.User? GetUserByExternalLogin(string providerId, string subject);
+
+        /// <summary>Returns whether a user with the given external login exists.</summary>
+        public bool UserWithExternalLoginExists(string providerId, string subject);
+
+        #region Metadata-fields
+
+        /// <summary>Persists a new storage-location-specific custom metadata-field-definition.</summary>
+        /// <param name="definition">The field-definition to create.</param>
+        public void CreateMetadataFieldDefinition(MetadataFieldDefinition definition);
+
+        /// <summary>Stores the changed name of an existing metadata-field-definition.</summary>
+        /// <param name="definition">The field-definition with its new name.</param>
+        public void UpdateMetadataFieldDefinition(MetadataFieldDefinition definition);
+
+        /// <summary>Deletes the metadata-field-definition with the given id together with all document-values stored for it.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to delete.</param>
+        public void DeleteMetadataFieldDefinition(string fieldDefinitionId);
+
+        /// <summary>Returns the metadata-field-definition with the given id.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to retrieve.</param>
+        /// <returns>The matching <see cref="MetadataFieldDefinition"/>.</returns>
+        public MetadataFieldDefinition GetMetadataFieldDefinition(string fieldDefinitionId);
+
+        /// <summary>Returns all metadata-field-definitions defined for the given storage-location.</summary>
+        /// <param name="storageLocationId">The id of the storage-location.</param>
+        /// <returns>The field-definitions of the storage-location; empty if none.</returns>
+        public IEnumerable<MetadataFieldDefinition> GetMetadataFieldDefinitionsOfStorageLocation(string storageLocationId);
+
+        /// <summary>Sets (inserts or updates) the value the given document holds for the given metadata-field.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <param name="value">The value to store (a boolean-value is stored as "true"/"false").</param>
+        public void SetDocumentMetadataValue(string documentId, string fieldDefinitionId, string value);
+
+        /// <summary>Removes the value the given document holds for the given metadata-field (if any).</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        public void RemoveDocumentMetadataValue(string documentId, string fieldDefinitionId);
+
+        /// <summary>Returns all metadata-values the given document holds, keyed by the field-definition-id.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <returns>A dictionary of field-definition-id to value; empty if the document has no values.</returns>
+        public IDictionary<string, string> GetMetadataValuesOfDocument(string documentId);
+
+        #endregion
     }
 }

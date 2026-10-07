@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc.CustomDisposables;
+using GRYLibrary.Core.Misc.CustomDisposables;
 using OpenDMSBackend.Core.Services;
 using System;
 using System.Collections.Generic;

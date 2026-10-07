@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
@@ -54,10 +54,10 @@ namespace OpenDMSBackend.Core.Services
                 this.SetInitializationState(new Initializing());
                 this._GeneralLogger.Log("Initialize services...", Microsoft.Extensions.Logging.LogLevel.Information);
                 Tools.WaitUntilDatabaseIsAvailable(this._Persistence, this._GeneralLogger);
-                if (this._Persistence is IInitializable initializablePersitence)
+                if (this._Persistence is IInitializable initializablePersistence)
                 {
-                    initializablePersitence.Initialize();//this part runs migrations. this is idempotent and can be done on every start.
-                    GRYLibrary.Core.Misc.Utilities.AssertCondition(initializablePersitence.InitializationState is Initialized);
+                    initializablePersistence.Initialize();//this part runs migrations. this is idempotent and can be done on every start.
+                    GRYLibrary.Core.Misc.Utilities.AssertCondition(initializablePersistence.InitializationState is Initialized);
                 }
                 this._IdGenerator.Reset(this._Persistence.GetLatestReadableId());
                 string adminUsername = CodeUnitSpecificConstants.UsernameAdmin;

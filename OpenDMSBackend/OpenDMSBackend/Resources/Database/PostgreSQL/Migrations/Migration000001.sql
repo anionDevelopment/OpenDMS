@@ -31,18 +31,35 @@ CREATE TABLE "Documents" (
     "Filename" varchar(255) not null,
     "OriginalFilename" varchar(255) not null,
     "ImportDate" timestamp not null,
-    "LastEditDate" timestamp null,
     "ReadableId" BIGINT not null,
     "MIMEType" varchar(255) not null,
     "OCRContent" text not null,
     "IsSoftDeleted" boolean not null,
+    "IsLatestVersion" boolean not null,
+    "IsHardDeleted" boolean not null,
     "DeleteIsNotAllowedBefore" timestamp null,
     "MustBeHardDeletedAfter" timestamp null,
     "GroupOfBusinessOwner" varchar(255) not null,
-    "Version" varchar(255) not null,
     "AssignedLanguages" varchar(255) null,
     "AddedByUserId" varchar(255) null,
+    "AISummaryShort" text null,
+    "AISummaryLong" text null,
     CONSTRAINT "PK_Documents" PRIMARY KEY ("Id")
+);
+
+CREATE TABLE "Settings" (
+    "Key" varchar(255) not null,
+    "Value" text not null,
+    CONSTRAINT "PK_Settings" PRIMARY KEY ("Key")
+);
+
+CREATE TABLE "DocumentVersion" (
+    "DocumentId" varchar(255) not null,
+    "ContentId" varchar(255) not null,
+    "Version" integer not null,
+    "Timestamp" timestamp not null,
+    CONSTRAINT "PK_DocumentVersion" PRIMARY KEY ("ContentId"),
+    CONSTRAINT "FK_DocumentVersion_ContentId" FOREIGN KEY ("ContentId") REFERENCES "Documents"("Id")
 );
 
 CREATE TABLE "Tags" (
@@ -103,10 +120,16 @@ CREATE TABLE "Role_InheritedRoles" (
     CONSTRAINT "PK_Role_InheritedRoles" PRIMARY KEY ("RoleId", "InheritedRoleId")
 );
 
+--the "StorageLocationId"-column of the following two permission-tables holds the id of any content-object (storage-location, folder or document), so it has no foreign-key to a single table. Every content-object can have several moderators (rows in StorageLocations_User) and several view-/edit-grants (rows in StorageLocation_UserPermission).
 CREATE TABLE "StorageLocations_User" (
     "StorageLocationId" varchar(255) not null,
     "UserId" varchar(255) not null,
-    CONSTRAINT "FK_User_StorageLocations_StorageLocationsId" FOREIGN KEY ("StorageLocationId") REFERENCES "StorageLocations"("Id"),
-    CONSTRAINT "FK_User_StorageLocations_UsersId" FOREIGN KEY ("UserId") REFERENCES "Users"("Id"),
-    CONSTRAINT "PK_User_StorageLocations" PRIMARY KEY ("UserId", "StorageLocationId")
+    CONSTRAINT "PK_User_StorageLocations" PRIMARY KEY ("StorageLocationId", "UserId")
+);
+
+CREATE TABLE "StorageLocation_UserPermission" (
+    "StorageLocationId" varchar(255) not null,
+    "UserId" varchar(255) not null,
+    "CanEdit" boolean not null,
+    CONSTRAINT "PK_StorageLocation_UserPermission" PRIMARY KEY ("StorageLocationId", "UserId")
 );

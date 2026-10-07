@@ -1,0 +1,117 @@
+import { Page } from '@playwright/test';
+import { respondWith } from './SimulatedBackend';
+
+/*
+ * A one-pixel png in a fixed color. It is used as preview-image of the simulated documents.
+ * The image is scaled up by the user-interface, but because it consists of exactly one pixel the
+ * result is a plain area of that color and therefore contains no scaling-artefacts which could
+ * differ between the browsers.
+ */
+const previewImageAsBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mOYt+IIAAPyAgtr2afYAAAAAElFTkSuQmCC';
+
+/*
+ * The readable id of the document whose page is checked by the visual-regression-tests.
+ */
+export const readableIdOfTheDocumentWithAnOwnPage = 1002;
+
+/*
+ * The documents which the simulated backend returns. All displayed values are fixed because they
+ * appear in the screenshots and therefore have to be identical in every testrun. The two documents
+ * differ on purpose: only one of them has an ai-summary and only one of them has more than one
+ * version, so both variants of these parts of the user-interface are covered.
+ */
+const previewOfTheFirstDocument = {
+    id: '00000000-0000-0000-0000-000000000101',
+    title: 'Invoice of the example-company',
+    filename: 'Invoice.pdf',
+    originalFilename: 'Invoice-original.pdf',
+    importDate: '2024-01-15T09:30:00+00:00',
+    readableId: 1001,
+    mimeType: 'application/pdf',
+    previewAsBase64: previewImageAsBase64,
+    isSoftDeleted: false,
+    groupOfBusinessOwner: 'Accounting',
+    addedByUserId: '00000000-0000-0000-0000-000000000001',
+    aiSummaryShort: null,
+    versionNumber: 1,
+    versionTimestamp: '2024-01-15T09:30:00+00:00'
+};
+
+const previewOfTheSecondDocument = {
+    id: '00000000-0000-0000-0000-000000000102',
+    title: 'Contract with the example-supplier',
+    filename: 'Contract.pdf',
+    originalFilename: 'Contract-original.pdf',
+    importDate: '2024-02-03T11:45:00+00:00',
+    readableId: readableIdOfTheDocumentWithAnOwnPage,
+    mimeType: 'application/pdf',
+    previewAsBase64: previewImageAsBase64,
+    isSoftDeleted: false,
+    groupOfBusinessOwner: 'Purchasing',
+    addedByUserId: '00000000-0000-0000-0000-000000000001',
+    aiSummaryShort: 'A contract about the delivery of example-goods.',
+    versionNumber: 3,
+    versionTimestamp: '2024-03-08T16:20:00+00:00'
+};
+
+/*
+ * The tags which exist in the simulated installation. One of them is assigned to the document whose page is
+ * checked and the other one is not, so the page shows an assigned tag as well as a tag which can still be assigned.
+ */
+const tagOfTheDocument = { id: '00000000-0000-0000-0000-000000000201', name: 'Contract', colorCode: '283593', ownerUserId: null };
+const tagWhichIsNotAssigned = { id: '00000000-0000-0000-0000-000000000202', name: 'Invoice', colorCode: 'C62828', ownerUserId: null };
+
+/*
+ * The custom metadata-fields of the storage-location which contains the document. Every field-type exists exactly
+ * once, so the page shows every input which the types are edited with.
+ */
+const metadataFieldOfTypeString = { id: '00000000-0000-0000-0000-000000000301', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Contact/Sender', type: 'String' };
+const metadataFieldOfTypeBoolean = { id: '00000000-0000-0000-0000-000000000302', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Tax-relevant', type: 'Boolean' };
+const metadataFieldOfTypeDouble = { id: '00000000-0000-0000-0000-000000000303', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Amount', type: 'Double' };
+const metadataFieldOfTypeTimestamp = { id: '00000000-0000-0000-0000-000000000304', storageLocationId: '00000000-0000-0000-0000-000000000001', name: 'Deadline', type: 'Timestamp' };
+
+/*
+ * The full document which belongs to the second preview. The document-page shows more values than
+ * the document-list, so this object contains the additional ones.
+ */
+const theDocumentWithAnOwnPage = {
+    ...previewOfTheSecondDocument,
+    tags: [tagOfTheDocument],
+    documentContentAsBase64: null,
+    documentPreviewAsBase64: previewImageAsBase64,
+    assignedLanguages: [],
+    aiSummaryLong: 'The example-supplier delivers example-goods to the example-company. '
+        + 'The contract is valid for one year and is extended automatically if none of the parties terminates it.',
+    metadataValues: {
+        '00000000-0000-0000-0000-000000000301': 'Example-supplier',
+        '00000000-0000-0000-0000-000000000302': 'true',
+        '00000000-0000-0000-0000-000000000303': '1234.56',
+        '00000000-0000-0000-0000-000000000304': '2026-01-31T12:00:00+01:00'
+    },
+    /* the retention-dates are fixed values as well, because the document-page shows them in its retention-section. */
+    deleteIsNotAllowedBefore: '2026-01-31T00:00:00+01:00',
+    mustBeHardDeletedAfter: '2036-01-31T00:00:00+01:00'
+};
+
+/*
+ * Makes the simulated backend answer the requests which the document-list and the document-page
+ * send while they are rendered.
+ *
+ * This function has to be called before the page is opened.
+ */
+export async function simulateDocuments(page: Page): Promise<void> {
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetLatestDocuments*', [previewOfTheFirstDocument, previewOfTheSecondDocument]);
+    /*
+     * The document-list contains a tab with the storage-locations. That tab is not the selected one,
+     * but its content is rendered nevertheless and therefore its request has to be answered too.
+     */
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetAllViewableStorageLocations*', []);
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetDocumentFromReadableId*', theDocumentWithAnOwnPage);
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetDocumentPreview*', previewOfTheSecondDocument);
+    /*
+     * The document-page lets the user index the document, so it additionally asks for every tag which exists and
+     * for the metadata-fields which the document can hold a value for.
+     */
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetTags*', [tagOfTheDocument, tagWhichIsNotAssigned]);
+    await respondWith(page, '**/API/v3/OpenDMSBackend/GetMetadataFieldsOfDocument/*', [metadataFieldOfTypeString, metadataFieldOfTypeBoolean, metadataFieldOfTypeDouble, metadataFieldOfTypeTimestamp]);
+}

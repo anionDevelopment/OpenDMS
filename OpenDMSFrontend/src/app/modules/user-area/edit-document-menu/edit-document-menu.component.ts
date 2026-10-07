@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { DocumentPreviewDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { StorageService } from '../../../services/storage.service';
 import { Router } from '@angular/router';
@@ -13,6 +13,7 @@ import { of, switchMap } from 'rxjs';
   selector: 'app-edit-document-menu',
   standalone: false,
   templateUrl: './edit-document-menu.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-document-menu.component.scss'
 })
 export class EditDocumentMenuComponent {
@@ -33,7 +34,7 @@ export class EditDocumentMenuComponent {
       if (userConfirmedAction) {
         this.openDMSBackendService.aPIV3OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.documentPreview!.id!, this.storageService.getAccessToken())
           .subscribe(() => {
-            this.documentRemoved.emit(this.documentPreview?.id!);
+            this.documentRemoved.emit(this.documentPreview!.id!);
           });
       }
     });
@@ -51,9 +52,10 @@ export class EditDocumentMenuComponent {
       data: { documentDTO: this.documentPreview },
     });
     dialogRef.afterClosed().pipe(switchMap(result => {
-      if (result.save) {
+      //the result is undefined when the dialog was closed without using one of its buttons (for example by pressing escape or by clicking the backdrop).
+      if (result?.save) {
         const newTitle: string = result.data.documentTitle;
-        return this.openDMSBackendService.aPIV3OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.documentPreview?.id!, this.storageService.getAccessToken(), { value: newTitle }).pipe(switchMap(() => of(newTitle)));
+        return this.openDMSBackendService.aPIV3OpenDMSBackendUpdateDocumentTitleDocumentIdPut(this.documentPreview!.id!, this.storageService.getAccessToken(), { value: newTitle }).pipe(switchMap(() => of(newTitle)));
       } else {
         return of(this.documentPreview?.title);
       }
@@ -65,7 +67,7 @@ export class EditDocumentMenuComponent {
   viewDocument() {
     this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.documentPreview!.id!)
       .subscribe(documentDTO => {
-        var fileURL = window.URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
+        const fileURL = window.URL.createObjectURL(this.utilitiesService.base64toBlob(documentDTO.documentContentAsBase64!, documentDTO.mimeType!));
         const tab = window.open()!;
         tab.location.href = fileURL;
       });

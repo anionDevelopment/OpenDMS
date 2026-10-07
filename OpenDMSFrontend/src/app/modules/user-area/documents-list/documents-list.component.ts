@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { DocumentPreviewDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
 import { BehaviorSubject } from 'rxjs';
@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
   selector: 'app-documents-list',
   standalone: false,
   templateUrl: './documents-list.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './documents-list.component.scss'
 })
 export class DocumentsListComponent {
@@ -15,7 +16,7 @@ export class DocumentsListComponent {
 
   constructor(storageService: StorageService, openDMSBackendService: OpenDMSBackendService) {
     openDMSBackendService.aPIV3OpenDMSBackendGetLatestDocumentsGet(storageService.getAccessToken()).subscribe(documents => {
-      var sortedDocuments = documents.sort((a, b) => {
+      const sortedDocuments = documents.sort((a, b) => {
         const aD: Date = this.getNewestDate(a);
         const bD: Date = this.getNewestDate(b);
         if (aD < bD) {
@@ -31,8 +32,8 @@ export class DocumentsListComponent {
   }
 
   private getNewestDate(a: DocumentPreviewDTO): Date {
-    if (a.lastEditDate !== null && a.lastEditDate !== undefined) {
-      return this.parseDate(a.lastEditDate!);
+    if (a.versionTimestamp !== null && a.versionTimestamp !== undefined) {
+      return this.parseDate(a.versionTimestamp!);
     } else {
       return this.parseDate(a.importDate!);
     }
@@ -43,7 +44,7 @@ export class DocumentsListComponent {
     return result;
   }
   private removeDocument(documentId: string) {
-    var latestDocuments = this.latestDocuments$.value.filter(document => document.id! != documentId);
+    const latestDocuments = this.latestDocuments$.value.filter(document => document.id! != documentId);
     this.latestDocuments$.next([...latestDocuments]);
   }
   onDocumentRemoved(documentId: string): void {

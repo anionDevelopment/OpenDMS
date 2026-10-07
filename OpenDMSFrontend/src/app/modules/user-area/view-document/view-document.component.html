@@ -19,16 +19,38 @@
       {{doc?.originalFilename}}
       <br>
       <span i18n="@@doc_metadata_import_date_label">Import-date:</span>
-      {{doc?.importDate | timestamp}}
+      {{$safeNavigationMigration(doc?.importDate) | timestamp}}
       <br>
-      <span i18n="@@doc_metadata_last_edit_date_label">Last edit-date:</span>
-      {{doc?.lastEditDate ? (doc!.lastEditDate | timestamp) : '(not available)'}}
+      <span i18n="@@doc_metadata_version_label">Version:</span>
+      {{doc?.versionNumber}}
       <br>
-      <span i18n="@@doc_metadata_tags_label">Tags:</span>
-      {{doc?.tags?.size ? formatTags(doc!.tags!) : ''}}
+      <span i18n="@@doc_metadata_version_date_label">Version-date:</span>
+      {{doc?.versionTimestamp ? (doc!.versionTimestamp | timestamp) : '(not available)'}}
       <br>
     </p>
-    <app-document-preview *ngIf="documentPreview" [documentPreview]="documentPreview"></app-document-preview>
+    <app-document-tags [documentId]="doc?.id" [assignedTags]="assignedTags" (tagsChanged)="reloadDocument()"></app-document-tags>
+    <app-document-metadata [documentId]="doc?.id" [metadataValues]="doc?.metadataValues" (metadataChanged)="reloadDocument()"></app-document-metadata>
+    <app-document-retention [documentId]="doc?.id" [deleteIsNotAllowedBefore]="doc?.deleteIsNotAllowedBefore" [mustBeHardDeletedAfter]="doc?.mustBeHardDeletedAfter" (retentionDatesChanged)="reloadDocument()"></app-document-retention>
+    <div class="ai-summary-section">
+      <span i18n="@@doc_ai_summary_heading">AI-summary:</span>
+      <br>
+      @if (aiSummaryIsAvailable()) { @if (doc?.aiSummaryShort) {
+      <div class="ai-summary-short">{{doc?.aiSummaryShort}}</div>
+      } @if (doc?.aiSummaryLong) {
+      <div class="ai-summary-long">{{doc?.aiSummaryLong}}</div>
+      } } @else {
+      <button type="button" (click)="generateAISummary()" [disabled]="aiSummaryIsGenerating">
+        @if (!aiSummaryIsGenerating) {
+        <span i18n="@@doc_ai_summary_generate_button">Generate AI-summary</span>
+        } @if (aiSummaryIsGenerating) {
+        <span i18n="@@doc_ai_summary_generating_label">Generating AI-summary…</span>
+        }
+      </button>
+      }
+    </div>
+    @if (documentPreview) {
+    <app-document-preview [documentPreview]="documentPreview"></app-document-preview>
+    }
     <app-edit-document-menu [documentPreview]="documentPreview" (documentRemoved)="onDocumentRemoved()"></app-edit-document-menu>
   </app-user-area-container>
 </app-frame-work>

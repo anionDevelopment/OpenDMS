@@ -1,4 +1,4 @@
-﻿using OpenDMSBackend.Core.Model.DTOs;
+using OpenDMSBackend.Core.Model.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 

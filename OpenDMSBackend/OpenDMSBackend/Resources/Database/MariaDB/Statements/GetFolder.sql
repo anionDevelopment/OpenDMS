@@ -1,4 +1,4 @@
 
-select `Id` 
-	from `Folders` 
+select `Name`
+	from `Folders`
 	where `Id`=@Id;

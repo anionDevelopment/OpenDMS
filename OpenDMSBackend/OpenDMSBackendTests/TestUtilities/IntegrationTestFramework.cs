@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Settings.Configuration;
+using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
@@ -21,6 +21,9 @@ namespace OpenDMSBackend.Tests.TestUtilities
         private bool Started = false;
         private readonly IDictionary<User, string> _UserPasswords = new Dictionary<User, string>();
         private Program? _Program = null;
+        private Thread? _ServerThread = null;
+        private int? _ExitCodeOfServer = null;
+        private Exception? _ExceptionOfServer = null;
         private readonly IntegrationTestConfiguration _IntegrationTestConfiguration;
         internal IBusinessLogicService? _BusinessLogicService;
         internal IGRYLog? _Log;
@@ -49,42 +52,27 @@ namespace OpenDMSBackend.Tests.TestUtilities
                     };
 
                     string[] args = new string[] {
-                        $"--{nameof(CommandlineParameter.UseMockOCRService)}"
+                        $"--{nameof(CommandlineParameter.UseMockOCRService)}",
+                        //The integration-tests drive the api of the application, so they need the business-logic of it.
+                        $"--{nameof(CommandlineParameter.RunBackgroundProcesses)}"
                     };//TODO add option to pass more configuration-values for the test-run like port etc. so that this can not go wrong due to a different configuration from a previous (manual) run.
-                    int exitCode = this._Program.MainImplementation(args);
-                    Thread.Sleep(TimeSpan.FromSeconds(5));
-                    GRYLibrary.Core.Misc.Utilities.AssertCondition(exitCode == 0, () =>
-                    {
-                        string message = $"Exitode of main-method was {exitCode}.";
-                        if (this._Program._Log != null)//TODO this condition should not be required. but for unknown reasons the _log-property is null and this causes problems whille retrieving the logs here which would be useful.
-                        {
-                            IGRYLog log = GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._Program._Log, nameof(Program._Log));
-                            LogItem[] logMessages = log.LastLogEntries.GetEntries();
-                            if (logMessages.Any())
-                            {
-                                message = $"{message} Last log entries:\n" + string.Join("\n", logMessages.Select(item =>
-                                {
-                                    item.Format(this._Program._Log.Configuration, out string result, out int _, out int _, out ConsoleColor _, GRYLogLogFormat.GRYLogFormat);
-                                    return result;
-                                }));
-                            }
-                        }
-                        return message;
-                    });
-
+                    this._ExitCodeOfServer = this._Program.MainImplementation(args);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    throw;
+                    //the exception must not leave this thread: an unhandled exception of a thread terminates the entire test-process, which hides which testcase failed and why. It is reported by EnsureServerIsStopped() instead.
+                    this._ExceptionOfServer = exception;
                 }
             };
             if (this._IntegrationTestConfiguration.RunInOwnThread)
             {
-                Thread t = new Thread(() => action())
+                this._ServerThread = new Thread(() => action())
                 {
-                    Name = nameof(Program)
+                    Name = nameof(Program),
+                    //the thread must not keep the test-process alive on its own: the test-runner collects the results (for example the test-coverage, which the process writes when it ends) directly after the last testcase, so a thread which is still running at that moment would be too late. The thread is awaited explicitly when the server is stopped.
+                    IsBackground = true
                 };
-                t.Start();
+                this._ServerThread.Start();
             }
             else
             {
@@ -95,6 +83,7 @@ namespace OpenDMSBackend.Tests.TestUtilities
             {
                 while (!this.IsReady(out lastException))
                 {
+                    this.EnsureServerIsStillRunning();
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
             }, TimeSpan.FromSeconds(120)))
@@ -110,8 +99,41 @@ namespace OpenDMSBackend.Tests.TestUtilities
             }
             var program = GRYLibrary.Core.Misc.Utilities.AssertNotNull(this._Program, nameof(this._Program));
             this.Started = true;
-            this._BusinessLogicService =GRYLibrary.Core.Misc.Utilities.GetValue( program._BusinessLogicService,nameof(Program._BusinessLogicService));
+            this._BusinessLogicService = GRYLibrary.Core.Misc.Utilities.GetValue(program._BusinessLogicService, nameof(Program._BusinessLogicService));
             this._Log = program._Log;
+        }
+
+        /// <summary>Reports a server which already ended, so that a server which can not start is reported immediately instead of after the timeout of the wait for its availability.</summary>
+        private void EnsureServerIsStillRunning()
+        {
+            if (this._ExceptionOfServer != null)
+            {
+                throw new DependencyNotAvailableException("The server stopped with an exception.", this._ExceptionOfServer);
+            }
+            if (this._ExitCodeOfServer.HasValue)
+            {
+                throw new DependencyNotAvailableException(this.GetExitCodeMessage());
+            }
+        }
+
+        /// <summary>Describes the exit-code of the server together with its last log-entries.</summary>
+        private string GetExitCodeMessage()
+        {
+            string message = $"Exitcode of main-method was {this._ExitCodeOfServer}.";
+            if (this._Program != null && this._Program._Log != null)//TODO this condition should not be required. but for unknown reasons the _log-property is null and this causes problems while retrieving the logs here which would be useful.
+            {
+                IGRYLog log = this._Program._Log;
+                LogItem[] logMessages = log.LastLogEntries.GetEntries();
+                if (logMessages.Any())
+                {
+                    message = $"{message} Last log entries:\n" + string.Join("\n", logMessages.Select(item =>
+                    {
+                        item.Format(log.Configuration, out string result, out int _, out int _, out ConsoleColor _, GRYLogLogFormat.GRYLogFormat);
+                        return result;
+                    }));
+                }
+            }
+            return message;
         }
 
         private bool IsReady(out Exception? exception)
@@ -178,6 +200,17 @@ namespace OpenDMSBackend.Tests.TestUtilities
             {
                 this._Program.Stop();
                 this.Started = false;
+                if (this._ServerThread != null)
+                {
+                    //the server-thread is awaited so that the testcase leaves no running thread behind.
+                    GRYLibrary.Core.Misc.Utilities.AssertCondition(this._ServerThread.Join(TimeSpan.FromSeconds(60)), () => "The thread of the server did not end.");
+                    this._ServerThread = null;
+                }
+                if (this._ExceptionOfServer != null)
+                {
+                    throw new DependencyNotAvailableException("The server stopped with an exception.", this._ExceptionOfServer);
+                }
+                GRYLibrary.Core.Misc.Utilities.AssertCondition(this._ExitCodeOfServer == 0, this.GetExitCodeMessage);
             }
         }
     }

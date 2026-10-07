@@ -35,9 +35,9 @@ tasks:
   BaseQuickStart:
     desc: "Base: Quick start"
     silent: true
-    dir: ". docker run opendms:latest"
+    dir: "."
     cmds:
-      - "python StartExample.py {{.CLI_ARGS}}"
+      - "docker run --rm -p 443:443 opendms:latest"
     aliases:
       - basequickstart
       - bqs
@@ -121,3 +121,13 @@ tasks:
     aliases:
       - translate
       - t
+
+  UpdateVisualRegressionBaselines:
+    desc: "Update: Visual-regression-baselines"
+    silent: true
+    dir: "./OpenDMSFrontend/Other/QualityCheck"
+    cmds:
+      - "python UpdateVisualRegressionBaselines.py {{.CLI_ARGS}}"
+    aliases:
+      - updatevisualregressionbaselines
+      - uvrb

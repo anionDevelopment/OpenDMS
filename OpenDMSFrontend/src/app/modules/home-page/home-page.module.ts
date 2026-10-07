@@ -5,16 +5,16 @@ import { HintNotAuthorizedComponent } from './hint-not-authorized/hint-not-autho
 import { HintNotFoundComponent } from './hint-not-found/hint-not-found.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { HomePageComponent } from './home-page/home-page.component';
 import { FooterComponent } from "./footer/footer.component";
 import { FrameWorkComponent } from './frame-work/frame-work.component';
+import { OidcCallbackComponent } from './oidc-callback/oidc-callback.component';
 
 
 
@@ -27,6 +27,7 @@ import { FrameWorkComponent } from './frame-work/frame-work.component';
     HintNotFoundComponent,
     HomePageComponent,
     LoginFormComponent,
+    OidcCallbackComponent,
   ],
   imports: [
     CommonModule,
@@ -37,6 +38,7 @@ import { FrameWorkComponent } from './frame-work/frame-work.component';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatSelectModule,
   ],
   exports: [
     FooterComponent,

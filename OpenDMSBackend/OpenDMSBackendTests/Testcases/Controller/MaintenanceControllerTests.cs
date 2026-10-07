@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,11 +12,10 @@ using System.Net.Http;
 namespace OpenDMSBackend.Tests.Testcases.Controller
 {
     [TestClass]
-    [Ignore("ignored because otherwise the testcoverage remains 0% for unknown reasons.")]
     public class MaintenanceControllerTests
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.IntegrationTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void HealthCheckIsWorking()
         {
             lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)

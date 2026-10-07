@@ -1,4 +1,4 @@
 
-select `Title`, `Filename`, `OriginalFilename`, `ImportDate`, `LastEditDate`, `ReadableId`, `MIMEType`, `IsSoftDeleted`,`DeleteIsNotAllowedBefore`,`MustBeHardDeletedAfter`,`GroupOfBusinessOwner`,`Version`, `AssignedLanguages`, `AddedByUserId` 
+select `Title`, `Filename`, `OriginalFilename`, `ImportDate`, `IsLatestVersion`, `ReadableId`, `MIMEType`, `IsSoftDeleted`,`DeleteIsNotAllowedBefore`,`MustBeHardDeletedAfter`,`GroupOfBusinessOwner`, `AssignedLanguages`, `AddedByUserId`, `AISummaryShort`, `IsHardDeleted`
 	from Documents 
 	where `Id`=@Id;

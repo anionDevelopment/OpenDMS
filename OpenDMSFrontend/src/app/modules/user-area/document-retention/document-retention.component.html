@@ -1,0 +1,18 @@
+<div class="document-retention">
+  <h4 i18n="@@document_retention_title">Retention</h4>
+  <p class="document-retention-description" i18n="@@document_retention_description">As long as the date before which the document must not be deleted is in the future, the document can not be deleted. When the date after which it must be deleted is reached, it is deleted automatically.</p>
+  <div class="document-retention-dates">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label i18n="@@document_retention_delete_not_allowed_before_label">Must not be deleted before</mat-label>
+      <input matInput type="date" [(ngModel)]="shownDeleteIsNotAllowedBefore">
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label i18n="@@document_retention_must_be_deleted_after_label">Must be deleted after</mat-label>
+      <input matInput type="date" [(ngModel)]="shownMustBeHardDeletedAfter">
+    </mat-form-field>
+    <button mat-button color="primary" (click)="saveRetentionDates()" i18n="@@document_retention_save">Save retention</button>
+  </div>
+  @if (changeNotAllowed) {
+  <p class="document-retention-error" i18n="@@document_retention_change_not_allowed">The retention of this document could not be changed.</p>
+  }
+</div>

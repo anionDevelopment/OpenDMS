@@ -1,0 +1,34 @@
+.document-metadata {
+  padding: 0.5rem 0;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .document-metadata-empty {
+    font-style: italic;
+    opacity: 0.7;
+  }
+
+  .document-metadata-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    /*
+     * The height is stated explicitly, because the height a form-field takes otherwise depends on the font-metrics
+     * of the browser-engine. That height is a fraction of a pixel, the fractions of the entries add up, and the
+     * whole page below this component then ends up a pixel or two lower in one engine than in the others.
+     */
+    li {
+      display: flex;
+      align-items: center;
+      height: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .document-metadata-error {
+    color: var(--mat-sys-error, #b00020);
+  }
+}

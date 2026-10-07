@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -53,6 +53,36 @@ namespace OpenDMSBackend.Core.Controller
             {
                 throw;
             }
+        }
+
+        /// <summary>Uploads a new version of an existing document. The new version is stored as a regular document in the same folder and is linked to the old document.</summary>
+        /// <param name="content">The raw binary content of the new version.</param>
+        /// <param name="oldDocumentId">The ID of the document a new version is uploaded for.</param>
+        /// <param name="filename">The file name for the uploaded document.</param>
+        /// <param name="title">An optional display title for the document.</param>
+        /// <param name="additionalOCRLanguages">Additional languages to use during OCR processing.</param>
+        /// <returns>The ID of the newly created document (the new version).</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(UploadNewVersion)}/{{{nameof(oldDocumentId)}}}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public IActionResult UploadNewVersion([FromBody] byte[] content, [FromRoute] string oldDocumentId, [FromQuery] string filename, [FromQuery] string? title, [FromQuery] IEnumerable<string> additionalOCRLanguages)
+        {
+            return this.Ok(this._BusinessLogicService.UploadNewVersion(this.GetUser().Id, oldDocumentId, title, filename, content, this._AuthenticationService.GetBaseRoleOfAllUser(), new HashSet<string>(additionalOCRLanguages)));
+        }
+
+        /// <summary>Returns the complete version-history (from oldest to newest) of the document's version-chain.</summary>
+        /// <param name="documentId">The ID of a document in the version-chain.</param>
+        /// <returns>The versions as <see cref="DocumentPreviewDTO"/> objects, ordered from oldest to newest.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpGet]
+        [ProducesResponseType(typeof(DocumentPreviewDTO[]), StatusCodes.Status200OK)]
+        [Route(nameof(GetVersionHistory))]
+        public IActionResult GetVersionHistory([FromQuery] string documentId)
+        {
+            return this.Ok(this._BusinessLogicService.GetVersionHistory(this.GetUser().Id, documentId).Select(preview => preview.ToDTO()));
         }
 
         /// <summary>Updates the display title of an existing document.</summary>
@@ -149,6 +179,79 @@ namespace OpenDMSBackend.Core.Controller
         {
             this._BusinessLogicService.UnauthorizeUserToViewStorageLocation(this.GetUser().Id, storageLocationId, sharedWithUserId);
             return this.Ok();
+        }
+
+        /// <summary>Grants the specified user permission to change (edit) the specified storage location and its contents. Only a moderator (owner) of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user to grant the edit-permission to.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AuthorizeUserToEditStorageLocation)}/{{{nameof(storageLocationId)}}}/{{{nameof(editUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AuthorizeUserToEditStorageLocation([FromRoute] string storageLocationId, [FromRoute] string editUserId)
+        {
+            this._BusinessLogicService.AuthorizeUserToEditStorageLocation(this.GetUser().Id, storageLocationId, editUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Revokes the specified user's permission to change (edit) the specified storage location. Only a moderator (owner) of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage location.</param>
+        /// <param name="editUserId">The id of the user whose edit-permission should be revoked.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(UnauthorizeUserToEditStorageLocation)}/{{{nameof(storageLocationId)}}}/{{{nameof(editUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult UnauthorizeUserToEditStorageLocation([FromRoute] string storageLocationId, [FromRoute] string editUserId)
+        {
+            this._BusinessLogicService.UnauthorizeUserToEditStorageLocation(this.GetUser().Id, storageLocationId, editUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Adds the specified user as a moderator of the specified content-object (storage-location, folder or document). Only a moderator may do this. A content-object can have several moderators.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <param name="newModeratorUserId">The id of the user to add as a moderator.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(AddModerator)}/{{{nameof(contentId)}}}/{{{nameof(newModeratorUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult AddModerator([FromRoute] string contentId, [FromRoute] string newModeratorUserId)
+        {
+            this._BusinessLogicService.AddModerator(this.GetUser().Id, contentId, newModeratorUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Removes the specified user from the moderators of the specified content-object. Only a moderator may do this. A folder or storage-location must always keep at least one moderator.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <param name="moderatorUserId">The id of the moderator to remove.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveModerator)}/{{{nameof(contentId)}}}/{{{nameof(moderatorUserId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveModerator([FromRoute] string contentId, [FromRoute] string moderatorUserId)
+        {
+            this._BusinessLogicService.RemoveModerator(this.GetUser().Id, contentId, moderatorUserId);
+            return this.Ok();
+        }
+
+        /// <summary>Returns the ids of all moderators of the specified content-object. Only a moderator may query this.</summary>
+        /// <param name="contentId">The id of the content-object.</param>
+        /// <returns>The ids of the moderators.</returns>
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetModerators)}/{{{nameof(contentId)}}}")]
+        [ProducesResponseType(typeof(string[]), StatusCodes.Status200OK)]
+        public IActionResult GetModerators([FromRoute] string contentId)
+        {
+            return this.Ok(this._BusinessLogicService.GetModerators(this.GetUser().Id, contentId));
         }
 
         /// <summary>Creates a new storage location with the given name owned by the current user.</summary>
@@ -266,16 +369,88 @@ namespace OpenDMSBackend.Core.Controller
             return this.Ok(this._BusinessLogicService.GetLatestDocuments(this.GetUser().Id).Select(preview => preview.ToDTO()));
         }
 
-        /// <summary>Returns all tags defined in the system.</summary>
-        /// <returns>An array of all tags as <see cref="TagDTO"/> objects.</returns>
+        /// <summary>Returns the tags the current user can use, which are the global tags and the tags the user owns.</summary>
+        /// <returns>An array of the usable tags as <see cref="TagDTO"/> objects.</returns>
         [Authenticate]
         [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
         [HttpPut]
         [ProducesResponseType(typeof(TagDTO[]), StatusCodes.Status200OK)]
-        [Route(nameof(GetAllTags))]
-        public IActionResult GetAllTags()
+        [Route(nameof(GetTags))]
+        public IActionResult GetTags()
         {
-            return this.Ok(this._BusinessLogicService.GetAllTags());
+            return this.Ok(this._BusinessLogicService.GetTags(this.GetUser().Id));
+        }
+
+        /// <summary>Creates a new tag which can afterwards be assigned to documents. A global tag can only be created by an administrator.</summary>
+        /// <param name="tag">The name, the color and the scope of the tag to create.</param>
+        /// <returns>The id of the created tag.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPost]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [Route(nameof(CreateTag))]
+        public IActionResult CreateTag([FromBody] TagCreationDTO tag)
+        {
+            return this.Ok(this._BusinessLogicService.CreateTag(this.GetUser().Id, tag.Name, ParseColorCode(tag.ColorCode), tag.IsGlobal));
+        }
+
+        /// <summary>Changes the name and the color of an existing tag. A global tag can only be changed by an administrator and a tag which belongs to a user only by that user.</summary>
+        /// <param name="tagId">The id of the tag to change.</param>
+        /// <param name="tag">The new name and the new color of the tag.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPut]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(UpdateTag)}/{{{nameof(tagId)}}}")]
+        public IActionResult UpdateTag([FromRoute] string tagId, [FromBody] TagUpdateDTO tag)
+        {
+            this._BusinessLogicService.UpdateTag(this.GetUser().Id, tagId, tag.Name, ParseColorCode(tag.ColorCode));
+            return this.Ok();
+        }
+
+        /// <summary>Deletes an existing tag together with all of its assignments to documents. A global tag can only be deleted by an administrator and a tag which belongs to a user only by that user.</summary>
+        /// <param name="tagId">The id of the tag to delete.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpDelete]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(DeleteTag)}/{{{nameof(tagId)}}}")]
+        public IActionResult DeleteTag([FromRoute] string tagId)
+        {
+            this._BusinessLogicService.DeleteTag(this.GetUser().Id, tagId);
+            return this.Ok();
+        }
+
+        /// <summary>Assigns an existing tag to the specified document. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="tagId">The id of the tag to assign.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPost]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(AssignTag)}/{{{nameof(documentId)}}}/{{{nameof(tagId)}}}")]
+        public IActionResult AssignTag([FromRoute] string documentId, [FromRoute] string tagId)
+        {
+            this._BusinessLogicService.AssignTag(this.GetUser().Id, documentId, tagId);
+            return this.Ok();
+        }
+
+        /// <summary>Removes the assignment of a tag from the specified document. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="tagId">The id of the tag to unassign.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpDelete]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route($"{nameof(UnassignTag)}/{{{nameof(documentId)}}}/{{{nameof(tagId)}}}")]
+        public IActionResult UnassignTag([FromRoute] string documentId, [FromRoute] string tagId)
+        {
+            this._BusinessLogicService.UnassignTag(this.GetUser().Id, documentId, tagId);
+            return this.Ok();
         }
 
         /// <summary>Permanently deletes the specified container or document and all its contents.</summary>
@@ -306,6 +481,201 @@ namespace OpenDMSBackend.Core.Controller
         {
             this._BusinessLogicService.SoftDelete(this.GetUser().Id, containerOrContaineeId, reason);
             return this.Ok();
+        }
+
+        /// <summary>Generates the short and the long AI-summary of the specified document and returns the updated document.</summary>
+        /// <param name="documentId">The id of the document to summarize.</param>
+        /// <returns>The updated document as a <see cref="DocumentDTO"/>.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [HttpPost]
+        [ProducesResponseType(typeof(DocumentDTO), StatusCodes.Status200OK)]
+        [Route($"{nameof(GenerateAISummary)}/{{{nameof(documentId)}}}")]
+        public IActionResult GenerateAISummary([FromRoute] string documentId)
+        {
+            this._BusinessLogicService.GenerateAISummary(this.GetUser().Id, documentId);
+            return this.Ok(this._BusinessLogicService.GetDocument(this.GetUser().Id, documentId).ToDTO());
+        }
+
+        /// <summary>Returns the general (admin-configurable) OpenDMS-settings.</summary>
+        /// <returns>The general settings as a <see cref="GeneralSettingsDTO"/>.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpGet]
+        [ProducesResponseType(typeof(GeneralSettingsDTO), StatusCodes.Status200OK)]
+        [Route(nameof(GetGeneralSettings))]
+        public IActionResult GetGeneralSettings()
+        {
+            return this.Ok(new GeneralSettingsDTO(this._BusinessLogicService.GetAutoGenerateAISummary()));
+        }
+
+        /// <summary>Updates the general (admin-configurable) OpenDMS-settings. Only administrators are allowed to call this.</summary>
+        /// <param name="settings">The new settings-values.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [Authorize(CodeUnitSpecificConstants.RolenameAdmins)]
+        [HttpPut]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [Route(nameof(SetGeneralSettings))]
+        public IActionResult SetGeneralSettings([FromBody] GeneralSettingsDTO settings)
+        {
+            this._BusinessLogicService.SetAutoGenerateAISummary(this.GetUser().Id, settings.AutoGenerateAISummary);
+            return this.Ok();
+        }
+
+        /// <summary>Defines a new custom metadata-field for the specified storage-location. Only a moderator of the storage-location may do this.</summary>
+        /// <param name="storageLocationId">The id of the storage-location the field is defined for.</param>
+        /// <param name="field">The name and type ("String", "Boolean", "Double" or "Timestamp") of the field to create.</param>
+        /// <returns>The id of the created field-definition.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(DefineMetadataField)}/{{{nameof(storageLocationId)}}}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public IActionResult DefineMetadataField([FromRoute] string storageLocationId, [FromBody] MetadataFieldDefinitionCreationDTO field)
+        {
+            return this.Ok(this._BusinessLogicService.DefineMetadataField(this.GetUser().Id, storageLocationId, field.Name, ParseMetadataFieldType(field.Type)));
+        }
+
+        /// <summary>Renames the specified custom metadata-field. Only a moderator of the field's storage-location may do this. The type of a field can not be changed.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to rename.</param>
+        /// <param name="newName">The new name of the field.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPut]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RenameMetadataField)}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RenameMetadataField([FromRoute] string fieldDefinitionId, [FromBody] StringValueDTO newName)
+        {
+            this._BusinessLogicService.RenameMetadataField(this.GetUser().Id, fieldDefinitionId, newName.Value);
+            return this.Ok();
+        }
+
+        /// <summary>Removes the specified custom metadata-field-definition together with all values documents hold for it. Only a moderator of the field's storage-location may do this.</summary>
+        /// <param name="fieldDefinitionId">The id of the field-definition to remove.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpDelete]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveMetadataField)}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveMetadataField([FromRoute] string fieldDefinitionId)
+        {
+            this._BusinessLogicService.RemoveMetadataField(this.GetUser().Id, fieldDefinitionId);
+            return this.Ok();
+        }
+
+        /// <summary>Returns all custom metadata-fields defined for the specified storage-location. The current user must be allowed to view the storage-location.</summary>
+        /// <param name="storageLocationId">The id of the storage-location.</param>
+        /// <returns>The field-definitions as <see cref="MetadataFieldDefinitionDTO"/> objects.</returns>
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetMetadataFields)}/{{{nameof(storageLocationId)}}}")]
+        [ProducesResponseType(typeof(MetadataFieldDefinitionDTO[]), StatusCodes.Status200OK)]
+        public IActionResult GetMetadataFields([FromRoute] string storageLocationId)
+        {
+            return this.Ok(this._BusinessLogicService.GetMetadataFields(this.GetUser().Id, storageLocationId).Select(field => field.ToDTO()));
+        }
+
+        /// <summary>Returns all custom metadata-fields the specified document can hold a value for, which are the fields defined for its storage-location. The current user must be allowed to view the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <returns>The field-definitions as <see cref="MetadataFieldDefinitionDTO"/> objects.</returns>
+        [Authenticate]
+        [HttpGet]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(GetMetadataFieldsOfDocument)}/{{{nameof(documentId)}}}")]
+        [ProducesResponseType(typeof(MetadataFieldDefinitionDTO[]), StatusCodes.Status200OK)]
+        public IActionResult GetMetadataFieldsOfDocument([FromRoute] string documentId)
+        {
+            return this.Ok(this._BusinessLogicService.GetMetadataFieldsOfDocument(this.GetUser().Id, documentId).Select(field => field.ToDTO()));
+        }
+
+        /// <summary>Sets the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <param name="value">The value to set. It must match the type of the field: a boolean ("true"/"false"), a number in the invariant culture (for example "1234.56") or a timestamp in the iso-8601-format (for example "2026-01-31T12:00:00+01:00").</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPost]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(SetDocumentMetadataValue)}/{{{nameof(documentId)}}}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult SetDocumentMetadataValue([FromRoute] string documentId, [FromRoute] string fieldDefinitionId, [FromBody] StringValueDTO value)
+        {
+            this._BusinessLogicService.SetDocumentMetadataValue(this.GetUser().Id, documentId, fieldDefinitionId, value.Value);
+            return this.Ok();
+        }
+
+        /// <summary>
+        /// Sets the retention-dates of the specified document. The current user must be allowed to change the document.
+        /// As long as the point in time before which the document must not be deleted is in the future, the document can not be hard-deleted; when the point in time after which it must be deleted is reached, the scheduled housekeeping hard-deletes it.
+        /// </summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="retentionDates">The retention-dates as iso-8601-timestamps. An omitted or empty value removes the respective date.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpPut]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(SetRetentionDates)}/{{{nameof(documentId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult SetRetentionDates([FromRoute] string documentId, [FromBody] RetentionDatesDTO retentionDates)
+        {
+            this._BusinessLogicService.SetRetentionDates(this.GetUser().Id, documentId, ParseTimestamp(retentionDates.DeleteIsNotAllowedBefore), ParseTimestamp(retentionDates.MustBeHardDeletedAfter));
+            return this.Ok();
+        }
+
+        /// <summary>Clears the value the specified document holds for the specified metadata-field. The current user must be allowed to change the document.</summary>
+        /// <param name="documentId">The id of the document.</param>
+        /// <param name="fieldDefinitionId">The id of the metadata-field-definition.</param>
+        /// <returns>200 OK on success.</returns>
+        [Authenticate]
+        [HttpDelete]
+        [Authorize(CodeUnitSpecificConstants.RolenameUsers)]
+        [Route($"{nameof(RemoveDocumentMetadataValue)}/{{{nameof(documentId)}}}/{{{nameof(fieldDefinitionId)}}}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public IActionResult RemoveDocumentMetadataValue([FromRoute] string documentId, [FromRoute] string fieldDefinitionId)
+        {
+            this._BusinessLogicService.SetDocumentMetadataValue(this.GetUser().Id, documentId, fieldDefinitionId, null);
+            return this.Ok();
+        }
+
+        /// <summary>Parses the given field-type-string into a <see cref="Model.BusinessTypes.MetadataFieldType"/>, rejecting unknown values with a <see cref="GRYLibrary.Core.Exceptions.BadRequestException"/>.</summary>
+        private static Model.BusinessTypes.MetadataFieldType ParseMetadataFieldType(string type)
+        {
+            if (System.Enum.TryParse(type, true, out Model.BusinessTypes.MetadataFieldType result) && System.Enum.IsDefined(typeof(Model.BusinessTypes.MetadataFieldType), result))
+            {
+                return result;
+            }
+            throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{type}' is not a valid metadata-field-type. Allowed values are '{nameof(Model.BusinessTypes.MetadataFieldType.String)}', '{nameof(Model.BusinessTypes.MetadataFieldType.Boolean)}', '{nameof(Model.BusinessTypes.MetadataFieldType.Double)}' and '{nameof(Model.BusinessTypes.MetadataFieldType.Timestamp)}'.");
+        }
+
+        /// <summary>Parses the given iso-8601-timestamp, rejecting a malformed value with a <see cref="GRYLibrary.Core.Exceptions.BadRequestException"/>.</summary>
+        /// <param name="timestamp">The timestamp to parse, or <see langword="null"/>/empty when no timestamp is given.</param>
+        /// <returns>The parsed timestamp, or <see langword="null"/> when no timestamp was given.</returns>
+        private static System.DateTimeOffset? ParseTimestamp(string? timestamp)
+        {
+            if (string.IsNullOrWhiteSpace(timestamp))
+            {
+                return null;
+            }
+            if (!System.DateTimeOffset.TryParse(timestamp, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out System.DateTimeOffset result))
+            {
+                throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{timestamp}' is not a valid timestamp. A timestamp must be given in the iso-8601-format, for example '2026-01-31T12:00:00+01:00'.");
+            }
+            return result;
+        }
+
+        /// <summary>Parses the given six-digit hexadecimal rgb-value into an <see cref="GRYLibrary.Core.Misc.ExtendedColor"/>, rejecting malformed values with a <see cref="GRYLibrary.Core.Exceptions.BadRequestException"/>.</summary>
+        private static GRYLibrary.Core.Misc.ExtendedColor ParseColorCode(string colorCode)
+        {
+            string hexadecimalValue = colorCode == null ? string.Empty : colorCode.TrimStart('#');
+            if (hexadecimalValue.Length != 6 || !int.TryParse(hexadecimalValue, System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out int rgbValue))
+            {
+                throw new GRYLibrary.Core.Exceptions.BadRequestException($"'{colorCode}' is not a valid color. A color must be a six-digit hexadecimal rgb-value, for example 'C62828'.");
+            }
+            return new GRYLibrary.Core.Misc.ExtendedColor((byte)(rgbValue >> 16), (byte)(rgbValue >> 8), (byte)rgbValue);
         }
 
         private GRYLibrary.Core.APIServer.CommonDBTypes.User GetUser()

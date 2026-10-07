@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
 
@@ -34,6 +35,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatSidenavModule,
     MatButtonModule,
     MatTabsModule,
+    MatSlideToggleModule,
     HomePageModule,
     UserAreaModule,
   ]

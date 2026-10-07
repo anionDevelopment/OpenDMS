@@ -1,15 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { StorageService } from '../../../services/storage.service';
 import { DocumentDTO, DocumentPreviewDTO, FolderDTO, OpenDMSBackendService } from '../../../generated/open-dms-backend';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { UtilitiesService } from '../../../services/utilities.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-content-view',
   standalone: false,
   templateUrl: './content-view.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './content-view.component.scss'
 })
 export class ContentViewComponent implements OnInit {//shows the content of a container
@@ -21,10 +19,10 @@ export class ContentViewComponent implements OnInit {//shows the content of a co
   containerId: string | null | undefined = null;
 
   @Input()
-  userIsAllowedToAddDocuments: boolean = false;
+  userIsAllowedToAddDocuments = false;
 
   @Input()
-  isFolder: boolean = false;
+  isFolder = false;
 
   @Input()
   documentIds: string[] | null | undefined = []
@@ -45,6 +43,16 @@ export class ContentViewComponent implements OnInit {//shows the content of a co
 
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
 
+  }
+
+  /**
+   * Whether the custom metadata-fields are shown. They are defined per storage-location, so they belong to a
+   * storage-location and not to a nested folder.
+   * The condition is decided here and not in the template, because the formatter of the build breaks a template
+   * which contains the operator "&&".
+   */
+  get metadataFieldsAreShown(): boolean {
+    return !this.isFolder && !!this.containerId;
   }
 
   ngOnInit(): void {

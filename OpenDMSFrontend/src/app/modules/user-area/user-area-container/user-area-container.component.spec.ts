@@ -4,8 +4,7 @@ import { UserAreaContainerComponent } from './user-area-container.component';
 import { UserDataService } from '../../../services/user-data.service';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
-import { UserIconComponent } from '../user-icon/user-icon.component';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { UtilitiesService } from '../../../services/utilities.service';
 import { CommonModule } from '@angular/common';
@@ -30,9 +29,10 @@ import { HomePageModule } from '../../home-page/home-page.module';
 @Component({
   selector: 'app-user-icon',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: '<span>app-user-icon-container-mock</span>'
 })
-class UserIconComponentMock { }
+class MockUserIconComponent { }
 
 describe('UserAreaContainerComponent', () => {
   let component: UserAreaContainerComponent;
@@ -63,7 +63,7 @@ describe('UserAreaContainerComponent', () => {
         HomePageModule
       ],
       declarations: [
-        UserIconComponentMock,
+        MockUserIconComponent,
         UserAreaContainerComponent,
       ],
       providers: [

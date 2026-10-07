@@ -1,3 +1,5 @@
+import { NgxCultureSelectorComponent } from '@aniondev/ngx-culture-selector';
+import { NgxDarkmodeToggleButtonComponent } from '@aniondev/ngx-darkmode-toggle-button';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TimestampPipe } from '../../pipes/timestamp.pipe';
@@ -39,6 +41,11 @@ import { EditDocumentMenuComponent } from './edit-document-menu/edit-document-me
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSortModule } from '@angular/material/sort';
 import { EditStorageLocationMenuComponent } from './edit-storage-location-menu/edit-storage-location-menu.component';
+import { MetadataFieldsComponent } from './metadata-fields/metadata-fields.component';
+import { DocumentMetadataComponent } from './document-metadata/document-metadata.component';
+import { DocumentTagsComponent } from './document-tags/document-tags.component';
+import { DocumentRetentionComponent } from './document-retention/document-retention.component';
+import { TagManagementComponent } from './tag-management/tag-management.component';
 
 @NgModule({
   declarations: [
@@ -48,22 +55,33 @@ import { EditStorageLocationMenuComponent } from './edit-storage-location-menu/e
     ContentViewComponent,
     DocumentTableComponent,
     DocumentsListComponent,
+    DocumentMetadataComponent,
     DocumentPreviewComponent,
+    DocumentRetentionComponent,
+    DocumentTagsComponent,
     EditDocumentMenuComponent,
     EditDocumentDialogComponent,
     EditContainerMenuComponent,
     EditContainerDialogComponent,
     EditStorageLocationMenuComponent,
+    MetadataFieldsComponent,
     LinkToDocumentComponent,
     UserIconComponent,
     UserAreaContainerComponent,
     UserDashboardComponent,
     UserSettingsComponent,
     SearchComponent,
+    TagManagementComponent,
     ViewDocumentComponent,
+  ],
+  exports: [
+    //the admin-area uses the tag-management to manage the global tags.
+    TagManagementComponent,
   ],
   imports: [
     CommonModule,
+    NgxDarkmodeToggleButtonComponent,
+    NgxCultureSelectorComponent,
     ReactiveFormsModule,
     FormsModule,
     MatExpansionModule,
