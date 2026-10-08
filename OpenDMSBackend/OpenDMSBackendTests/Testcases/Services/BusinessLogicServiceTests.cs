@@ -20,6 +20,7 @@ using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
+using OpenDMSBackend.Tests.TestUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,22 +33,9 @@ namespace OpenDMSBackend.Tests.Testcases.Services
         private void InitializeServices(bool registrationIsEnabled, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence)
         {
             ITimeService timeService = new TimeService();
-            IPersistedAPIServerConfiguration<CodeUnitSpecificConfiguration> persistedAPIServerConfiguration = new PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>();
-            persistedAPIServerConfiguration.ApplicationSpecificConfiguration = new CodeUnitSpecificConfiguration();
-            persistedAPIServerConfiguration.ApplicationSpecificConfiguration.RegistrationIsEnabled = registrationIsEnabled;
-            ApplicationConstants<CodeUnitSpecificConstants> constants = new ApplicationConstants<CodeUnitSpecificConstants>(GeneralConstants.CodeUnitName, GeneralConstants.CodeUnitVersion, Version3.Parse(GeneralConstants.CodeUnitVersion), TestRun.Instance, OpenDMSBackend.Core.Misc.Utilities.GetEnvironmentTargetType(), new CodeUnitSpecificConstants());
-            constants.BaseFolder = APIServer<CodeUnitSpecificConstants, PersistedAPIServerConfiguration<CodeUnitSpecificConfiguration>, CommandlineParameter>.GetDefaultBaseFolder(constants, true);
-            IServerLog logger = new ServerLog(new GRYLogConfiguration(true), constants.GetLogFolder());
-            IAuditLog auditLog = new AuditLog(new GRYLogConfiguration(true), constants.GetLogFolder());
-            IIdGenerator<ulong> idGenerator = new OpenDMSBackend.Core.Services.IdGenerator();
             (TransientPersistence, ISet<IDisposable>) databasePersistenceD = OpenDMSBackend.Tests.TestUtilities.Utilities.GetTransientPersistence(timeService);
             persistence = databasePersistenceD.Item1;
-            IAuthenticationService<User> authenticationService = new PersistentAuthenticationService(timeService, persistence, logger, constants);
-            IGeneralResourceLoader generalResourceLoader = new OpenDMSBackend.Core.Services.GeneralResourceLoader();
-            Mock<IOCRServiceClient> ocrServiceClientMock = new Mock<IOCRServiceClient>(MockBehavior.Strict);
-            businessLogicService = new BusinessLogicService(persistence, authenticationService, timeService, constants, logger, persistedAPIServerConfiguration, ocrServiceClientMock.Object, new OpenDMSBackend.Core.Services.AISummaryServiceClientMock(), idGenerator, generalResourceLoader, auditLog);
-            IExampleDataCreator exampleDataCreator = new ExampleDataCreator(businessLogicService, authenticationService);
-            initializationService = new InitializationService(authenticationService, businessLogicService, logger, constants, exampleDataCreator, persistence, idGenerator);
+            ServicesForTests.CreateServices(persistence, timeService, registrationIsEnabled, out businessLogicService, out initializationService);
         }
 
         [TestMethod(DisplayName = nameof(DatabaseInitializationTest))]

@@ -112,5 +112,19 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
         {
             this.HardDeleteDocument();
         }
+
+        [TestMethod(DisplayName = nameof(UserCanNotDoAdministratorOnlyActionTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public override void UserCanNotDoAdministratorOnlyActionTest()
+        {
+            this.UserCanNotDoAdministratorOnlyAction();
+        }
+
+        [TestMethod(DisplayName = nameof(UserCanNotReadDocumentOfAnotherUserWithoutPermissionTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public override void UserCanNotReadDocumentOfAnotherUserWithoutPermissionTest()
+        {
+            this.UserCanNotReadDocumentOfAnotherUserWithoutPermission();
+        }
     }
 }

@@ -1,11 +1,16 @@
+using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
+using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
+using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Constants;
 using OpenDMSBackend.Core.Model.BusinessTypes;
 using OpenDMSBackend.Core.Model.DTOs;
+using OpenDMSBackend.Core.Services;
 using OpenDMSBackend.Tests.TestUtilities;
 using System;
 using System.Collections.Generic;
@@ -319,5 +324,56 @@ namespace OpenDMSBackend.Tests.Testcases.Services.PersistenceTests
             }
         }
 
+        public abstract void UserCanNotDoAdministratorOnlyActionTest();
+        public void UserCanNotDoAdministratorOnlyAction()
+        {
+            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
+            {
+                //arrange
+                TimeService timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
+                IBusinessLogicService businessLogicService = InitializeBusinessLogic(persistenceD.Persistence, timeService);
+                string userId = businessLogicService.Register($"user-{Guid.NewGuid()}", "password");
+                Assert.IsFalse(businessLogicService.UserIsAdministrator(userId));
+
+                //act & assert: a user who is not an administrator must not be able to grant themselves the administrator-role.
+                Assert.ThrowsExactly<NotAuthorizedException>(() => businessLogicService.SetRolesOfUser(userId, userId, new HashSet<string>() { CodeUnitSpecificConstants.RolenameAdmins }));
+                Assert.IsFalse(businessLogicService.UserIsAdministrator(userId), "The rejected role-change must not have been applied.");
+            }
+        }
+
+        public abstract void UserCanNotReadDocumentOfAnotherUserWithoutPermissionTest();
+        public void UserCanNotReadDocumentOfAnotherUserWithoutPermission()
+        {
+            lock (OpenDMSBackend.Tests.TestUtilities.Utilities.LockForTests)
+            {
+                //arrange
+                TimeService timeService = new TimeService();
+                using PersistenceDisposable persistenceD = this.GetPersistence(timeService);
+                IBusinessLogicService businessLogicService = InitializeBusinessLogic(persistenceD.Persistence, timeService);
+                string ownerUserId = businessLogicService.Register($"owner-{Guid.NewGuid()}", "password");
+                string otherUserId = businessLogicService.Register($"other-{Guid.NewGuid()}", "password");
+                string storageLocationId = persistenceD.Persistence.AddStoragLocation($"sl-{Guid.NewGuid()}");
+                persistenceD.Persistence.SetOwnerOfStorageLocation(storageLocationId, ownerUserId);
+                Document document = new Document(Guid.NewGuid().ToString(), OneLineString.From("title"), OneLineString.From("Filename.pdf"), OneLineString.From($"Originalfilename_{Guid.NewGuid()}.pdf"), new DateTimeOffset(2025, 08, 06, 20, 00, 06, TimeSpan.Zero), 1, new HashSet<Tag>(), OneLineString.From("application/pdf"), new byte[] { 1, 2, 3, 4 }, string.Empty, new byte[] { 1, 2 }, false, default, default, CodeUnitSpecificConstants.RolenameUsers, new HashSet<string>(), ownerUserId);
+                persistenceD.Persistence.CreateDocument(document);
+                persistenceD.Persistence.SetParentOfContainee(document, storageLocationId);
+                //the owner can read the document, so a refusal for the other user is caused by the missing permission and not by a broken setup.
+                Assert.AreEqual(document.Id, businessLogicService.GetDocument(ownerUserId, document.Id).Id);
+
+                //act & assert
+                Assert.ThrowsExactly<NotAuthorizedException>(() => businessLogicService.GetDocument(otherUserId, document.Id));
+                Assert.ThrowsExactly<NotAuthorizedException>(() => businessLogicService.GetDocumentPreview(otherUserId, document.Id));
+            }
+        }
+
+        /// <summary>Builds the business-logic on top of the given persistence and initializes it (roles and the administrator), so that permission-checks can be verified for every persistence.</summary>
+        private static IBusinessLogicService InitializeBusinessLogic(IPersistence persistence, ITimeService timeService)
+        {
+            ServicesForTests.CreateServices(persistence, timeService, true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService);
+            initializationService.Initialize(new CommandlineParameter());
+            Assert.IsInstanceOfType<Initialized>(initializationService.GetInitializationState());
+            return businessLogicService;
+        }
     }
 }
