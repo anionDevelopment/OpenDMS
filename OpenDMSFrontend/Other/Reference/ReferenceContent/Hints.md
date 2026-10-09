@@ -140,8 +140,4 @@ Keep in mind that these tests therefore verify the user-interface only and not t
 
 ## Known defects which require a larger change
 
-The following defects were found by a pure code-review (independent of the business-logic). They are not fixed yet because fixing them requires a bigger change than a local correction.
-
-- The permission-dependent parts of the UI are permanently enabled: `EditContainerMenuComponent.userIsAllowedToAddDocument`, `EditContainerMenuComponent.userIsAllowedToAddFolder` and `MetadataFieldsComponent.userIsModerator` are hard-coded to `true` (each with a `TODO`). Every user therefore sees actions they may not be allowed to perform; the backend rejects them, but only after the user triggered them. Showing them correctly requires an endpoint which reports the caller's permissions for a content-object and wiring it through the container- and storage-location-views.
-- `ContentViewComponent` loads the containee-ids it gets from `StorageLocationDTO`/`FolderDTO` with one request per document and per folder. For a container with many entries this produces a request-storm; a batch-endpoint (previews of all documents of a container) would be needed instead.
-- `ContentViewComponent.addDocument` is typed as taking a `DocumentDTO` but is also called with a `DocumentPreviewDTO` (from `loadDocument`), and the component's list is a `DocumentPreviewDTO[]`. This only compiles because every property of the generated DTOs is optional. Cleaning this up means separating "a document was added" (which yields an id) from "a preview was loaded" throughout the container-view.
+The defects of this codeunit which were found by a code-review and which require a bigger change than a local correction are listed as `Frontend-01` to `Frontend-03` in the [findings of the product reference](https://github.com/anionDev/OpenDMS/blob/main/Other/Reference/Reference.md#findings), together with their current state.

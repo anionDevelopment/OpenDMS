@@ -16,8 +16,5 @@ It is possible to enable/disable the maintenance-endpoints using commandline-swi
 
 ## Technical debts
 
-The known defects which are not fixed yet because fixing them requires a bigger change than a local correction are listed in the
-[hints of the codeunit OpenDMSBackend](https://github.com/anionDev/OpenDMS/blob/main/OpenDMSBackend/Other/Reference/ReferenceContent/Hints.md#known-defects-which-require-a-larger-change),
-next to the code they belong to. They concern the containment-hierarchy after a move, the error-reporting of the hard-deletion, the
-visibility of soft-deleted documents in a container-view, the re-seeding of the readable document-id and the width of the
-readable-id-type.
+The known defects and the findings of the code-reviews and of the security-analysis are listed, together with their current
+state, in the [findings of the product reference](../Reference.md#findings).
