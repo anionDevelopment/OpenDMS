@@ -1,5 +1,8 @@
+using GRYLibrary.Core.APIServer.CommonDBTypes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using OpenDMSBackend.Core.Constants;
+using OpenDMSBackend.Core.Model.DTOs;
 using OpenDMSBackend.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
@@ -172,6 +175,56 @@ namespace OpenDMSBackend.Tests.Testcases.Miscellaneous
 
             //assert
             CollectionAssert.AreEquivalent(languages.ToList(), roundTripped.ToList());
+        }
+
+        [TestMethod(DisplayName = nameof(GetUserInformationMarksAUserWithTheAdminsRoleAsAdmin))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void GetUserInformationMarksAUserWithTheAdminsRoleAsAdmin()
+        {
+            //arrange
+            Role adminRole = new Role() { Id = "role-admin", Name = CodeUnitSpecificConstants.RolenameAdmins };
+            User user = new User() { Id = "user-1", Name = "alice", Roles = new HashSet<Role>() { adminRole } };
+
+            //act
+            UserInformationDTO actual = Utilities.GetUserInformation(user);
+
+            //assert
+            Assert.AreEqual("user-1", actual.Id);
+            Assert.AreEqual("alice", actual.Name);
+            Assert.IsTrue(actual.IsAdmin);
+        }
+
+        [TestMethod(DisplayName = nameof(GetUserInformationDoesNotMarkAUserWithoutTheAdminsRoleAsAdmin))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void GetUserInformationDoesNotMarkAUserWithoutTheAdminsRoleAsAdmin()
+        {
+            //arrange
+            Role someRole = new Role() { Id = "role-x", Name = "SomeOtherRole" };
+            User user = new User() { Id = "user-2", Name = "bob", Roles = new HashSet<Role>() { someRole } };
+
+            //act
+            UserInformationDTO actual = Utilities.GetUserInformation(user);
+
+            //assert
+            Assert.AreEqual("user-2", actual.Id);
+            Assert.AreEqual("bob", actual.Name);
+            Assert.IsFalse(actual.IsAdmin);
+        }
+
+        [TestMethod(DisplayName = nameof(GetUserInformationDetectsTheAdminsRoleWhenItIsInheritedThroughAnotherRole))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void GetUserInformationDetectsTheAdminsRoleWhenItIsInheritedThroughAnotherRole()
+        {
+            //arrange
+            Role adminRole = new Role() { Id = "role-admin", Name = CodeUnitSpecificConstants.RolenameAdmins };
+            Role intermediateRole = new Role() { Id = "role-mid", Name = "Managers", DirectlyInheritedRoles = new HashSet<Role>() { adminRole } };
+            User user = new User() { Id = "user-3", Name = "carol", Roles = new HashSet<Role>() { intermediateRole } };
+
+            //act
+            UserInformationDTO actual = Utilities.GetUserInformation(user);
+
+            //assert
+            Assert.IsTrue(actual.IsAdmin);
         }
     }
 }

@@ -27,9 +27,9 @@
       },
       "GRYLibrary": {
         "type": "Direct",
-        "requested": "[2.1.0, 2.1.0]",
-        "resolved": "2.1.0",
-        "contentHash": "hDsPr46UvbHLU/BZ+bmIl/jZlwyfUjYuIOmbpBAqmcovEgUh4oHCaarpE7JOPKUdVIP4kHsjgW8gJN0qpMgItA=="
+        "requested": "[2.1.6, 2.1.6]",
+        "resolved": "2.1.6",
+        "contentHash": "Re67ypjUxoLBSNHgLNCFroOwFJQwjtXcXd4WRLIXVjhTepavVoqn5Z+cF3jA5fWMgEi5Ea6eYYFybdBrF3gkJA=="
       },
       "Microsoft.AspNetCore.Http": {
         "type": "Direct",
@@ -718,7 +718,7 @@
         "dependencies": {
           "CommandLineParser": "[2.9.1, 2.9.1]",
           "ExtendedXmlSerializer": "[3.10.0, 3.10.0]",
-          "GRYLibrary": "[2.1.0, 2.1.0]",
+          "GRYLibrary": "[2.1.6, 2.1.6]",
           "HtmlAgilityPack": "[1.12.4, 1.12.4]",
           "Microsoft.AspNetCore.Http": "[2.3.9, 2.3.9]",
           "Microsoft.CSharp": "[4.7.0, 4.7.0]",

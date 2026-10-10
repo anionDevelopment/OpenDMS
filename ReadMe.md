@@ -215,7 +215,7 @@ exception-middleware, so the 401 and the 403 of this product depend on that midd
 
 ### Validation and test-coverage
 
-The backend has 172 testcases, and sixteen of them assert that an operation is refused for a user who lacks the permission - the
+The backend has 175 testcases, and sixteen of them assert that an operation is refused for a user who lacks the permission - the
 access-control is therefore the one security-property which is really tested. No test exists for any of the following, all of
 which are the high-risk paths of this analysis: the login (`PersistentAuthenticationService.Login`), the password-hashing, the
 validity and the expiry of an access-token, the behaviour of an upload with an unexpected type or an excessive size, the

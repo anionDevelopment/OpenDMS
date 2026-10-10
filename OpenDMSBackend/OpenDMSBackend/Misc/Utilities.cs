@@ -26,7 +26,7 @@ namespace OpenDMSBackend.Core.Misc
 #elif Productive
             return Productive.Instance;
 #else
-            throw new System.Collections.Generic.KeyNotFoundException("Unknown environmenttargettype.");
+            throw new System.Collections.Generic.KeyNotFoundException("Unknown environment-target-type.");
 #endif
         }
 

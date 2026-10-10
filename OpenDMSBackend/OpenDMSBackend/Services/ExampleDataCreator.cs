@@ -26,7 +26,7 @@ namespace OpenDMSBackend.Core.Services
             DateTime now = DateTime.Now;
             DateTime initialDate = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0).AddHours(-1);
             (string userId, string storageLocationId) userDetails1 = this.AddUser(1);//minimal example
-            string userGroupe = this._AuthenticationService.GetBaseRoleOfAllUser();
+            string userGroup = this._AuthenticationService.GetBaseRoleOfAllUser();
 
             (string userId, string storageLocationId) userDetails2 = this.AddUser(2);//example with some more documents
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
@@ -36,16 +36,16 @@ namespace OpenDMSBackend.Core.Services
             string folder3Id = this.AddFolder(3, userDetails2.userId, userDetails2.storageLocationId);
             string folder4Id = this.AddFolder(4, userDetails2.userId, folder3Id);
             string folder5Id = this.AddFolder(5, userDetails2.userId, userDetails2.storageLocationId);
-            this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId, initialDate, userGroupe);
-            this.AddExampleDocument(2, userDetails2.userId, folder2Id, initialDate, userGroupe);
-            this.AddExampleDocument(3, userDetails2.userId, folder2Id, initialDate, userGroupe);
-            this.AddExampleDocument(4, userDetails2.userId, folder4Id, initialDate, userGroupe);
-            this.AddExampleDocument(5, userDetails2.userId, folder3Id, initialDate, userGroupe);
-            this.AddExampleDocument(6, userDetails2.userId, folder5Id, initialDate, userGroupe);
-            this.AddExampleDocument(7, userDetails2.userId, folder5Id, initialDate, userGroupe);
-            this.AddExampleDocument(8, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroupe);
-            this.AddExampleDocument(9, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroupe);
-            this.AddExampleDocument(10, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroupe);
+            this.AddExampleDocument(1, userDetails1.userId, userDetails1.storageLocationId, initialDate, userGroup);
+            this.AddExampleDocument(2, userDetails2.userId, folder2Id, initialDate, userGroup);
+            this.AddExampleDocument(3, userDetails2.userId, folder2Id, initialDate, userGroup);
+            this.AddExampleDocument(4, userDetails2.userId, folder4Id, initialDate, userGroup);
+            this.AddExampleDocument(5, userDetails2.userId, folder3Id, initialDate, userGroup);
+            this.AddExampleDocument(6, userDetails2.userId, folder5Id, initialDate, userGroup);
+            this.AddExampleDocument(7, userDetails2.userId, folder5Id, initialDate, userGroup);
+            this.AddExampleDocument(8, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroup);
+            this.AddExampleDocument(9, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroup);
+            this.AddExampleDocument(10, userDetails2.userId, userDetails2.storageLocationId, initialDate, userGroup);
             /* Structure for user02:
                 MainStorage
                 ├─ folder01/

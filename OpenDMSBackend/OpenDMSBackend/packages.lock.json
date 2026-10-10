@@ -21,9 +21,9 @@
       },
       "GRYLibrary": {
         "type": "Direct",
-        "requested": "[2.1.0, 2.1.0]",
-        "resolved": "2.1.0",
-        "contentHash": "hDsPr46UvbHLU/BZ+bmIl/jZlwyfUjYuIOmbpBAqmcovEgUh4oHCaarpE7JOPKUdVIP4kHsjgW8gJN0qpMgItA=="
+        "requested": "[2.1.6, 2.1.6]",
+        "resolved": "2.1.6",
+        "contentHash": "Re67ypjUxoLBSNHgLNCFroOwFJQwjtXcXd4WRLIXVjhTepavVoqn5Z+cF3jA5fWMgEi5Ea6eYYFybdBrF3gkJA=="
       },
       "HtmlAgilityPack": {
         "type": "Direct",

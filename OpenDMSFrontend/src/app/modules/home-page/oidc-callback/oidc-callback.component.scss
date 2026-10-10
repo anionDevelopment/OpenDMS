@@ -6,5 +6,6 @@
 }
 
 .error-message {
-  color: red;
+  /* Read from the palette (through the Material theme) instead of naming a color-value here. */
+  color: var(--mat-sys-error);
 }
