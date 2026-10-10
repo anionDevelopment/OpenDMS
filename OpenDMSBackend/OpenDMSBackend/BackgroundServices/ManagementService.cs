@@ -59,9 +59,10 @@ namespace OpenDMSBackend.Core.BackgroundServices
             {
                 action();
             }
-            catch
+            catch (System.Exception exception)
             {
-                //TODO log exception
+                //a failing scheduled task is logged instead of being swallowed silently, so that a permanently failing housekeeping or import becomes visible (see finding OWASP-33).
+                this._Logger.Log($"The scheduled management-task '{actionName}' failed.", exception);
             }
         }
 
@@ -104,22 +105,25 @@ namespace OpenDMSBackend.Core.BackgroundServices
                                 //run the optional TypeScript adapt-script to let the import-definition mutate the metadata of the just-imported document.
                                 this.ApplyAdaptScript(importDefinition, documentId);
                             }
-                            catch
+                            catch (System.Exception exception)
                             {
-                                //TODO log adapt-script-exception; the document is kept with its default metadata on purpose so that the import is not retried endlessly for a broken script.
+                                //the document is kept with its default metadata on purpose so that the import is not retried endlessly for a broken script. The exception is logged instead of being swallowed silently (see finding OWASP-33).
+                                this._Logger.Log($"The adapt-script of an import-definition could not be applied to the imported document '{documentId}'. The document is kept with its default metadata.", exception);
                             }
                             //remove the file from the import-source so that it is not imported again on the next iteration.
                             File.Delete(externalFile.SourcePath);
                         }
-                        catch
+                        catch (System.Exception exception)
                         {
-                            //TODO log exception
+                            //a single file which can not be imported is logged and skipped so that it does not stop the import of the other files (see finding OWASP-33).
+                            this._Logger.Log($"The file '{externalFile.SourcePath}' could not be imported.", exception);
                         }
                     }
                 }
-                catch
+                catch (System.Exception exception)
                 {
-                    //TODO log exception
+                    //a failing import-definition is logged and skipped so that it does not stop the import of the other import-definitions (see finding OWASP-33).
+                    this._Logger.Log($"The documents of the import-definition with target-folder '{importDefinition.TargetFolderId}' could not be imported.", exception);
                 }
             }
         }
@@ -208,7 +212,16 @@ namespace OpenDMSBackend.Core.BackgroundServices
             {
                 return null;
             }
-            return DateTimeOffset.Parse((string)value, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind);
+            string stringValue = (string)value;
+            try
+            {
+                return DateTimeOffset.Parse(stringValue, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind);
+            }
+            catch (FormatException)
+            {
+                //a date which the adapt-script produced in an invalid format is a bad input, not an internal error (see finding OWASP-38); it is reported with a clear message instead of letting the raw FormatException escape.
+                throw new GRYLibrary.Core.Exceptions.BadRequestException($"The adapt-script returned '{stringValue}' as a date, which is not valid. A date must be given in the iso-8601-format, for example '2026-01-31T12:00:00+01:00'.");
+            }
         }
 
         private string ConvertTypeScriptToJavaScript(string typeScript)

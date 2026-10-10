@@ -381,7 +381,9 @@ namespace OpenDMSBackend.Core.Services
         private bool UserHasPermissionInHierarchy(string userId, string contentId, RequiredPermission required)
         {
             string currentId = contentId;
-            while (true)
+            //guard against a cyclic containment-hierarchy: a repeated id would otherwise make this loop run forever and make every request which touches the affected object hang (see finding OWASP-35). A cycle is treated as the end of the hierarchy, so the default-deny applies.
+            HashSet<string> visitedContentIds = new HashSet<string>();
+            while (visitedContentIds.Add(currentId))
             {
                 //a moderator ("owner") at any level of the hierarchy has all permissions on the content-object and its contents.
                 if (this._Persistence.UserIsOwnerOfStorageLocation(userId, currentId))
@@ -840,6 +842,21 @@ namespace OpenDMSBackend.Core.Services
             //moving requires the permission to change both the moved containee (its current location) and the target-container it is moved into.
             this.EnsureUserIsAllowedToEditContent(requesterUserId, containeeIdToMove);
             this.EnsureUserIsAllowedToEditContent(requesterUserId, targetContainerId);
+            //refuse moving a containee into itself or into one of its own descendants: that would create a cycle in the containment-hierarchy, which would make every permission-check on an affected object loop (see finding OWASP-35).
+            string ancestorIdOfTarget = targetContainerId;
+            HashSet<string> visitedAncestorIds = new HashSet<string>();
+            while (visitedAncestorIds.Add(ancestorIdOfTarget))
+            {
+                if (ancestorIdOfTarget == containeeIdToMove)
+                {
+                    throw new BadRequestException($"Containee '{containeeIdToMove}' can not be moved into itself or into one of its own descendants.");
+                }
+                if (this._Persistence.IsStorageLocation(ancestorIdOfTarget))
+                {
+                    break;
+                }
+                ancestorIdOfTarget = this._Persistence.GetParentIdOfContainee(ancestorIdOfTarget);
+            }
             string previousStorageLocationId = this._Persistence.GetIdOfStorageLocationContainedIn(containeeIdToMove);
             //TODO remove containeeToMove from previous parent
             this._Persistence.SetParentOfContainee(this.GetContainee(containeeIdToMove), targetContainerId);
@@ -953,6 +970,14 @@ namespace OpenDMSBackend.Core.Services
             this.EnsureAdministrator(requesterUserId);
             //resolve the requested role-names to roles first (GetRoleByName throws for an unknown role-name, so invalid input is rejected before any change is made).
             ISet<GRYLibrary.Core.APIServer.CommonDBTypes.Role> targetRoles = roleNames.Select(this._Persistence.GetRoleByName).ToHashSet();
+            //refuse an operation which would leave the installation without any administrator: otherwise the last administrator could remove their own administrator-role and nobody could administer the installation any more (see finding OWASP-24).
+            GRYLibrary.Core.APIServer.CommonDBTypes.Role administratorRole = this._Persistence.GetRoleByName(CodeUnitSpecificConstants.RolenameAdmins);
+            bool targetUserWillBeAdministrator = targetRoles.Any(role => role.Id == administratorRole.Id);
+            bool anotherAdministratorExists = this._Persistence.GetAllUsers().Values.Any(user => user.Id != targetUserId && this._Persistence.UserHasRole(user.Id, administratorRole.Id));
+            if (!targetUserWillBeAdministrator && !anotherAdministratorExists)
+            {
+                throw new BadRequestException("At least one administrator must remain; this operation would remove the administrator-role of the last administrator.");
+            }
             foreach (GRYLibrary.Core.APIServer.CommonDBTypes.Role role in this._Persistence.GetAllRoles())
             {
                 bool shouldHaveRole = targetRoles.Any(targetRole => targetRole.Id == role.Id);

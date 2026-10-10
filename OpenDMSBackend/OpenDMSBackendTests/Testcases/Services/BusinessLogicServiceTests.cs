@@ -958,6 +958,46 @@ namespace OpenDMSBackend.Tests.Testcases.Services
             return storageLocationId;
         }
 
+        [TestMethod(DisplayName = nameof(LastAdministratorRoleCanNotBeRemovedTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void LastAdministratorRoleCanNotBeRemovedTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string administratorUserId = GetAdministratorUserId(persistence);
+            Assert.IsTrue(businessLogicService.UserIsAdministrator(administratorUserId));
+
+            //act & assert: the only administrator must not be able to remove their own administrator-role, because that would leave the installation without any administrator (see finding OWASP-24).
+            Assert.ThrowsExactly<BadRequestException>(() => businessLogicService.SetRolesOfUser(administratorUserId, administratorUserId, new HashSet<string>() { CodeUnitSpecificConstants.RolenameUsers }));
+            Assert.IsTrue(businessLogicService.UserIsAdministrator(administratorUserId), "The rejected role-change must not have been applied.");
+
+            //with a second administrator present, dropping the administrator-role of the first one is allowed.
+            string secondUserId = businessLogicService.Register($"second-admin-{Guid.NewGuid()}", "password");
+            businessLogicService.SetRolesOfUser(administratorUserId, secondUserId, new HashSet<string>() { CodeUnitSpecificConstants.RolenameAdmins });
+            businessLogicService.SetRolesOfUser(administratorUserId, administratorUserId, new HashSet<string>() { CodeUnitSpecificConstants.RolenameUsers });
+            Assert.IsFalse(businessLogicService.UserIsAdministrator(administratorUserId), "With another administrator present, the role-change must be applied.");
+        }
+
+        [TestMethod(DisplayName = nameof(MovingAContainerIntoItsOwnDescendantIsRefusedTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void MovingAContainerIntoItsOwnDescendantIsRefusedTest()
+        {
+            //arrange
+            this.InitializeServices(true, out IBusinessLogicService businessLogicService, out IInitializationService<CommandlineParameter> initializationService, out IPersistence persistence);
+            initializationService.Initialize(new CommandlineParameter());
+            string userId = "move-user-" + Guid.NewGuid();
+            persistence.AddUser(new User() { Id = userId, });
+            string storageLocationId = persistence.AddStoragLocation("move-storageLocation");
+            persistence.SetOwnerOfStorageLocation(storageLocationId, userId);
+            string outerFolderId = businessLogicService.AddFolder(userId, "outer", storageLocationId);
+            string innerFolderId = businessLogicService.AddFolder(userId, "inner", outerFolderId);
+
+            //act & assert: moving a folder into one of its own descendants - or into itself - would create a cycle in the containment-hierarchy and must be refused (see finding OWASP-35).
+            Assert.ThrowsExactly<BadRequestException>(() => businessLogicService.Move(userId, outerFolderId, innerFolderId));
+            Assert.ThrowsExactly<BadRequestException>(() => businessLogicService.Move(userId, outerFolderId, outerFolderId));
+        }
+
         [TestMethod(DisplayName = nameof(CreateGlobalTagRequiresAdministratorTest))]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void CreateGlobalTagRequiresAdministratorTest()

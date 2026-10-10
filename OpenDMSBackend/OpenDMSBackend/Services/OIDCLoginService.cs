@@ -138,7 +138,8 @@ namespace OpenDMSBackend.Core.Services
                 .FirstOrDefault(p => p.Id == providerId);
             if (entry == null)
             {
-                throw new KeyNotFoundException($"No OIDC provider configured with id '{providerId}'.");
+                //an unknown provider-id is a bad request which maps to 404, not an internal error; the exception-middleware turns a BadRequestException into its http-status-code (see finding OWASP-38).
+                throw new BadRequestException(404, $"No OIDC provider configured with id '{providerId}'.");
             }
             return new OIDCProviderConfiguration
             {

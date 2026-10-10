@@ -157,6 +157,8 @@ namespace OpenDMSBackend.Core.Services
         {
             if (!this._AuthentificationPersistence.UserWithNameExists(userName))
             {
+                //compute a hash anyway so that the response for an unknown user-name takes about the same time as the response for a wrong password; otherwise user-names could be enumerated by timing (see finding OWASP-28).
+                this.Hash(password);
                 return this.ThrowInvalidCredentialsException();
             }
 
