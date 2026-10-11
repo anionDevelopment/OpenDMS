@@ -18,7 +18,7 @@ export class SearchComponent {
   }
 
   search() {
-    this.openDMSBackendService.aPIV3OpenDMSBackendSearchGet(this.storageService.getAccessToken(), this.searchText).subscribe((result => {
+    this.openDMSBackendService.aPIV4OpenDMSBackendSearchGet(this.storageService.getAccessToken(), this.searchText).subscribe((result => {
       this.documents$.next(result);
     }));
   }

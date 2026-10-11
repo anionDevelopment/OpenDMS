@@ -54,7 +54,7 @@ export class DocumentRetentionComponent implements OnChanges {
     if (!this.documentId) {
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendSetRetentionDatesDocumentIdPut(this.documentId, this.storageService.getAccessToken(), {
+    this.openDMSBackendService.aPIV4OpenDMSBackendSetRetentionDatesDocumentIdPut(this.documentId, this.storageService.getAccessToken(), {
       deleteIsNotAllowedBefore: DocumentRetentionComponent.toBackendTimestamp(this.shownDeleteIsNotAllowedBefore),
       mustBeHardDeletedAfter: DocumentRetentionComponent.toBackendTimestamp(this.shownMustBeHardDeletedAfter)
     }).subscribe({

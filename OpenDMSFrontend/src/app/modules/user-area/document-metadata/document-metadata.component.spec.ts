@@ -14,9 +14,9 @@ import type { Mock } from 'vitest';
 //typed loosely on purpose: OpenDMSBackendService's generated methods are overloaded (body/response/events),
 //and constraining the mock to the full interface makes TypeScript pick the wrong ('events') overload.
 interface OpenDMSBackendServiceMock {
-  aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: Mock;
-  aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost: Mock;
-  aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete: Mock;
+  aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: Mock;
+  aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost: Mock;
+  aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete: Mock;
 }
 
 const senderField: MetadataFieldDefinitionDTO = { id: 'field-sender', storageLocationId: 'sl1', name: 'sender', type: 'String' };
@@ -29,11 +29,11 @@ describe('DocumentMetadataComponent', () => {
 
   beforeEach(async () => {
     openDMSBackendServiceSpy = {
-      aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: vi.fn(),
-      aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost: vi.fn(),
-      aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete: vi.fn(),
+      aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: vi.fn(),
+      aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost: vi.fn(),
+      aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete: vi.fn(),
     };
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -76,18 +76,18 @@ describe('DocumentMetadataComponent', () => {
 
     component.loadFields();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet).not.toHaveBeenCalled();
     expect(component.entries).toEqual([]);
   });
 
   it('should show the fields of the document alphabetically together with its values', () => {
     component.documentId = 'doc1';
     component.metadataValues = { 'field-sender': 'Some Company GmbH' };
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([taxRelevantField, senderField]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([taxRelevantField, senderField]));
 
     component.loadFields();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet).toHaveBeenCalledWith('doc1', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet).toHaveBeenCalledWith('doc1', 'accesstoken1');
     expect(component.entries.map(entry => entry.definition.name)).toEqual(['sender', 'tax-relevant']);
     expect(component.entries[0].value).toBe('Some Company GmbH');
   });
@@ -95,7 +95,7 @@ describe('DocumentMetadataComponent', () => {
   it('should show an empty value for a field the document holds no value for', () => {
     component.documentId = 'doc1';
     component.metadataValues = {};
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([senderField]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([senderField]));
 
     component.loadFields();
 
@@ -104,7 +104,7 @@ describe('DocumentMetadataComponent', () => {
 
   it('should clear the entries when loading the fields fails', () => {
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(throwError(() => new Error('boom')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(throwError(() => new Error('boom')));
 
     component.loadFields();
 
@@ -113,29 +113,29 @@ describe('DocumentMetadataComponent', () => {
 
   it('should store a value and report the change', () => {
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(of(undefined));
     const changed = vi.fn();
     component.metadataChanged.subscribe(changed);
 
     component.saveValue({ definition: senderField, value: 'Some Company GmbH' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).toHaveBeenCalledWith('doc1', 'field-sender', 'accesstoken1', { value: 'Some Company GmbH' });
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).toHaveBeenCalledWith('doc1', 'field-sender', 'accesstoken1', { value: 'Some Company GmbH' });
     expect(changed).toHaveBeenCalled();
   });
 
   it('should clear the value instead of storing an empty text, because holding no value is a different state', () => {
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete.mockReturnValue(of(undefined));
 
     component.saveValue({ definition: senderField, value: '' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete).toHaveBeenCalledWith('doc1', 'field-sender', 'accesstoken1');
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete).toHaveBeenCalledWith('doc1', 'field-sender', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).not.toHaveBeenCalled();
   });
 
   it('should report changeNotAllowed when storing a value is rejected', () => {
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(throwError(() => new Error('forbidden')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(throwError(() => new Error('forbidden')));
     const changed = vi.fn();
     component.metadataChanged.subscribe(changed);
 
@@ -147,20 +147,20 @@ describe('DocumentMetadataComponent', () => {
 
   it('should store a boolean-value in the representation the backend normalizes it to', () => {
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(of(undefined));
 
     component.saveValue({ definition: taxRelevantField, value: 'true' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).toHaveBeenCalledWith('doc1', 'field-tax', 'accesstoken1', { value: 'true' });
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).toHaveBeenCalledWith('doc1', 'field-tax', 'accesstoken1', { value: 'true' });
   });
 
   it('should clear a boolean-value instead of storing it, because "not set" is a state of its own', () => {
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete.mockReturnValue(of(undefined));
 
     component.saveValue({ definition: taxRelevantField, value: '' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete).toHaveBeenCalledWith('doc1', 'field-tax', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete).toHaveBeenCalledWith('doc1', 'field-tax', 'accesstoken1');
   });
 
   it('should recognize which fields are edited as a boolean', () => {
@@ -181,7 +181,7 @@ describe('DocumentMetadataComponent', () => {
     const deadlineField: MetadataFieldDefinitionDTO = { id: 'field-deadline', storageLocationId: 'sl1', name: 'deadline', type: 'Timestamp' };
     component.documentId = 'doc1';
     component.metadataValues = { 'field-deadline': new Date('2026-01-31T12:00').toISOString() };
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([deadlineField]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet.mockReturnValue(of([deadlineField]));
 
     component.loadFields();
 
@@ -191,20 +191,20 @@ describe('DocumentMetadataComponent', () => {
   it('should store a timestamp as the iso-8601-timestamp which the backend expects', () => {
     const deadlineField: MetadataFieldDefinitionDTO = { id: 'field-deadline', storageLocationId: 'sl1', name: 'deadline', type: 'Timestamp' };
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost.mockReturnValue(of(undefined));
 
     component.saveValue({ definition: deadlineField, value: '2026-01-31T12:00' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).toHaveBeenCalledWith('doc1', 'field-deadline', 'accesstoken1', { value: new Date('2026-01-31T12:00').toISOString() });
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost).toHaveBeenCalledWith('doc1', 'field-deadline', 'accesstoken1', { value: new Date('2026-01-31T12:00').toISOString() });
   });
 
   it('should clear a timestamp which the user emptied', () => {
     const deadlineField: MetadataFieldDefinitionDTO = { id: 'field-deadline', storageLocationId: 'sl1', name: 'deadline', type: 'Timestamp' };
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete.mockReturnValue(of(undefined));
 
     component.saveValue({ definition: deadlineField, value: '' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete).toHaveBeenCalledWith('doc1', 'field-deadline', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete).toHaveBeenCalledWith('doc1', 'field-deadline', 'accesstoken1');
   });
 });

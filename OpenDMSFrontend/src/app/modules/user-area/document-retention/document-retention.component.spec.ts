@@ -14,7 +14,7 @@ import type { Mock } from 'vitest';
 //typed loosely on purpose: OpenDMSBackendService's generated methods are overloaded (body/response/events),
 //and constraining the mock to the full interface makes TypeScript pick the wrong ('events') overload.
 interface OpenDMSBackendServiceMock {
-  aPIV3OpenDMSBackendSetRetentionDatesDocumentIdPut: Mock;
+  aPIV4OpenDMSBackendSetRetentionDatesDocumentIdPut: Mock;
 }
 
 describe('DocumentRetentionComponent', () => {
@@ -24,7 +24,7 @@ describe('DocumentRetentionComponent', () => {
 
   beforeEach(async () => {
     openDMSBackendServiceSpy = {
-      aPIV3OpenDMSBackendSetRetentionDatesDocumentIdPut: vi.fn(),
+      aPIV4OpenDMSBackendSetRetentionDatesDocumentIdPut: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -87,13 +87,13 @@ describe('DocumentRetentionComponent', () => {
     component.documentId = 'doc1';
     component.shownDeleteIsNotAllowedBefore = '2026-01-31';
     component.shownMustBeHardDeletedAfter = '';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetRetentionDatesDocumentIdPut.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetRetentionDatesDocumentIdPut.mockReturnValue(of(undefined));
     const changed = vi.fn();
     component.retentionDatesChanged.subscribe(changed);
 
     component.saveRetentionDates();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetRetentionDatesDocumentIdPut).toHaveBeenCalledWith('doc1', 'accesstoken1', {
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetRetentionDatesDocumentIdPut).toHaveBeenCalledWith('doc1', 'accesstoken1', {
       deleteIsNotAllowedBefore: new Date('2026-01-31T00:00').toISOString(),
       mustBeHardDeletedAfter: null
     });
@@ -105,13 +105,13 @@ describe('DocumentRetentionComponent', () => {
 
     component.saveRetentionDates();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetRetentionDatesDocumentIdPut).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetRetentionDatesDocumentIdPut).not.toHaveBeenCalled();
   });
 
   it('should report changeNotAllowed when the change is rejected', () => {
     component.documentId = 'doc1';
     component.shownDeleteIsNotAllowedBefore = '2026-01-31';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendSetRetentionDatesDocumentIdPut.mockReturnValue(throwError(() => new Error('not allowed')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendSetRetentionDatesDocumentIdPut.mockReturnValue(throwError(() => new Error('not allowed')));
 
     component.saveRetentionDates();
 

@@ -81,11 +81,11 @@ describe('ViewDocumentComponent', () => {
         {
           provide: OpenDMSBackendService,
           useValue: {
-            aPIV3OpenDMSBackendGetDocumentFromReadableIdGet: () => of({
+            aPIV4OpenDMSBackendGetDocumentFromReadableIdGet: () => of({
               id: 1,
             }),
-            aPIV3OpenDMSBackendGetTagsPut: () => of([]),
-            aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: () => of([]),
+            aPIV4OpenDMSBackendGetTagsPut: () => of([]),
+            aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet: () => of([]),
           },
         },
         {

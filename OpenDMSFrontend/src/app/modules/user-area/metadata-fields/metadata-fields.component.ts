@@ -46,7 +46,7 @@ export class MetadataFieldsComponent implements OnInit {
     if (!this.storageLocationId) {
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet(this.storageLocationId, this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet(this.storageLocationId, this.storageService.getAccessToken()).subscribe({
       next: fields => {
         this.fields = (fields ?? []).sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
       },
@@ -60,7 +60,7 @@ export class MetadataFieldsComponent implements OnInit {
       return;
     }
     const creation: MetadataFieldDefinitionCreationDTO = { name: this.newFieldName.trim(), type: this.newFieldType };
-    this.openDMSBackendService.aPIV3OpenDMSBackendDefineMetadataFieldStorageLocationIdPost(this.storageLocationId, this.storageService.getAccessToken(), creation).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendDefineMetadataFieldStorageLocationIdPost(this.storageLocationId, this.storageService.getAccessToken(), creation).subscribe({
       next: () => {
         this.newFieldName = '';
         this.newFieldType = 'String';
@@ -90,7 +90,7 @@ export class MetadataFieldsComponent implements OnInit {
     if (this.fieldIdBeingRenamed.length === 0 || this.newNameOfFieldBeingRenamed.trim().length === 0) {
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut(this.fieldIdBeingRenamed, this.storageService.getAccessToken(), { value: this.newNameOfFieldBeingRenamed.trim() }).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut(this.fieldIdBeingRenamed, this.storageService.getAccessToken(), { value: this.newNameOfFieldBeingRenamed.trim() }).subscribe({
       next: () => {
         this.cancelRenamingField();
         this.loadFields();
@@ -104,7 +104,7 @@ export class MetadataFieldsComponent implements OnInit {
     if (!field.id) {
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete(field.id, this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete(field.id, this.storageService.getAccessToken()).subscribe({
       next: () => {
         this.cancelRenamingField();
         this.loadFields();

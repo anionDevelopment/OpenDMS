@@ -15,6 +15,14 @@ entity "Container_Containee" {
   * ContainerId : character varying <<PK>>
 }
 
+entity "DocumentVersion" {
+  * ContentId : character varying <<PK>>
+  --
+  DocumentId : character varying <<NOT NULL>>
+  Timestamp : timestamp without time zone <<NOT NULL>>
+  Version : integer <<NOT NULL>>
+}
+
 entity "Document_MetadataValue" {
   * DocumentId : character varying <<PK>>
   * MetadataFieldDefinitionId : character varying <<PK>>
@@ -30,9 +38,9 @@ entity "Document_Tag" {
 entity "Documents" {
   * Id : character varying <<PK>>
   --
-  AddedByUserId : character varying
   AISummaryLong : text
   AISummaryShort : text
+  AddedByUserId : character varying
   AssignedLanguages : character varying
   DeleteIsNotAllowedBefore : timestamp without time zone
   Filename : character varying <<NOT NULL>>
@@ -47,14 +55,6 @@ entity "Documents" {
   OriginalFilename : character varying <<NOT NULL>>
   ReadableId : bigint <<NOT NULL>>
   Title : character varying <<NOT NULL>>
-}
-
-entity "DocumentVersion" {
-  * ContentId : character varying <<PK>>
-  --
-  DocumentId : character varying <<NOT NULL>>
-  Timestamp : timestamp without time zone <<NOT NULL>>
-  Version : integer <<NOT NULL>>
 }
 
 entity "Folders" {
@@ -121,6 +121,13 @@ entity "Tags" {
   OwnerUserId : character varying
 }
 
+entity "UserSettings" {
+  * Key : character varying <<PK>>
+  * UserId : character varying <<PK>>
+  --
+  Value : text <<NOT NULL>>
+}
+
 entity "User_Roles" {
   * RoleId : character varying <<PK>>
   * UserId : character varying <<PK>>
@@ -139,13 +146,6 @@ entity "Users" {
   TOTPSecretKey : character varying
   UserIsActivated : boolean <<NOT NULL>>
   UserIsLocked : boolean <<NOT NULL>>
-}
-
-entity "UserSettings" {
-  * Key : character varying <<PK>>
-  * UserId : character varying <<PK>>
-  --
-  Value : text <<NOT NULL>>
 }
 
 "AccessToken" }o--|| "Users" : UserId

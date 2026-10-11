@@ -70,7 +70,7 @@ export class TagManagementComponent implements OnInit {
   }
 
   loadTags(): void {
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetTagsPut(this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendGetTagsPut(this.storageService.getAccessToken()).subscribe({
       next: tags => this.tags = (tags ?? []).filter(tag => this.belongsToTheShownScope(tag)).sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '')),
       error: () => this.tags = []
     });
@@ -100,7 +100,7 @@ export class TagManagementComponent implements OnInit {
       return;
     }
     const creation: TagCreationDTO = { name: this.newTagName.trim(), colorCode: this.newTagColorCode, isGlobal: this.scope === 'global' };
-    this.openDMSBackendService.aPIV3OpenDMSBackendCreateTagPost(this.storageService.getAccessToken(), creation).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendCreateTagPost(this.storageService.getAccessToken(), creation).subscribe({
       next: () => {
         this.newTagName = '';
         this.newTagColorCode = TagManagementComponent.selectableColorCodes[0];
@@ -131,7 +131,7 @@ export class TagManagementComponent implements OnInit {
     if (this.tagIdBeingChanged.length === 0 || this.newNameOfTagBeingChanged.trim().length === 0) {
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendUpdateTagTagIdPut(this.tagIdBeingChanged, this.storageService.getAccessToken(), { name: this.newNameOfTagBeingChanged.trim(), colorCode: this.newColorCodeOfTagBeingChanged }).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendUpdateTagTagIdPut(this.tagIdBeingChanged, this.storageService.getAccessToken(), { name: this.newNameOfTagBeingChanged.trim(), colorCode: this.newColorCodeOfTagBeingChanged }).subscribe({
       next: () => {
         this.cancelChangingTag();
         this.loadTags();
@@ -150,7 +150,7 @@ export class TagManagementComponent implements OnInit {
       if (!userConfirmedAction) {
         return;
       }
-      this.openDMSBackendService.aPIV3OpenDMSBackendDeleteTagTagIdDelete(tag.id!, this.storageService.getAccessToken()).subscribe({
+      this.openDMSBackendService.aPIV4OpenDMSBackendDeleteTagTagIdDelete(tag.id!, this.storageService.getAccessToken()).subscribe({
         next: () => {
           this.cancelChangingTag();
           this.loadTags();

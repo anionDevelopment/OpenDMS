@@ -13,7 +13,7 @@ export class AdminSettingsComponent {
   autoGenerateAISummary = false;
 
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService) {
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetGeneralSettingsGet(this.storageService.getAccessToken()).subscribe(settings => {
+    this.openDMSBackendService.aPIV4OpenDMSBackendGetGeneralSettingsGet(this.storageService.getAccessToken()).subscribe(settings => {
       this.autoGenerateAISummary = settings.autoGenerateAISummary ?? false;
     });
   }
@@ -21,6 +21,6 @@ export class AdminSettingsComponent {
   onAutoGenerateAISummaryChanged(enabled: boolean): void {
     this.autoGenerateAISummary = enabled;
     const settings: GeneralSettingsDTO = { autoGenerateAISummary: enabled };
-    this.openDMSBackendService.aPIV3OpenDMSBackendSetGeneralSettingsPut(this.storageService.getAccessToken(), settings).subscribe();
+    this.openDMSBackendService.aPIV4OpenDMSBackendSetGeneralSettingsPut(this.storageService.getAccessToken(), settings).subscribe();
   }
 }

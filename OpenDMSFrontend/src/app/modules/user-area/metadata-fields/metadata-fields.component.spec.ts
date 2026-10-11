@@ -16,10 +16,10 @@ import type { Mock } from 'vitest';
 //typed loosely on purpose: OpenDMSBackendService's generated methods are overloaded (body/response/events),
 //and constraining the mock to the full interface makes TypeScript pick the wrong ('events') overload.
 interface OpenDMSBackendServiceMock {
-  aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet: Mock;
-  aPIV3OpenDMSBackendDefineMetadataFieldStorageLocationIdPost: Mock;
-  aPIV3OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete: Mock;
-  aPIV3OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut: Mock;
+  aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet: Mock;
+  aPIV4OpenDMSBackendDefineMetadataFieldStorageLocationIdPost: Mock;
+  aPIV4OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete: Mock;
+  aPIV4OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut: Mock;
 }
 
 describe('MetadataFieldsComponent', () => {
@@ -29,12 +29,12 @@ describe('MetadataFieldsComponent', () => {
 
   beforeEach(async () => {
     openDMSBackendServiceSpy = {
-      aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet: vi.fn(),
-      aPIV3OpenDMSBackendDefineMetadataFieldStorageLocationIdPost: vi.fn(),
-      aPIV3OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete: vi.fn(),
-      aPIV3OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut: vi.fn(),
+      aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet: vi.fn(),
+      aPIV4OpenDMSBackendDefineMetadataFieldStorageLocationIdPost: vi.fn(),
+      aPIV4OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete: vi.fn(),
+      aPIV4OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut: vi.fn(),
     };
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of([]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -76,7 +76,7 @@ describe('MetadataFieldsComponent', () => {
 
   it('should not query the backend on init when no storage-location is set', () => {
     // storageLocationId defaults to null, so ngOnInit (triggered by the initial detectChanges in beforeEach) must not call the backend.
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).not.toHaveBeenCalled();
     expect(component.fields).toEqual([]);
   });
 
@@ -85,19 +85,19 @@ describe('MetadataFieldsComponent', () => {
       { id: '2', storageLocationId: 'sl1', name: 'zeta', type: 'String' },
       { id: '1', storageLocationId: 'sl1', name: 'alpha', type: 'Boolean' },
     ];
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of(unsorted));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of(unsorted));
     component.storageLocationId = 'sl1';
 
     component.loadFields();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).toHaveBeenCalledWith('sl1', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).toHaveBeenCalledWith('sl1', 'accesstoken1');
     expect(component.fields.map(field => field.name)).toEqual(['alpha', 'zeta']);
   });
 
   it('should clear the fields when loading them fails', () => {
     component.storageLocationId = 'sl1';
     component.fields = [{ id: '1', storageLocationId: 'sl1', name: 'alpha', type: 'String' }];
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(throwError(() => new Error('boom')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(throwError(() => new Error('boom')));
 
     component.loadFields();
 
@@ -110,7 +110,7 @@ describe('MetadataFieldsComponent', () => {
 
     component.addField();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendDefineMetadataFieldStorageLocationIdPost).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendDefineMetadataFieldStorageLocationIdPost).not.toHaveBeenCalled();
   });
 
   it('should not add a field when the name is blank', () => {
@@ -119,56 +119,56 @@ describe('MetadataFieldsComponent', () => {
 
     component.addField();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendDefineMetadataFieldStorageLocationIdPost).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendDefineMetadataFieldStorageLocationIdPost).not.toHaveBeenCalled();
   });
 
   it('should add a trimmed field, reset the input and reload the fields on success', () => {
     component.storageLocationId = 'sl1';
     component.newFieldName = '  sender  ';
     component.newFieldType = 'Boolean';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendDefineMetadataFieldStorageLocationIdPost.mockReturnValue(of('new-field-id'));
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of([]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendDefineMetadataFieldStorageLocationIdPost.mockReturnValue(of('new-field-id'));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of([]));
 
     component.addField();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendDefineMetadataFieldStorageLocationIdPost).toHaveBeenCalledWith('sl1', 'accesstoken1', { name: 'sender', type: 'Boolean' });
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendDefineMetadataFieldStorageLocationIdPost).toHaveBeenCalledWith('sl1', 'accesstoken1', { name: 'sender', type: 'Boolean' });
     expect(component.newFieldName).toBe('');
     expect(component.newFieldType).toBe('String');
     expect(component.changeNotAllowed).toBe(false);
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).toHaveBeenCalledWith('sl1', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).toHaveBeenCalledWith('sl1', 'accesstoken1');
   });
 
   it('should report changeNotAllowed and keep the input when adding a field is rejected (e.g. a non-moderator)', () => {
     component.storageLocationId = 'sl1';
     component.newFieldName = 'sender';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendDefineMetadataFieldStorageLocationIdPost.mockReturnValue(throwError(() => new Error('forbidden')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendDefineMetadataFieldStorageLocationIdPost.mockReturnValue(throwError(() => new Error('forbidden')));
 
     component.addField();
 
     expect(component.changeNotAllowed).toBe(true);
     expect(component.newFieldName).toBe('sender');
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).not.toHaveBeenCalled();
   });
 
   it('should do nothing when removing a field without an id', () => {
     component.removeField({ storageLocationId: 'sl1', name: 'sender', type: 'String' } as MetadataFieldDefinitionDTO);
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete).not.toHaveBeenCalled();
   });
 
   it('should remove a field and reload the fields on success', () => {
     component.storageLocationId = 'sl1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete.mockReturnValue(of(undefined));
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of([]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of([]));
 
     component.removeField({ id: 'field-1', storageLocationId: 'sl1', name: 'sender', type: 'String' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete).toHaveBeenCalledWith('field-1', 'accesstoken1');
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete).toHaveBeenCalledWith('field-1', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).toHaveBeenCalled();
   });
 
   it('should report changeNotAllowed when removing a field is rejected (e.g. a non-moderator)', () => {
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete.mockReturnValue(throwError(() => new Error('forbidden')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendRemoveMetadataFieldFieldDefinitionIdDelete.mockReturnValue(throwError(() => new Error('forbidden')));
 
     component.removeField({ id: 'field-1', storageLocationId: 'sl1', name: 'sender', type: 'String' });
 
@@ -186,16 +186,16 @@ describe('MetadataFieldsComponent', () => {
   it('should send the trimmed new name of a field and reload the fields', () => {
     component.storageLocationId = 'sl1';
     const field = { id: 'field-1', storageLocationId: 'sl1', name: 'contact', type: 'String' };
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut.mockReturnValue(of(undefined));
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of([]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet.mockReturnValue(of([]));
     component.startRenamingField(field);
     component.newNameOfFieldBeingRenamed = '  sender  ';
 
     component.renameField();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut).toHaveBeenCalledWith('field-1', 'accesstoken1', { value: 'sender' });
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut).toHaveBeenCalledWith('field-1', 'accesstoken1', { value: 'sender' });
     expect(component.fieldIsBeingRenamed(field)).toBe(false);
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetMetadataFieldsStorageLocationIdGet).toHaveBeenCalled();
   });
 
   it('should not rename a field to a blank name', () => {
@@ -204,13 +204,13 @@ describe('MetadataFieldsComponent', () => {
 
     component.renameField();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut).not.toHaveBeenCalled();
   });
 
   it('should report changeNotAllowed when renaming a field is rejected (e.g. a non-moderator)', () => {
     component.startRenamingField({ id: 'field-1', storageLocationId: 'sl1', name: 'contact', type: 'String' });
     component.newNameOfFieldBeingRenamed = 'sender';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut.mockReturnValue(throwError(() => new Error('forbidden')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendRenameMetadataFieldFieldDefinitionIdPut.mockReturnValue(throwError(() => new Error('forbidden')));
 
     component.renameField();
 

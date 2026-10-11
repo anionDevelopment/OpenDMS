@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "OpenDMSBackend v3.1.0 API documentation",
+    "title": "OpenDMSBackend v4.0.1 API documentation",
     "description": "OpenDMSBackend is the backend of OpenDMS.",
-    "version": "v3.1.0"
+    "version": "v4.0.1"
   },
   "paths": {
     "/API/Other/Maintenance/AvailabilityCheck": {
@@ -78,7 +78,7 @@
         }
       }
     },
-    "/API/v3/OIDCController/GetOIDCProviders": {
+    "/API/v4/OIDCController/GetOIDCProviders": {
       "get": {
         "tags": [
           "OIDC"
@@ -117,7 +117,7 @@
         }
       }
     },
-    "/API/v3/OIDCController/InitiateOIDCLogin": {
+    "/API/v4/OIDCController/InitiateOIDCLogin": {
       "get": {
         "tags": [
           "OIDC"
@@ -177,7 +177,7 @@
         }
       }
     },
-    "/API/v3/OIDCController/ExchangeOIDCCode": {
+    "/API/v4/OIDCController/ExchangeOIDCCode": {
       "post": {
         "tags": [
           "OIDC"
@@ -246,7 +246,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/AddDocument/{containerId}": {
+    "/API/v4/OpenDMSBackend/AddDocument/{containerId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -352,7 +352,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/UploadNewVersion/{oldDocumentId}": {
+    "/API/v4/OpenDMSBackend/UploadNewVersion/{oldDocumentId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -458,7 +458,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetVersionHistory": {
+    "/API/v4/OpenDMSBackend/GetVersionHistory": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -516,7 +516,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/UpdateDocumentTitle/{documentId}": {
+    "/API/v4/OpenDMSBackend/UpdateDocumentTitle/{documentId}": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -586,7 +586,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/AddFolder/{parentFolderId}/{name}": {
+    "/API/v4/OpenDMSBackend/AddFolder/{parentFolderId}/{name}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -645,7 +645,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/Rename/{containerId}/{newName}": {
+    "/API/v4/OpenDMSBackend/Rename/{containerId}/{newName}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -687,7 +687,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}": {
+    "/API/v4/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -729,7 +729,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
+    "/API/v4/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -771,7 +771,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
+    "/API/v4/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -813,7 +813,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/AuthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}": {
+    "/API/v4/OpenDMSBackend/AuthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -855,7 +855,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/UnauthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}": {
+    "/API/v4/OpenDMSBackend/UnauthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -897,7 +897,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/AddModerator/{contentId}/{newModeratorUserId}": {
+    "/API/v4/OpenDMSBackend/AddModerator/{contentId}/{newModeratorUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -939,7 +939,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/RemoveModerator/{contentId}/{moderatorUserId}": {
+    "/API/v4/OpenDMSBackend/RemoveModerator/{contentId}/{moderatorUserId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -981,7 +981,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetModerators/{contentId}": {
+    "/API/v4/OpenDMSBackend/GetModerators/{contentId}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1040,7 +1040,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/AddStorageLocation/{name}": {
+    "/API/v4/OpenDMSBackend/AddStorageLocation/{name}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -1090,7 +1090,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetStorageLocation/{id}": {
+    "/API/v4/OpenDMSBackend/GetStorageLocation/{id}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1140,7 +1140,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetAllViewableStorageLocations": {
+    "/API/v4/OpenDMSBackend/GetAllViewableStorageLocations": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1190,7 +1190,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetFolder/{id}": {
+    "/API/v4/OpenDMSBackend/GetFolder/{id}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1240,7 +1240,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/Search": {
+    "/API/v4/OpenDMSBackend/Search": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1298,7 +1298,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetDocument": {
+    "/API/v4/OpenDMSBackend/GetDocument": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1347,7 +1347,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetDocumentFromReadableId": {
+    "/API/v4/OpenDMSBackend/GetDocumentFromReadableId": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1397,7 +1397,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetDocumentPreview": {
+    "/API/v4/OpenDMSBackend/GetDocumentPreview": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1446,7 +1446,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetLatestDocuments": {
+    "/API/v4/OpenDMSBackend/GetLatestDocuments": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1496,7 +1496,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetTags": {
+    "/API/v4/OpenDMSBackend/GetTags": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -1546,7 +1546,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/CreateTag": {
+    "/API/v4/OpenDMSBackend/CreateTag": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -1607,7 +1607,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/UpdateTag/{tagId}": {
+    "/API/v4/OpenDMSBackend/UpdateTag/{tagId}": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -1660,7 +1660,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/DeleteTag/{tagId}": {
+    "/API/v4/OpenDMSBackend/DeleteTag/{tagId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -1693,7 +1693,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/AssignTag/{documentId}/{tagId}": {
+    "/API/v4/OpenDMSBackend/AssignTag/{documentId}/{tagId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -1735,7 +1735,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/UnassignTag/{documentId}/{tagId}": {
+    "/API/v4/OpenDMSBackend/UnassignTag/{documentId}/{tagId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -1777,7 +1777,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/HardDelete/{containerOrContaineeId}": {
+    "/API/v4/OpenDMSBackend/HardDelete/{containerOrContaineeId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -1830,7 +1830,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/SoftDelete/{containerOrContaineeId}": {
+    "/API/v4/OpenDMSBackend/SoftDelete/{containerOrContaineeId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -1883,7 +1883,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GenerateAISummary/{documentId}": {
+    "/API/v4/OpenDMSBackend/GenerateAISummary/{documentId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -1933,7 +1933,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetGeneralSettings": {
+    "/API/v4/OpenDMSBackend/GetGeneralSettings": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -1974,7 +1974,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/SetGeneralSettings": {
+    "/API/v4/OpenDMSBackend/SetGeneralSettings": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -2018,7 +2018,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/DefineMetadataField/{storageLocationId}": {
+    "/API/v4/OpenDMSBackend/DefineMetadataField/{storageLocationId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -2088,7 +2088,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/RenameMetadataField/{fieldDefinitionId}": {
+    "/API/v4/OpenDMSBackend/RenameMetadataField/{fieldDefinitionId}": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -2141,7 +2141,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/RemoveMetadataField/{fieldDefinitionId}": {
+    "/API/v4/OpenDMSBackend/RemoveMetadataField/{fieldDefinitionId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -2174,7 +2174,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetMetadataFields/{storageLocationId}": {
+    "/API/v4/OpenDMSBackend/GetMetadataFields/{storageLocationId}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -2233,7 +2233,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/GetMetadataFieldsOfDocument/{documentId}": {
+    "/API/v4/OpenDMSBackend/GetMetadataFieldsOfDocument/{documentId}": {
       "get": {
         "tags": [
           "OpenDMSBackend"
@@ -2292,7 +2292,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/SetDocumentMetadataValue/{documentId}/{fieldDefinitionId}": {
+    "/API/v4/OpenDMSBackend/SetDocumentMetadataValue/{documentId}/{fieldDefinitionId}": {
       "post": {
         "tags": [
           "OpenDMSBackend"
@@ -2354,7 +2354,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/SetRetentionDates/{documentId}": {
+    "/API/v4/OpenDMSBackend/SetRetentionDates/{documentId}": {
       "put": {
         "tags": [
           "OpenDMSBackend"
@@ -2407,7 +2407,7 @@
         }
       }
     },
-    "/API/v3/OpenDMSBackend/RemoveDocumentMetadataValue/{documentId}/{fieldDefinitionId}": {
+    "/API/v4/OpenDMSBackend/RemoveDocumentMetadataValue/{documentId}/{fieldDefinitionId}": {
       "delete": {
         "tags": [
           "OpenDMSBackend"
@@ -2449,7 +2449,7 @@
         }
       }
     },
-    "/API/v3/UserController/Login": {
+    "/API/v4/UserController/Login": {
       "put": {
         "tags": [
           "User"
@@ -2497,7 +2497,7 @@
         }
       }
     },
-    "/API/v3/UserController/Register": {
+    "/API/v4/UserController/Register": {
       "put": {
         "tags": [
           "User"
@@ -2537,7 +2537,7 @@
         }
       }
     },
-    "/API/v3/UserController/Logout": {
+    "/API/v4/UserController/Logout": {
       "put": {
         "tags": [
           "User"
@@ -2561,7 +2561,7 @@
         }
       }
     },
-    "/API/v3/UserController/TokenIsValid": {
+    "/API/v4/UserController/TokenIsValid": {
       "get": {
         "tags": [
           "User"
@@ -2601,7 +2601,7 @@
         }
       }
     },
-    "/API/v3/UserController/GetRoles": {
+    "/API/v4/UserController/GetRoles": {
       "put": {
         "tags": [
           "User"
@@ -2651,7 +2651,7 @@
         }
       }
     },
-    "/API/v3/UserController/GetUserInformation": {
+    "/API/v4/UserController/GetUserInformation": {
       "get": {
         "tags": [
           "User"
@@ -2692,7 +2692,7 @@
         }
       }
     },
-    "/API/v3/UserController/GetTheme": {
+    "/API/v4/UserController/GetTheme": {
       "get": {
         "tags": [
           "User"
@@ -2733,7 +2733,7 @@
         }
       }
     },
-    "/API/v3/UserController/SetTheme": {
+    "/API/v4/UserController/SetTheme": {
       "put": {
         "tags": [
           "User"
@@ -2777,7 +2777,7 @@
         }
       }
     },
-    "/API/v3/UserController/GetAllUsers": {
+    "/API/v4/UserController/GetAllUsers": {
       "get": {
         "tags": [
           "User"
@@ -2827,7 +2827,7 @@
         }
       }
     },
-    "/API/v3/UserController/GetAllRoles": {
+    "/API/v4/UserController/GetAllRoles": {
       "get": {
         "tags": [
           "User"
@@ -2877,7 +2877,7 @@
         }
       }
     },
-    "/API/v3/UserController/SetRolesOfUser": {
+    "/API/v4/UserController/SetRolesOfUser": {
       "put": {
         "tags": [
           "User"

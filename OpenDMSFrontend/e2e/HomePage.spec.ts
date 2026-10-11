@@ -12,11 +12,11 @@ test.describe('Home-page', () => {
      */
     test('looks like the baseline-screenshot in the light color-scheme', async ({ page }) => {
         await page.emulateMedia({ colorScheme: 'light' });
-        await expectPageToLookLikeBaseline(page, '/', 'light_home-page');
+        await expectPageToLookLikeBaseline(page, '/', 'light-home-page');
     });
 
     test('looks like the baseline-screenshot in the dark color-scheme', async ({ page }) => {
         await page.emulateMedia({ colorScheme: 'dark' });
-        await expectPageToLookLikeBaseline(page, '/', 'dark_home-page');
+        await expectPageToLookLikeBaseline(page, '/', 'dark-home-page');
     });
 });

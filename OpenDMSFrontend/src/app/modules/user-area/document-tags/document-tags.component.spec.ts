@@ -16,10 +16,10 @@ import type { Mock } from 'vitest';
 //typed loosely on purpose: OpenDMSBackendService's generated methods are overloaded (body/response/events),
 //and constraining the mock to the full interface makes TypeScript pick the wrong ('events') overload.
 interface OpenDMSBackendServiceMock {
-  aPIV3OpenDMSBackendGetTagsPut: Mock;
-  aPIV3OpenDMSBackendCreateTagPost: Mock;
-  aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost: Mock;
-  aPIV3OpenDMSBackendUnassignTagDocumentIdTagIdDelete: Mock;
+  aPIV4OpenDMSBackendGetTagsPut: Mock;
+  aPIV4OpenDMSBackendCreateTagPost: Mock;
+  aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost: Mock;
+  aPIV4OpenDMSBackendUnassignTagDocumentIdTagIdDelete: Mock;
 }
 
 describe('DocumentTagsComponent', () => {
@@ -29,12 +29,12 @@ describe('DocumentTagsComponent', () => {
 
   beforeEach(async () => {
     openDMSBackendServiceSpy = {
-      aPIV3OpenDMSBackendGetTagsPut: vi.fn(),
-      aPIV3OpenDMSBackendCreateTagPost: vi.fn(),
-      aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost: vi.fn(),
-      aPIV3OpenDMSBackendUnassignTagDocumentIdTagIdDelete: vi.fn(),
+      aPIV4OpenDMSBackendGetTagsPut: vi.fn(),
+      aPIV4OpenDMSBackendCreateTagPost: vi.fn(),
+      aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost: vi.fn(),
+      aPIV4OpenDMSBackendUnassignTagDocumentIdTagIdDelete: vi.fn(),
     };
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetTagsPut.mockReturnValue(of([]));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetTagsPut.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -79,7 +79,7 @@ describe('DocumentTagsComponent', () => {
       { id: '2', name: 'zeta', colorCode: 'C62828' },
       { id: '1', name: 'alpha', colorCode: '283593' },
     ];
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetTagsPut.mockReturnValue(of(unsorted));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetTagsPut.mockReturnValue(of(unsorted));
 
     component.loadAvailableTags();
 
@@ -88,7 +88,7 @@ describe('DocumentTagsComponent', () => {
 
   it('should clear the available tags when loading them fails', () => {
     component.availableTags = [{ id: '1', name: 'alpha', colorCode: '283593' }];
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendGetTagsPut.mockReturnValue(throwError(() => new Error('boom')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendGetTagsPut.mockReturnValue(throwError(() => new Error('boom')));
 
     component.loadAvailableTags();
 
@@ -111,7 +111,7 @@ describe('DocumentTagsComponent', () => {
 
     component.assignSelectedTag();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost).not.toHaveBeenCalled();
   });
 
   it('should not assign a tag when none is selected', () => {
@@ -120,19 +120,19 @@ describe('DocumentTagsComponent', () => {
 
     component.assignSelectedTag();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost).not.toHaveBeenCalled();
   });
 
   it('should assign the selected tag, reset the selection and report the change', () => {
     component.documentId = 'doc1';
     component.selectedTagId = 'tag1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost.mockReturnValue(of(undefined));
     const changed = vi.fn();
     component.tagsChanged.subscribe(changed);
 
     component.assignSelectedTag();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost).toHaveBeenCalledWith('doc1', 'tag1', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost).toHaveBeenCalledWith('doc1', 'tag1', 'accesstoken1');
     expect(component.selectedTagId).toBe('');
     expect(changed).toHaveBeenCalled();
   });
@@ -140,7 +140,7 @@ describe('DocumentTagsComponent', () => {
   it('should report changeNotAllowed when assigning a tag is rejected', () => {
     component.documentId = 'doc1';
     component.selectedTagId = 'tag1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost.mockReturnValue(throwError(() => new Error('forbidden')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost.mockReturnValue(throwError(() => new Error('forbidden')));
     const changed = vi.fn();
     component.tagsChanged.subscribe(changed);
 
@@ -156,22 +156,22 @@ describe('DocumentTagsComponent', () => {
 
     component.createAndAssignTag();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendCreateTagPost).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendCreateTagPost).not.toHaveBeenCalled();
   });
 
   it('should create a trimmed tag, assign it directly and reset the input', () => {
     component.documentId = 'doc1';
     component.newTagName = '  Invoice  ';
     component.newTagColorCode = 'C62828';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendCreateTagPost.mockReturnValue(of('new-tag-id'));
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendCreateTagPost.mockReturnValue(of('new-tag-id'));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost.mockReturnValue(of(undefined));
     const changed = vi.fn();
     component.tagsChanged.subscribe(changed);
 
     component.createAndAssignTag();
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendCreateTagPost).toHaveBeenCalledWith('accesstoken1', { name: 'Invoice', colorCode: 'C62828', isGlobal: false });
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost).toHaveBeenCalledWith('doc1', 'new-tag-id', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendCreateTagPost).toHaveBeenCalledWith('accesstoken1', { name: 'Invoice', colorCode: 'C62828', isGlobal: false });
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost).toHaveBeenCalledWith('doc1', 'new-tag-id', 'accesstoken1');
     expect(component.newTagName).toBe('');
     expect(changed).toHaveBeenCalled();
   });
@@ -179,24 +179,24 @@ describe('DocumentTagsComponent', () => {
   it('should report changeNotAllowed and keep the input when creating a tag is rejected', () => {
     component.documentId = 'doc1';
     component.newTagName = 'Invoice';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendCreateTagPost.mockReturnValue(throwError(() => new Error('duplicate')));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendCreateTagPost.mockReturnValue(throwError(() => new Error('duplicate')));
 
     component.createAndAssignTag();
 
     expect(component.changeNotAllowed).toBe(true);
     expect(component.newTagName).toBe('Invoice');
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost).not.toHaveBeenCalled();
   });
 
   it('should unassign a tag and report the change', () => {
     component.documentId = 'doc1';
-    openDMSBackendServiceSpy.aPIV3OpenDMSBackendUnassignTagDocumentIdTagIdDelete.mockReturnValue(of(undefined));
+    openDMSBackendServiceSpy.aPIV4OpenDMSBackendUnassignTagDocumentIdTagIdDelete.mockReturnValue(of(undefined));
     const changed = vi.fn();
     component.tagsChanged.subscribe(changed);
 
     component.unassignTag({ id: 'tag1', name: 'Invoice', colorCode: 'C62828' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendUnassignTagDocumentIdTagIdDelete).toHaveBeenCalledWith('doc1', 'tag1', 'accesstoken1');
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendUnassignTagDocumentIdTagIdDelete).toHaveBeenCalledWith('doc1', 'tag1', 'accesstoken1');
     expect(changed).toHaveBeenCalled();
   });
 
@@ -205,7 +205,7 @@ describe('DocumentTagsComponent', () => {
 
     component.unassignTag({ name: 'Invoice', colorCode: 'C62828' });
 
-    expect(openDMSBackendServiceSpy.aPIV3OpenDMSBackendUnassignTagDocumentIdTagIdDelete).not.toHaveBeenCalled();
+    expect(openDMSBackendServiceSpy.aPIV4OpenDMSBackendUnassignTagDocumentIdTagIdDelete).not.toHaveBeenCalled();
   });
 
   it('should write the name of a dark tag in a bright color and the name of a bright tag in a dark color', () => {

@@ -86,8 +86,8 @@ describe('DocumentsListComponent', () => {
         {
           provide: OpenDMSBackendService,
           useValue: {
-            aPIV3OpenDMSBackendGetLatestDocumentsGet: () => of([]),
-            aPIV3OpenDMSBackendGetAllViewableStorageLocationsGet: () => of([]),
+            aPIV4OpenDMSBackendGetLatestDocumentsGet: () => of([]),
+            aPIV4OpenDMSBackendGetAllViewableStorageLocationsGet: () => of([]),
           }
         },
         {

@@ -59,7 +59,7 @@ export class DocumentMetadataComponent implements OnChanges {
       this.entries = [];
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet(this.documentId, this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendGetMetadataFieldsOfDocumentDocumentIdGet(this.documentId, this.storageService.getAccessToken()).subscribe({
       next: fields => this.entries = this.toEntries(fields ?? []),
       error: () => this.entries = []
     });
@@ -89,8 +89,8 @@ export class DocumentMetadataComponent implements OnChanges {
     }
     const valueForBackend: string = this.fieldIsTimestamp(entry) ? DocumentMetadataComponent.toBackendTimestamp(entry.value) : entry.value;
     const request = valueForBackend.length === 0
-      ? this.openDMSBackendService.aPIV3OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete(this.documentId, entry.definition.id, this.storageService.getAccessToken())
-      : this.openDMSBackendService.aPIV3OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost(this.documentId, entry.definition.id, this.storageService.getAccessToken(), { value: valueForBackend });
+      ? this.openDMSBackendService.aPIV4OpenDMSBackendRemoveDocumentMetadataValueDocumentIdFieldDefinitionIdDelete(this.documentId, entry.definition.id, this.storageService.getAccessToken())
+      : this.openDMSBackendService.aPIV4OpenDMSBackendSetDocumentMetadataValueDocumentIdFieldDefinitionIdPost(this.documentId, entry.definition.id, this.storageService.getAccessToken(), { value: valueForBackend });
     request.subscribe({
       next: () => this.metadataChanged.emit(),
       error: () => this.changeNotAllowed = true

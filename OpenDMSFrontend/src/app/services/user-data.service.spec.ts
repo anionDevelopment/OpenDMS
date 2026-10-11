@@ -8,8 +8,8 @@ import { StorageService } from './storage.service';
 import { ThemeService } from './theme.service';
 
 interface UserServiceMock {
-  aPIV3UserControllerGetUserInformationGet: Mock;
-  aPIV3UserControllerTokenIsValidGet: Mock;
+  aPIV4UserControllerGetUserInformationGet: Mock;
+  aPIV4UserControllerTokenIsValidGet: Mock;
 }
 
 interface StorageServiceMock {
@@ -33,8 +33,8 @@ describe('UserDataService', () => {
 
   beforeEach(() => {
     userServiceSpy = {
-      aPIV3UserControllerGetUserInformationGet: vi.fn().mockReturnValue(of(userInformation)),
-      aPIV3UserControllerTokenIsValidGet: vi.fn().mockReturnValue(of(true)),
+      aPIV4UserControllerGetUserInformationGet: vi.fn().mockReturnValue(of(userInformation)),
+      aPIV4UserControllerTokenIsValidGet: vi.fn().mockReturnValue(of(true)),
     };
     storageServiceSpy = {
       getAccessToken: vi.fn().mockReturnValue('accesstoken1'),
@@ -69,7 +69,7 @@ describe('UserDataService', () => {
     service.getUserId().subscribe();
     service.getUserName().subscribe();
 
-    expect(userServiceSpy.aPIV3UserControllerGetUserInformationGet).toHaveBeenCalledTimes(1);
+    expect(userServiceSpy.aPIV4UserControllerGetUserInformationGet).toHaveBeenCalledTimes(1);
   });
 
   it('should store the fetched user-information via the storage-service', () => {
@@ -116,7 +116,7 @@ describe('UserDataService', () => {
     service.userIsLoggedIn().subscribe((isLoggedIn) => {
       expect(isLoggedIn).toBe(false);
     });
-    expect(userServiceSpy.aPIV3UserControllerTokenIsValidGet).not.toHaveBeenCalled();
+    expect(userServiceSpy.aPIV4UserControllerTokenIsValidGet).not.toHaveBeenCalled();
   });
 
   it('should ask the backend whether the stored access-token is valid when one is stored', () => {
@@ -126,7 +126,7 @@ describe('UserDataService', () => {
     service.userIsLoggedIn().subscribe((isLoggedIn) => {
       expect(isLoggedIn).toBe(true);
     });
-    expect(userServiceSpy.aPIV3UserControllerTokenIsValidGet).toHaveBeenCalledWith('accesstoken1');
+    expect(userServiceSpy.aPIV4UserControllerTokenIsValidGet).toHaveBeenCalledWith('accesstoken1');
   });
 
   it('should clear the stored user-data and the theme when unloading the user', () => {
@@ -145,6 +145,6 @@ describe('UserDataService', () => {
 
     service.getUserId().subscribe();
 
-    expect(userServiceSpy.aPIV3UserControllerGetUserInformationGet).toHaveBeenCalledTimes(2);
+    expect(userServiceSpy.aPIV4UserControllerGetUserInformationGet).toHaveBeenCalledTimes(2);
   });
 });

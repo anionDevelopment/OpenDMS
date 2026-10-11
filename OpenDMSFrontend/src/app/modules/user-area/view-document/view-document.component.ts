@@ -17,9 +17,9 @@ export class ViewDocumentComponent {
   constructor(private storageService: StorageService, private openDMSBackendService: OpenDMSBackendService, route: ActivatedRoute, private router: Router) {
     route.params.subscribe(params => {
       const readableId = params['readableId'];
-      openDMSBackendService.aPIV3OpenDMSBackendGetDocumentFromReadableIdGet(storageService.getAccessToken(), readableId).subscribe(document => {
+      openDMSBackendService.aPIV4OpenDMSBackendGetDocumentFromReadableIdGet(storageService.getAccessToken(), readableId).subscribe(document => {
         this.doc = document;
-        openDMSBackendService.aPIV3OpenDMSBackendGetDocumentPreviewGet(storageService.getAccessToken(), document.id!).subscribe(documentPreview => {
+        openDMSBackendService.aPIV4OpenDMSBackendGetDocumentPreviewGet(storageService.getAccessToken(), document.id!).subscribe(documentPreview => {
           this.documentPreview = documentPreview;
         });
       });
@@ -43,7 +43,7 @@ export class ViewDocumentComponent {
       return;
     }
     this.aiSummaryIsGenerating = true;
-    this.openDMSBackendService.aPIV3OpenDMSBackendGenerateAISummaryDocumentIdPost(this.doc.id!, this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendGenerateAISummaryDocumentIdPost(this.doc.id!, this.storageService.getAccessToken()).subscribe({
       next: updatedDocument => {
         this.doc = updatedDocument;
         this.aiSummaryIsGenerating = false;
@@ -63,7 +63,7 @@ export class ViewDocumentComponent {
     if (!this.doc?.id) {
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.doc.id).subscribe(document => this.doc = document);
+    this.openDMSBackendService.aPIV4OpenDMSBackendGetDocumentGet(this.storageService.getAccessToken(), this.doc.id).subscribe(document => this.doc = document);
   }
 
   onDocumentRemoved(): void {

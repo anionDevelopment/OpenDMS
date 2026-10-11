@@ -1,5 +1,5 @@
 /**
- * OpenDMSBackend v3.1.0 API documentation
+ * OpenDMSBackend v4.0.1 API documentation
  *
  * 
  *
@@ -49,10 +49,10 @@ export class OIDCService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public aPIV3OIDCControllerExchangeOIDCCodePost(oIDCCallbackRequestDTO?: OIDCCallbackRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<AccessToken>;
-    public aPIV3OIDCControllerExchangeOIDCCodePost(oIDCCallbackRequestDTO?: OIDCCallbackRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AccessToken>>;
-    public aPIV3OIDCControllerExchangeOIDCCodePost(oIDCCallbackRequestDTO?: OIDCCallbackRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AccessToken>>;
-    public aPIV3OIDCControllerExchangeOIDCCodePost(oIDCCallbackRequestDTO?: OIDCCallbackRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public aPIV4OIDCControllerExchangeOIDCCodePost(oIDCCallbackRequestDTO?: OIDCCallbackRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<AccessToken>;
+    public aPIV4OIDCControllerExchangeOIDCCodePost(oIDCCallbackRequestDTO?: OIDCCallbackRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<AccessToken>>;
+    public aPIV4OIDCControllerExchangeOIDCCodePost(oIDCCallbackRequestDTO?: OIDCCallbackRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<AccessToken>>;
+    public aPIV4OIDCControllerExchangeOIDCCodePost(oIDCCallbackRequestDTO?: OIDCCallbackRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -92,7 +92,7 @@ export class OIDCService extends BaseService {
             }
         }
 
-        let localVarPath = `/API/v3/OIDCController/ExchangeOIDCCode`;
+        let localVarPath = `/API/v4/OIDCController/ExchangeOIDCCode`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<AccessToken>('post', `${basePath}${localVarPath}`,
             {
@@ -113,10 +113,10 @@ export class OIDCService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public aPIV3OIDCControllerGetOIDCProvidersGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<OIDCProviderDTO>>;
-    public aPIV3OIDCControllerGetOIDCProvidersGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<OIDCProviderDTO>>>;
-    public aPIV3OIDCControllerGetOIDCProvidersGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<OIDCProviderDTO>>>;
-    public aPIV3OIDCControllerGetOIDCProvidersGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public aPIV4OIDCControllerGetOIDCProvidersGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<OIDCProviderDTO>>;
+    public aPIV4OIDCControllerGetOIDCProvidersGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<OIDCProviderDTO>>>;
+    public aPIV4OIDCControllerGetOIDCProvidersGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<OIDCProviderDTO>>>;
+    public aPIV4OIDCControllerGetOIDCProvidersGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -145,7 +145,7 @@ export class OIDCService extends BaseService {
             }
         }
 
-        let localVarPath = `/API/v3/OIDCController/GetOIDCProviders`;
+        let localVarPath = `/API/v4/OIDCController/GetOIDCProviders`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<Array<OIDCProviderDTO>>('get', `${basePath}${localVarPath}`,
             {
@@ -166,10 +166,10 @@ export class OIDCService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public aPIV3OIDCControllerInitiateOIDCLoginGet(providerId?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<OIDCInitiationDTO>;
-    public aPIV3OIDCControllerInitiateOIDCLoginGet(providerId?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<OIDCInitiationDTO>>;
-    public aPIV3OIDCControllerInitiateOIDCLoginGet(providerId?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<OIDCInitiationDTO>>;
-    public aPIV3OIDCControllerInitiateOIDCLoginGet(providerId?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public aPIV4OIDCControllerInitiateOIDCLoginGet(providerId?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<OIDCInitiationDTO>;
+    public aPIV4OIDCControllerInitiateOIDCLoginGet(providerId?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<OIDCInitiationDTO>>;
+    public aPIV4OIDCControllerInitiateOIDCLoginGet(providerId?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<OIDCInitiationDTO>>;
+    public aPIV4OIDCControllerInitiateOIDCLoginGet(providerId?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
@@ -202,7 +202,7 @@ export class OIDCService extends BaseService {
             }
         }
 
-        let localVarPath = `/API/v3/OIDCController/InitiateOIDCLogin`;
+        let localVarPath = `/API/v4/OIDCController/InitiateOIDCLogin`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<OIDCInitiationDTO>('get', `${basePath}${localVarPath}`,
             {

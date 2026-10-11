@@ -15,5 +15,5 @@ const tagOfTheUser = { id: '00000000-0000-0000-0000-000000000203', name: 'Deadli
  * This function has to be called before the page is opened.
  */
 export async function simulateTags(page: Page): Promise<void> {
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetTags*', [globalTag, tagOfTheUser]);
+    await respondWith(page, '**/API/v4/OpenDMSBackend/GetTags*', [globalTag, tagOfTheUser]);
 }

@@ -47,8 +47,8 @@ export class EditContainerMenuComponent {
     const reader = new FileReader()
     reader.onload = () => {
       const blobAsBaseString = (reader.result! as string).split(',')[1];
-      this.openDMSBackendService.aPIV3OpenDMSBackendAddDocumentContainerIdPost(this.containerId!, this.storageService.getAccessToken(), blob.name, blob.name, [], '"' + blobAsBaseString + '"').subscribe((newDocumentId) => {
-        this.openDMSBackendService.aPIV3OpenDMSBackendGetDocumentPreviewGet(this.storageService.getAccessToken(), newDocumentId).subscribe(newDocument => {
+      this.openDMSBackendService.aPIV4OpenDMSBackendAddDocumentContainerIdPost(this.containerId!, this.storageService.getAccessToken(), blob.name, blob.name, [], '"' + blobAsBaseString + '"').subscribe((newDocumentId) => {
+        this.openDMSBackendService.aPIV4OpenDMSBackendGetDocumentPreviewGet(this.storageService.getAccessToken(), newDocumentId).subscribe(newDocument => {
           this.documentAdded.next(newDocument);
         });
       });
@@ -60,8 +60,8 @@ export class EditContainerMenuComponent {
   }
 
   addFolder(): void {
-    this.openDMSBackendService.aPIV3OpenDMSBackendAddFolderParentFolderIdNamePost(this.containerId!, "New folder", this.storageService.getAccessToken()).subscribe(newFolderId => {
-      this.openDMSBackendService.aPIV3OpenDMSBackendGetFolderIdGet(newFolderId, this.storageService.getAccessToken()).subscribe((newFolder) => {
+    this.openDMSBackendService.aPIV4OpenDMSBackendAddFolderParentFolderIdNamePost(this.containerId!, "New folder", this.storageService.getAccessToken()).subscribe(newFolderId => {
+      this.openDMSBackendService.aPIV4OpenDMSBackendGetFolderIdGet(newFolderId, this.storageService.getAccessToken()).subscribe((newFolder) => {
         this.folderAdded.next(newFolder);
       });
     });
@@ -74,7 +74,7 @@ export class EditContainerMenuComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result?.save) {
         const newTitle: string = result.data.containerTitle;
-        this.openDMSBackendService.aPIV3OpenDMSBackendRenameContainerIdNewNamePost(this.containerId!, newTitle, this.storageService.getAccessToken()).subscribe(() => {
+        this.openDMSBackendService.aPIV4OpenDMSBackendRenameContainerIdNewNamePost(this.containerId!, newTitle, this.storageService.getAccessToken()).subscribe(() => {
           this.containerTitleChanged.emit(newTitle);
         });
       }
@@ -85,7 +85,7 @@ export class EditContainerMenuComponent {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
     dialogRef.afterClosed().subscribe(userConfirmedAction => {
       if (userConfirmedAction) {
-        this.openDMSBackendService.aPIV3OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.containerId!, this.storageService.getAccessToken())
+        this.openDMSBackendService.aPIV4OpenDMSBackendSoftDeleteContainerOrContaineeIdDelete(this.containerId!, this.storageService.getAccessToken())
           .subscribe(() => {
             this.containerRemoved.emit();
           });

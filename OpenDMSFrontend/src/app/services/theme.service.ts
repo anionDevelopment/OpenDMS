@@ -41,7 +41,7 @@ export class ThemeService {
     if (!this.storageService.hasAccessToken()) {
       return;
     }
-    this.userService.aPIV3UserControllerGetThemeGet(this.storageService.getAccessToken()).subscribe((theme: StringValueDTO) => {
+    this.userService.aPIV4UserControllerGetThemeGet(this.storageService.getAccessToken()).subscribe((theme: StringValueDTO) => {
       this.modeOfBackend = theme.value as ThemeMode;
       this.modeOfBackendWasLoaded = true;
       this.darkmodeService.mode.set(this.modeOfBackend);
@@ -59,6 +59,6 @@ export class ThemeService {
       return;
     }
     this.modeOfBackend = mode;
-    this.userService.aPIV3UserControllerSetThemePut(this.storageService.getAccessToken(), { value: mode }).subscribe();
+    this.userService.aPIV4UserControllerSetThemePut(this.storageService.getAccessToken(), { value: mode }).subscribe();
   }
 }

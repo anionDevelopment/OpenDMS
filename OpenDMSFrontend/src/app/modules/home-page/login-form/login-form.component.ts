@@ -24,7 +24,7 @@ export class LoginFormComponent implements OnInit {
     private userDataService: UserDataService,
     private router: Router,
     private storageService: StorageService,
-  ) {}
+  ) { }
 
   form: FormGroup = new FormGroup({
     username: new FormControl(''),
@@ -32,7 +32,7 @@ export class LoginFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.oidcService.aPIV3OIDCControllerGetOIDCProvidersGet().subscribe({
+    this.oidcService.aPIV4OIDCControllerGetOIDCProvidersGet().subscribe({
       next: (providers) => { this.oidcProviders = providers; },
       error: () => { this.oidcProviders = []; }
     });
@@ -42,7 +42,7 @@ export class LoginFormComponent implements OnInit {
   public login(): void {
     const username: string = this.form.get('username')!.value;
     const password: string = this.form.get('password')!.value;
-    this.userService.aPIV3UserControllerLoginPut(username, password)
+    this.userService.aPIV4UserControllerLoginPut(username, password)
       .pipe(
         switchMap((accessToken: AccessToken) => {
           this.storageService.setAccessToken(accessToken.value!);
@@ -64,7 +64,7 @@ export class LoginFormComponent implements OnInit {
       return;
     }
     const providerId = this.selectedProviderId;
-    this.oidcService.aPIV3OIDCControllerInitiateOIDCLoginGet(providerId).subscribe((initiation) => {
+    this.oidcService.aPIV4OIDCControllerInitiateOIDCLoginGet(providerId).subscribe((initiation) => {
       sessionStorage.setItem('oidcState', initiation.state!);
       sessionStorage.setItem('oidcProviderId', providerId);
       window.location.href = initiation.authorizationUrl!;

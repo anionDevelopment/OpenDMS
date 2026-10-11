@@ -67,7 +67,7 @@ export class DocumentTagsComponent implements OnInit {
   }
 
   loadAvailableTags(): void {
-    this.openDMSBackendService.aPIV3OpenDMSBackendGetTagsPut(this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendGetTagsPut(this.storageService.getAccessToken()).subscribe({
       next: tags => this.availableTags = (tags ?? []).slice().sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '')),
       error: () => this.availableTags = []
     });
@@ -78,7 +78,7 @@ export class DocumentTagsComponent implements OnInit {
     if (!this.documentId || this.selectedTagId.length === 0) {
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost(this.documentId, this.selectedTagId, this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost(this.documentId, this.selectedTagId, this.storageService.getAccessToken()).subscribe({
       next: () => {
         this.selectedTagId = '';
         this.tagsChanged.emit();
@@ -94,7 +94,7 @@ export class DocumentTagsComponent implements OnInit {
     }
     //a tag which is created while a document is indexed belongs to the user who creates it. Global tags are created in the tag-management of the settings-page, which only an administrator can do.
     const creation: TagCreationDTO = { name: this.newTagName.trim(), colorCode: this.newTagColorCode, isGlobal: false };
-    this.openDMSBackendService.aPIV3OpenDMSBackendCreateTagPost(this.storageService.getAccessToken(), creation).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendCreateTagPost(this.storageService.getAccessToken(), creation).subscribe({
       next: createdTagId => {
         this.newTagName = '';
         this.newTagColorCode = DocumentTagsComponent.selectableColorCodes[0];
@@ -110,7 +110,7 @@ export class DocumentTagsComponent implements OnInit {
     if (!this.documentId || !tag.id) {
       return;
     }
-    this.openDMSBackendService.aPIV3OpenDMSBackendUnassignTagDocumentIdTagIdDelete(this.documentId, tag.id, this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendUnassignTagDocumentIdTagIdDelete(this.documentId, tag.id, this.storageService.getAccessToken()).subscribe({
       next: () => this.tagsChanged.emit(),
       error: () => this.changeNotAllowed = true
     });
@@ -133,7 +133,7 @@ export class DocumentTagsComponent implements OnInit {
   }
 
   private assignCreatedTag(createdTagId: string): void {
-    this.openDMSBackendService.aPIV3OpenDMSBackendAssignTagDocumentIdTagIdPost(this.documentId!, createdTagId, this.storageService.getAccessToken()).subscribe({
+    this.openDMSBackendService.aPIV4OpenDMSBackendAssignTagDocumentIdTagIdPost(this.documentId!, createdTagId, this.storageService.getAccessToken()).subscribe({
       next: () => this.tagsChanged.emit(),
       error: () => this.changeNotAllowed = true
     });

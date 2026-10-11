@@ -425,8 +425,8 @@ components:
       type: object
 info:
   description: OpenDMSBackend is the backend of OpenDMS.
-  title: OpenDMSBackend v3.1.0 API documentation
-  version: v3.1.0
+  title: OpenDMSBackend v4.0.1 API documentation
+  version: v4.0.1
 openapi: 3.0.4
 paths:
   /API/Other/Maintenance/AvailabilityCheck:
@@ -471,7 +471,7 @@ paths:
           description: OK
       tags:
       - MaintenanceRoutes
-  /API/v3/OIDCController/ExchangeOIDCCode:
+  /API/v4/OIDCController/ExchangeOIDCCode:
     post:
       requestBody:
         content:
@@ -514,7 +514,7 @@ paths:
         Creates a new OpenDMS account for the user on their first login via this provider.'
       tags:
       - OIDC
-  /API/v3/OIDCController/GetOIDCProviders:
+  /API/v4/OIDCController/GetOIDCProviders:
     get:
       responses:
         '200':
@@ -539,7 +539,7 @@ paths:
         OIDC login is not available.
       tags:
       - OIDC
-  /API/v3/OIDCController/InitiateOIDCLogin:
+  /API/v4/OIDCController/InitiateOIDCLogin:
     get:
       parameters:
       - description: The id of the OIDC provider (e.g. "keycloak-1").
@@ -576,7 +576,7 @@ paths:
         URL to redirect the user to.
       tags:
       - OIDC
-  /API/v3/OpenDMSBackend/AddDocument/{containerId}:
+  /API/v4/OpenDMSBackend/AddDocument/{containerId}:
     post:
       parameters:
       - description: The ID of the container (folder or storage location) to add the
@@ -644,7 +644,7 @@ paths:
       summary: Uploads a new document into the specified container.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/AddFolder/{parentFolderId}/{name}:
+  /API/v4/OpenDMSBackend/AddFolder/{parentFolderId}/{name}:
     post:
       parameters:
       - description: The ID of the parent folder in which to create the new folder.
@@ -681,7 +681,7 @@ paths:
       summary: Creates a new folder inside the specified parent folder.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/AddModerator/{contentId}/{newModeratorUserId}:
+  /API/v4/OpenDMSBackend/AddModerator/{contentId}/{newModeratorUserId}:
     post:
       parameters:
       - description: The id of the content-object.
@@ -710,7 +710,7 @@ paths:
         can have several moderators.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/AddStorageLocation/{name}:
+  /API/v4/OpenDMSBackend/AddStorageLocation/{name}:
     post:
       parameters:
       - description: The display name of the new storage location.
@@ -742,7 +742,7 @@ paths:
         user.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/AssignTag/{documentId}/{tagId}:
+  /API/v4/OpenDMSBackend/AssignTag/{documentId}/{tagId}:
     post:
       parameters:
       - description: The id of the document.
@@ -770,7 +770,7 @@ paths:
         must be allowed to change the document.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/AuthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}:
+  /API/v4/OpenDMSBackend/AuthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}:
     post:
       parameters:
       - description: The id of the storage location.
@@ -799,7 +799,7 @@ paths:
         may do this.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
+  /API/v4/OpenDMSBackend/AuthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
     post:
       parameters:
       - description: The id of the storage location to share.
@@ -827,7 +827,7 @@ paths:
         location.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/CreateTag:
+  /API/v4/OpenDMSBackend/CreateTag:
     post:
       parameters:
       - description: Access Token
@@ -865,7 +865,7 @@ paths:
         global tag can only be created by an administrator.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/DefineMetadataField/{storageLocationId}:
+  /API/v4/OpenDMSBackend/DefineMetadataField/{storageLocationId}:
     post:
       parameters:
       - description: The id of the storage-location the field is defined for.
@@ -910,7 +910,7 @@ paths:
         Only a moderator of the storage-location may do this.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/DeleteTag/{tagId}:
+  /API/v4/OpenDMSBackend/DeleteTag/{tagId}:
     delete:
       parameters:
       - description: The id of the tag to delete.
@@ -933,7 +933,7 @@ paths:
         to a user only by that user.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GenerateAISummary/{documentId}:
+  /API/v4/OpenDMSBackend/GenerateAISummary/{documentId}:
     post:
       parameters:
       - description: The id of the document to summarize.
@@ -965,7 +965,7 @@ paths:
         and returns the updated document.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetAllViewableStorageLocations:
+  /API/v4/OpenDMSBackend/GetAllViewableStorageLocations:
     get:
       parameters:
       - description: Access Token
@@ -996,7 +996,7 @@ paths:
       summary: Returns all storage locations the current user is allowed to view.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetDocument:
+  /API/v4/OpenDMSBackend/GetDocument:
     get:
       parameters:
       - description: The id of the document to retrieve.
@@ -1026,7 +1026,7 @@ paths:
       summary: Returns the full document with the specified id.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetDocumentFromReadableId:
+  /API/v4/OpenDMSBackend/GetDocumentFromReadableId:
     get:
       parameters:
       - description: The human-readable numeric id of the document to retrieve.
@@ -1058,7 +1058,7 @@ paths:
         id.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetDocumentPreview:
+  /API/v4/OpenDMSBackend/GetDocumentPreview:
     get:
       parameters:
       - description: The id of the document whose preview is requested.
@@ -1089,7 +1089,7 @@ paths:
         id.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetFolder/{id}:
+  /API/v4/OpenDMSBackend/GetFolder/{id}:
     get:
       parameters:
       - description: The id of the folder to retrieve.
@@ -1120,7 +1120,7 @@ paths:
       summary: Returns the folder with the specified id.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetGeneralSettings:
+  /API/v4/OpenDMSBackend/GetGeneralSettings:
     get:
       parameters:
       - description: Access Token
@@ -1145,7 +1145,7 @@ paths:
       summary: Returns the general (admin-configurable) OpenDMS-settings.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetLatestDocuments:
+  /API/v4/OpenDMSBackend/GetLatestDocuments:
     get:
       parameters:
       - description: Access Token
@@ -1176,7 +1176,7 @@ paths:
       summary: Returns the most recently added documents visible to the current user.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetMetadataFields/{storageLocationId}:
+  /API/v4/OpenDMSBackend/GetMetadataFields/{storageLocationId}:
     get:
       parameters:
       - description: The id of the storage-location.
@@ -1214,7 +1214,7 @@ paths:
         The current user must be allowed to view the storage-location.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetMetadataFieldsOfDocument/{documentId}:
+  /API/v4/OpenDMSBackend/GetMetadataFieldsOfDocument/{documentId}:
     get:
       parameters:
       - description: The id of the document.
@@ -1253,7 +1253,7 @@ paths:
         user must be allowed to view the document.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetModerators/{contentId}:
+  /API/v4/OpenDMSBackend/GetModerators/{contentId}:
     get:
       parameters:
       - description: The id of the content-object.
@@ -1291,7 +1291,7 @@ paths:
         Only a moderator may query this.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetStorageLocation/{id}:
+  /API/v4/OpenDMSBackend/GetStorageLocation/{id}:
     get:
       parameters:
       - description: The id of the storage location to retrieve.
@@ -1322,7 +1322,7 @@ paths:
       summary: Returns the storage location with the specified id.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetTags:
+  /API/v4/OpenDMSBackend/GetTags:
     put:
       parameters:
       - description: Access Token
@@ -1354,7 +1354,7 @@ paths:
         and the tags the user owns.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/GetVersionHistory:
+  /API/v4/OpenDMSBackend/GetVersionHistory:
     get:
       parameters:
       - description: The ID of a document in the version-chain.
@@ -1391,7 +1391,7 @@ paths:
         document's version-chain.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/HardDelete/{containerOrContaineeId}:
+  /API/v4/OpenDMSBackend/HardDelete/{containerOrContaineeId}:
     delete:
       parameters:
       - description: The id of the container or document to delete.
@@ -1425,7 +1425,7 @@ paths:
         contents.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}:
+  /API/v4/OpenDMSBackend/Move/{containeeIdToMove}/{targetContainerId}:
     post:
       parameters:
       - description: The id of the document or folder to move.
@@ -1452,7 +1452,7 @@ paths:
       summary: Moves the specified containee into the target container.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/RemoveDocumentMetadataValue/{documentId}/{fieldDefinitionId}:
+  /API/v4/OpenDMSBackend/RemoveDocumentMetadataValue/{documentId}/{fieldDefinitionId}:
     delete:
       parameters:
       - description: The id of the document.
@@ -1480,7 +1480,7 @@ paths:
         The current user must be allowed to change the document.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/RemoveMetadataField/{fieldDefinitionId}:
+  /API/v4/OpenDMSBackend/RemoveMetadataField/{fieldDefinitionId}:
     delete:
       parameters:
       - description: The id of the field-definition to remove.
@@ -1503,7 +1503,7 @@ paths:
         may do this.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/RemoveModerator/{contentId}/{moderatorUserId}:
+  /API/v4/OpenDMSBackend/RemoveModerator/{contentId}/{moderatorUserId}:
     post:
       parameters:
       - description: The id of the content-object.
@@ -1532,7 +1532,7 @@ paths:
         at least one moderator.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/Rename/{containerId}/{newName}:
+  /API/v4/OpenDMSBackend/Rename/{containerId}/{newName}:
     post:
       parameters:
       - description: The id of the container to rename.
@@ -1559,7 +1559,7 @@ paths:
       summary: Renames the specified container to the given new name.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/RenameMetadataField/{fieldDefinitionId}:
+  /API/v4/OpenDMSBackend/RenameMetadataField/{fieldDefinitionId}:
     put:
       parameters:
       - description: The id of the field-definition to rename.
@@ -1593,7 +1593,7 @@ paths:
         field's storage-location may do this. The type of a field can not be changed.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/Search:
+  /API/v4/OpenDMSBackend/Search:
     get:
       parameters:
       - description: The term to search for across document titles, filenames, tags,
@@ -1631,7 +1631,7 @@ paths:
         search term.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/SetDocumentMetadataValue/{documentId}/{fieldDefinitionId}:
+  /API/v4/OpenDMSBackend/SetDocumentMetadataValue/{documentId}/{fieldDefinitionId}:
     post:
       parameters:
       - description: The id of the document.
@@ -1673,7 +1673,7 @@ paths:
         The current user must be allowed to change the document.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/SetGeneralSettings:
+  /API/v4/OpenDMSBackend/SetGeneralSettings:
     put:
       parameters:
       - description: Access Token
@@ -1701,7 +1701,7 @@ paths:
         are allowed to call this.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/SetRetentionDates/{documentId}:
+  /API/v4/OpenDMSBackend/SetRetentionDates/{documentId}:
     put:
       parameters:
       - description: The id of the document.
@@ -1741,7 +1741,7 @@ paths:
         hard-deletes it.'
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/SoftDelete/{containerOrContaineeId}:
+  /API/v4/OpenDMSBackend/SoftDelete/{containerOrContaineeId}:
     delete:
       parameters:
       - description: The id of the container or document to soft-delete.
@@ -1775,7 +1775,7 @@ paths:
         it from storage.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/UnassignTag/{documentId}/{tagId}:
+  /API/v4/OpenDMSBackend/UnassignTag/{documentId}/{tagId}:
     delete:
       parameters:
       - description: The id of the document.
@@ -1803,7 +1803,7 @@ paths:
         user must be allowed to change the document.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/UnauthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}:
+  /API/v4/OpenDMSBackend/UnauthorizeUserToEditStorageLocation/{storageLocationId}/{editUserId}:
     post:
       parameters:
       - description: The id of the storage location.
@@ -1832,7 +1832,7 @@ paths:
         this.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
+  /API/v4/OpenDMSBackend/UnauthorizeUserToViewStorageLocation/{storageLocationId}/{sharedWithUserId}:
     post:
       parameters:
       - description: The id of the storage location.
@@ -1860,7 +1860,7 @@ paths:
         location.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/UpdateDocumentTitle/{documentId}:
+  /API/v4/OpenDMSBackend/UpdateDocumentTitle/{documentId}:
     put:
       parameters:
       - description: The ID of the document whose title should be updated.
@@ -1903,7 +1903,7 @@ paths:
       summary: Updates the display title of an existing document.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/UpdateTag/{tagId}:
+  /API/v4/OpenDMSBackend/UpdateTag/{tagId}:
     put:
       parameters:
       - description: The id of the tag to change.
@@ -1938,7 +1938,7 @@ paths:
         by that user.
       tags:
       - OpenDMSBackend
-  /API/v3/OpenDMSBackend/UploadNewVersion/{oldDocumentId}:
+  /API/v4/OpenDMSBackend/UploadNewVersion/{oldDocumentId}:
     post:
       parameters:
       - description: The ID of the document a new version is uploaded for.
@@ -2006,7 +2006,7 @@ paths:
         as a regular document in the same folder and is linked to the old document.
       tags:
       - OpenDMSBackend
-  /API/v3/UserController/GetAllRoles:
+  /API/v4/UserController/GetAllRoles:
     get:
       parameters:
       - description: Access Token
@@ -2038,7 +2038,7 @@ paths:
         administrator privileges.
       tags:
       - User
-  /API/v3/UserController/GetAllUsers:
+  /API/v4/UserController/GetAllUsers:
     get:
       parameters:
       - description: Access Token
@@ -2070,7 +2070,7 @@ paths:
         administrator privileges.
       tags:
       - User
-  /API/v3/UserController/GetRoles:
+  /API/v4/UserController/GetRoles:
     put:
       parameters:
       - description: Access Token
@@ -2101,7 +2101,7 @@ paths:
       summary: Returns the roles assigned to the currently authenticated user.
       tags:
       - User
-  /API/v3/UserController/GetTheme:
+  /API/v4/UserController/GetTheme:
     get:
       parameters:
       - description: Access Token
@@ -2126,7 +2126,7 @@ paths:
       summary: Returns the color-scheme which the currently authenticated user chose.
       tags:
       - User
-  /API/v3/UserController/GetUserInformation:
+  /API/v4/UserController/GetUserInformation:
     get:
       parameters:
       - description: Access Token
@@ -2151,7 +2151,7 @@ paths:
       summary: Returns profile information for the currently authenticated user.
       tags:
       - User
-  /API/v3/UserController/Login:
+  /API/v4/UserController/Login:
     put:
       parameters:
       - description: The username.
@@ -2181,7 +2181,7 @@ paths:
         token on success.
       tags:
       - User
-  /API/v3/UserController/Logout:
+  /API/v4/UserController/Logout:
     put:
       parameters:
       - description: Access Token
@@ -2196,7 +2196,7 @@ paths:
       summary: Invalidates the current session's access token, logging the user out.
       tags:
       - User
-  /API/v3/UserController/Register:
+  /API/v4/UserController/Register:
     put:
       parameters:
       - description: The username for the new account.
@@ -2221,7 +2221,7 @@ paths:
       summary: Registers a new user account. Requires administrator privileges.
       tags:
       - User
-  /API/v3/UserController/SetRolesOfUser:
+  /API/v4/UserController/SetRolesOfUser:
     put:
       parameters:
       - description: The id of the user whose roles should be set.
@@ -2260,7 +2260,7 @@ paths:
         are removed, missing ones are added). Requires administrator privileges.
       tags:
       - User
-  /API/v3/UserController/SetTheme:
+  /API/v4/UserController/SetTheme:
     put:
       parameters:
       - description: Access Token
@@ -2288,7 +2288,7 @@ paths:
         the choice is available again on another device and after a new login.
       tags:
       - User
-  /API/v3/UserController/TokenIsValid:
+  /API/v4/UserController/TokenIsValid:
     get:
       parameters:
       - description: The access token to validate.

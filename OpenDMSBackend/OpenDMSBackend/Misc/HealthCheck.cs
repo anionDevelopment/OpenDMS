@@ -3,7 +3,6 @@ using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using OpenDMSBackend.Core.Configuration;
 using OpenDMSBackend.Core.Services;
 using System.Collections.Generic;
 using System.Threading;
@@ -15,14 +14,14 @@ namespace OpenDMSBackend.Core.Misc
     {
         private readonly IGeneralLogger _Logger;
         private readonly IPersistence _Persistence;
-        private readonly IInitializationService<CommandlineParameter> _InitializationService;
+        private readonly IInitializationService _InitializationService;
         private readonly IOCRServiceClient _OCRService;
         /// <summary>Initializes a new instance of <see cref="HealthCheck"/>.</summary>
         /// <param name="logger">The logger for diagnostic output.</param>
         /// <param name="persistence">The persistence service to check for availability.</param>
         /// <param name="initializationService">The initialization service used to verify the app is ready.</param>
         /// <param name="ocrService">The OCR service to check for availability.</param>
-        public HealthCheck(IServerLog logger, IPersistence persistence, IInitializationService<CommandlineParameter> initializationService, IOCRServiceClient ocrService)
+        public HealthCheck(IServerLog logger, IPersistence persistence, IInitializationService initializationService, IOCRServiceClient ocrService)
         {
             this._Logger = logger.Logger;
             this._Persistence = persistence;

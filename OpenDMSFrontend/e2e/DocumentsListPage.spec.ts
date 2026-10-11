@@ -11,12 +11,12 @@ test.describe('Documents-list-page', () => {
     test('looks like the baseline-screenshot in the light color-scheme', async ({ page }) => {
         await simulateLoggedInUser(page, 'light');
         await simulateDocuments(page);
-        await expectPageToLookLikeBaseline(page, '/user/documents', 'light_documents-list-page');
+        await expectPageToLookLikeBaseline(page, '/user/documents', 'light-documents-list-page');
     });
 
     test('looks like the baseline-screenshot in the dark color-scheme', async ({ page }) => {
         await simulateLoggedInUser(page, 'dark');
         await simulateDocuments(page);
-        await expectPageToLookLikeBaseline(page, '/user/documents', 'dark_documents-list-page');
+        await expectPageToLookLikeBaseline(page, '/user/documents', 'dark-documents-list-page');
     });
 });

@@ -100,18 +100,18 @@ const theDocumentWithAnOwnPage = {
  * This function has to be called before the page is opened.
  */
 export async function simulateDocuments(page: Page): Promise<void> {
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetLatestDocuments*', [previewOfTheFirstDocument, previewOfTheSecondDocument]);
+    await respondWith(page, '**/API/v4/OpenDMSBackend/GetLatestDocuments*', [previewOfTheFirstDocument, previewOfTheSecondDocument]);
     /*
      * The document-list contains a tab with the storage-locations. That tab is not the selected one,
      * but its content is rendered nevertheless and therefore its request has to be answered too.
      */
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetAllViewableStorageLocations*', []);
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetDocumentFromReadableId*', theDocumentWithAnOwnPage);
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetDocumentPreview*', previewOfTheSecondDocument);
+    await respondWith(page, '**/API/v4/OpenDMSBackend/GetAllViewableStorageLocations*', []);
+    await respondWith(page, '**/API/v4/OpenDMSBackend/GetDocumentFromReadableId*', theDocumentWithAnOwnPage);
+    await respondWith(page, '**/API/v4/OpenDMSBackend/GetDocumentPreview*', previewOfTheSecondDocument);
     /*
      * The document-page lets the user index the document, so it additionally asks for every tag which exists and
      * for the metadata-fields which the document can hold a value for.
      */
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetTags*', [tagOfTheDocument, tagWhichIsNotAssigned]);
-    await respondWith(page, '**/API/v3/OpenDMSBackend/GetMetadataFieldsOfDocument/*', [metadataFieldOfTypeString, metadataFieldOfTypeBoolean, metadataFieldOfTypeDouble, metadataFieldOfTypeTimestamp]);
+    await respondWith(page, '**/API/v4/OpenDMSBackend/GetTags*', [tagOfTheDocument, tagWhichIsNotAssigned]);
+    await respondWith(page, '**/API/v4/OpenDMSBackend/GetMetadataFieldsOfDocument/*', [metadataFieldOfTypeString, metadataFieldOfTypeBoolean, metadataFieldOfTypeDouble, metadataFieldOfTypeTimestamp]);
 }

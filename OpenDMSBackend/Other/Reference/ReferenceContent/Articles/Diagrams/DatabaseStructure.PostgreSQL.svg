@@ -31,7 +31,20 @@
       <text x="68.08" y="120.186" fill="#000" font-size="14" textLength="258.296" font-family="DejaVu Sans">ContainerId : character varying «PK»</text>
       <line x1="49.08" y1="127.488" x2="334.233" y2="127.488" style="stroke:#181818;stroke-width:0.5;" />
     </g>
-    <g class="entity" data-qualified-name="Document_MetadataValue" id="ent0003" data-source-line="17">
+    <g class="entity" data-qualified-name="DocumentVersion" id="ent0003" data-source-line="17">
+      <rect x="2997.09" y="44.297" width="403.118" height="107.484" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <text x="3136.1" y="62.292" fill="#000" font-size="14" textLength="125.098" font-family="DejaVu Sans">DocumentVersion</text>
+      <line x1="2998.09" y1="70.594" x2="3399.208" y2="70.594" style="stroke:#181818;stroke-width:0.5;" />
+      <g data-visibility-modifier="IE_MANDATORY">
+        <ellipse cx="3008.09" cy="84.242" rx="3" ry="3" fill="#000" style="stroke:#000;stroke-width:1;" />
+      </g>
+      <text x="3017.09" y="87.589" fill="#000" font-size="14" textLength="245.561" font-family="DejaVu Sans">ContentId : character varying «PK»</text>
+      <line x1="2998.09" y1="94.891" x2="3399.208" y2="94.891" style="stroke:#181818;stroke-width:1;" />
+      <text x="3003.09" y="111.886" fill="#000" font-size="14" textLength="315.602" font-family="DejaVu Sans">DocumentId : character varying «NOT NULL»</text>
+      <text x="3003.09" y="128.183" fill="#000" font-size="14" textLength="391.118" font-family="DejaVu Sans">Timestamp : timestamp without time zone «NOT NULL»</text>
+      <text x="3003.09" y="144.479" fill="#000" font-size="14" textLength="208.701" font-family="DejaVu Sans">Version : integer «NOT NULL»</text>
+    </g>
+    <g class="entity" data-qualified-name="Document_MetadataValue" id="ent0004" data-source-line="25">
       <rect x="370" y="52.447" width="383.301" height="91.188" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
       <text x="468.972" y="70.442" fill="#000" font-size="14" textLength="185.356" font-family="DejaVu Sans">Document_MetadataValue</text>
       <line x1="371" y1="78.744" x2="752.301" y2="78.744" style="stroke:#181818;stroke-width:0.5;" />
@@ -46,7 +59,7 @@
       <line x1="371" y1="119.337" x2="752.301" y2="119.337" style="stroke:#181818;stroke-width:1;" />
       <text x="376" y="136.333" fill="#000" font-size="14" textLength="173.421" font-family="DejaVu Sans">Value : text «NOT NULL»</text>
     </g>
-    <g class="entity" data-qualified-name="Document_Tag" id="ent0004" data-source-line="24">
+    <g class="entity" data-qualified-name="Document_Tag" id="ent0005" data-source-line="32">
       <rect x="788.45" y="60.597" width="288.411" height="74.891" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
       <text x="879.882" y="78.592" fill="#000" font-size="14" textLength="105.547" font-family="DejaVu Sans">Document_Tag</text>
       <line x1="789.45" y1="86.894" x2="1075.861" y2="86.894" style="stroke:#181818;stroke-width:0.5;" />
@@ -60,7 +73,7 @@
       <text x="808.45" y="120.186" fill="#000" font-size="14" textLength="215.899" font-family="DejaVu Sans">TagId : character varying «PK»</text>
       <line x1="789.45" y1="127.488" x2="1075.861" y2="127.488" style="stroke:#181818;stroke-width:0.5;" />
     </g>
-    <g class="entity" data-qualified-name="Documents" id="ent0005" data-source-line="29">
+    <g class="entity" data-qualified-name="Documents" id="ent0006" data-source-line="37">
       <rect x="2991.13" y="211.777" width="415.047" height="335.641" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
       <text x="3158.742" y="229.772" fill="#000" font-size="14" textLength="79.823" font-family="DejaVu Sans">Documents</text>
       <line x1="2992.13" y1="238.074" x2="3405.177" y2="238.074" style="stroke:#181818;stroke-width:0.5;" />
@@ -69,9 +82,9 @@
       </g>
       <text x="3011.13" y="255.069" fill="#000" font-size="14" textLength="189.882" font-family="DejaVu Sans">Id : character varying «PK»</text>
       <line x1="2992.13" y1="262.371" x2="3405.177" y2="262.371" style="stroke:#181818;stroke-width:1;" />
-      <text x="2997.13" y="279.366" fill="#000" font-size="14" textLength="245.328" font-family="DejaVu Sans">AddedByUserId : character varying</text>
-      <text x="2997.13" y="295.663" fill="#000" font-size="14" textLength="156.98" font-family="DejaVu Sans">AISummaryLong : text</text>
-      <text x="2997.13" y="311.959" fill="#000" font-size="14" textLength="160.426" font-family="DejaVu Sans">AISummaryShort : text</text>
+      <text x="2997.13" y="279.366" fill="#000" font-size="14" textLength="156.98" font-family="DejaVu Sans">AISummaryLong : text</text>
+      <text x="2997.13" y="295.663" fill="#000" font-size="14" textLength="160.426" font-family="DejaVu Sans">AISummaryShort : text</text>
+      <text x="2997.13" y="311.959" fill="#000" font-size="14" textLength="245.328" font-family="DejaVu Sans">AddedByUserId : character varying</text>
       <text x="2997.13" y="328.256" fill="#000" font-size="14" textLength="277.361" font-family="DejaVu Sans">AssignedLanguages : character varying</text>
       <text x="2997.13" y="344.553" fill="#000" font-size="14" textLength="403.047" font-family="DejaVu Sans">DeleteIsNotAllowedBefore : timestamp without time zone</text>
       <text x="2997.13" y="360.85" fill="#000" font-size="14" textLength="294.205" font-family="DejaVu Sans">Filename : character varying «NOT NULL»</text>
@@ -86,19 +99,6 @@
       <text x="2997.13" y="507.522" fill="#000" font-size="14" textLength="348.988" font-family="DejaVu Sans">OriginalFilename : character varying «NOT NULL»</text>
       <text x="2997.13" y="523.819" fill="#000" font-size="14" textLength="224.718" font-family="DejaVu Sans">ReadableId : bigint «NOT NULL»</text>
       <text x="2997.13" y="540.116" fill="#000" font-size="14" textLength="260.49" font-family="DejaVu Sans">Title : character varying «NOT NULL»</text>
-    </g>
-    <g class="entity" data-qualified-name="DocumentVersion" id="ent0006" data-source-line="51">
-      <rect x="2997.09" y="44.297" width="403.118" height="107.484" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
-      <text x="3136.1" y="62.292" fill="#000" font-size="14" textLength="125.098" font-family="DejaVu Sans">DocumentVersion</text>
-      <line x1="2998.09" y1="70.594" x2="3399.208" y2="70.594" style="stroke:#181818;stroke-width:0.5;" />
-      <g data-visibility-modifier="IE_MANDATORY">
-        <ellipse cx="3008.09" cy="84.242" rx="3" ry="3" fill="#000" style="stroke:#000;stroke-width:1;" />
-      </g>
-      <text x="3017.09" y="87.589" fill="#000" font-size="14" textLength="245.561" font-family="DejaVu Sans">ContentId : character varying «PK»</text>
-      <line x1="2998.09" y1="94.891" x2="3399.208" y2="94.891" style="stroke:#181818;stroke-width:1;" />
-      <text x="3003.09" y="111.886" fill="#000" font-size="14" textLength="315.602" font-family="DejaVu Sans">DocumentId : character varying «NOT NULL»</text>
-      <text x="3003.09" y="128.183" fill="#000" font-size="14" textLength="391.118" font-family="DejaVu Sans">Timestamp : timestamp without time zone «NOT NULL»</text>
-      <text x="3003.09" y="144.479" fill="#000" font-size="14" textLength="208.701" font-family="DejaVu Sans">Version : integer «NOT NULL»</text>
     </g>
     <g class="entity" data-qualified-name="Folders" id="ent0007" data-source-line="59">
       <rect x="1111.97" y="60.597" width="283.359" height="74.891" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
@@ -225,7 +225,22 @@
       <text x="397.97" y="691.313" fill="#000" font-size="14" textLength="271.359" font-family="DejaVu Sans">Name : character varying «NOT NULL»</text>
       <text x="397.97" y="707.609" fill="#000" font-size="14" textLength="228.3" font-family="DejaVu Sans">OwnerUserId : character varying</text>
     </g>
-    <g class="entity" data-qualified-name="User_Roles" id="ent0017" data-source-line="123">
+    <g class="entity" data-qualified-name="UserSettings" id="ent0017" data-source-line="123">
+      <rect x="710.76" y="615.567" width="247.792" height="91.188" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
+      <text x="789.99" y="633.562" fill="#000" font-size="14" textLength="89.332" font-family="DejaVu Sans">UserSettings</text>
+      <line x1="711.76" y1="641.864" x2="957.552" y2="641.864" style="stroke:#181818;stroke-width:0.5;" />
+      <g data-visibility-modifier="IE_MANDATORY">
+        <ellipse cx="721.76" cy="655.512" rx="3" ry="3" fill="#000" style="stroke:#000;stroke-width:1;" />
+      </g>
+      <text x="730.76" y="658.859" fill="#000" font-size="14" textLength="202.945" font-family="DejaVu Sans">Key : character varying «PK»</text>
+      <g data-visibility-modifier="IE_MANDATORY">
+        <ellipse cx="721.76" cy="671.809" rx="3" ry="3" fill="#000" style="stroke:#000;stroke-width:1;" />
+      </g>
+      <text x="730.76" y="675.156" fill="#000" font-size="14" textLength="221.792" font-family="DejaVu Sans">UserId : character varying «PK»</text>
+      <line x1="711.76" y1="682.458" x2="957.552" y2="682.458" style="stroke:#181818;stroke-width:1;" />
+      <text x="716.76" y="699.453" fill="#000" font-size="14" textLength="173.421" font-family="DejaVu Sans">Value : text «NOT NULL»</text>
+    </g>
+    <g class="entity" data-qualified-name="User_Roles" id="ent0018" data-source-line="130">
       <rect x="2369.76" y="60.597" width="247.792" height="74.891" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
       <text x="2455.156" y="78.592" fill="#000" font-size="14" textLength="77" font-family="DejaVu Sans">User_Roles</text>
       <line x1="2370.76" y1="86.894" x2="2616.552" y2="86.894" style="stroke:#181818;stroke-width:0.5;" />
@@ -239,7 +254,7 @@
       <text x="2389.76" y="120.186" fill="#000" font-size="14" textLength="221.792" font-family="DejaVu Sans">UserId : character varying «PK»</text>
       <line x1="2370.76" y1="127.488" x2="2616.552" y2="127.488" style="stroke:#181818;stroke-width:0.5;" />
     </g>
-    <g class="entity" data-qualified-name="Users" id="ent0018" data-source-line="128">
+    <g class="entity" data-qualified-name="Users" id="ent0019" data-source-line="135">
       <rect x="1884.23" y="268.817" width="466.85" height="221.563" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
       <text x="2098.053" y="286.812" fill="#000" font-size="14" textLength="39.204" font-family="DejaVu Sans">Users</text>
       <line x1="1885.23" y1="295.114" x2="2350.08" y2="295.114" style="stroke:#181818;stroke-width:0.5;" />
@@ -259,22 +274,7 @@
       <text x="1890.23" y="466.781" fill="#000" font-size="14" textLength="271.824" font-family="DejaVu Sans">UserIsActivated : boolean «NOT NULL»</text>
       <text x="1890.23" y="483.078" fill="#000" font-size="14" textLength="254.987" font-family="DejaVu Sans">UserIsLocked : boolean «NOT NULL»</text>
     </g>
-    <g class="entity" data-qualified-name="UserSettings" id="ent0019" data-source-line="143">
-      <rect x="710.76" y="615.567" width="247.792" height="91.188" fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;" rx="2.5" ry="2.5" />
-      <text x="789.99" y="633.562" fill="#000" font-size="14" textLength="89.332" font-family="DejaVu Sans">UserSettings</text>
-      <line x1="711.76" y1="641.864" x2="957.552" y2="641.864" style="stroke:#181818;stroke-width:0.5;" />
-      <g data-visibility-modifier="IE_MANDATORY">
-        <ellipse cx="721.76" cy="655.512" rx="3" ry="3" fill="#000" style="stroke:#000;stroke-width:1;" />
-      </g>
-      <text x="730.76" y="658.859" fill="#000" font-size="14" textLength="202.945" font-family="DejaVu Sans">Key : character varying «PK»</text>
-      <g data-visibility-modifier="IE_MANDATORY">
-        <ellipse cx="721.76" cy="671.809" rx="3" ry="3" fill="#000" style="stroke:#000;stroke-width:1;" />
-      </g>
-      <text x="730.76" y="675.156" fill="#000" font-size="14" textLength="221.792" font-family="DejaVu Sans">UserId : character varying «PK»</text>
-      <line x1="711.76" y1="682.458" x2="957.552" y2="682.458" style="stroke:#181818;stroke-width:1;" />
-      <text x="716.76" y="699.453" fill="#000" font-size="14" textLength="173.421" font-family="DejaVu Sans">Value : text «NOT NULL»</text>
-    </g>
-    <g class="link" data-entity-1="ent0001" data-entity-2="ent0018" id="lnk20" data-source-line="150" data-link-type="crowfoot">
+    <g class="link" data-entity-1="ent0001" data-entity-2="ent0019" id="lnk20" data-source-line="150" data-link-type="crowfoot">
       <path d="M1883.56,97.907 C1899.92,97.907 1892.2,97.907 1892.2,97.907 C1892.2,97.907 1892.2,181.847 1892.2,260.677" style="stroke:#181818;stroke-width:1;" fill="none" id="AccessToken-Users" codeLine="150" />
       <line x1="1873.56" y1="97.907" x2="1865.56" y2="103.907" style="stroke:#181818;stroke-width:1;" />
       <line x1="1873.56" y1="97.907" x2="1865.56" y2="91.907" style="stroke:#181818;stroke-width:1;" />
@@ -285,7 +285,7 @@
       <line x1="1892.2" y1="260.677" x2="1892.2" y2="268.677" style="stroke:#181818;stroke-width:1;" />
       <text x="1850.2" y="166.034" fill="#000" font-size="13" textLength="41.717" font-family="DejaVu Sans">UserId</text>
     </g>
-    <g class="link" data-entity-1="ent0006" data-entity-2="ent0005" id="lnk21" data-source-line="151" data-link-type="crowfoot">
+    <g class="link" data-entity-1="ent0003" data-entity-2="ent0006" id="lnk21" data-source-line="151" data-link-type="crowfoot">
       <path d="M3198.65,169.997 C3198.65,187.557 3198.65,182.087 3198.65,203.487" style="stroke:#181818;stroke-width:1;" fill="none" id="DocumentVersion-Documents" codeLine="151" />
       <line x1="3198.65" y1="159.997" x2="3192.65" y2="151.997" style="stroke:#181818;stroke-width:1;" />
       <line x1="3198.65" y1="159.997" x2="3204.65" y2="151.997" style="stroke:#181818;stroke-width:1;" />
@@ -296,7 +296,7 @@
       <line x1="3198.65" y1="203.487" x2="3198.65" y2="211.487" style="stroke:#181818;stroke-width:1;" />
       <text x="3134.65" y="177.804" fill="#000" font-size="13" textLength="63.788" font-family="DejaVu Sans">ContentId</text>
     </g>
-    <g class="link" data-entity-1="ent0009" data-entity-2="ent0018" id="lnk22" data-source-line="152" data-link-type="crowfoot">
+    <g class="link" data-entity-1="ent0009" data-entity-2="ent0019" id="lnk22" data-source-line="152" data-link-type="crowfoot">
       <path d="M2117.65,161.907 C2117.65,195.637 2117.65,216.987 2117.65,260.407" style="stroke:#181818;stroke-width:1;" fill="none" id="RefreshToken-Users" codeLine="152" />
       <line x1="2117.65" y1="151.907" x2="2111.65" y2="143.907" style="stroke:#181818;stroke-width:1;" />
       <line x1="2117.65" y1="151.907" x2="2123.65" y2="143.907" style="stroke:#181818;stroke-width:1;" />
@@ -329,7 +329,7 @@
       <line x1="2854.88" y1="333.697" x2="2854.88" y2="341.697" style="stroke:#181818;stroke-width:1;" />
       <text x="2813.88" y="234.774" fill="#000" font-size="13" textLength="40.682" font-family="DejaVu Sans">RoleId</text>
     </g>
-    <g class="link" data-entity-1="ent0017" data-entity-2="ent0011" id="lnk25" data-source-line="155" data-link-type="crowfoot">
+    <g class="link" data-entity-1="ent0018" data-entity-2="ent0011" id="lnk25" data-source-line="155" data-link-type="crowfoot">
       <path d="M2493.65,153.757 C2493.65,230.567 2493.65,379.907 2493.65,379.907 C2493.65,379.907 2574.6,379.907 2657.81,379.907" style="stroke:#181818;stroke-width:1;" fill="none" id="User_Roles-Roles" codeLine="155" />
       <line x1="2493.65" y1="143.757" x2="2487.65" y2="135.757" style="stroke:#181818;stroke-width:1;" />
       <line x1="2493.65" y1="143.757" x2="2499.65" y2="135.757" style="stroke:#181818;stroke-width:1;" />
@@ -340,7 +340,7 @@
       <line x1="2657.81" y1="379.907" x2="2665.81" y2="379.907" style="stroke:#181818;stroke-width:1;" />
       <text x="2452.65" y="339.984" fill="#000" font-size="13" textLength="40.682" font-family="DejaVu Sans">RoleId</text>
     </g>
-    <g class="link" data-entity-1="ent0017" data-entity-2="ent0018" id="lnk26" data-source-line="156" data-link-type="crowfoot">
+    <g class="link" data-entity-1="ent0018" data-entity-2="ent0019" id="lnk26" data-source-line="156" data-link-type="crowfoot">
       <path d="M2351.33,97.907 C2335.73,97.907 2343.11,97.907 2343.11,97.907 C2343.11,97.907 2343.11,181.847 2343.11,260.677" style="stroke:#181818;stroke-width:1;" fill="none" id="User_Roles-Users" codeLine="156" />
       <line x1="2361.33" y1="97.907" x2="2369.33" y2="91.907" style="stroke:#181818;stroke-width:1;" />
       <line x1="2361.33" y1="97.907" x2="2369.33" y2="103.907" style="stroke:#181818;stroke-width:1;" />

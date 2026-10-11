@@ -41,7 +41,7 @@ describe('LoginFormComponent', () => {
         },
         {
           provide: OIDCService,
-          useValue: { aPIV3OIDCControllerGetOIDCProvidersGet: () => of([]) }
+          useValue: { aPIV4OIDCControllerGetOIDCProvidersGet: () => of([]) }
         }
       ]
     }).compileComponents();

@@ -21,7 +21,7 @@ export class OidcCallbackComponent implements OnInit {
     private oidcService: OIDCService,
     private storageService: StorageService,
     private userDataService: UserDataService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;
@@ -43,7 +43,7 @@ export class OidcCallbackComponent implements OnInit {
     sessionStorage.removeItem('oidcState');
     sessionStorage.removeItem('oidcProviderId');
 
-    this.oidcService.aPIV3OIDCControllerExchangeOIDCCodePost({ providerId, code, state })
+    this.oidcService.aPIV4OIDCControllerExchangeOIDCCodePost({ providerId, code, state })
       .pipe(
         switchMap((accessToken) => {
           this.storageService.setAccessToken(accessToken.value!);

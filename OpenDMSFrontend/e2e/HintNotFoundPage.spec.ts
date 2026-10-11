@@ -8,11 +8,11 @@ test.describe('Hint-not-found-page', () => {
      */
     test('looks like the baseline-screenshot in the light color-scheme', async ({ page }) => {
         await page.emulateMedia({ colorScheme: 'light' });
-        await expectPageToLookLikeBaseline(page, '/this-route-does-not-exist', 'light_hint-not-found-page');
+        await expectPageToLookLikeBaseline(page, '/this-route-does-not-exist', 'light-hint-not-found-page');
     });
 
     test('looks like the baseline-screenshot in the dark color-scheme', async ({ page }) => {
         await page.emulateMedia({ colorScheme: 'dark' });
-        await expectPageToLookLikeBaseline(page, '/this-route-does-not-exist', 'dark_hint-not-found-page');
+        await expectPageToLookLikeBaseline(page, '/this-route-does-not-exist', 'dark-hint-not-found-page');
     });
 });

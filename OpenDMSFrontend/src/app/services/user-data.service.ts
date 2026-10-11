@@ -40,7 +40,7 @@ export class UserDataService {
 
   userIsLoggedIn(): Observable<boolean> {
     if (this.storageService.hasAccessToken()) {
-      return this.userService.aPIV3UserControllerTokenIsValidGet(this.storageService.getAccessToken());
+      return this.userService.aPIV4UserControllerTokenIsValidGet(this.storageService.getAccessToken());
     } else {
       return of(false);
     }
@@ -61,7 +61,7 @@ export class UserDataService {
     if (this.loaded) {
       pipe = of(void 0);//nothing to do
     } else {
-      pipe = this.userService.aPIV3UserControllerGetUserInformationGet(this.storageService.getAccessToken()).pipe(
+      pipe = this.userService.aPIV4UserControllerGetUserInformationGet(this.storageService.getAccessToken()).pipe(
         tap((value: UserInformationDTO) => {
           this.storageService.setUserName(value.name);
           this.storageService.setUserId(value.id);
