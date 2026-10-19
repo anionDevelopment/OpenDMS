@@ -9,6 +9,43 @@ the traceability of every change, the retention-periods and the regulated deleti
 The product is delivered as one OCI-image which contains the web-frontend and the backend, and it is operated behind a
 reverse-proxy which terminates TLS. The documents are stored in a PostgreSQL- or a MariaDB-database.
 
+## Features
+
+This table lists the features which are typically expected from a document-management-system and whether this product provides them.
+The state of a feature is one of `available` and `unavailable`, and it was determined from the source-code.
+A feature which is not implemented yet links to the issue which tracks it where one exists.
+
+| Id      | State       | Description                                                                                                                                                                 |
+| ------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| feat-1  | available   | Store documents unchanged in their original format (content, original filename and mime-type), together with the immutable capture-timestamp.                              |
+| feat-2  | available   | Show and download existing documents.                                                                                                                                       |
+| feat-3  | available   | Organize documents in storage-locations and folders.                                                                                                                        |
+| feat-4  | available   | Move a document (or a folder) into another folder or storage-location.                                                                                                       |
+| feat-5  | available   | Keep a version-history per document (upload a new version; the old version is hidden from the listings but stays retrievable).                                              |
+| feat-6  | available   | Search for documents by title, filename, ocr-content, tags and metadata-values.                                                                                             |
+| feat-7  | available   | Perform ocr on scanned documents for machine-readability (via a configurable ocr-service; a mock is used when none is configured).                                          |
+| feat-8  | available   | Tag documents with named and colored labels (a tag is either global or belongs to a single user).                                                                           |
+| feat-9  | available   | Index documents with custom metadata-fields of their storage-location (types `string`, `bool`, `double` and `timestamp`), defined per storage-location by a moderator.     |
+| feat-10 | available   | Generate a document-summary by ai (the admin provides an openai-api-compatible endpoint and its credentials).                                                               |
+| feat-11 | available   | Set retention-periods per document (`DeleteIsNotAllowedBefore`, `MustBeHardDeletedAfter`) and technically enforce the deletion-lock during the retention-period.            |
+| feat-12 | available   | Perform a scheduled, audit-logged hard-deletion of documents after their retention-period expired.                                                                          |
+| feat-13 | available   | Soft-delete a document (mark it as deleted instead of physically removing it).                                                                                              |
+| feat-14 | available   | Hard-delete a document with a stated reason.                                                                                                                                 |
+| feat-15 | available   | Record every change (add, update, rename, move, tag- and metadata-change, version-upload, sharing, soft- and hard-delete) in an audit-log with the acting user.            |
+| feat-16 | available   | Authenticate users with login and registration (access-token).                                                                                                              |
+| feat-17 | available   | Manage roles and permissions with a default-deny-model, moderators (owners) per content-object and view-/edit-grants inherited along the containment-hierarchy.             |
+| feat-18 | available   | Allow login via OpenID Connect (an admin configures one or more oidc-providers; an account is created automatically on the first login through a provider).                 |
+| feat-19 | available   | Automatically import documents from a configured external folder (with an optional server-side adapt-script per import-definition).                                         |
+| feat-20 | unavailable | Allow a user to change their password and an administrator to reset it.                                                                                                      |
+| feat-21 | unavailable | Perform actions (for example web-requests) when a specific event occurs, e. g. when a document is moved to a specific folder ([issue 1](https://github.com/anionDevelopment/OpenDMS/issues/1)). |
+| feat-22 | unavailable | Link related documents, for example a voucher and its posting ([issue 17](https://github.com/anionDevelopment/OpenDMS/issues/17)).                                           |
+| feat-23 | unavailable | Export and import all data for migrating a whole installation from one server to another ([issue 26](https://github.com/anionDevelopment/OpenDMS/issues/26)).                |
+| feat-24 | unavailable | Assign a document to a person in the sense of personal data of the gdpr ([issue 3](https://github.com/anionDevelopment/OpenDMS/issues/3)).                                   |
+| feat-25 | unavailable | Ensure immutability of archived documents (worm principle) ([issue 4](https://github.com/anionDevelopment/OpenDMS/issues/4)).                                                |
+| feat-26 | unavailable | Provide a tamper-proof audit-log (the log itself immutable and protected against subsequent modification) ([issue 6](https://github.com/anionDevelopment/OpenDMS/issues/6)). |
+| feat-27 | unavailable | Protect the integrity of stored content with a per-document checksum/hash ([issue 22](https://github.com/anionDevelopment/OpenDMS/issues/22)).                               |
+| feat-28 | unavailable | Provide a gobd-compliant data-export for the tax authority (z1/z2/z3 access or an evaluable export) ([issue 18](https://github.com/anionDevelopment/OpenDMS/issues/18)).     |
+
 ## Technical documentation
 
 - [1. Introduction and Goals](./Technical/01_Introduction-and-Goals.md)
