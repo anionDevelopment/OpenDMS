@@ -8,5 +8,14 @@ namespace OpenDMSBackend.Core.Model.DTOs
 
         /// <summary>The human-readable label for the login button.</summary>
         public string DisplayName { get; set; }
+
+        /// <summary>Initializes a new instance of <see cref="OIDCProviderDTO"/>.</summary>
+        /// <param name="id">The unique provider id.</param>
+        /// <param name="displayName">The human-readable label for the login button.</param>
+        public OIDCProviderDTO(string id, string displayName)
+        {
+            this.Id = id;
+            this.DisplayName = displayName;
+        }
     }
 }

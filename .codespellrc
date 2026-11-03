@@ -1,0 +1,9 @@
+[codespell]
+# Skipped: VCS internals, minified/binary/lock files, build output, caches, generated artifacts,
+# example PDF documents (binary), generated docfx API-reference output, the Other/Logs folder,
+# and the Angular *.xlf translation resources (full of intentional non-English words).
+skip = ./.git,*.min.js,*.min.css,*.map,*.svg,*.lock,package-lock.json,*.pdf,./OpenDMSFrontend/node_modules,./OpenDMSFrontend/.angular,./OpenDMSFrontend/dist,./OpenDMSBackend/TestResults,./Other/Logs,./Other/Reference/ReferenceContent,./**/Other/Artifacts,./**/Other/Resources/DependentCodeUnits,./**/Other/Resources/Translations,./**/Other/Reference/ReferenceContent,./**/Other/Logs,./**/bin,./**/obj,./**/.vs,./.ScriptCollection/Cache
+# als: German for "than/as" inside German source-comments.
+# containees: deliberate OpenDMS domain term (plural of the glossary entry "Containee").
+# unparseable: intentional, valid English spelling variant of "unparsable" used in the documentation.
+ignore-words-list = als,containees,unparseable

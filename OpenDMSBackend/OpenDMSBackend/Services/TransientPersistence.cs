@@ -262,9 +262,7 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public string AddStoragLocation(string name)
         {
-            StorageLocation sl = new StorageLocation();
-            sl.Id = Guid.NewGuid().ToString();
-            sl.Name = name;
+            StorageLocation sl = new StorageLocation(Guid.NewGuid().ToString(), name);
             this._StorageLocations[sl.Id] = sl;
             return sl.Id;
         }
@@ -279,11 +277,7 @@ namespace OpenDMSBackend.Core.Services
         /// <inheritdoc />
         public string AddFolder(string name)
         {
-            Folder folder = new Folder()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = name,
-            };
+            Folder folder = new Folder(Guid.NewGuid().ToString(), name);
             this._Folders[folder.Id] = folder;
             return folder.Id;
         }

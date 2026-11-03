@@ -10,6 +10,15 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public ISet<IContainee> Content { get; set; } = new HashSet<IContainee>();
         public string Name { get; set; }
 
+        /// <summary>Initializes a new instance of <see cref="Folder"/>.</summary>
+        /// <param name="id">The unique identifier of the folder.</param>
+        /// <param name="name">The name of the folder.</param>
+        public Folder(string id, string name)
+        {
+            this.Id = id;
+            this.Name = name;
+        }
+
         /// <inheritdoc />
         public void Accept(IContainerVisitor containee)
         {

@@ -66,7 +66,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="ExtendedXmlSerializer" Version="[3.10.0]" />
-    <PackageReference Include="GRYLibrary" Version="[2.1.6]" />
+    <PackageReference Include="GRYLibrary" Version="[2.1.9]" />
     <PackageReference Include="Microsoft.ClearScript.Core" Version="[7.5.0]" />
     <PackageReference Include="Microsoft.ClearScript.V8" Version="[7.5.0]" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="[10.0.3]" />
@@ -88,8 +88,8 @@
     <PackageReference Include="NSwag.AspNetCore" Version="[14.6.3]" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="[9.0.0]" />
     <PackageReference Include="SimpleOCRLibrary" Version="[1.5.0]" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.2.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.3.0" />
     <PackageReference Include="System.Collections.Immutable" Version="[10.0.3]" />
     <PackageReference Include="System.Drawing.Common" Version="[10.0.3]" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="[8.16.0]" />

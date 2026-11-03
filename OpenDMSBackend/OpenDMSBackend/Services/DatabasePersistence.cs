@@ -1201,11 +1201,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     while (reader.Read())
                     {
-                        result = new StorageLocation()
-                        {
-                            Id = storageLocationId,
-                            Name = reader.GetString(0),
-                        };
+                        result = new StorageLocation(storageLocationId, reader.GetString(0));
                     }
                     reader.Close();
                     if (result == null)
@@ -1231,11 +1227,7 @@ namespace OpenDMSBackend.Core.Services
                 {
                     while (reader.Read())
                     {
-                        result = new Folder()
-                        {
-                            Id = folderId,
-                            Name = reader.GetString(0),
-                        };
+                        result = new Folder(folderId, reader.GetString(0));
                     }
                     reader.Close();
                     if (result == null)

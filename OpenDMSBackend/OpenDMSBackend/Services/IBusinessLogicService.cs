@@ -20,7 +20,7 @@ namespace OpenDMSBackend.Core.Services
         public AccessToken Login(string username, string password);
         #endregion
 
-        public void Housekeeping();//TODO call this function regulary
+        public void Housekeeping();//TODO call this function regularly
 
         #region BusinessLogic
 

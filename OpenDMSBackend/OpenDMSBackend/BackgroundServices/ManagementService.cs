@@ -353,12 +353,7 @@ namespace OpenDMSBackend.Core.BackgroundServices
             }
             foreach (string filePath in Directory.EnumerateFiles(sourceFolder))
             {
-                result.Add(new ExternalFile()
-                {
-                    Name = Path.GetFileName(filePath),
-                    Content = File.ReadAllBytes(filePath),
-                    SourcePath = filePath,
-                });
+                result.Add(new ExternalFile(Path.GetFileName(filePath), File.ReadAllBytes(filePath), filePath));
             }
             return result;
         }
@@ -377,6 +372,17 @@ namespace OpenDMSBackend.Core.BackgroundServices
             public byte[] Content { get; set; }
             /// <summary>The absolute path of the file in the import-source, used to remove it after a successful import.</summary>
             public string SourcePath { get; set; }
+
+            /// <summary>Initializes a new instance of <see cref="ExternalFile"/>.</summary>
+            /// <param name="name">The file-name.</param>
+            /// <param name="content">The binary content of the file.</param>
+            /// <param name="sourcePath">The absolute path of the file in the import-source.</param>
+            public ExternalFile(string name, byte[] content, string sourcePath)
+            {
+                this.Name = name;
+                this.Content = content;
+                this.SourcePath = sourcePath;
+            }
         }
     }
 }

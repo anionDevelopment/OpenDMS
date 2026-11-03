@@ -49,7 +49,7 @@ namespace OpenDMSBackend.Core.Services
         public IReadOnlyList<OIDCProviderDTO> GetProviders()
         {
             return this._Configuration.ApplicationSpecificConfiguration.OIDCProviders
-                .Select(p => new OIDCProviderDTO { Id = p.Id, DisplayName = p.DisplayName })
+                .Select(p => new OIDCProviderDTO(p.Id, p.DisplayName))
                 .ToList();
         }
 
@@ -62,11 +62,7 @@ namespace OpenDMSBackend.Core.Services
             this.CleanupExpiredLogins();
             this._PendingLogins[request.State] = new PendingOIDCLogin(providerId, request.CodeVerifier, this._TimeService.GetCurrentLocalTimeAsDateTimeOffset());
 
-            return new OIDCInitiationDTO
-            {
-                AuthorizationUrl = request.AuthorizationUrl,
-                State = request.State,
-            };
+            return new OIDCInitiationDTO(request.AuthorizationUrl, request.State);
         }
 
         /// <inheritdoc/>

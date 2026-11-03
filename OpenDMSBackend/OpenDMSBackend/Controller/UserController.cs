@@ -128,7 +128,7 @@ namespace OpenDMSBackend.Core.Controller
         [Route(nameof(GetTheme))]
         public IActionResult GetTheme()
         {
-            return this.Ok(new StringValueDTO() { Value = this._BusinessLogicService.GetThemeOfUser(this.GetUser().Id) });
+            return this.Ok(new StringValueDTO(this._BusinessLogicService.GetThemeOfUser(this.GetUser().Id)));
         }
 
         /// <summary>Sets the color-scheme of the currently authenticated user, so that the choice is available again on another device and after a new login.</summary>

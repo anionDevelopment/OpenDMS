@@ -11,5 +11,16 @@ namespace OpenDMSBackend.Core.Model.DTOs
 
         /// <summary>The state value from the callback, used to look up the stored code verifier.</summary>
         public string State { get; set; }
+
+        /// <summary>Initializes a new instance of <see cref="OIDCCallbackRequestDTO"/>.</summary>
+        /// <param name="providerId">The provider id that initiated the flow.</param>
+        /// <param name="code">The authorization code received from the OIDC provider callback.</param>
+        /// <param name="state">The state value from the callback.</param>
+        public OIDCCallbackRequestDTO(string providerId, string code, string state)
+        {
+            this.ProviderId = providerId;
+            this.Code = code;
+            this.State = state;
+        }
     }
 }

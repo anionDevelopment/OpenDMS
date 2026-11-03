@@ -80,11 +80,11 @@ default-deny-model with inheritance along the containment-hierarchy and does not
 operation which takes an object-id was found which trusts that id without checking it, so no insecure direct object reference was
 found. Sixteen testcases assert that an operation is refused for a user without the permission.
 
-The findings of this category (OWASP-01 and OWASP-02) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-1 and SEC-2) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 ### A02:2025 Security Misconfiguration
 
-The findings of this category (OWASP-03, OWASP-04, OWASP-05, OWASP-06, OWASP-07, OWASP-08 and OWASP-09) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-3, SEC-4, SEC-5, SEC-6, SEC-7, SEC-8 and SEC-9) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 ### A03:2025 Software Supply Chain Failures
 
@@ -93,11 +93,11 @@ npm-dependencies are pinned exactly, both code-units keep a lock-file (`RestoreP
 machine-sources so that the build does not depend on the developer-machine, and the pipeline-images for the generation of a
 bill-of-materials (syft) and for a secret-scan (betterleaks) are defined in `.ScriptCollection/OCIImages/ImageDefinition.csv`.
 
-The findings of this category (OWASP-10, OWASP-11 and OWASP-12) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-10, SEC-11 and SEC-12) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 ### A04:2025 Cryptographic Failures
 
-The findings of this category (OWASP-13, OWASP-14 and OWASP-15) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-13, SEC-14 and SEC-15) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 In addition, document-contents are stored unencrypted in the database. That is a legitimate decision for a document-management-
 system which has to search them, but it means the protection of the data rests entirely on the database and on its backups, which
@@ -110,7 +110,7 @@ No sql-injection was found. Every statement is an embedded `.sql`-resource which
 `__generated__`) only generates parameter-names and no values. The frontend contains no `innerHTML`, no `eval` and no
 `bypassSecurityTrust*`-call, so the output-escaping of angular is in place everywhere.
 
-The findings of this category (OWASP-16, OWASP-17 and OWASP-18) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-16, SEC-17 and SEC-18) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 The generation of the adapt-script itself was checked as well: `ToTSStringLiteral` escapes backslash, double-quote and both
 line-breaks before a value (among them the attacker-controllable ocr-content) is written into the generated typescript, which is
@@ -118,14 +118,14 @@ complete for a double-quoted literal of the targeted language-version. No script
 
 ### A06:2025 Insecure Design
 
-The findings of this category (OWASP-19, OWASP-20, OWASP-21, OWASP-22, OWASP-23 and OWASP-24) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-19, SEC-20, SEC-21, SEC-22, SEC-23 and SEC-24) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 ### A07:2025 Authentication Failures
 
-The findings of this category (OWASP-25, OWASP-26, OWASP-27 and OWASP-28) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-25, SEC-26, SEC-27 and SEC-28) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 A token is valid for exactly 24 hours, is not rotated and has no idle-timeout; that is a design-decision rather than a defect,
-but it enlarges the window of OWASP-01 and should be reconsidered together with it.
+but it enlarges the window of SEC-1 and should be reconsidered together with it.
 
 ### A08:2025 Software or Data Integrity Failures
 
@@ -134,7 +134,7 @@ audit-log (issue 6), the immutability of an archived document (issue 4), the int
 (issue 22) and the gap-free numbering (issue 8) as not implemented. They are repeated here because they are security-findings and not only
 gobd-findings.
 
-The findings of this category (OWASP-29, OWASP-30 and OWASP-31) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-29, SEC-30 and SEC-31) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 ### A09:2025 Security Logging and Alerting Failures
 
@@ -142,11 +142,11 @@ The product has a real audit-log for its business-operations, which covers the c
 renaming, sharing, tag- and metadata-changes and both kinds of deletion each write an entry with the acting user. What is missing
 is the security-side of logging.
 
-The findings of this category (OWASP-32, OWASP-33 and OWASP-34) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-32, SEC-33 and SEC-34) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 ### A10:2025 Mishandling of Exceptional Conditions
 
-The findings of this category (OWASP-35, OWASP-36, OWASP-37 and OWASP-38) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
+The findings of this category (SEC-35, BUG-1, BUG-2 and BUG-3) and their current state are listed in the [findings of the product reference](./Other/Reference/Reference.md#findings).
 
 Two further points of this category concern the behaviour of `GRYLibrary` and were verified there afterwards (version 2.1.3; the
 result is recorded in the readme of that repository). The first one is harmless: `DefaultExceptionHandlerMiddleware` answers with
@@ -174,21 +174,21 @@ pipeline-images for the secret-scan and for the bill-of-materials.
 
 ### Prioritized remediation plan
 
-1. Replace the password-hashing with a salted memory-hard algorithm and re-hash on the next login (OWASP-13), and remove the
-   default-password `admin` (OWASP-25). Both are reachable without any precondition and compromise the whole installation.
+1. Replace the password-hashing with a salted memory-hard algorithm and re-hash on the next login (SEC-13), and remove the
+   default-password `admin` (SEC-25). Both are reachable without any precondition and compromise the whole installation.
 2. Close the stored-cross-site-scripting: deliver a document as a download instead of as its stored mime-type, and add an
-   allowlist of accepted types (OWASP-16, OWASP-19). Add the content-security-policy in the same step (OWASP-05).
-3. Build a productive image without the development-certificate and let it run as a non-root user (OWASP-03, OWASP-04).
-4. Add a rate-limit and a lockout to the login and log every failed attempt (OWASP-26, OWASP-32).
-5. Add the missing password-management (change and administrative reset) and make a token revocable (OWASP-20, OWASP-01).
+   allowlist of accepted types (SEC-16, SEC-19). Add the content-security-policy in the same step (SEC-5).
+3. Build a productive image without the development-certificate and let it run as a non-root user (SEC-3, SEC-4).
+4. Add a rate-limit and a lockout to the login and log every failed attempt (SEC-26, SEC-32).
+5. Add the missing password-management (change and administrative reset) and make a token revocable (SEC-20, SEC-1).
 6. Replace every swallowed exception of the background-service by a logged one, and exclude the authentication-routes from the
-   request-logging so that no access-token is written to a log-file (OWASP-33, OWASP-34).
+   request-logging so that no access-token is written to a log-file (SEC-33, SEC-34).
 7. Harden the deployment-surface: secrets through the environment instead of the commandline, a slimmer runtime-image, and an
-   example-deployment which publishes nothing unnecessary (OWASP-06, OWASP-07, OWASP-08, OWASP-17).
-8. Make the data trustworthy: hash-chain the audit-log and store a checksum per document (OWASP-29, OWASP-30), which are the
+   example-deployment which publishes nothing unnecessary (SEC-6, SEC-7, SEC-8, SEC-17).
+8. Make the data trustworthy: hash-chain the audit-log and store a checksum per document (SEC-29, SEC-30), which are the
    issues 6 and 22 of the feature-list.
-9. Work off the robustness-findings (OWASP-21, OWASP-22, OWASP-23, OWASP-35, OWASP-36, OWASP-37) and the remaining
-   supply-chain- and crypto-findings (OWASP-10, OWASP-11, OWASP-12, OWASP-14, OWASP-15, OWASP-31).
+9. Work off the robustness-findings (SEC-21, SEC-22, SEC-23, SEC-35, BUG-1, BUG-2) and the remaining
+   supply-chain- and crypto-findings (SEC-10, SEC-11, SEC-12, SEC-14, SEC-15, SEC-31).
 10. Add the missing security-tests listed above, and verify the two open assumptions against `GRYLibrary`.
 
 ## Build

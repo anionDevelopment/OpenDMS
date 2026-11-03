@@ -11,5 +11,14 @@ namespace OpenDMSBackend.Core.Model.DTOs
         /// in the callback query parameter before calling ExchangeOIDCCode.
         /// </summary>
         public string State { get; set; }
+
+        /// <summary>Initializes a new instance of <see cref="OIDCInitiationDTO"/>.</summary>
+        /// <param name="authorizationUrl">The full URL to redirect the user's browser to at the OIDC provider.</param>
+        /// <param name="state">The OIDC state value which the frontend must verify on the callback.</param>
+        public OIDCInitiationDTO(string authorizationUrl, string state)
+        {
+            this.AuthorizationUrl = authorizationUrl;
+            this.State = state;
+        }
     }
 }

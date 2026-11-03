@@ -9,6 +9,16 @@ namespace OpenDMSBackend.Core.Model.BusinessTypes
         public string Id { get; set; }
         public string Name { get; set; }
         public ISet<IContainee> Content { get; set; } = new HashSet<IContainee>();
+
+        /// <summary>Initializes a new instance of <see cref="StorageLocation"/>.</summary>
+        /// <param name="id">The unique identifier of the storage-location.</param>
+        /// <param name="name">The name of the storage-location.</param>
+        public StorageLocation(string id, string name)
+        {
+            this.Id = id;
+            this.Name = name;
+        }
+
         /// <inheritdoc />
         public void Accept(IContainerVisitor containee)
         {
